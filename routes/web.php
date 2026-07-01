@@ -34,6 +34,8 @@ Route::name('patron.')->group(function () {
     // Reservation form
     Route::get('/p_mreserve', [ReservationController::class, 'create'])->name('p_mreserve');
     Route::post('/p_mreserve', [ReservationController::class, 'store'])->name('p_mreserve.submit');
+    Route::post('/guest-consent/agree', [ReservationController::class, 'acceptGuestConsent'])->name('guest.consent.agree');
+    Route::get('/guest/renew', [ReservationController::class, 'renewGuest'])->name('guest.renew');
 
     // Payment (proof of receipt upload)
     Route::get('/p_payment', [PaymentController::class, 'index'])->name('p_payment');

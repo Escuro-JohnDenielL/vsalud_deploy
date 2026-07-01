@@ -22,6 +22,11 @@
     <nav class="navbar">
         <ul class="navbar">
             <li>
+                <a href="{{ url('/') }}" class="site-home-link">
+                    Landing Page
+                </a>
+            </li>
+            <li>
                 <a href="{{ route('admin.home') }}" class="{{ request()->is('admin/home') ? 'active' : '' }}">
                     Home
                 </a>

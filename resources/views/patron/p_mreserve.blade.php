@@ -111,6 +111,11 @@
         </div>
     </div>
 
+    <script>
+        window.guestAgreementAccepted = @json($agreementAccepted ?? false);
+        window.guestConsentAgreeUrl = @json(route('patron.guest.consent.agree'));
+    </script>
+
     <div class="page-wrapper">
         <div class="container">
             <div class="reservation-container">

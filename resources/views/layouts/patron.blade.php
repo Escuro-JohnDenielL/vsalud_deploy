@@ -22,6 +22,11 @@
     <nav class="navbar">
         <ul class="navbar">
             <li>
+                <a href="{{ url('/') }}" class="site-home-link">
+                    Landing Page
+                </a>
+            </li>
+            <li>
                 <a href="{{ route('patron.p_home') }}"
                     class="{{ request()->routeIs('patron.p_home') ? 'active' : '' }}">
                     Home

@@ -112,20 +112,31 @@ document.addEventListener("DOMContentLoaded", function () {
     let hasScrolledToBottom = false;
 
     if (agreementModal && agreementContent && agreeButton) {
-        setTimeout(() => {
-            agreementModal.style.display = "flex";
-            agreementModal.classList.add("show");
-            form?.classList.add("form-disabled");
-            document.body.style.overflow = "hidden";
-        }, 100);
+        const shouldShowAgreement = !window.guestAgreementAccepted;
 
-        setTimeout(() => {
-            const { scrollHeight, clientHeight } = agreementContent;
-            if (scrollHeight <= clientHeight + 10) {
-                hasScrolledToBottom = true;
-                agreeButton.disabled = false;
-            }
-        }, 300);
+        if (shouldShowAgreement) {
+            setTimeout(() => {
+                agreementModal.style.display = "flex";
+                agreementModal.classList.add("show");
+                form?.classList.add("form-disabled");
+                document.body.style.overflow = "hidden";
+            }, 100);
+        } else {
+            agreementModal.style.display = "none";
+            agreementModal.classList.remove("show");
+            form?.classList.remove("form-disabled");
+            document.body.style.overflow = "auto";
+        }
+
+        if (shouldShowAgreement) {
+            setTimeout(() => {
+                const { scrollHeight, clientHeight } = agreementContent;
+                if (scrollHeight <= clientHeight + 10) {
+                    hasScrolledToBottom = true;
+                    agreeButton.disabled = false;
+                }
+            }, 300);
+        }
 
         agreementContent.addEventListener("scroll", () => {
             const { scrollTop, scrollHeight, clientHeight } = agreementContent;
@@ -137,10 +148,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
         agreeButton.addEventListener("click", () => {
             if (hasScrolledToBottom) {
-                agreementModal.classList.remove("show");
-                setTimeout(() => (agreementModal.style.display = "none"), 300);
-                form?.classList.remove("form-disabled");
-                document.body.style.overflow = "auto";
+                fetch(window.guestConsentAgreeUrl, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN":
+                            document
+                                .querySelector('meta[name="csrf-token"]')
+                                ?.getAttribute("content") || "",
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "same-origin",
+                    body: JSON.stringify({ accepted: true }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.success) {
+                            window.guestAgreementAccepted = true;
+                            agreementModal.classList.remove("show");
+                            setTimeout(
+                                () => (agreementModal.style.display = "none"),
+                                300
+                            );
+                            form?.classList.remove("form-disabled");
+                            document.body.style.overflow = "auto";
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Failed to save guest consent:", error);
+                    });
             }
         });
     }

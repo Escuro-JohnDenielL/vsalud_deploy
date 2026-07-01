@@ -1,1 +1,16 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
+
+.site-home-link {
+  background: #007b3d;
+  color: #fff !important;
+  border-radius: 999px;
+  padding: 8px 14px !important;
+  border-bottom: 0 !important;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.site-home-link:hover {
+  background: #0a8f49;
+  color: #fff !important;
+  transform: translateY(-1px);
+}
