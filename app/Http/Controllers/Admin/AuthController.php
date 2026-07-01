@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use App\Models\Admin;
 use App\Models\ActivityLog;
 use Carbon\Carbon;
@@ -54,10 +55,27 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
         $credentials = $request->only('email', 'password');
+        $key = strtolower($request->input('email')).'|'.$request->ip();
+
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $seconds = RateLimiter::availableIn($key);
+
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors([
+                    'email' => "Too many login attempts. Try again in {$seconds} seconds.",
+                ]);
+        }
 
         if (Auth::guard('admin')->attempt($credentials)) {
             Log::info('nag true');
+            RateLimiter::clear($key);
             
             $admin = Auth::guard('admin')->user();
 
@@ -79,9 +97,17 @@ class AuthController extends Controller
             return redirect()->intended('/admin/home');
         }
 
-        return back()->withErrors([
-            'email' => 'Invalid login credentials.',
-        ]);
+        RateLimiter::hit($key, 60);
+
+        $remaining = 5 - RateLimiter::attempts($key);
+
+        return back()
+            ->withInput($request->only('email'))
+            ->withErrors([
+                'email' => $remaining > 0
+                    ? 'Invalid login credentials.'
+                    : 'Too many login attempts. Try again in 60 seconds.',
+            ]);
     }
 
     public function logout(Request $request)

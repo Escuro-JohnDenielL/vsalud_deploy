@@ -16,9 +16,9 @@
             <div class="login-box">
                 <h2>Log In</h2>
 
-                @if(session('error'))
+                @if ($errors->any())
                     <div class="error-message" style="color: #dc3545; background: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
-                        {{ session('error') }}
+                        {{ $errors->first() }}
                     </div>
                 @endif
 
