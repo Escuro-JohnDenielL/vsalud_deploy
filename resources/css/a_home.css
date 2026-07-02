@@ -1,75 +1,8 @@
-body {
-  margin: 0;
-  padding: 0;
-  font-family: "Playfair Display", serif;
-  background: #fdfaf4;
-  zoom: 90%;
-}
-
-.header-image {
-  width: 100%;
-  height: auto;
-}
-
-.header-banner {
-  width: 100%;
-  height: 90px;
-  object-fit: cover;
-  display: block;
-}
-
-/* === Navbar === */
-.navbar {
-  display: flex;
-  justify-content: center;
-  background: #fff;
-  padding: 15px 0;
-}
-
-.navbar ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  gap: 30px;
-}
-
-.navbar li {
-  display: inline;
-}
-
-.navbar a {
-  text-decoration: none;
-  color: #333;
-  font-size: 17px;
-  font-weight: 600;
-  padding: 6px 12px;
-  transition: 0.2s ease-in-out;
-}
-
-.navbar a:hover,
-.navbar a.active {
-  color: #007b3d;
-  border-bottom: 2px solid #007b3d;
-}
-
-/* === Banner === */
+/* === Banner Container === */
 .banner-container {
   display: flex;
   justify-content: center;
   padding: 20px 0;
-}
-
-.banner {
-  background: #007b3d;
-  color: white;
-  text-align: center;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 12px;
-  width: 80%;
-  max-width: 900px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* === Add Package Button Container === */
@@ -79,25 +12,6 @@ body {
   padding: 20px 0;
 }
 
-.add-package-btn {
-  background: #28a745;
-  color: white;
-  padding: 15px 30px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.add-package-btn:hover {
-  background: #218838;
-  transform: translateY(-2px);
-  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
-}
-
 /* === Packages Grid Layout === */
 .packages-grid {
   display: flex !important;
@@ -105,31 +19,37 @@ body {
   justify-content: center;
   align-items: stretch;
   overflow-x: auto;
-  gap: 20px;
+  gap: 24px;
   padding: 20px 40px;
   flex-wrap: nowrap !important;
 }
 
 /* === Package Cards === */
 .package-card {
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
-  transition: all 0.3s ease;
-  border: 1px solid #e0e0e0;
+  transition: all var(--transition-base);
+  border: 1px solid var(--color-border);
+  min-width: 280px;
+  max-width: 320px;
 }
 
 .package-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-xl);
 }
 
 .package-card img {
   width: 100%;
   height: 220px;
   object-fit: cover;
-  border-bottom: 2px solid #f0f0f0;
+  transition: transform var(--transition-slow);
+}
+
+.package-card:hover img {
+  transform: scale(1.03);
 }
 
 .package-content {
@@ -139,9 +59,10 @@ body {
 .package-card h3 {
   font-size: 20px;
   margin: 0 0 15px 0;
-  color: #333;
+  color: var(--color-text);
   font-weight: 600;
   text-align: center;
+  font-family: var(--font-heading);
 }
 
 /* === Package Details === */
@@ -152,7 +73,7 @@ body {
 
 .package-description {
   font-size: 14px;
-  color: #666;
+  color: var(--color-text-muted);
   margin: 8px 0;
   font-style: italic;
   line-height: 1.4;
@@ -161,11 +82,11 @@ body {
 .package-price {
   font-size: 18px;
   font-weight: bold;
-  color: #007b3d;
+  color: var(--color-primary);
   margin: 10px 0;
 }
 
-/* === Buttons Row - Horizontal Layout === */
+/* === Buttons Row === */
 .buttons-row {
   display: flex;
   justify-content: space-between;
@@ -178,70 +99,41 @@ body {
   padding: 8px 12px;
   font-size: 12px;
   font-weight: 600;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-base);
   text-align: center;
-}
-
-.buttons-row .btn-success {
-  background: #28a745;
-  color: white;
-}
-
-.buttons-row .btn-success:hover {
-  background: #218838;
-  transform: translateY(-1px);
-}
-
-.buttons-row .btn-warning {
-  background: #ffc107;
-  color: white;
-}
-
-.buttons-row .btn-warning:hover {
-  background: #e0a800;
-  transform: translateY(-1px);
-}
-
-.buttons-row .btn-danger {
-  background: #dc3545;
-  color: white;
-}
-
-.buttons-row .btn-danger:hover {
-  background: #c82333;
-  transform: translateY(-1px);
 }
 
 /* === Modal Enhancements === */
 .modal-content {
-  border-radius: 15px;
+  border-radius: var(--radius-lg);
   border: none;
-  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-xl);
 }
 
 .modal-header {
-  background: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
-  border-radius: 15px 15px 0 0;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .modal-title {
   font-weight: 600;
-  color: #333;
+  color: var(--color-text);
+  font-family: var(--font-heading);
 }
 
 .thumbnail-img {
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: transform var(--transition-base);
   border: 2px solid transparent;
 }
 
 .thumbnail-img:hover {
   transform: scale(1.05);
-  border-color: #007b3d;
+  border-color: var(--color-primary);
 }
 
 .package-inclusions ul {
@@ -257,29 +149,10 @@ body {
 
 .package-inclusions li::before {
   content: "✓";
-  color: #28a745;
+  color: var(--color-primary);
   font-weight: bold;
   position: absolute;
   left: 0;
-}
-
-/* === Form Styling === */
-.form-control {
-  border-radius: 8px;
-  border: 1px solid #ced4da;
-  padding: 10px 12px;
-  transition: border-color 0.3s ease;
-}
-
-.form-control:focus {
-  border-color: #007b3d;
-  box-shadow: 0 0 5px rgba(0, 123, 61, 0.2);
-}
-
-.form-label {
-  font-weight: 600;
-  color: #495057;
-  margin-bottom: 8px;
 }
 
 /* === Success Modal Styling === */

@@ -1,3 +1,5 @@
+@import "variables.css";
+
 .checkbox-container {
   display: flex;
   align-items: center;
@@ -19,22 +21,21 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: "Playfair Display", serif;
+  font-family: var(--font-body);
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background: #fdfaf4;
-  zoom: 80%;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--color-bg) 0%, #e8f5e9 100%);
 }
 
 .container {
   display: flex;
   width: 80%;
   max-width: 1200px;
-  background: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-xl);
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -49,47 +50,85 @@ body {
 
 h1 {
   font-size: 24px;
-  color: #333;
+  color: var(--color-text);
+  font-family: var(--font-heading);
 }
 
-.signup-box {
+.login-box {
   margin-top: 20px;
-  border: 2px solid #007b3d;
-  padding: 20px;
-  background: white;
+  border: 1px solid var(--color-border);
+  padding: 24px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
 }
 
 h2 {
   font-size: 22px;
   text-align: center;
+  color: var(--color-primary);
+  font-family: var(--font-heading);
 }
 
 label {
   display: block;
   margin-top: 10px;
+  font-weight: 500;
+  color: var(--color-text);
+  font-size: 14px;
 }
 
 input {
   width: 100%;
-  padding: 8px;
+  padding: 10px 14px;
   margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
   box-sizing: border-box;
+  font-family: var(--font-body);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(13, 122, 62, 0.1);
 }
 
 button {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin-top: 15px;
-  background: #007b3d;
+  background: var(--color-primary);
   color: white;
   border: none;
+  border-radius: var(--radius-sm);
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
+  font-family: var(--font-body);
+  transition: all var(--transition-base);
+}
+
+button:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .login-link {
   text-align: center;
   margin-top: 10px;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.login-link a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
 }

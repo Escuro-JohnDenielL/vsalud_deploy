@@ -1,56 +1,3 @@
-body {
-  margin: 0;
-  padding: 0;
-  font-family: "Playfair Display", serif;
-  background: #fdfaf4;
-  zoom: 90%;
-}
-
-.header-image {
-  width: 100%;
-  height: auto;
-}
-
-.header-banner {
-  width: 100%;
-  height: 90px;
-  object-fit: cover;
-  display: block;
-}
-
-/* === Navbar === */
-.navbar {
-  display: flex;
-  justify-content: center;
-  background: #fff;
-  padding: 15px 0;
-}
-
-.navbar ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  gap: 30px;
-}
-
-.navbar li {
-  display: inline;
-}
-
-.navbar a {
-  text-decoration: none;
-  color: #333;
-  font-size: 17px;
-  font-weight: 600;
-  padding: 6px 12px;
-  transition: 0.2s ease-in-out;
-}
-
-.navbar a:hover,
-.navbar a.active {
-  color: #007b3d;
-  border-bottom: 2px solid #007b3d;
-}
 /* === Loading Overlay === */
 .loading-overlay {
   position: fixed;
@@ -81,8 +28,7 @@ body {
   width: 40px;
   height: 40px;
   border: 4px solid #f3f3f3;
-  border-top: 4px solid #007b3d;
-  border-radius: 50%;
+  border-top: 4px solid var(--color-primary);
   animation: spin 1s linear infinite;
   margin: 0 auto 20px;
 }
@@ -93,36 +39,36 @@ body {
 }
 
 .loading-spinner p {
-  color: #666;
+  color: var(--color-text-muted);
   font-size: 16px;
   margin: 0;
 }
 
 /* === Page Content === */
 #content {
-  margin-top: 0; /* Remove the 30px margin that was causing extra space */
-  padding: 0; /* Remove padding here since report-container handles it */
-  max-width: none; /* Let report-container handle the width */
+  margin-top: 0;
+  padding: 0;
+  max-width: none;
   margin-left: auto;
   margin-right: auto;
 }
 
-/* === Report Page Container - Proper spacing from navbar === */
+/* === Report Page Container === */
 .report-container {
-  max-width: calc(100% - 3rem); /* Only 1.5rem (24px) on each side */
-  padding: 20px 1.5rem 30px; /* Top padding creates space from navbar */
+  max-width: calc(100% - 3rem);
+  padding: 20px 1.5rem 30px;
   margin: 0 auto;
   width: 90%;
 }
 
 /* === Dashboard Header === */
 .dashboard-header {
-  background: linear-gradient(135deg, #007b3d 0%, #005a2d 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
   color: white;
-  border-radius: 15px;
+  border-radius: var(--radius-lg);
   padding: 23px;
   margin-bottom: 30px;
-  box-shadow: 0 8px 32px rgba(0, 123, 61, 0.15);
+  box-shadow: 0 8px 32px rgba(13, 122, 62, 0.15);
 }
 
 .header-content {
