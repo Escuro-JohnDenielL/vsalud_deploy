@@ -226,7 +226,6 @@
                     <span id="month-year"></span>
                     <button id="nextMonth">▶</button>
                 </div>
-                <div id="calendar"></div>
                 <div id="calendar" class="calendar-grid"></div>
 
                 <div class="calendar-legend">
@@ -250,5 +249,188 @@
 @endsection
 
 @push('scripts')
-    @vite('resources/js/patron/mreserve.js')
+    {{-- Preload calendar availability data (eliminates a round-trip API call) --}}
+    @php
+        $availData = \App\Models\Inquiry::selectRaw('date, COUNT(*) as total')
+            ->groupBy('date')
+            ->get()
+            ->mapWithKeys(fn($i) => [$i->date => match(true) {
+                $i->total >= 4 => 'Full',
+                $i->total === 3 => 'Nearly',
+                $i->total === 2 => 'Half',
+                default => 'Available',
+            }]);
+    @endphp
+    <script>
+        window.__calendarAvailability = @json($availData);
+    </script>
+
+    {{-- Inline app logic (calendar + form behaviors, no module script wait needed) --}}
+    <script>
+        (function() {
+            // ── Calendar ──
+            var data = window.__calendarAvailability || {};
+            var cal = document.getElementById('calendar');
+            var mY = document.getElementById('month-year');
+            var now = new Date();
+            var month = now.getMonth();
+            var year = now.getFullYear();
+
+            function renderCal() {
+                if (!cal || !mY) return;
+                mY.textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(year, month, 1));
+                var fd = new Date(year, month, 1).getDay();
+                var ld = new Date(year, month + 1, 0).getDate();
+                cal.innerHTML = '';
+                ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(function(d) {
+                    var h = document.createElement('div');
+                    h.className = 'calendar-day day-header';
+                    h.textContent = d;
+                    cal.appendChild(h);
+                });
+                for (var i = 0; i < fd; i++) {
+                    var e = document.createElement('div');
+                    e.className = 'calendar-day empty';
+                    cal.appendChild(e);
+                }
+                for (var d = 1; d <= ld; d++) {
+                    var pm = String(month + 1).padStart(2, '0');
+                    var pd = String(d).padStart(2, '0');
+                    var key = year + '-' + pm + '-' + pd;
+                    var cell = document.createElement('div');
+                    cell.className = 'calendar-day';
+                    cell.textContent = d;
+                    cell.setAttribute('data-date', key);
+                    if (data[key]) cell.classList.add(data[key]);
+                    cal.appendChild(cell);
+                }
+            }
+            renderCal();
+            document.getElementById('prevMonth')?.addEventListener('click', function() {
+                month--; if (month < 0) { month = 11; year--; } renderCal();
+            });
+            document.getElementById('nextMonth')?.addEventListener('click', function() {
+                month++; if (month > 11) { month = 0; year++; } renderCal();
+            });
+
+            // ── Date unavailable modal ──
+            var dateInput = document.getElementById('date');
+            var dateModal = document.getElementById('dateUnavailableModal');
+            var closeModal = document.getElementById('closeUnavailableModal');
+            dateInput?.addEventListener('change', function() {
+                if (data[this.value] === 'Full' || data[this.value] === 'Closed') {
+                    if (dateModal) dateModal.style.display = 'block';
+                    this.value = '';
+                }
+            });
+            closeModal?.addEventListener('click', function() { if (dateModal) dateModal.style.display = 'none'; });
+            window.addEventListener('click', function(e) { if (e.target === dateModal) dateModal.style.display = 'none'; });
+
+            // ── "Others" toggles ──
+            function toggleOther(sel, inp) {
+                if (!sel || !inp) return;
+                inp.style.display = sel.value === 'Others' ? 'block' : 'none';
+                inp.required = sel.value === 'Others';
+                if (sel.value !== 'Others') inp.value = '';
+            }
+            [
+                ['venue', 'otherVenue'],
+                ['theme_motif', 'otherThemeMotif'],
+                ['event_type', 'otherEventType']
+            ].forEach(function(pair) {
+                var sel = document.getElementById(pair[0]);
+                var inp = document.getElementById(pair[1]) || document.getElementById(pair[1].replace('other', 'other_'));
+                if (sel) {
+                    sel.addEventListener('change', function() { toggleOther(sel, inp); });
+                    toggleOther(sel, inp);
+                }
+            });
+
+            // ── Time slot toggles ──
+            var periodSel = document.getElementById('period');
+            var tsWrap = document.getElementById('timeSlotWrapper');
+            var tsSel = document.getElementById('time_slot');
+            var slots = { AM: ['9am–1pm','10am–2pm','11am–3pm'], PM: ['4pm-8pm','5pm–9pm','6pm–10pm'] };
+            periodSel?.addEventListener('change', function() {
+                var v = this.value;
+                tsSel.innerHTML = '<option value="">Select a time slot</option>';
+                if (slots[v]) {
+                    slots[v].forEach(function(s) {
+                        var o = document.createElement('option');
+                        o.value = s; o.textContent = s;
+                        tsSel.appendChild(o);
+                    });
+                    tsWrap.style.display = 'block';
+                    tsSel.disabled = false;
+                } else {
+                    tsWrap.style.display = 'none';
+                    tsSel.disabled = true;
+                }
+            });
+
+            // ── Agreement modal ──
+            var modal = document.getElementById('agreementModal');
+            var content = document.getElementById('agreementContent');
+            var agreeBtn = document.getElementById('agreeButton');
+            var form = document.querySelector('form');
+            var scrolled = false;
+
+            if (modal && content && agreeBtn) {
+                var showAgreement = !window.guestAgreementAccepted;
+
+                if (showAgreement) {
+                    setTimeout(function() {
+                        modal.style.display = 'flex';
+                        modal.classList.add('show');
+                        if (form) form.classList.add('form-disabled');
+                        document.body.style.overflow = 'hidden';
+                    }, 100);
+                } else {
+                    modal.style.display = 'none';
+                    modal.classList.remove('show');
+                    if (form) form.classList.remove('form-disabled');
+                    document.body.style.overflow = 'auto';
+                }
+
+                if (showAgreement) {
+                    setTimeout(function() {
+                        if (content.scrollHeight <= content.clientHeight + 10) {
+                            scrolled = true;
+                            agreeBtn.disabled = false;
+                        }
+                    }, 300);
+                }
+
+                content.addEventListener('scroll', function() {
+                    if (content.scrollTop + content.clientHeight >= content.scrollHeight - 10) {
+                        scrolled = true;
+                        agreeBtn.disabled = false;
+                    }
+                });
+
+                agreeBtn.addEventListener('click', function() {
+                    // Enable form immediately — no need to wait for server
+                    window.guestAgreementAccepted = true;
+                    modal.classList.remove('show');
+                    setTimeout(function() { modal.style.display = 'none'; }, 300);
+                    if (form) form.classList.remove('form-disabled');
+                    document.body.style.overflow = 'auto';
+                    // Send consent in background (fire & forget)
+                    fetch(window.guestConsentAgreeUrl, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''),
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ accepted: true })
+                    }).catch(function(err) { console.error('Guest consent error:', err); });
+                });
+            }
+        })();
+    </script>
+
+
+    {{-- Module script removed — all functionality is now inline above for faster loading --}}
 @endpush

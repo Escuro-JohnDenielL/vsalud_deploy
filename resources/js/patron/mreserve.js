@@ -268,18 +268,27 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function loadAvailabilityData() {
-        fetch("/calendar/availability")
-            .then((res) => res.json())
-            .then((data) => {
-                Object.entries(data).forEach(([date, status]) => {
-                    dateStatuses[date] = status;
-                });
-                renderCalendar();
-            })
-            .catch((err) => {
-                console.error("Failed to load availability:", err);
-                renderCalendar();
+        // Use preloaded data from server (eliminates an extra round-trip)
+        if (window.__calendarAvailability) {
+            Object.entries(window.__calendarAvailability).forEach(([date, status]) => {
+                dateStatuses[date] = status;
             });
+            renderCalendar();
+        } else {
+            // Fallback: fetch from API
+            fetch("/calendar/availability")
+                .then((res) => res.json())
+                .then((data) => {
+                    Object.entries(data).forEach(([date, status]) => {
+                        dateStatuses[date] = status;
+                    });
+                    renderCalendar();
+                })
+                .catch((err) => {
+                    console.error("Failed to load availability:", err);
+                    renderCalendar();
+                });
+        }
     }
 
     loadAvailabilityData();

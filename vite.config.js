@@ -27,4 +27,17 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        host: '0.0.0.0',
+        port: 5173,
+        strictPort: true,
+        cors: {
+            origin: ['http://localhost:8000', 'https://z825b5tt-8000.asse.devtunnels.ms'],
+            credentials: true,
+        },
+        hmr: {
+            host: 'localhost',
+            protocol: 'ws',
+        },
+    },
 });
