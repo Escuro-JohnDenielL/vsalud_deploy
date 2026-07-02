@@ -3,7 +3,7 @@
 @section('title', 'Patron Home')
 
 @push('styles')
-    @vite('resources/css/p_home.css')
+    @vite('resources/css/patron/home.css')
 @endpush
 
 @section('content')
@@ -32,5 +32,5 @@
 @endsection
 
 @push('scripts')
-    @vite('resources/js/p_homepage.js')
+    @vite('resources/js/patron/home.js')
 @endpush

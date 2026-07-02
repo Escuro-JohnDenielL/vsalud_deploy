@@ -19,7 +19,7 @@ class ReservationController extends Controller
     public function create(Request $request)
     {
         if ($request->is('admin/*')) {
-            return view('admin.a_reserve');
+            return view('admin.reserve');
         }
 
         $agreementAccepted = (bool) $request->session()->get('guest_agreed', false);
@@ -48,7 +48,7 @@ class ReservationController extends Controller
             $request->session()->put('guest_token', $guestToken);
         }
 
-        $response = response()->view('patron.p_mreserve', compact('agreementAccepted'));
+        $response = response()->view('patron.mreserve', compact('agreementAccepted'));
 
         if ($guestToken) {
             $response->cookie('guest_token', $guestToken, 60 * 24 * 30);
@@ -59,7 +59,7 @@ class ReservationController extends Controller
 
     public function fetch_vreserve(Request $request)
     {
-        return view('patron.p_vreserve');
+        return view('patron.vreserve');
     }
 
     public function store(Request $request)

@@ -3,7 +3,7 @@
 @section('title', 'Submit Payment')
 
 @push('styles')
-    @vite('resources/css/payment_order.css')
+    @vite('resources/css/patron/payment.css')
 @endpush
 
 @section('content')
@@ -120,5 +120,5 @@
 @endsection
 
 @push('scripts')
-    @vite('resources/js/payment_order.js')
+    @vite('resources/js/patron/payment.js')
 @endpush

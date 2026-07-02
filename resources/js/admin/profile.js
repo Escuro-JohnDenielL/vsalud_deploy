@@ -1,4 +1,4 @@
-console.log("a_profile.js loaded ✅");
+console.log("admin/profile.js loaded ✅");
 
 function generateId(length = 12) {
     const chars =

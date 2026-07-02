@@ -3,7 +3,7 @@
 @section('title', 'Villa Salud Catering - Guidelines')
 
 @push('styles')
-    @vite(['resources/css/guidelines.css'])
+    @vite(['resources/css/patron/guidelines.css'])
 @endpush
 
 @section('content')

@@ -47,8 +47,8 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('admin.reserve_logs') }}"
-                    class="{{ request()->is('admin/reserve_logs') ? 'active' : '' }}">
+                <a href="{{ route('admin.reserve-logs') }}"
+                    class="{{ request()->is('admin/reserve-logs') ? 'active' : '' }}">
                     Reservation Logs
                 </a>
             </li>

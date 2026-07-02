@@ -203,9 +203,9 @@
 @endsection
 
 @push('scripts')
-@vite('resources/js/a_homepage.js')
+@vite('resources/js/admin/home.js')
 @endpush
 
 @push('styles')
-@vite('resources/css/a_home.css')
+@vite('resources/css/admin/home.css')
 @endpush

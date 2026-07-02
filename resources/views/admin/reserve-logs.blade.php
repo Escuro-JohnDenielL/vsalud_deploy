@@ -3,7 +3,7 @@
 @section('title', 'Reservation Logs')
 
 @push('styles')
-    @vite('resources/css/reserve_logs.css')
+    @vite('resources/css/admin/reserve-logs.css')
 @endpush
 
 @section('content')
@@ -172,5 +172,5 @@
     </div>
 
 
-    @vite('resources/js/reserve_logs.js')
+    @vite('resources/js/admin/reserve-logs.js')
 @endsection

@@ -15,7 +15,7 @@ class InquiryController extends Controller
     public function index()
     {
         $inquiries = Inquiry::with('patron')->latest()->get();
-        return view('admin.a_inquiry', compact('inquiries'));
+        return view('admin.inquiry', compact('inquiries'));
     }
 
     public function show($id)

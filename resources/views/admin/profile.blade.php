@@ -3,7 +3,7 @@
 @section('title', 'Admin Profile')
 
 @push('styles')
-  @vite('resources/css/a_profile.css')
+  @vite('resources/css/admin/profile.css')
 @endpush
 
 @section('content')
@@ -185,5 +185,5 @@ $user = Auth::guard('admin')->user() ?? (object)[
 @endsection
 
 @push('scripts')
-  @vite('resources/js/a_profile.js')
+  @vite('resources/js/admin/profile.js')
 @endpush

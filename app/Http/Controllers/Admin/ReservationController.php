@@ -19,7 +19,7 @@ class ReservationController extends Controller
 
         $payment_logs = Payment::latest()->get();
 
-        return view('admin.reserve_logs', compact('reservations', 'payment_logs'));
+        return view('admin.reserve-logs', compact('reservations', 'payment_logs'));
     }
 
     public function getReservation($id)

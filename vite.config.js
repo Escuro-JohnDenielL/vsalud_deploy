@@ -3,15 +3,22 @@ import laravel from 'laravel-vite-plugin';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const cssInputs = fs
-    .readdirSync(path.resolve('resources/css'))
-    .filter((file) => file.endsWith('.css'))
-    .map((file) => `resources/css/${file}`);
+function getFilesRecursive(dir, ext) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    const files = [];
+    for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+            files.push(...getFilesRecursive(fullPath, ext));
+        } else if (entry.name.endsWith(ext)) {
+            files.push(fullPath);
+        }
+    }
+    return files;
+}
 
-const jsInputs = fs
-    .readdirSync(path.resolve('resources/js'))
-    .filter((file) => file.endsWith('.js'))
-    .map((file) => `resources/js/${file}`);
+const cssInputs = getFilesRecursive(path.resolve('resources/css'), '.css');
+const jsInputs = getFilesRecursive(path.resolve('resources/js'), '.js');
 
 export default defineConfig({
     plugins: [

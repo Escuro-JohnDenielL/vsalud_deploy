@@ -3,7 +3,7 @@
 @section('title', 'Manual Reservation')
 
 @push('styles')
-    @vite('resources/css/p_mreserve.css')
+    @vite('resources/css/patron/mreserve.css')
 @endpush
 
 @section('content')
@@ -125,7 +125,7 @@
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
 
-                <form method="POST" action="{{ route('patron.p_mreserve.submit') }}">
+                <form method="POST" action="{{ route('patron.mreserve.submit') }}">
                     @csrf
 
                     <div class="form-group">
@@ -250,5 +250,5 @@
 @endsection
 
 @push('scripts')
-    @vite('resources/js/p_mreserve.js')
+    @vite('resources/js/patron/mreserve.js')
 @endpush

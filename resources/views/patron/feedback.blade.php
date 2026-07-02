@@ -3,7 +3,7 @@
 @section('title', 'Feedback')
 
 @push('styles')
-@vite('resources/css/feedback.css')
+@vite('resources/css/patron/feedback.css')
 @endpush
 
 @section('content')
@@ -70,5 +70,5 @@
 @endsection
 
 @push('scripts')
-@vite('resources/js/feedback.js')
+@vite('resources/js/patron/feedback.js')
 @endpush

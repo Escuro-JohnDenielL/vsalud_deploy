@@ -1,6 +1,6 @@
-// resources/js/p_mreserve.js
+// resources/js/patron/mreserve.js
 
-import "./bootstrap";
+import "../bootstrap";
 
 document.addEventListener("DOMContentLoaded", function () {
     const venueSelect = document.getElementById("venue");

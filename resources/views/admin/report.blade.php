@@ -3,7 +3,7 @@
 @section('title', 'Report Dashboard')
 
 @push('styles')
-@vite('resources/css/a_report.css')
+@vite('resources/css/admin/report.css')
 <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet">
 @endpush
 
@@ -151,5 +151,5 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-@vite('resources/js/a_report.js')
+@vite('resources/js/admin/report.js')
 @endpush

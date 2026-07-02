@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Villa Salud Catering</title>
-    @vite('resources/css/landing_page.css')
+    @vite('resources/css/index.css')
 
 </head>
 <body>
+
+    <div id="toast" class="toast-notification"></div>
 
     <div class="hero">
         <a href="{{ route('patron.guest.renew') }}" class="guest-reset-link">Reset Guest</a>
@@ -19,17 +21,25 @@
                 <span>VILLA SALUD CATERING</span>
                 <span>BOOKING AND RESERVATION SYSTEM</span>
             </h1>
-            @if (session('success'))
-                <div class="alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
             <div class="buttons">
                 <a href="{{ url('/home') }}" class="btn client">Patrons</a>
                 <a href="{{ route('admin.login') }}" class="btn admin">Admin</a>
             </div>
         </div>
     </div>
+
+    @if (session('success'))
+        <script>
+            (function() {
+                var toast = document.getElementById('toast');
+                toast.textContent = '{{ session('success') }}';
+                toast.classList.add('show');
+                setTimeout(function() {
+                    toast.classList.remove('show');
+                }, 2000);
+            })();
+        </script>
+    @endif
 
 </body>
 </html>

@@ -31,26 +31,26 @@
     <nav class="navbar">
         <ul class="navbar">
             <li>
-                <a href="{{ route('patron.p_home') }}"
-                    class="{{ request()->routeIs('patron.p_home') ? 'active' : '' }}">
+                <a href="{{ route('patron.home') }}"
+                    class="{{ request()->routeIs('patron.home') ? 'active' : '' }}">
                     Packages
                 </a>
             </li>
             <li>
-                <a href="{{ route('patron.p_mreserve') }}"
-                    class="{{ request()->routeIs('patron.p_mreserve') ? 'active' : '' }}">
+                <a href="{{ route('patron.mreserve') }}"
+                    class="{{ request()->routeIs('patron.mreserve') ? 'active' : '' }}">
                     Make Reservation
                 </a>
             </li>
             <li>
-                <a href="{{ route('patron.p_vreserve') }}"
-                    class="{{ request()->routeIs('patron.p_vreserve') ? 'active' : '' }}">
+                <a href="{{ route('patron.vreserve') }}"
+                    class="{{ request()->routeIs('patron.vreserve') ? 'active' : '' }}">
                     View Reservation
                 </a>
             </li>
             <li>
-                <a href="{{ route('patron.p_payment') }}"
-                    class="{{ request()->routeIs('patron.p_payment') ? 'active' : '' }}">
+                <a href="{{ route('patron.payment') }}"
+                    class="{{ request()->routeIs('patron.payment') ? 'active' : '' }}">
                     Payment Order
                 </a>
             </li>

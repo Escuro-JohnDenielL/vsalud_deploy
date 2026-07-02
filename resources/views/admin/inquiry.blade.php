@@ -3,7 +3,7 @@
 @section('title', 'View Inquiries')
 
 @push('styles')
-    @vite('resources/css/a_inquiry.css')
+    @vite('resources/css/admin/inquiry.css')
 @endpush
 
 @section('content')
@@ -125,5 +125,5 @@
 @endsection
 
 @push('scripts')
-    @vite('resources/js/a_inquiries.js')
+    @vite('resources/js/admin/inquiries.js')
 @endpush

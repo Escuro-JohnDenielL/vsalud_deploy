@@ -3,7 +3,7 @@
 @section('title', 'Make Reservation')
 
 @push('styles')
-    @vite('resources/css/a_reserve.css')
+    @vite('resources/css/admin/reserve.css')
 @endpush
 
 @section('content')
@@ -165,5 +165,5 @@
 @endsection
 
 @push('scripts')
-    @vite('resources/js/a_reserve.js')
+    @vite('resources/js/admin/reserve.js')
 @endpush

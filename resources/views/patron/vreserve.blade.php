@@ -3,7 +3,7 @@
 @section('title', 'View Reservation')
 
 @push('styles')
-    @vite('resources/css/p_vreserve.css')
+    @vite('resources/css/patron/vreserve.css')
 @endpush
 
 @section('content')
@@ -33,5 +33,5 @@
 @endsection
 
 @push('scripts')
-    @vite('resources/js/p_view_reservation.js')
+    @vite('resources/js/patron/view-reservation.js')
 @endpush
