@@ -15,7 +15,10 @@
             <img src="{{ asset('./images/background_picture.jpeg') }}" alt="Background" class="background-image">
         </div>
         <div class="content">
-            <h1>VILLA SALUD CATERING<br>BOOKING AND RESERVATION SYSTEM</h1>
+            <h1>
+                <span>VILLA SALUD CATERING</span>
+                <span>BOOKING AND RESERVATION SYSTEM</span>
+            </h1>
             @if (session('success'))
                 <div class="alert-success">
                     {{ session('success') }}

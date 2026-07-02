@@ -10,7 +10,7 @@
 
 <body>
     <a href="{{ url('/') }}" style="position: absolute; top: 18px; left: 18px; z-index: 10; display: inline-block; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,0.86); color: #165c34; text-decoration: none; font-weight: 700; font-size: 12px; border: 1px solid rgba(22,92,52,0.2);">
-        Back to Landing
+        Back to Home
     </a>
     <di class="container">
         <div class="left-section">

@@ -9,7 +9,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url('/') }}">Landing Page</a>
+            <a class="navbar-brand" href="{{ url('/') }}">Home</a>
         </div>
     </nav>
 
