@@ -19,29 +19,32 @@ use App\Http\Controllers\Admin\AvailabilityController;
 use App\Http\Controllers\Admin\AdminActivityController;
 use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
+use App\Http\Controllers\It\AccessController as ItAccessController;
 use App\Models\Inquiry;
 use Illuminate\Support\Facades\Log;
 
 // Patron Routes
 Route::name('patron.')->group(function () {
     // Home page
-    Route::get('/home', [HomeController::class, 'index'])->name('p_home');
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
 
     // Feedback
     Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback');
     Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 
     // Reservation form
-    Route::get('/p_mreserve', [ReservationController::class, 'create'])->name('p_mreserve');
-    Route::post('/p_mreserve', [ReservationController::class, 'store'])->name('p_mreserve.submit');
+    Route::get('/mreserve', [ReservationController::class, 'create'])->name('mreserve');
+    Route::post('/mreserve', [ReservationController::class, 'store'])->name('mreserve.submit');
+    Route::post('/guest-consent/agree', [ReservationController::class, 'acceptGuestConsent'])->name('guest.consent.agree');
+    Route::get('/guest/renew', [ReservationController::class, 'renewGuest'])->name('guest.renew');
 
     // Payment (proof of receipt upload)
-    Route::get('/p_payment', [PaymentController::class, 'index'])->name('p_payment');
-    // Route::post('/p_payment', [PaymentController::class, 'store'])->name('payment.store');
+    Route::get('/payment', [PaymentController::class, 'index'])->name('payment');
+    // Route::post('/payment', [PaymentController::class, 'store'])->name('payment.store');
 
     // Placeholder views for other patron pages
-    Route::get('/p_vreserve', [ReservationController::class, 'fetch_vreserve'])->name('p_vreserve');
-    // Route::view('/p_vreserve', 'patron.p_vreserve')->name('p_vreserve');
+    Route::get('/vreserve', [ReservationController::class, 'fetch_vreserve'])->name('vreserve');
+    // Route::view('/vreserve', 'patron.vreserve')->name('vreserve');
     Route::view('/faq', 'patron.faq')->name('faq');
     Route::view('/guidelines', 'patron.guidelines')->name('guidelines');
 });
@@ -94,7 +97,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(functi
     Route::post('activities/store', [AdminActivityController::class, 'store'])->name('activities.store');
 
     // Profile editing and saving
-    Route::view('/profile', 'admin.a_profile')->name('profile');
+    Route::view('/profile', 'admin.profile')->name('profile');
     Route::post('profile/update', [AdminProfileController::class, 'update'])->name('profile.update');
 
     // For change password
@@ -116,14 +119,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(functi
     Route::get('/event-type-data', [AdminHomeController::class, 'getEventTypeData'])->name('event-type.data');
 
     // Reserve Logs - FIXED ROUTES
-    Route::get('/reserve_logs', [AdminReservationController::class, 'showReservationLogs'])->name('reserve_logs');
+    Route::get('/reserve-logs', [AdminReservationController::class, 'showReservationLogs'])->name('reserve-logs');
 
     // API routes for reservation management (for AJAX calls)
     Route::get('/reservations/{id}', [AdminReservationController::class, 'getReservation'])->name('reservations.show');
     Route::delete('/reservations/{id}', [AdminReservationController::class, 'deleteReservation'])->name('reservations.delete');
 
     // Report page
-    Route::view('/report', 'admin.a_report')->name('report');
+    Route::view('/report', 'admin.report')->name('report');
 
     Route::post('/send-reply', [ReservationController::class, 'sendReply']);
 });
@@ -168,4 +171,17 @@ Route::get('/calendar/availability', function () {
 });
 
 // Landing Page
-Route::view('/', 'home');
+Route::view('/', 'index');
+
+// IT Access
+Route::prefix('it')->name('it.')->group(function () {
+    Route::get('/login', [ItAccessController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [ItAccessController::class, 'login'])->name('login.submit');
+
+    Route::middleware(['auth', 'role:it'])->group(function () {
+        Route::get('/dashboard', [ItAccessController::class, 'dashboard'])->name('dashboard');
+        Route::post('/logout', [ItAccessController::class, 'logout'])->name('logout');
+        Route::post('/admins', [ItAccessController::class, 'storeAdmin'])->name('admins.store');
+        Route::post('/guests', [ItAccessController::class, 'storeGuest'])->name('guests.store');
+    });
+});

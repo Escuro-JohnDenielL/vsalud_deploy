@@ -35,7 +35,20 @@ class Handler extends ExceptionHandler
             case 'admin':
                 $login = route('admin.login');
                 break;
+            case 'web':
+                if ($request->is('it') || $request->is('it/*')) {
+                    $login = route('it.login');
+                    break;
+                }
+
+                $login = route('login');
+                break;
             default:
+                if ($request->is('it') || $request->is('it/*')) {
+                    $login = route('it.login');
+                    break;
+                }
+
                 $login = route('login');
                 break;
         }
@@ -45,6 +58,5 @@ class Handler extends ExceptionHandler
     }
 
 }
-
 
 

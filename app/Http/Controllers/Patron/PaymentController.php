@@ -13,7 +13,7 @@ class PaymentController extends Controller
 {
     public function index()
     {
-        return view('patron.p_payment');
+        return view('patron.payment');
     }
 
     // public function store(Request $request)

@@ -3,7 +3,7 @@
 @section('title', 'FAQs')
 
 @push('styles')
-    @vite('resources/css/faqs.css')
+    @vite('resources/css/patron/faq.css')
 @endpush
 
 @section('content')
@@ -103,5 +103,5 @@
 @endsection
 
 @push('scripts')
-    @vite('resources/js/faqs.js')
+    @vite('resources/js/patron/faq.js')
 @endpush

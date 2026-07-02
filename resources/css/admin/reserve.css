@@ -1,0 +1,366 @@
+/* === Layout Container === */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 50px;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* === Reservation Form === */
+.reservation-container {
+    width: 50%;
+}
+
+.reservation-container h2 {
+    margin-bottom: 30px;
+    color: #2b2b2b;
+    font-size: 22px;
+}
+
+/* === Form Styling === */
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.form-group span {
+    color: red;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 75%;
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 5px rgba(13, 122, 62, 0.25);
+    outline: none;
+}
+
+.form-group textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.form-group button {
+    width: 75%;
+    padding: 10px;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: all var(--transition-base);
+}
+
+.form-group button:hover {
+    background: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+/* === Calendar === */
+.calendar-container {
+    width: 350px;
+    padding: 20px;
+    background: #fefefe;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.calendar-header button {
+    background: #e0e0e0;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.calendar-header button:hover {
+    background: #c5c5c5;
+}
+
+#calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    padding-top: 10px;
+}
+
+.calendar-day {
+    padding: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-align: center;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-day:hover:not(.day-header):not(.empty) {
+    background-color: #f0f0f0;
+}
+
+.day-header {
+    font-weight: bold;
+    background: #f2f2f2 !important;
+    cursor: default;
+}
+
+.empty {
+    background: none !important;
+    border: none !important;
+    cursor: default;
+}
+
+/* Calendar Status Colors */
+.status-green {
+    background: #28a745 !important;
+    color: white !important;
+}
+
+.status-yellow {
+    background: #ffc107 !important;
+    color: black !important;
+}
+
+.status-orange {
+    background: orange !important;
+    color: black !important;
+}
+
+.status-red {
+    background: #dc3545 !important;
+    color: white !important;
+}
+
+.status-gray {
+    background: gray !important;
+    color: white !important;
+}
+
+/* === Legend === */
+.calendar-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.legend-green {
+    background: #28a745;
+}
+.legend-yellow {
+    background: #ffc107;
+}
+.legend-orange {
+    background: orange;
+}
+.legend-red {
+    background: #dc3545;
+}
+.legend-gray {
+    background: gray;
+}
+
+/* === Modal === */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 400px;
+}
+
+.modal-box h3 {
+    margin: 0 0 15px 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.modal-box select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.modal-box button {
+    flex: 1;
+    padding: 8px 12px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    min-width: 80px;
+}
+
+.modal-box #saveStatus {
+    background: #28a745;
+    color: white;
+}
+
+.modal-box #saveStatus:hover {
+    background: #218838;
+}
+
+.modal-box #closeModal {
+    background: #6c757d;
+    color: white;
+}
+
+.modal-box #closeModal:hover {
+    background: #5a6268;
+}
+
+.modal-box #undoStatus {
+    background: #dc3545;
+    color: white;
+}
+
+.modal-box #undoStatus:hover {
+    background: #c82333;
+}
+
+.modal1 {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content1 {
+    margin: auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.close-modal1 {
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+}
+
+/* === Responsive === */
+@media (max-width: 900px) {
+    .container {
+        flex-direction: column;
+        padding: 20px;
+        gap: 30px;
+    }
+
+    .reservation-container,
+    .calendar-container {
+        width: 100%;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea,
+    .form-group button {
+        width: 100%;
+    }
+
+    .calendar-container {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+    }
+
+    .modal-box button {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+}

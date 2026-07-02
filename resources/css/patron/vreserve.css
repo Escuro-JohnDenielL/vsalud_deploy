@@ -1,0 +1,284 @@
+/* === Banner === */
+.banner {
+    background: #007b3d;
+    color: white;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px;
+    width: 50%;
+    max-width: 100%;
+    border-radius: 10px;
+    margin: 20px auto;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* === Reservation Section === */
+.reservation-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.reservation-notes {
+    width: 60%;
+    padding: 25px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.reservation-notes h2 {
+    margin-bottom: 15px;
+}
+
+.reservation-notes p {
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.reservation-notes ul {
+    padding-left: 30px;
+}
+
+/* === Buttons === */
+button.view-details {
+    background-color: #007b3d;
+    color: white;
+    padding: 12px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background 0.3s ease;
+}
+
+button.view-details:hover {
+    background-color: darkgreen;
+}
+
+/* === Form Styles === */
+form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+form input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* === Calendar === */
+.calendar {
+    width: 35%;
+    text-align: center;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.month h3 {
+    margin-bottom: 15px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+table th,
+table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+}
+
+/* === Calendar Controls === */
+button.prev-month,
+button.next-month {
+    background-color: #ddd;
+    border: none;
+    padding: 8px 14px;
+    cursor: pointer;
+    margin: 10px;
+    transition: background 0.3s ease;
+}
+
+button.prev-month:hover,
+button.next-month:hover {
+    background-color: #bbb;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    padding: 1rem;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5); /* dark backdrop */
+    /* display: flex;
+    align-items: center;
+    justify-content: center; */
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
+#reservationDetails p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+#reservationDetails strong {
+    color: #444;
+}
+
+
+@media (max-width: 480px) {
+    .modal-content {
+        padding: 1rem;
+    }
+
+    .close-btn {
+        top: 0.5rem;
+        right: 1rem;
+    }
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 20px;
+    }
+
+    .navbar ul {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .navbar li {
+        display: block;
+        width: 100%;
+    }
+
+    .navbar a {
+        display: block;
+        font-size: 16px;
+        padding: 8px 0;
+        text-align: left;
+        width: 100%;
+    }
+
+    .navbar a.active {
+        color: #007b3d;
+        border-bottom: 2px solid #007b3d;
+    }
+
+    .reservation-container {
+        margin: 30px 20px;
+        padding: 25px;
+    }
+
+    .reservation-notes,
+    .calendar {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar ul {
+        gap: 10px;
+    }
+
+    .navbar a {
+        font-size: 15px;
+    }
+
+    .reservation-container {
+        padding: 20px;
+    }
+
+    .banner {
+        font-size: 14px;
+        width: 90%;
+    }
+
+    .reservation-notes p {
+        font-size: 14px;
+    }
+
+    table th,
+    table td {
+        padding: 8px;
+    }
+}
+
+@media (max-width: 320px) {
+    .navbar a {
+        font-size: 14px;
+    }
+
+    .banner {
+        font-size: 13px;
+        padding: 10px;
+    }
+
+    .reservation-container {
+        padding: 15px;
+        margin: 20px 10px;
+    }
+}

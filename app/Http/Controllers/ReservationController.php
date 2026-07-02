@@ -6,24 +6,60 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Patron;
 use App\Models\Inquiry;
+use App\Models\GuestConsent;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationSubmitted;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Str;
 
 class ReservationController extends Controller
 {
     public function create(Request $request)
     {
         if ($request->is('admin/*')) {
-            return view('admin.a_reserve');
+            return view('admin.reserve');
         }
-        return view('patron.p_mreserve');
+
+        $agreementAccepted = (bool) $request->session()->get('guest_agreed', false);
+        $guestToken = $request->cookie('guest_token');
+        $consent = null;
+
+        if (!$agreementAccepted && $guestToken) {
+            $consent = GuestConsent::query()
+                ->where('guest_token', $guestToken)
+                ->where('expires_at', '>', now())
+                ->first();
+        }
+
+        if (!$agreementAccepted && !$consent) {
+            $consent = GuestConsent::query()
+                ->where('ip_address', $request->ip())
+                ->where('expires_at', '>', now())
+                ->latest('consented_at')
+                ->first();
+        }
+
+        if ($consent) {
+            $agreementAccepted = true;
+            $guestToken = $consent->guest_token;
+            $request->session()->put('guest_agreed', true);
+            $request->session()->put('guest_token', $guestToken);
+        }
+
+        $response = response()->view('patron.mreserve', compact('agreementAccepted'));
+
+        if ($guestToken) {
+            $response->cookie('guest_token', $guestToken, 60 * 24 * 30);
+        }
+
+        return $response;
     }
 
     public function fetch_vreserve(Request $request)
     {
-        return view('patron.p_vreserve');
+        return view('patron.vreserve');
     }
 
     public function store(Request $request)
@@ -139,5 +175,45 @@ class ReservationController extends Controller
                 'Status' => $inquiry->status ?? 'Pending',
             ]
         ]);
+    }
+
+    public function acceptGuestConsent(Request $request)
+    {
+        $guestToken = $request->cookie('guest_token') ?: Str::random(40);
+        $expiresAt = now()->addDays(30);
+
+        GuestConsent::updateOrCreate(
+            ['guest_token' => $guestToken],
+            [
+                'consented_at' => now(),
+                'expires_at' => $expiresAt,
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
+
+        $request->session()->put('guest_agreed', true);
+        $request->session()->put('guest_token', $guestToken);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Guest consent saved.',
+            'expires_at' => $expiresAt->toDateTimeString(),
+        ])->cookie('guest_token', $guestToken, 60 * 24 * 30);
+    }
+
+    public function renewGuest(Request $request)
+    {
+        $newToken = Str::random(40);
+
+        GuestConsent::query()
+            ->where('ip_address', $request->ip())
+            ->delete();
+
+        $request->session()->forget(['guest_agreed', 'guest_token']);
+
+        return redirect('/')
+            ->with('success', 'Guest profile refreshed successfully.')
+            ->cookie('guest_token', $newToken, 60 * 24 * 30);
     }
 }

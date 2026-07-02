@@ -11,6 +11,6 @@ class HomeController extends Controller
     public function index()
     {
         $packages = Package::all();
-        return view('patron.p_home', compact('packages'));
+        return view('patron.home', compact('packages'));
     }
 }

@@ -1,0 +1,433 @@
+/* === Main Content Wrapper === */
+#content {
+  position: relative;
+  width: 80%;
+  margin: 20px auto;
+  padding: 10px;
+}
+
+/* === Internal Content Navigation Bar === */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  padding: 15px;
+  border: none;
+  margin-bottom: 40px;
+}
+
+nav h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-align: center;
+}
+
+nav i {
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* === Heading Title === */
+.head-title {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.head-title h1 {
+  color: var(--color-primary);
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+
+.head-title p {
+  font-size: 16px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* === Table Styling === */
+.table-data {
+  margin-top: 20px;
+  background: var(--color-surface);
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+}
+
+.table-data .head {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.table-data .head h3 {
+  font-size: 20px;
+  color: var(--color-text);
+  margin: 0;
+  font-family: var(--font-heading);
+}
+
+.table-data table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-data th {
+  background: var(--color-primary);
+  color: white;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+.table-data td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+  vertical-align: middle;
+  font-size: 14px;
+}
+
+.table-data tbody tr:hover {
+  background: var(--color-primary-50);
+}
+
+/* === Status Dropdown Styling === */
+.status-dropdown {
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 14px;
+  min-width: 100px;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.status-dropdown:hover {
+  border-color: var(--color-primary);
+}
+
+.status-dropdown:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Status-specific styling will be applied via JavaScript */
+.status-dropdown option {
+  padding: 5px;
+  background: white;
+  color: black;
+}
+
+/* === Buttons === */
+.reply-btn,
+.status-btn {
+  background: var(--color-primary);
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all var(--transition-base);
+}
+
+.reply-btn:hover,
+.status-btn:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+#closeModalBtn {
+  background: #ccc;
+  color: black;
+}
+
+#closeModalBtn:hover {
+  background: #aaa;
+}
+
+/* === Modal === */
+.modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--color-surface);
+  padding: 24px;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-xl);
+  border-radius: var(--radius-md);
+  width: 300px;
+  text-align: center;
+  z-index: 1000;
+}
+
+.modal h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: var(--color-text);
+  font-family: var(--font-heading);
+}
+
+.modal select {
+  width: 100%;
+  padding: 8px;
+  margin: 10px 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+}
+
+/* === Accessibility Focus === */
+a:focus,
+button:focus,
+select:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+.reply-modal {
+    /* display: none; */
+    position: fixed;
+    width: 50%;
+    height: 70%;
+    /*overflow: auto;
+    background-color: rgba(0,0,0,0.6); */
+}
+
+.modal-content {
+    background-color: var(--color-surface);
+    margin: 10% auto;
+    padding: 20px 30px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    width: 90%;
+    max-width: 500px;
+    box-shadow: var(--shadow-xl);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+}
+
+.reply-select,
+#replyMessage {
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    resize: vertical;
+    font-family: var(--font-body);
+}
+
+.reply-select:focus,
+#replyMessage:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(13, 122, 62, 0.1);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-actions button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: all var(--transition-base);
+}
+
+#sendReplyBtn {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+
+#sendReplyBtn:hover {
+    background-color: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+#cancelReplyBtn,
+.close-btn {
+    background-color: var(--color-danger);
+    color: white;
+}
+
+#cancelReplyBtn:hover,
+.close-btn:hover {
+    opacity: 0.9;
+}
+
+.close-btn {
+    float: right;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+    .modal-content {
+        margin-top: 30%;
+        padding: 15px;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .modal-actions button {
+        width: 100%;
+    }
+}
+
+
+/* === Responsive Adjustments === */
+@media (max-width: 768px) {
+  #content {
+    width: 95%;
+    padding: 16px;
+  }
+
+  .modal {
+    width: 90%;
+  }
+  
+  .table-data {
+    overflow-x: scroll;
+  }
+  
+  .status-dropdown {
+    min-width: 80px;
+    font-size: 12px;
+  }
+  
+  .head-title h1 {
+    font-size: 24px;
+  }
+  
+  nav h2 {
+    font-size: 22px;
+  }
+}
+
+/* === Table scroll styling === */
+.table-data::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-data::-webkit-scrollbar-track {
+  background: var(--color-bg);
+  border-radius: 4px;
+}
+
+.table-data::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 4px;
+}
+
+.table-data::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-hover);
+}
+
+/* Common style for both buttons (optional but neat) */
+.reply-btn,
+.undo-btn {
+  display: inline-block;
+  margin: 2px 2px;
+  padding: 6px 14px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 13px;
+  transition: all var(--transition-base);
+}
+
+/* Specific colors for each button */
+.reply-btn {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.reply-btn:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.undo-btn {
+  background-color: var(--color-danger);
+  color: white;
+}
+
+.undo-btn:hover {
+  background-color: #b91c1c;
+  transform: translateY(-1px);
+}
+
+/* Make buttons container inline */
+td button {
+  vertical-align: middle;
+}
+
+.inquiry-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-surface);
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+}
+
+.inquiry-table th {
+  background: var(--color-primary);
+  color: white;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+.inquiry-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+  vertical-align: middle;
+  font-size: 14px;
+}
