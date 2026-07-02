@@ -8,6 +8,8 @@ class GuestConsent extends Model
 {
     protected $fillable = [
         'guest_token',
+        'label',
+        'email',
         'consented_at',
         'expires_at',
         'ip_address',

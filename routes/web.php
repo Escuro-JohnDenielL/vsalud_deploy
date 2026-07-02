@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\AvailabilityController;
 use App\Http\Controllers\Admin\AdminActivityController;
 use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
+use App\Http\Controllers\It\AccessController as ItAccessController;
 use App\Models\Inquiry;
 use Illuminate\Support\Facades\Log;
 
@@ -171,3 +172,16 @@ Route::get('/calendar/availability', function () {
 
 // Landing Page
 Route::view('/', 'home');
+
+// IT Access
+Route::prefix('it')->name('it.')->group(function () {
+    Route::get('/login', [ItAccessController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [ItAccessController::class, 'login'])->name('login.submit');
+
+    Route::middleware(['auth', 'role:it'])->group(function () {
+        Route::get('/dashboard', [ItAccessController::class, 'dashboard'])->name('dashboard');
+        Route::post('/logout', [ItAccessController::class, 'logout'])->name('logout');
+        Route::post('/admins', [ItAccessController::class, 'storeAdmin'])->name('admins.store');
+        Route::post('/guests', [ItAccessController::class, 'storeGuest'])->name('guests.store');
+    });
+});
