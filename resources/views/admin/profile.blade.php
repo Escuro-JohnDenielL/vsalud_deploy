@@ -165,7 +165,7 @@ $user = Auth::guard('admin')->user() ?? (object)[
       </p>
       <div class="modal-buttons">
         <button id="confirm-ok" class="btn btn-primary">Yes</button>
-        <button id="confirm-cancel" class="btn btn-secondary">No</button>
+        <button id="confirm-no" class="btn btn-secondary">No</button>
       </div>
     </div>
   </div>

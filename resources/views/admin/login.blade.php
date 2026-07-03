@@ -49,10 +49,7 @@
                 </form>
 
                 <p class="login-link">
-                    Haven't signed up? <a href="{{ route('admin.signup') }}">Register here!</a>
-                </p>
-                <p class="login-link" style="margin-top: 8px;">
-                    IT staff? <a href="{{ route('it.login') }}">Open IT Access</a>
+                    Account registration is managed by IT administration.
                 </p>
             </div>
         </div>

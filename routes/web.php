@@ -19,7 +19,7 @@ use App\Http\Controllers\Admin\AdminActivityController;
 use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\FeedbackController as AdminFeedbackController;
 use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
-use App\Http\Controllers\It\AccessController as ItAccessController;
+use App\Http\Controllers\Admin\AdminManagementController;
 use App\Models\Inquiry;
 use Illuminate\Support\Facades\Log;
 
@@ -51,11 +51,7 @@ Route::name('patron.')->group(function () {
 
 // Admin Authentication Routes (NO MIDDLEWARE - accessible to non-authenticated users)
 Route::prefix('admin')->name('admin.')->group(function () {
-    // Signup
-    Route::get('/signup', [AuthController::class, 'showSignupForm'])->name('signup');
-    Route::post('/signup', [AuthController::class, 'signup'])->name('signup.submit');
-
-    // Login
+    // Login (signup removed — accounts created via IT section only)
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 });
@@ -167,15 +163,14 @@ Route::get('/calendar/availability', function () {
 // Landing Page
 Route::view('/', 'index');
 
-// IT Access
-Route::prefix('it')->name('it.')->group(function () {
-    Route::get('/login', [ItAccessController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [ItAccessController::class, 'login'])->name('login.submit');
+// IT Management (super_admin only — inside admin guard)
+Route::prefix('admin/it')->name('admin.it.')->middleware(['auth:admin', 'role.admin:super_admin'])->group(function () {
+    Route::get('/dashboard', [AdminManagementController::class, 'index'])->name('dashboard');
+    Route::post('/store', [AdminManagementController::class, 'store'])->name('store');
+    Route::get('/edit/{id}', [AdminManagementController::class, 'edit'])->name('edit');
+    Route::post('/update/{id}', [AdminManagementController::class, 'update'])->name('update');
+    Route::post('/deactivate/{id}', [AdminManagementController::class, 'deactivate'])->name('deactivate');
+    Route::post('/restore/{id}', [AdminManagementController::class, 'restore'])->name('restore');
+    Route::delete('/force-delete/{id}', [AdminManagementController::class, 'forceDelete'])->name('force-delete');
 
-    Route::middleware(['auth', 'role:it'])->group(function () {
-        Route::get('/dashboard', [ItAccessController::class, 'dashboard'])->name('dashboard');
-        Route::post('/logout', [ItAccessController::class, 'logout'])->name('logout');
-        Route::post('/admins', [ItAccessController::class, 'storeAdmin'])->name('admins.store');
-        Route::post('/guests', [ItAccessController::class, 'storeGuest'])->name('guests.store');
-    });
 });

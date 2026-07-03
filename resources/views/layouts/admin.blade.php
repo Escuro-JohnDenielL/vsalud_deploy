@@ -67,6 +67,13 @@
                     Admin Profile
                 </a>
             </li>
+            @if(auth('admin')->user() && auth('admin')->user()->role === 'super_admin')
+            <li>
+                <a href="{{ route('admin.it.dashboard') }}" class="{{ request()->is('admin/it*') ? 'active' : '' }}">
+                    IT Management
+                </a>
+            </li>
+            @endif
         </ul>
 
     </nav>

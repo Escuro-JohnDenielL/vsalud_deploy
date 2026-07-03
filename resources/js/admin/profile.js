@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const cancelEdit = document.getElementById("cancel-edit");
     const cancelPassword = document.getElementById("cancel-password");
     const confirmCancel = document.getElementById("confirm-cancel");
+    const confirmNo = document.getElementById("confirm-no");
     const confirmOk = document.getElementById("confirm-ok");
 
     // Get forms (these may not exist in HTML, so we'll handle gracefully)
@@ -578,6 +579,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (confirmCancel && confirmModal) {
         confirmCancel.addEventListener("click", function () {
+            confirmModal.style.display = "none";
+            confirmCallback = null;
+        });
+    }
+
+    if (confirmNo && confirmModal) {
+        confirmNo.addEventListener("click", function () {
             confirmModal.style.display = "none";
             confirmCallback = null;
         });
