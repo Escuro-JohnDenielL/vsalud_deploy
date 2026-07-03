@@ -58,6 +58,11 @@
                 </a>
             </li>
             <li>
+                <a href="{{ route('admin.feedback') }}" class="{{ request()->is('admin/feedback') ? 'active' : '' }}">
+                    Feedback
+                </a>
+            </li>
+            <li>
                 <a href="{{ route('admin.profile') }}" class="{{ request()->is('admin/profile') ? 'active' : '' }}">
                     Admin Profile
                 </a>

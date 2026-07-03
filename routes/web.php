@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\AvailabilityController;
 use App\Http\Controllers\Admin\AdminActivityController;
 use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\FeedbackController as AdminFeedbackController;
 use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
 use App\Http\Controllers\It\AccessController as ItAccessController;
 use App\Models\Inquiry;
@@ -83,6 +84,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(functi
     Route::get('/inquiry', [InquiryController::class, 'index'])->name('inquiry');
     Route::post('/inquiries/{id}/update-status', [InquiryController::class, 'updateStatusAjax']);
     Route::post('/inquiry', [InquiryController::class, 'store'])->name('inquiry.store');
+
+    // Feedback
+    Route::get('/feedback', [AdminFeedbackController::class, 'index'])->name('feedback');
+    Route::delete('/feedback/{id}', [AdminFeedbackController::class, 'destroy'])->name('feedback.destroy');
 
     // Availability for the calendar on admin making inquiry/reservation
     Route::get('/availability', [AvailabilityController::class, 'index'])->name('availability.index');

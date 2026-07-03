@@ -18,7 +18,7 @@ class AdminHomeController extends Controller
         $now = Carbon::now();
         $labels = [];
         $data = [];
-        $total = Inquiry::count();
+        $total = 0;
         $previousTotal = 0;
 
         switch ($filter) {

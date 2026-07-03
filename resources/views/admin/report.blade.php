@@ -32,7 +32,7 @@
             </div>
 
             <div class="refresh-container">
-                <button class="refresh-btn" onclick="refreshDashboard()">
+                <button class="refresh-btn" onclick="window.dashboardManager.refreshDashboard()">
                     <i class='bx bx-refresh'></i>
                     Refresh Data
                 </button>
@@ -124,7 +124,7 @@
                     <p>Latest administrative actions and system events</p>
                 </div>
                 <div class="panel-controls">
-                    <button class="icon-btn" onclick="loadActivityLog()" title="Refresh Activity">
+                    <button class="icon-btn" onclick="window.dashboardManager.loadActivityLog()" title="Refresh Activity">
                         <i class='bx bx-refresh'></i>
                     </button>
                 </div>
