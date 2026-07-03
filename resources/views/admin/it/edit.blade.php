@@ -56,6 +56,7 @@
                 <label>Phone</label>
                 <input type="text" name="phone" value="{{ old('phone', $admin->phone) }}" maxlength="11" required>
             </div>
+            {{-- PROFILE PICTURE: commented out for now — re-enable later
             <div class="field">
                 <label>Profile Picture</label>
                 <select name="profile_picture">
@@ -68,6 +69,7 @@
                     <option value="girl2.png" {{ $admin->profile_picture === 'girl2.png' ? 'selected' : '' }}>Girl 2</option>
                 </select>
             </div>
+            --}}
             <div class="field">
                 <label>New Password <span class="hint">(leave blank to keep current)</span></label>
                 <input type="password" name="password">

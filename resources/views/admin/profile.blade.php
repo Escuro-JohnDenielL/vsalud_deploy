@@ -18,11 +18,13 @@ $user = Auth::guard('admin')->user() ?? (object)[
 <section class="dashboard-container">
   <div class="admin-profile">
     <div class="profile-header">
+      {{-- PROFILE PICTURE: commented out for now — re-enable later
       <div class="profile-pic-container">
         <img src="{{ asset('images/default.png') }}" alt="Admin Profile Picture" class="profile-pic" id="profile-pic">
         <button class="change-pic-btn" id="change-pic-btn">📷</button>
         <input type="file" id="profile-pic-input" accept="image/*" style="display: none;">
       </div>
+      --}}
       <h2 id="admin-name">{{ $user->name ?? ($user->f_name . ' ' . $user->l_name) }}</h2>
       <p>System Administrator</p>
     </div>

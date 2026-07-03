@@ -49,10 +49,10 @@
                                             <td>{{ $feedback->created_at ? $feedback->created_at->format('M d, Y h:i A') : '-' }}</td>
                                             <td>
                                                 <button class="view-feedback-btn" data-id="{{ $feedback->id }}" data-name="{{ $feedback->name }}" data-email="{{ $feedback->email }}" data-message="{{ $feedback->message }}" data-date="{{ $feedback->created_at ? $feedback->created_at->format('M d, Y h:i A') : '-' }}">View</button>
-                                                <form action="{{ route('admin.feedback.destroy', $feedback->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this feedback?')">
+                                                <form action="{{ route('admin.feedback.destroy', $feedback->id) }}" method="POST" class="d-inline" id="delete-feedback-form-{{ $feedback->id }}">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="delete-btn">Delete</button>
+                                                    <button type="button" class="delete-btn" onclick="confirmDeleteFeedback({{ $feedback->id }})">Delete</button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -80,6 +80,19 @@
             </div>
         </div>
     </div>
+
+    {{-- Confirm Delete Modal --}}
+    <div id="confirmDeleteModal" class="modal">
+        <div class="modal-content" style="max-width: 420px;">
+            <span class="close-btn" id="closeConfirmModal">&times;</span>
+            <h3>Confirm Delete</h3>
+            <p id="confirmDeleteMessage" style="font-size: 15px; margin: 16px 0;">Are you sure you want to delete this feedback?</p>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button id="confirmDeleteNo" class="delete-btn" style="background: #6c757d;">Cancel</button>
+                <button id="confirmDeleteYes" class="delete-btn" style="background: #dc3545;">Delete</button>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -100,6 +113,34 @@
 
         closeBtn.addEventListener('click', () => modal.style.display = 'none');
         window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+
+        // Confirm delete modal logic
+        const confirmModal = document.getElementById('confirmDeleteModal');
+        const closeConfirm = document.getElementById('closeConfirmModal');
+        const confirmNo = document.getElementById('confirmDeleteNo');
+        const confirmYes = document.getElementById('confirmDeleteYes');
+        let pendingFormId = null;
+
+        window.confirmDeleteFeedback = function(id) {
+            pendingFormId = 'delete-feedback-form-' + id;
+            confirmModal.style.display = 'flex';
+        };
+
+        function closeConfirmModal() {
+            confirmModal.style.display = 'none';
+            pendingFormId = null;
+        }
+
+        closeConfirm.addEventListener('click', closeConfirmModal);
+        confirmNo.addEventListener('click', closeConfirmModal);
+        window.addEventListener('click', (e) => { if (e.target === confirmModal) closeConfirmModal(); });
+
+        confirmYes.addEventListener('click', function() {
+            if (pendingFormId) {
+                document.getElementById(pendingFormId).submit();
+            }
+            closeConfirmModal();
+        });
     });
 </script>
 @endpush

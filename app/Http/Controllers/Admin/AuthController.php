@@ -29,7 +29,7 @@ class AuthController extends Controller
             'phone' => 'required|digits:11',
             'password' => 'required|min:6',
             'confirm_password' => 'required|same:password',
-            'profile_picture' => 'nullable|in:default.png,boy.png,boy1.png,boy2.png,girl.png,girl1.png,girl2.png',
+            // 'profile_picture' => 'nullable|in:default.png,boy.png,boy1.png,boy2.png,girl.png,girl1.png,girl2.png', // temporarily removed
         ]);
 
         if ($validator->fails()) {
@@ -42,7 +42,7 @@ class AuthController extends Controller
             'l_name' => $request->l_name,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'profile_picture' => $request->input('profile_picture', 'default.png'),
+            // 'profile_picture' => $request->input('profile_picture', 'default.png'), // temporarily removed
         ]);
 
         return redirect()->route('admin.login')->with('success', 'Account created successfully. Please log in.');

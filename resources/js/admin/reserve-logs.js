@@ -197,20 +197,57 @@ function closeModal() {
 }
 
 // DELETE BUTTON HANDLER
-function deleteReservation(id) {
-    if (confirm(`Are you sure you want to delete reservation #${id}?`)) {
-        const csrfToken = document
-            .querySelector('meta[name="csrf-token"]')
-            ?.getAttribute("content");
+let pendingDeleteId = null;
 
-        fetch(`/admin/reservations/${id}`, {
-            method: "DELETE",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                ...(csrfToken && { "X-CSRF-TOKEN": csrfToken }),
-            },
-        })
+function deleteReservation(id) {
+    const modal = document.getElementById('confirmDeleteReservationModal');
+    document.getElementById('confirmDeleteReservationMessage').textContent = `Are you sure you want to delete reservation #${id}?`;
+    modal.style.display = 'flex';
+    pendingDeleteId = id;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('confirmDeleteReservationModal');
+    const closeBtn = document.getElementById('closeConfirmDeleteModal');
+    const noBtn = document.getElementById('confirmDeleteReservationNo');
+    const yesBtn = document.getElementById('confirmDeleteReservationYes');
+
+    function closeModal() {
+        if (modal) modal.style.display = 'none';
+        pendingDeleteId = null;
+    }
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (noBtn) noBtn.addEventListener('click', closeModal);
+    if (modal) {
+        window.addEventListener('click', function(e) {
+            if (e.target === modal) closeModal();
+        });
+    }
+
+    if (yesBtn) {
+        yesBtn.addEventListener('click', function() {
+            const id = pendingDeleteId;
+            closeModal();
+            if (!id) return;
+            executeDelete(id);
+        });
+    }
+});
+
+function executeDelete(id) {
+    const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        ?.getAttribute("content");
+
+    fetch(`/admin/reservations/${id}`, {
+        method: "DELETE",
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            ...(csrfToken && { "X-CSRF-TOKEN": csrfToken }),
+        },
+    })
             .then((response) => {
                 const contentType = response.headers.get("content-type");
                 if (!contentType || !contentType.includes("application/json")) {
@@ -241,7 +278,6 @@ function deleteReservation(id) {
                 console.error("Error deleting reservation:", err);
                 showNotification(`Failed to delete: ${err.message}`, "error");
             });
-    }
 }
 
 // RECEIPT VIEW (stub)

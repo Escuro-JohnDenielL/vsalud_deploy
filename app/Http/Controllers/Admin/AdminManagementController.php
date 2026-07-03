@@ -39,7 +39,7 @@ class AdminManagementController extends Controller
             'l_name'          => 'required|string|max:50',
             'phone'           => 'required|digits:11',
             'password'        => 'required|min:6|confirmed',
-            'profile_picture' => 'nullable|in:default.png,boy.png,boy1.png,boy2.png,girl.png,girl1.png,girl2.png',
+            // 'profile_picture' => 'nullable|in:default.png,boy.png,boy1.png,boy2.png,girl.png,girl1.png,girl2.png', // temporarily removed
         ]);
 
         if ($validator->fails()) {
@@ -52,7 +52,7 @@ class AdminManagementController extends Controller
             'l_name'          => $request->l_name,
             'phone'           => $request->phone,
             'password'        => Hash::make($request->password),
-            'profile_picture' => $request->input('profile_picture', 'default.png'),
+            // 'profile_picture' => $request->input('profile_picture', 'default.png'), // temporarily removed
             'role'            => 'admin', // always regular admin via UI
         ]);
 
@@ -79,7 +79,7 @@ class AdminManagementController extends Controller
             'f_name' => 'required|string|max:50',
             'l_name' => 'required|string|max:50',
             'phone'  => 'required|digits:11',
-            'profile_picture' => 'nullable|in:default.png,boy.png,boy1.png,boy2.png,girl.png,girl1.png,girl2.png',
+            // 'profile_picture' => 'nullable|in:default.png,boy.png,boy1.png,boy2.png,girl.png,girl1.png,girl2.png', // temporarily removed
         ];
 
         // Only validate email uniqueness if it changed
@@ -105,7 +105,7 @@ class AdminManagementController extends Controller
             'f_name'          => $request->f_name,
             'l_name'          => $request->l_name,
             'phone'           => $request->phone,
-            'profile_picture' => $request->input('profile_picture', $admin->profile_picture),
+            // 'profile_picture' => $request->input('profile_picture', $admin->profile_picture), // temporarily removed
         ];
 
         if ($request->filled('password')) {

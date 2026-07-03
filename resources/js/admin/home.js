@@ -9,6 +9,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const packages = {};
 
+    // Pending delete state for confirm modal
+    let pendingDelete = null;
+
+    document.getElementById('confirmDeleteYes').addEventListener('click', function() {
+        if (!pendingDelete) return;
+        const { card, packageName } = pendingDelete;
+        pendingDelete = null;
+
+        const packageId = packages[packageName].id;
+        fetch(`/admin/packages/${packageId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                'Accept': 'application/json',
+            }
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('Delete failed');
+            return res.json();
+        })
+        .then(() => {
+            card.remove();
+            delete packages[packageName];
+            showSuccessModal(`"${packageName}" has been deleted successfully!`);
+        })
+        .catch(err => {
+            console.error("Delete failed:", err);
+            alert("Failed to delete package. Please try again.");
+        });
+    });
+
     // Load packages on page load
     loadPackages();
 
@@ -182,29 +213,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         card.querySelector(".delete-btn")?.addEventListener("click", () => {
-            if (!confirm(`Are you sure you want to delete "${packageName}"?`)) return;
-
-            const packageId = packages[packageName].id;
-            fetch(`/admin/packages/${packageId}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
-                    'Accept': 'application/json',
-                }
-            })
-            .then(res => {
-                if (!res.ok) throw new Error('Delete failed');
-                return res.json();
-            })
-            .then(() => {
-                card.remove();
-                delete packages[packageName];
-                showSuccessModal(`"${packageName}" has been deleted successfully!`);
-            })
-            .catch(err => {
-                console.error("Delete failed:", err);
-                alert("Failed to delete package. Please try again.");
-            });
+            pendingDelete = { card, packageName };
+            document.getElementById('confirmDeleteTitle').textContent = 'Delete Package';
+            document.getElementById('confirmDeleteMessage').textContent = `Are you sure you want to delete "${packageName}"?`;
+            new bootstrap.Modal(document.getElementById('confirmDeleteModal')).show();
         });
     }
 

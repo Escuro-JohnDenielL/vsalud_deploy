@@ -201,6 +201,7 @@
                         <label>Confirm Password</label>
                         <input type="password" name="password_confirmation" required>
                     </div>
+                    {{-- PROFILE PICTURE: commented out for now — re-enable later
                     <div class="field">
                         <label>Profile Picture</label>
                         <select name="profile_picture">
@@ -213,6 +214,7 @@
                             <option value="girl2.png">Girl 2</option>
                         </select>
                     </div>
+                    --}}
                     <button class="btn-primary" type="submit">Create Admin</button>
                 </form>
             </div>

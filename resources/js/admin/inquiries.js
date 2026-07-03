@@ -154,7 +154,24 @@ function attachEventListeners() {
     document.querySelectorAll(".undo-btn").forEach((button) => {
         button.addEventListener("click", function () {
             const inquiryId = this.getAttribute("data-inquiry-id");
-            if (confirm("Are you sure you want to undo this reservation?")) {
+            const modal = document.getElementById('confirmUndoModal');
+            const message = document.getElementById('confirmUndoMessage');
+            message.textContent = 'Are you sure you want to undo this reservation?';
+            modal.style.display = 'flex';
+
+            const closeModal = document.getElementById('closeUndoModal');
+            const noBtn = document.getElementById('confirmUndoNo');
+            const yesBtn = document.getElementById('confirmUndoYes');
+
+            function closeConfirmModal() {
+                modal.style.display = 'none';
+                closeModal.removeEventListener('click', closeConfirmModal);
+                noBtn.removeEventListener('click', closeConfirmModal);
+                yesBtn.removeEventListener('click', handleConfirm);
+            }
+
+            function handleConfirm() {
+                closeConfirmModal();
                 fetch("undo_reservation.php", {
                     method: "POST",
                     headers: {
@@ -176,6 +193,16 @@ function attachEventListeners() {
                         alert("Something went wrong.");
                     });
             }
+
+            closeModal.addEventListener('click', closeConfirmModal);
+            noBtn.addEventListener('click', closeConfirmModal);
+            yesBtn.addEventListener('click', handleConfirm);
+            window.addEventListener('click', function handler(e) {
+                if (e.target === modal) {
+                    closeConfirmModal();
+                    window.removeEventListener('click', handler);
+                }
+            });
         });
     });
 }

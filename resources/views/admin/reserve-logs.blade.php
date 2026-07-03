@@ -172,5 +172,18 @@
     </div>
 
 
+    {{-- Confirm Delete Modal --}}
+    <div id="confirmDeleteReservationModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width: 420px;">
+            <span class="close" id="closeConfirmDeleteModal" style="cursor:pointer;font-size:24px;float:right;">&times;</span>
+            <h3>Confirm Delete</h3>
+            <p id="confirmDeleteReservationMessage" style="font-size: 15px; margin: 20px 0;">Are you sure you want to delete this reservation?</p>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button id="confirmDeleteReservationNo" class="btn-view" style="background:#6c757d;color:#fff;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;">Cancel</button>
+                <button id="confirmDeleteReservationYes" class="btn-delete" style="border:none;padding:8px 16px;border-radius:4px;cursor:pointer;">Delete</button>
+            </div>
+        </div>
+    </div>
+
     @vite('resources/js/admin/reserve-logs.js')
 @endsection

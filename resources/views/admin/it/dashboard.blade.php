@@ -112,9 +112,9 @@
                                     @if (!$admin->trashed())
                                         <a href="{{ route('admin.it.edit', $admin->admin_id) }}" class="btn-sm btn-warning">Edit</a>
                                         @if ($admin->role !== 'super_admin' && (int) $admin->admin_id !== (int) auth('admin')->id())
-                                            <form method="POST" action="{{ route('admin.it.deactivate', $admin->admin_id) }}" style="display:inline;" onsubmit="return confirm('Deactivate {{ $admin->f_name }} {{ $admin->l_name }}?')">
+                                            <form method="POST" action="{{ route('admin.it.deactivate', $admin->admin_id) }}" style="display:inline;" id="deactivate-form-{{ $admin->admin_id }}">
                                                 @csrf
-                                                <button type="submit" class="btn-sm btn-danger">Deactivate</button>
+                                                <button type="button" class="btn-sm btn-danger" onclick="showConfirmModal('Deactivate Admin', 'Deactivate {{ $admin->f_name }} {{ $admin->l_name }}?', 'deactivate-form-{{ $admin->admin_id }}')">Deactivate</button>
                                             </form>
                                         @endif
                                     @else
@@ -122,10 +122,10 @@
                                             @csrf
                                             <button type="submit" class="btn-sm btn-success">Restore</button>
                                         </form>
-                                        <form method="POST" action="{{ route('admin.it.force-delete', $admin->admin_id) }}" style="display:inline;" onsubmit="return confirm('Permanently delete this account? This cannot be undone.')">
+                                        <form method="POST" action="{{ route('admin.it.force-delete', $admin->admin_id) }}" style="display:inline;" id="force-delete-form-{{ $admin->admin_id }}">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn-sm btn-danger">Delete Forever</button>
+                                            <button type="button" class="btn-sm btn-danger" onclick="showConfirmModal('Delete Forever', 'Permanently delete this account? This cannot be undone.', 'force-delete-form-{{ $admin->admin_id }}')">Delete Forever</button>
                                         </form>
                                     @endif
                                 </div>
@@ -188,6 +188,7 @@
                         <label>Confirm Password</label>
                         <input type="password" name="password_confirmation" required>
                     </div>
+                    {{-- PROFILE PICTURE: commented out for now — re-enable later
                     <div class="field">
                         <label>Profile Picture</label>
                         <select name="profile_picture">
@@ -200,6 +201,7 @@
                             <option value="girl2.png" {{ old('profile_picture') === 'girl2.png' ? 'selected' : '' }}>Girl 2</option>
                         </select>
                     </div>
+                    --}}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -209,6 +211,25 @@
         </div>
     </div>
 </div>
+{{-- Confirm Modal --}}
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalTitle">Confirm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmModalMessage">Are you sure?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="confirmModalNo">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmModalYes">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
@@ -235,6 +256,30 @@
                     modal.show();
                 }
             @endif
+
+            // Confirm modal logic
+            var confirmModalEl = document.getElementById('confirmModal');
+            var confirmModal = new bootstrap.Modal(confirmModalEl);
+            var pendingFormId = null;
+
+            window.showConfirmModal = function(title, message, formId) {
+                document.getElementById('confirmModalTitle').textContent = title;
+                document.getElementById('confirmModalMessage').textContent = message;
+                pendingFormId = formId;
+                confirmModal.show();
+            };
+
+            document.getElementById('confirmModalYes').addEventListener('click', function() {
+                if (pendingFormId) {
+                    document.getElementById(pendingFormId).submit();
+                }
+                confirmModal.hide();
+                pendingFormId = null;
+            });
+
+            confirmModalEl.addEventListener('hidden.bs.modal', function () {
+                pendingFormId = null;
+            });
         });
     </script>
 @endpush
