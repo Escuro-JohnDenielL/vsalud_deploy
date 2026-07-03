@@ -8,7 +8,6 @@ class Reservation extends Model
 {
     protected $table = 'reservation';
     protected $primaryKey = 'reserve_id';
-    public $timestamps = false;
 
     protected $fillable = [
         'inquiry_id',

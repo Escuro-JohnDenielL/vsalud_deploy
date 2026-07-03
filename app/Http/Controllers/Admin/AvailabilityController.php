@@ -12,6 +12,9 @@ class AvailabilityController extends Controller
     public function index()
     {
         $records = \App\Models\Availability::all()->mapWithKeys(function ($item) {
+            if ($item->date === null) {
+                return [];
+            }
             return [$item->date->format('Y-n-j') => $item->status];
         });
 

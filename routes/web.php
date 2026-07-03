@@ -8,7 +8,6 @@ use App\Http\Controllers\Patron\PaymentController;
 
 // Unified
 use App\Http\Controllers\ReservationController;
-use App\Http\Controllers\Patron\CalendarController;
 
 // Admin Controller Related
 use App\Http\Controllers\Admin\AuthController;
@@ -59,13 +58,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Login
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
-
-    // Packages
-    Route::get('/packages', [PackageController::class, 'index']);
-    Route::post('/packages', [PackageController::class, 'store']);
-    Route::get('/packages/{package}', [PackageController::class, 'show']);
-    Route::put('/packages/{package}', [PackageController::class, 'update']);
-    Route::delete('/packages/{package}', [PackageController::class, 'destroy']);
 });
 
 // Protected Admin Routes (WITH MIDDLEWARE - requires authentication)
@@ -106,7 +98,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(functi
     Route::post('profile/update', [AdminProfileController::class, 'update'])->name('profile.update');
 
     // For change password
-    Route::post('profile/change-password', [AdminProfileController::class, 'changePassword'])->name('password.change');
+    Route::post('profile/change-password', [AdminProfileController::class, 'changePassword'])->name('password.change')->middleware('auth.session');
 
     // All activities of Admin in the reports tab
     Route::get('/dashboard-activities', [AdminActivityController::class, 'allActivities'])->name('activities.all');
@@ -138,9 +130,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(functi
 
 // Logout Route (accessible to authenticated users)
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
-
-// For Calendar Routes
-// Route::get('/calendar/availability', [CalendarController::class, 'getAvailability']);
 
 Route::post('/fetch-reservation', [ReservationController::class, 'fetchReservation'])->name('fetch.reservation');
 

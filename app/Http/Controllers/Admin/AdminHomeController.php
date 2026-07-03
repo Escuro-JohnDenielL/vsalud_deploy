@@ -224,6 +224,7 @@ class AdminHomeController extends Controller
 
     public function index()
     {
-        return view('admin.home');
+        $packages = \App\Models\Package::all();
+        return view('admin.home', compact('packages'));
     }
 }

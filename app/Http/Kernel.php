@@ -40,4 +40,8 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
     ];
+
+    protected $middlewareAliases = [
+        'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
+    ];
 }

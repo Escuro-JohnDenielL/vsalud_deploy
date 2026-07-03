@@ -58,9 +58,20 @@ class PaymentController extends Controller
             'payment_type' => 'required|in:full,half',
             'payment_method' => 'required|in:cash,gcash,bank',
             'email' => 'required|email',
-            'reservation_code' => 'required|string|max:255',
+            'reservation_code' => 'required|string|exists:inquiry,tracking_code',
             'receipt' => 'required|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
+
+        // Verify the reservation code belongs to the same email
+        $inquiry = Inquiry::where('tracking_code', $validated['reservation_code'])->first();
+        if ($inquiry && $inquiry->patron) {
+            if (strtolower($inquiry->patron->email) !== strtolower($validated['email'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'The reservation code does not match the provided email address.',
+                ], 422);
+            }
+        }
 
         $trackingCode = 'VS-' . substr(time(), -6) . '-' . rand(1000, 9999);
 

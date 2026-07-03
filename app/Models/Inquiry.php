@@ -67,4 +67,9 @@ class Inquiry extends Model
     {
         return $this->belongsTo(Patron::class, 'patron_id', 'patron_id');
     }
+
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class, 'admin_id', 'admin_id');
+    }
 }

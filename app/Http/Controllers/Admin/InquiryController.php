@@ -18,16 +18,10 @@ class InquiryController extends Controller
         return view('admin.inquiry', compact('inquiries'));
     }
 
-    public function show($id)
-    {
-        $inquiry = Inquiry::with('patron')->findOrFail($id);
-        return view('admin.inquiry_show', compact('inquiry'));
-    }
-
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|string|in:pending,approved,rejected',
+            'status' => 'required|string|in:Pending,In Progress,Completed,Cancelled',
         ]);
 
         $inquiry = Inquiry::with('patron')->find($id);

@@ -98,6 +98,9 @@ class AdminProfileController extends Controller
             $admin->password = Hash::make($validated['new_password']);
             $admin->save();
 
+            // Invalidate other active sessions
+            Auth::guard('admin')->logoutOtherDevices($validated['new_password']);
+
             Log::info('Password changed successfully for admin: ' . $admin->email);
 
             return response()->json([

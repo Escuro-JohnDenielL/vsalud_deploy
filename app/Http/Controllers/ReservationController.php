@@ -118,12 +118,12 @@ class ReservationController extends Controller
                 'message' => $validated['message'],
                 'tracking_code' => $inquiry['tracking_code'],
             ], null));
+
+            return redirect()->back()->with('success', 'Inquiry successfully created!');
         } catch (\Throwable $th) {
             Log::error('Failed to insert inquiry: ' . $th->getMessage());
+            return redirect()->back()->with('error', 'Failed to create inquiry. Please try again.');
         }
-
-
-        return redirect()->back()->with('success', 'Inquiry successfully created!');
     }
 
     public function sendReply(Request $request)
@@ -204,11 +204,17 @@ class ReservationController extends Controller
 
     public function renewGuest(Request $request)
     {
+        $currentToken = $request->cookie('guest_token');
         $newToken = Str::random(40);
 
-        GuestConsent::query()
-            ->where('ip_address', $request->ip())
-            ->delete();
+        // Only delete records belonging to this guest's token (or IP if no token)
+        $query = GuestConsent::query();
+        if ($currentToken) {
+            $query->where('guest_token', $currentToken);
+        } else {
+            $query->where('ip_address', $request->ip());
+        }
+        $query->delete();
 
         $request->session()->forget(['guest_agreed', 'guest_token']);
 
