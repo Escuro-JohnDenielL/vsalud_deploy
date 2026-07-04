@@ -91,8 +91,10 @@ class AuthController extends Controller
                 'user_agent' => $request->userAgent(),
             ]);
 
-            // Log::info($request); //dito wala akong na re-receive na request
-
+            // Redirect permissionless admins to their profile instead of the home page
+            if ($admin->role !== 'super_admin' && !\App\Models\AdminPagePermission::where('admin_id', $admin->admin_id)->exists()) {
+                return redirect()->route('admin.profile');
+            }
 
             return redirect()->intended('/admin/home');
         }

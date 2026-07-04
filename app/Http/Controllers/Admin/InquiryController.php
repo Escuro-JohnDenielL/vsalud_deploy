@@ -64,7 +64,8 @@ class InquiryController extends Controller
                         'event_type'         => $inquiry->event_type,
                         'theme_motif'        => $inquiry->theme_motif,
                         'message'            => $inquiry->message,
-                        'status'             => 'Active'
+                        'status'             => 'Active',
+                        'form_data'          => $inquiry->form_data, // carry forward dynamic data
                     ]);
                 } catch (\Exception $e) {
                     // ❌ Log the exception with full message

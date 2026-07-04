@@ -32,5 +32,7 @@ class DatabaseSeeder extends Seeder
                 'role' => 'it',
             ]
         );
+
+        $this->call(ReservationFormSeeder::class);
     }
 }

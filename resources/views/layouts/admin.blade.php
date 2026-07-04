@@ -28,46 +28,71 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     </a>
 
+    @php
+        $adminUser = auth('admin')->user();
+        $isSuperAdmin = $adminUser && $adminUser->role === 'super_admin';
+        // Get granted page slugs for non-super-admin users
+        $grantedPages = [];
+        if ($adminUser && !$isSuperAdmin) {
+            $grantedPages = \App\Models\AdminPagePermission::where('admin_id', $adminUser->admin_id)
+                ->pluck('page_slug')
+                ->toArray();
+        }
+        $canAccess = fn($slug) => $isSuperAdmin || in_array($slug, $grantedPages);
+    @endphp
+
     <nav class="navbar">
         <ul class="navbar">
+            @if($canAccess('packages'))
             <li>
                 <a href="{{ route('admin.home') }}" class="{{ request()->is('admin/home') ? 'active' : '' }}">
                     Packages
                 </a>
             </li>
+            @endif
+            @if($canAccess('reservations'))
             <li>
                 <a href="{{ route('admin.reserve.create') }}"
                     class="{{ request()->is('admin/reserve') ? 'active' : '' }}">
                     Reservations
                 </a>
             </li>
+            @endif
+            @if($canAccess('inquiries'))
             <li>
                 <a href="{{ route('admin.inquiry') }}" class="{{ request()->is('admin/inquiry') ? 'active' : '' }}">
                     Inquiries
                 </a>
             </li>
+            @endif
+            @if($canAccess('reserve-logs'))
             <li>
                 <a href="{{ route('admin.reserve-logs') }}"
                     class="{{ request()->is('admin/reserve-logs') ? 'active' : '' }}">
                     Reservation Logs
                 </a>
             </li>
+            @endif
+            @if($canAccess('reports'))
             <li>
                 <a href="{{ route('admin.report') }}" class="{{ request()->is('admin/report') ? 'active' : '' }}">
                     Reports
                 </a>
             </li>
+            @endif
+            @if($canAccess('feedback'))
             <li>
                 <a href="{{ route('admin.feedback') }}" class="{{ request()->is('admin/feedback') ? 'active' : '' }}">
                     Feedback
                 </a>
             </li>
+            @endif
             <li>
                 <a href="{{ route('admin.profile') }}" class="{{ request()->is('admin/profile') ? 'active' : '' }}">
                     Admin Profile
                 </a>
             </li>
-            @if(auth('admin')->user() && auth('admin')->user()->role === 'super_admin')
+            @if($isSuperAdmin)
             <li>
                 <a href="{{ route('admin.it.dashboard') }}" class="{{ request()->is('admin/it*') ? 'active' : '' }}">
                     IT Management

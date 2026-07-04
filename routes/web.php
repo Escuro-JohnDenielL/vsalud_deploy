@@ -20,6 +20,9 @@ use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\FeedbackController as AdminFeedbackController;
 use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
 use App\Http\Controllers\Admin\AdminManagementController;
+use App\Http\Controllers\Admin\AdminPermissionController;
+use App\Http\Controllers\Admin\FormBuilderController;
+use App\Models\Form;
 use App\Models\Inquiry;
 use Illuminate\Support\Facades\Log;
 
@@ -56,8 +59,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 });
 
-// Protected Admin Routes (WITH MIDDLEWARE - requires authentication)
-Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(function () {
+// Protected Admin Routes (WITH MIDDLEWARE - requires authentication + page permissions)
+Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'page.permission'])->group(function () {
     // Admin Homepage
     Route::get('/home', [AdminHomeController::class, 'index'])->name('home');
 
@@ -173,4 +176,22 @@ Route::prefix('admin/it')->name('admin.it.')->middleware(['auth:admin', 'role.ad
     Route::post('/restore/{id}', [AdminManagementController::class, 'restore'])->name('restore');
     Route::delete('/force-delete/{id}', [AdminManagementController::class, 'forceDelete'])->name('force-delete');
 
+    // Form Builder
+    Route::get('/forms', [FormBuilderController::class, 'index'])->name('forms');
+    Route::get('/forms/{form}/edit', [FormBuilderController::class, 'edit'])->name('forms.edit');
+    Route::post('/forms/{form}/fields', [FormBuilderController::class, 'addField'])->name('forms.fields.store');
+    Route::put('/forms/{form}/fields/{field}', [FormBuilderController::class, 'updateField'])->name('forms.fields.update');
+    Route::delete('/forms/{form}/fields/{field}', [FormBuilderController::class, 'deleteField'])->name('forms.fields.destroy');
+    Route::post('/forms/{form}/fields/reorder', [FormBuilderController::class, 'reorderFields'])->name('forms.fields.reorder');
+    Route::get('/forms/{form}/preview', [FormBuilderController::class, 'preview'])->name('forms.preview');
+    Route::post('/forms/{form}/publish', [FormBuilderController::class, 'publish'])->name('forms.publish');
+
+    // Permissions Management
+    Route::get('/permissions/{id}', [AdminPermissionController::class, 'edit'])->name('permissions');
+});
+
+// Permissions API routes (super_admin only — outside admin it group but still gated by role)
+Route::prefix('admin/permissions')->name('admin.permissions.')->middleware(['auth:admin', 'role.admin:super_admin'])->group(function () {
+    Route::post('/{id}/update', [AdminPermissionController::class, 'update'])->name('update');
+    Route::post('/{id}/preset', [AdminPermissionController::class, 'applyPreset'])->name('preset');
 });

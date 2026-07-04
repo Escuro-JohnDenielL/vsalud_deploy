@@ -67,6 +67,14 @@
         </div>
     </div>
 
+    {{-- Quick Links --}}
+    <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+        <a href="{{ route('admin.it.forms') }}"
+           style="background:#165c34;color:#fff;border:none;border-radius:999px;padding:10px 24px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;">
+           🏗️ Form Builder
+        </a>
+    </div>
+
     {{-- Admin Accounts List --}}
     <div class="panel">
         <div class="panel-header">
@@ -111,6 +119,9 @@
                                 <div class="action-group">
                                     @if (!$admin->trashed())
                                         <a href="{{ route('admin.it.edit', $admin->admin_id) }}" class="btn-sm btn-warning">Edit</a>
+                                        @if ($admin->role !== 'super_admin')
+                                            <a href="{{ route('admin.it.permissions', $admin->admin_id) }}" class="btn-sm" style="background:#6f42c1;color:#fff;">Permissions</a>
+                                        @endif
                                         @if ($admin->role !== 'super_admin' && (int) $admin->admin_id !== (int) auth('admin')->id())
                                             <form method="POST" action="{{ route('admin.it.deactivate', $admin->admin_id) }}" style="display:inline;" id="deactivate-form-{{ $admin->admin_id }}">
                                                 @csrf

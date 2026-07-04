@@ -19,6 +19,11 @@ class Reservation extends Model
         'theme_motif',
         'message',
         'status',
+        'form_data',
+    ];
+
+    protected $casts = [
+        'form_data' => 'array',
     ];
 
     public function patron()

@@ -31,6 +31,12 @@ class Inquiry extends Model
         // 'event_time',
         'message',
         'status',
+        'form_data',
+    ];
+
+    protected $casts = [
+        'form_data' => 'array',
+        'date' => 'date',
     ];
 
     protected static function boot()
