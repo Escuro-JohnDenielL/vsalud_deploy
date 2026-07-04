@@ -69,7 +69,7 @@
 
     {{-- Quick Links --}}
     <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
-        <a href="{{ route('admin.it.forms') }}"
+        <a href="{{ route('admin.forms.index') }}"
            style="background:#165c34;color:#fff;border:none;border-radius:999px;padding:10px 24px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;">
            🏗️ Form Builder
         </a>

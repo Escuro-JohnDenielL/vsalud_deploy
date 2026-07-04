@@ -121,6 +121,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'page.permissi
     Route::get('/reservations/{id}', [AdminReservationController::class, 'getReservation'])->name('reservations.show');
     Route::delete('/reservations/{id}', [AdminReservationController::class, 'deleteReservation'])->name('reservations.delete');
 
+    // Payment status management
+    Route::patch('/payments/{payment}/status', [\App\Http\Controllers\Admin\PaymentStatusController::class, 'update'])->name('payments.status');
+
+    // Payment settings (admin-editable)
+    Route::get('/payment-settings', [\App\Http\Controllers\Admin\PaymentSettingsController::class, 'index'])->name('payment-settings');
+    Route::post('/payment-settings', [\App\Http\Controllers\Admin\PaymentSettingsController::class, 'update'])->name('payment-settings.update');
+
     // Report page
     Route::view('/report', 'admin.report')->name('report');
 
@@ -176,18 +183,20 @@ Route::prefix('admin/it')->name('admin.it.')->middleware(['auth:admin', 'role.ad
     Route::post('/restore/{id}', [AdminManagementController::class, 'restore'])->name('restore');
     Route::delete('/force-delete/{id}', [AdminManagementController::class, 'forceDelete'])->name('force-delete');
 
-    // Form Builder
-    Route::get('/forms', [FormBuilderController::class, 'index'])->name('forms');
-    Route::get('/forms/{form}/edit', [FormBuilderController::class, 'edit'])->name('forms.edit');
-    Route::post('/forms/{form}/fields', [FormBuilderController::class, 'addField'])->name('forms.fields.store');
-    Route::put('/forms/{form}/fields/{field}', [FormBuilderController::class, 'updateField'])->name('forms.fields.update');
-    Route::delete('/forms/{form}/fields/{field}', [FormBuilderController::class, 'deleteField'])->name('forms.fields.destroy');
-    Route::post('/forms/{form}/fields/reorder', [FormBuilderController::class, 'reorderFields'])->name('forms.fields.reorder');
-    Route::get('/forms/{form}/preview', [FormBuilderController::class, 'preview'])->name('forms.preview');
-    Route::post('/forms/{form}/publish', [FormBuilderController::class, 'publish'])->name('forms.publish');
-
     // Permissions Management
     Route::get('/permissions/{id}', [AdminPermissionController::class, 'edit'])->name('permissions');
+});
+
+// Form Builder (super_admin only — separate from IT Management)
+Route::prefix('admin/forms')->name('admin.forms.')->middleware(['auth:admin', 'role.admin:super_admin'])->group(function () {
+    Route::get('/', [FormBuilderController::class, 'index'])->name('index');
+    Route::get('/{form}/edit', [FormBuilderController::class, 'edit'])->name('edit');
+    Route::post('/{form}/fields', [FormBuilderController::class, 'addField'])->name('fields.store');
+    Route::put('/{form}/fields/{field}', [FormBuilderController::class, 'updateField'])->name('fields.update');
+    Route::delete('/{form}/fields/{field}', [FormBuilderController::class, 'deleteField'])->name('fields.destroy');
+    Route::post('/{form}/fields/reorder', [FormBuilderController::class, 'reorderFields'])->name('fields.reorder');
+    Route::get('/{form}/preview', [FormBuilderController::class, 'preview'])->name('preview');
+    Route::post('/{form}/publish', [FormBuilderController::class, 'publish'])->name('publish');
 });
 
 // Permissions API routes (super_admin only — outside admin it group but still gated by role)

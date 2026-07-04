@@ -84,8 +84,10 @@ class PaymentController extends Controller
             'payment_method' => $validated['payment_method'],
             'tracking_code' => $trackingCode,
             'reservation_code' => $validated['reservation_code'],
+            'inquiry_id' => $inquiry?->inquiry_id,
             'receipt_path' => $receiptPath,
             'email' => $validated['email'],
+            'status' => 'pending',
         ]);
 
         return response()->json([

@@ -106,6 +106,6 @@
         @endforelse
     </div>
 
-    <a href="{{ route('admin.it.forms.edit', $form) }}" class="back-link">&larr; Back to editor</a>
+    <a href="{{ route('admin.forms.edit', $form) }}" class="back-link">&larr; Back to editor</a>
 </div>
 @endpush

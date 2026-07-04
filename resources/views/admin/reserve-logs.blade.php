@@ -110,6 +110,7 @@
                             <th>Tracking Code</th>
                             <th>Reservation Code</th>
                             <th>Email</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -122,6 +123,14 @@
                                 <td>{{ $payment_log->tracking_code ?? '-' }}</td>
                                 <td>{{ $payment_log->reservation_code ?? '-' }}</td>
                                 <td>{{ $payment_log->email ?? '-' }}</td>
+                                <td>
+                                    <select class="payment-status-dropdown" data-payment-id="{{ $payment_log->payment_id }}">
+                                        <option value="pending" {{ $payment_log->status === 'pending' ? 'selected' : '' }}>Pending</option>
+                                        <option value="approved" {{ $payment_log->status === 'approved' ? 'selected' : '' }}>Approved</option>
+                                        <option value="rejected" {{ $payment_log->status === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                        <option value="refunded" {{ $payment_log->status === 'refunded' ? 'selected' : '' }}>Refunded</option>
+                                    </select>
+                                </td>
                                 <td>
                                     <a href="#" class="receipt-link1"
                                         data-receipt="{{ asset('storage/' . $payment_log->receipt_path) }}">View

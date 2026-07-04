@@ -41,9 +41,9 @@
         <p style="margin-top: 30px;">
             Warm regards,<br>
             <strong>Villa Salud Events Team</strong><br><br>
-            📞 <strong>Phone:</strong> (+63) 912 345 6789<br>
-            📧 <strong>Email:</strong> <a href="mailto:villasalud.events@gmail.com"
-                style="color: #3498db;">villasalud.events@gmail.com</a>
+            📞 <strong>Phone:</strong> {{ payment_setting('contact_phone', '(+63) 912 345 6789') }}<br>
+            📧 <strong>Email:</strong> <a href="mailto:{{ payment_setting('contact_email', 'villasalud.events@gmail.com') }}"
+                style="color: #3498db;">{{ payment_setting('contact_email', 'villasalud.events@gmail.com') }}</a>
         </p>
     </div>
 

@@ -336,6 +336,38 @@ function deleteReservationFromServer(id) {
     console.log(`Deleting reservation ${id} from server`);
 }
 
+// PAYMENT STATUS CHANGE HANDLER
+document.addEventListener("change", function (e) {
+    if (e.target.classList.contains("payment-status-dropdown")) {
+        const paymentId = e.target.dataset.paymentId;
+        const newStatus = e.target.value;
+        const csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute("content");
+
+        fetch(`/admin/payments/${paymentId}/status`, {
+            method: "PATCH",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken,
+            },
+            body: JSON.stringify({ status: newStatus }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.success) {
+                    showNotification(data.message, "success");
+                } else {
+                    showNotification(data.message || "Failed to update status", "error");
+                }
+            })
+            .catch(() => {
+                showNotification("Failed to update payment status", "error");
+            });
+    }
+});
+
 // Make functions accessible globally to Blade
 window.viewReservation = viewReservation;
 window.deleteReservation = deleteReservation;

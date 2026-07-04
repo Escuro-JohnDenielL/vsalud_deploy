@@ -15,7 +15,14 @@ class Payment extends Model
         'payment_method',
         'tracking_code',
         'reservation_code',
+        'inquiry_id',
         'receipt_path',
         'email',
+        'status',
     ];
+
+    public function inquiry()
+    {
+        return $this->belongsTo(\App\Models\Inquiry::class, 'inquiry_id', 'inquiry_id');
+    }
 }

@@ -99,7 +99,7 @@
             </span>
         </div>
         <div style="text-align:right;">
-            <a href="{{ route('admin.it.forms') }}" style="color:#587064;font-size:14px;">&larr; Back to Forms</a>
+            <a href="{{ route('admin.forms.index') }}" style="color:#587064;font-size:14px;">&larr; Back to Forms</a>
         </div>
     </div>
 
@@ -141,7 +141,7 @@
                 <button class="btn-publish" onclick="togglePublish()">
                     {{ $form->is_published ? 'Unpublish' : 'Publish Changes' }}
                 </button>
-                <a href="{{ route('admin.it.forms.preview', $form) }}" class="btn-preview" target="_blank">Preview Form</a>
+                <a href="{{ route('admin.forms.preview', $form) }}" class="btn-preview" target="_blank">Preview Form</a>
             </div>
         </div>
 
@@ -308,7 +308,7 @@
 
     function saveOrder() {
         const fieldIds = [...document.querySelectorAll('.field-item')].map(el => parseInt(el.dataset.fieldId));
-        fetch(`/admin/it/forms/${formId}/fields/reorder`, {
+        fetch(`/admin/forms/${formId}/fields/reorder`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'X-Requested-With': 'XMLHttpRequest' },
             body: JSON.stringify({ field_ids: fieldIds })
@@ -322,7 +322,7 @@
         const options = collectOptions('newOptionsEditor');
         if (options.length > 0) formData.set('options', JSON.stringify(options));
 
-        fetch(`/admin/it/forms/${formId}/fields`, {
+        fetch(`/admin/forms/${formId}/fields`, {
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': csrfToken, 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
             body: formData
@@ -335,7 +335,7 @@
     // ===== Delete Field =====
     function deleteField(fieldId) {
         if (!confirm('Delete this field? Existing submitted data will not be affected.')) return;
-        fetch(`/admin/it/forms/${formId}/fields/${fieldId}`, {
+        fetch(`/admin/forms/${formId}/fields/${fieldId}`, {
             method: 'DELETE',
             headers: { 'X-CSRF-TOKEN': csrfToken, 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         }).then(r => r.json()).then(d => {
@@ -384,7 +384,7 @@
         const options = collectOptions('editOptionsEditor');
         if (options.length > 0) formData.set('options', JSON.stringify(options));
 
-        fetch(`/admin/it/forms/${formId}/fields/${fieldId}`, {
+        fetch(`/admin/forms/${formId}/fields/${fieldId}`, {
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': csrfToken, 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
             body: formData
@@ -452,7 +452,7 @@
 
     // ===== Publish Toggle =====
     function togglePublish() {
-        fetch(`/admin/it/forms/${formId}/publish`, {
+        fetch(`/admin/forms/${formId}/publish`, {
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': csrfToken, 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         }).then(r => r.json()).then(d => {

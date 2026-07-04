@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Form Builder - IT Management')
+@section('title', 'Form Builder')
 
 @push('styles')
 <style>
@@ -37,7 +37,7 @@
                     {{ $form->is_published ? 'Published' : 'Draft (unpublished changes)' }}
                 </span>
             </div>
-            <a href="{{ route('admin.it.forms.edit', $form) }}" class="btn-edit-form">Edit Fields</a>
+            <a href="{{ route('admin.forms.edit', $form) }}" class="btn-edit-form">Edit Fields</a>
         </div>
     @empty
         <div class="empty-state">
@@ -46,7 +46,7 @@
     @endforelse
 
     <div style="margin-top: 12px;">
-        <a href="{{ route('admin.it.dashboard') }}" style="color:#587064;font-size:14px;">&larr; Back to IT Dashboard</a>
+        <a href="{{ route('admin.home') }}" style="color:#587064;font-size:14px;">&larr; Back to Dashboard</a>
     </div>
 </div>
 @endsection

@@ -92,7 +92,17 @@
                     Admin Profile
                 </a>
             </li>
+            <li>
+                <a href="{{ route('admin.payment-settings') }}" class="{{ request()->is('admin/payment-settings') ? 'active' : '' }}">
+                    Payment Settings
+                </a>
+            </li>
             @if($isSuperAdmin)
+            <li>
+                <a href="{{ route('admin.forms.index') }}" class="{{ request()->is('admin/forms*') ? 'active' : '' }}">
+                    Form Builder
+                </a>
+            </li>
             <li>
                 <a href="{{ route('admin.it.dashboard') }}" class="{{ request()->is('admin/it*') ? 'active' : '' }}">
                     IT Management

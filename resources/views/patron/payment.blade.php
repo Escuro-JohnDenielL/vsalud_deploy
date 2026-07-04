@@ -64,13 +64,13 @@
                     <h3>GCash Payment</h3>
                     <ul class="steps">
                         <li>Scan the QR code below using your GCash app.</li>
-                        <li>Account Name: <strong>Elizabeth R.</strong></li>
-                        <li>Mobile Number: <strong>09062236120</strong></li>
+                        <li>Account Name: <strong>{{ payment_setting('gcash_account_name', 'Elizabeth R.') }}</strong></li>
+                        <li>Mobile Number: <strong>{{ payment_setting('gcash_mobile_number', '09062236120') }}</strong></li>
                         <li>Include your tracking code in the note.</li>
                         <li>Upload a screenshot of your payment below.</li>
                     </ul>
                     <div class="qr-code-container">
-                        <img src="{{ asset('images/gcash.jpg') }}" alt="GCash QR Code">
+                        <img src="{{ asset(payment_setting('gcash_qr_path', 'images/gcash.jpg')) }}" alt="GCash QR Code">
                     </div>
                 </div>
 
@@ -78,9 +78,9 @@
                     <h3>Bank Transfer (BPI Only)</h3>
                     <div class="bank-note">Note: BDO is currently unavailable. Please use BPI.</div>
                     <ul class="steps">
-                        <li>Bank: <strong>BPI Savings Bank</strong></li>
-                        <li>Account Name: <strong>Ernesto Rafael Jr. and/or Elizabeth Rafael</strong></li>
-                        <li>Account Number: <strong>8230001538</strong></li>
+                        <li>Bank: <strong>{{ payment_setting('bank_name', 'BPI Savings Bank') }}</strong></li>
+                        <li>Account Name: <strong>{{ payment_setting('bank_account_name', 'Ernesto Rafael Jr. and/or Elizabeth Rafael') }}</strong></li>
+                        <li>Account Number: <strong>{{ payment_setting('bank_account_number', '8230001538') }}</strong></li>
                         <li>Include your tracking code in the deposit note.</li>
                         <li>Upload a photo of your deposit slip below.</li>
                     </ul>
@@ -89,7 +89,7 @@
                 <div id="cashInstructions" class="payment-method" style="display: none;">
                     <h3>Cash Payment</h3>
                     <ul class="steps">
-                        <li>Pay in person at the Villa office.</li>
+                        <li>{{ payment_setting('cash_instructions', 'Pay in person at the Villa office.') }}</li>
                         <li>Provide your tracking code at the counter.</li>
                         <li>Upload a photo of your official receipt below.</li>
                     </ul>
