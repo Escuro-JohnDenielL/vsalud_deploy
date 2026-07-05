@@ -20,6 +20,8 @@ class Reservation extends Model
         'message',
         'status',
         'form_data',
+        'event_reminder_sent_at',
+        'payment_reminder_sent_at',
     ];
 
     protected $casts = [

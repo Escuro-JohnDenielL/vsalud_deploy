@@ -78,4 +78,9 @@ class Inquiry extends Model
     {
         return $this->belongsTo(Admin::class, 'admin_id', 'admin_id');
     }
+
+    public function payments()
+    {
+        return $this->hasMany(\App\Models\Payment::class, 'inquiry_id', 'inquiry_id');
+    }
 }

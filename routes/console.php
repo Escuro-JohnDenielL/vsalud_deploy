@@ -10,3 +10,9 @@ Artisan::command('inspire', function () {
 
 // Check for expired waitlist notifications every minute
 Schedule::command('app:check-waitlist-expirations')->everyMinute();
+
+// Send event reminders for reservations 7 days away
+Schedule::command('app:send-event-reminders')->daily();
+
+// Send payment reminders for reservations 3+ days old with pending payment
+Schedule::command('app:send-payment-reminders')->daily();
