@@ -73,6 +73,22 @@
                 </a>
             </li>
             @endif
+            @if($canAccess('cancellations'))
+            <li>
+                <a href="{{ route('admin.cancellations') }}"
+                    class="{{ request()->is('admin/cancellations') ? 'active' : '' }}">
+                    Cancellation Requests
+                </a>
+            </li>
+            @endif
+            @if($canAccess('waitlist'))
+            <li>
+                <a href="{{ route('admin.waitlist') }}"
+                    class="{{ request()->is('admin/waitlist') ? 'active' : '' }}">
+                    Waitlist
+                </a>
+            </li>
+            @endif
             @if($canAccess('reports'))
             <li>
                 <a href="{{ route('admin.report') }}" class="{{ request()->is('admin/report') ? 'active' : '' }}">

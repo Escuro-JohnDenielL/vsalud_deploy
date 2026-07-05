@@ -30,4 +30,14 @@ class Reservation extends Model
     {
         return $this->belongsTo(\App\Models\Patron::class, 'patron_id', 'patron_id');
     }
+
+    public function inquiry()
+    {
+        return $this->belongsTo(\App\Models\Inquiry::class, 'inquiry_id', 'inquiry_id');
+    }
+
+    public function cancellationRequests()
+    {
+        return $this->hasMany(\App\Models\CancellationRequest::class, 'reserve_id', 'reserve_id');
+    }
 }

@@ -167,8 +167,34 @@
     <div id="dateUnavailableModal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close-modal" id="closeUnavailableModal">&times;</span>
-            <h3>Date Not Available</h3>
-            <p>Sorry, the selected date is already full or closed. Please choose another available date.</p>
+            <h3 id="unavailableTitle">Date Not Available</h3>
+            <p id="unavailableMessage">Sorry, the selected date is already full or closed. Please choose another available date.</p>
+            <div id="waitlistOption" style="display: none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
+                <p style="font-size: 14px; color: #555; margin-bottom: 12px;">
+                    Want to be notified if a slot opens up? Join the waitlist!
+                </p>
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <input type="text" id="waitlistName" placeholder="Your Name" style="width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; box-sizing: border-box;">
+                </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <input type="email" id="waitlistEmail" placeholder="Your Email" style="width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; box-sizing: border-box;">
+                </div>
+                <div id="waitlistMessage" style="font-size: 13px; margin-bottom: 10px; display: none;"></div>
+                <button id="joinWaitlistBtn" style="background: #f39c12; color: white; border: none; padding: 10px 24px; border-radius: 5px; font-size: 14px; cursor: pointer; font-weight: 600;">
+                    Join Waitlist
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="waitlistSuccessModal" class="modal" style="display: none;">
+        <div class="modal-content" style="text-align: center;">
+            <span class="close-modal" id="closeWaitlistSuccessModal">&times;</span>
+            <h3 style="color: #27ae60;">✅ You're on the Waitlist!</h3>
+            <p style="font-size: 16px; margin: 16px 0;">We'll email you if a slot opens up for this date. You'll have 24 hours to claim it.</p>
+            <button onclick="document.getElementById('waitlistSuccessModal').style.display='none'" style="background: #27ae60; color: white; border: none; padding: 10px 24px; border-radius: 5px; font-size: 14px; cursor: pointer; font-weight: 600;">
+                Got it!
+            </button>
         </div>
     </div>
 @endsection

@@ -31,6 +31,8 @@ class CheckPagePermission
         'admin.theme.data'       => 'reports',
         'admin.event-type.data'  => 'reports',
         'admin.activities.all'   => 'reports',
+        // Waitlist
+        'admin.waitlist'         => 'waitlist',
     ];
 
     public function handle(Request $request, Closure $next): Response

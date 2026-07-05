@@ -6,20 +6,18 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class ReservationSubmitted extends Mailable
+class ReservationConfirmed extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $reservationData;
-    public $reply;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($reservationData, $reply)
+    public function __construct($reservationData)
     {
         $this->reservationData = $reservationData;
-        $this->reply = $reply;
     }
 
     /**
@@ -29,16 +27,8 @@ class ReservationSubmitted extends Mailable
     {
         $this->replyTo('coheredit@gmail.com', 'Events Team');
 
-        if ($this->reply) {
-            return $this->subject('Reply to your inquiry.')
-                ->view('emails.reply')
-                ->with([
-                    'data' => $this->reply,
-                ]);
-        }
-
-        return $this->subject('Your Reservation Has Been Submitted')
-            ->view('emails.reservation_submitted')
+        return $this->subject('Your Reservation Has Been Confirmed')
+            ->view('emails.reservation_confirmed')
             ->with([
                 'data' => $this->reservationData,
             ]);

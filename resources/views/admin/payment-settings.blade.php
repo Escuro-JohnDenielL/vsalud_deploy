@@ -67,7 +67,7 @@
 
         <div style="margin-bottom:16px;">
             <label style="display:block;font-weight:600;margin-bottom:4px;color:#22332a;font-size:13px;">Email Address</label>
-            <input type="email" name="contact_email" value="{{ old('contact_email', $settings['contact_email']->value ?? 'villasalud.events@gmail.com') }}" style="width:100%;border:1px solid #d7dfd5;border-radius:10px;padding:9px 12px;font-size:14px;">
+            <input type="email" name="contact_email" value="{{ old('contact_email', $settings['contact_email']->value ?? 'coheredit@gmail.com') }}" style="width:100%;border:1px solid #d7dfd5;border-radius:10px;padding:9px 12px;font-size:14px;">
         </div>
 
         <div style="margin-top:24px;">

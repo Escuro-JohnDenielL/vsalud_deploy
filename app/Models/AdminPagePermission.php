@@ -24,12 +24,14 @@ class AdminPagePermission extends Model
     public static function availablePages(): array
     {
         return [
-            'packages'     => 'Packages',
-            'reservations' => 'Reservations',
-            'inquiries'    => 'Inquiries',
-            'reserve-logs' => 'Reservation Logs',
-            'reports'      => 'Reports',
-            'feedback'     => 'Feedback',
+            'packages'      => 'Packages',
+            'reservations'  => 'Reservations',
+            'inquiries'     => 'Inquiries',
+            'reserve-logs'  => 'Reservation Logs',
+            'cancellations' => 'Cancellation Requests',
+            'waitlist'      => 'Waitlist',
+            'reports'       => 'Reports',
+            'feedback'      => 'Feedback',
         ];
     }
 
@@ -41,8 +43,8 @@ class AdminPagePermission extends Model
         return [
             'full-access' => [
                 'label' => 'Full Access',
-                'description' => 'All pages (packages, reservations, inquiries, logs, reports, feedback)',
-                'pages' => ['packages', 'reservations', 'inquiries', 'reserve-logs', 'reports', 'feedback'],
+                'description' => 'All pages (packages, reservations, inquiries, logs, cancellations, waitlist, reports, feedback)',
+                'pages' => ['packages', 'reservations', 'inquiries', 'reserve-logs', 'cancellations', 'waitlist', 'reports', 'feedback'],
             ],
             'view-only' => [
                 'label' => 'View Only',

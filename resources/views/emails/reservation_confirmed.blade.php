@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Reservation Confirmation</title>
+    <title>Reservation Confirmed</title>
 </head>
 
 <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 30px; color: #333;">
@@ -11,11 +11,11 @@
     <div
         style="max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
 
-        <h2 style="color: #2c3e50;">👋 Hi {{ $data['name'] }},</h2>
+        <h2 style="color: #2c3e50;">🎉 Hi {{ $data['name'] }},</h2>
 
         <p style="font-size: 16px;">
-            Thank you for reaching out to us! 🎉<br>
-            We have successfully received your reservation request. Below are the details you submitted:
+            Great news! Your reservation has been confirmed. 🎊<br>
+            Below are your finalized booking details:
         </p>
 
         <h3 style="color: #3498db; margin-top: 30px;">📋 Reservation Details</h3>
@@ -30,12 +30,19 @@
             <li>📝 <strong>Special Request:</strong> {{ $data['message'] ?: 'None' }}</li>
         </ul>
 
-        <p style="font-size: 16px; margin-top: 30px;">
-            We'll review your request and get back to you shortly with confirmation and next steps. 😊
-        </p>
-
+        <h3 style="color: #27ae60; margin-top: 30px;">💳 Next Steps for Payment</h3>
         <p style="font-size: 16px;">
-            If you have any questions or need to make changes, feel free to reply to this email.
+            To secure your reservation, please settle your payment at your earliest convenience.
+            You may upload your proof of payment through our payment portal:
+        </p>
+        <p style="text-align: center; margin: 20px 0;">
+            <a href="{{ url('/payment') }}"
+               style="background-color: #3498db; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-size: 16px;">
+                Go to Payment Portal
+            </a>
+        </p>
+        <p style="font-size: 14px; color: #666;">
+            If you have any questions or need assistance, simply reply to this email or contact us using the details below.
         </p>
 
         <p style="margin-top: 30px;">

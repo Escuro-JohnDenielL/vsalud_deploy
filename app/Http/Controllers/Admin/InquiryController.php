@@ -8,6 +8,8 @@ use App\Models\Inquiry;
 use App\Models\Patron;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ReservationConfirmed;
 
 
 class InquiryController extends Controller
@@ -67,6 +69,26 @@ class InquiryController extends Controller
                         'status'             => 'Active',
                         'form_data'          => $inquiry->form_data, // carry forward dynamic data
                     ]);
+
+                    // Send confirmation email to patron
+                    if ($inquiry->relationLoaded('patron') && $inquiry->patron) {
+                        $emailData = [
+                            'name'              => $inquiry->patron->name,
+                            'tracking_code'     => $inquiry->tracking_code,
+                            'date'              => $inquiry->date ? $inquiry->date->format('Y-m-d') : 'N/A',
+                            'time'              => $inquiry->time ?? 'N/A',
+                            'venue'             => $inquiry->venue ?? 'N/A',
+                            'other_venue'       => $inquiry->other_venue ?? '',
+                            'event_type'        => $inquiry->event_type ?? 'N/A',
+                            'other_event_type'  => $inquiry->other_event_type ?? '',
+                            'theme_motif'       => $inquiry->theme_motif ?? 'N/A',
+                            'other_theme_motif' => $inquiry->other_theme_motif ?? '',
+                            'message'           => $inquiry->message ?? '',
+                        ];
+
+                        Mail::to($inquiry->patron->email)->send(new ReservationConfirmed($emailData));
+                        Log::info('Confirmation email sent to ' . $inquiry->patron->email . ' for inquiry #' . $inquiry->inquiry_id);
+                    }
                 } catch (\Exception $e) {
                     // ❌ Log the exception with full message
                     Log::error('Failed to create reservation: ' . $e->getMessage());

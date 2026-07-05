@@ -3,27 +3,31 @@
 import "../bootstrap";
 
 document.addEventListener("DOMContentLoaded", function () {
-    const venueSelect = document.getElementById("venue");
+    const venueSelect = document.getElementById("field_venue");
     const otherVenueInput =
         document.getElementById("otherVenue") ||
-        document.getElementById("other_venue");
+        document.getElementById("other_venue") ||
+        document.getElementById("field_other_venue");
 
-    const themeMotifSelect = document.getElementById("theme_motif");
+    const themeMotifSelect = document.getElementById("field_theme_motif");
     const otherThemeMotifInput =
         document.getElementById("otherThemeMotif") ||
-        document.getElementById("other_theme_motif");
+        document.getElementById("other_theme_motif") ||
+        document.getElementById("field_other_theme_motif");
 
-    const eventTypeSelect = document.getElementById("event_type");
+    const eventTypeSelect = document.getElementById("field_event_type");
     const otherEventTypeInput =
         document.getElementById("otherEventType") ||
-        document.getElementById("other_event_type");
+        document.getElementById("other_event_type") ||
+        document.getElementById("field_other_event_type");
 
     const form = document.querySelector("form");
-    const dateInput = document.getElementById("date");
+    const dateInput = document.getElementById("field_date");
 
-    const periodSelect = document.getElementById("period");
-    const timeSlotWrapper = document.getElementById("timeSlotWrapper");
-    const timeSlotSelect = document.getElementById("time_slot");
+    const periodSelect = document.getElementById("field_period");
+    const timeSlotSelect = document.getElementById("field_time");
+    // The dynamic form wraps each field in a .form-group div
+    const timeSlotWrapper = timeSlotSelect?.closest(".form-group");
 
     const timeSlots = {
         AM: ["9am–1pm", "10am–2pm", "11am–3pm"],
@@ -291,25 +295,110 @@ document.addEventListener("DOMContentLoaded", function () {
         "closeUnavailableModal"
     );
 
+    let selectedUnavailableDate = null;
+
     dateInput?.addEventListener("change", () => {
         const selected = dateInput.value;
-        if (
-            dateStatuses[selected] === "Full" ||
-            dateStatuses[selected] === "Closed"
-        ) {
-            // alert("This date is not available. Please choose another.");
+        const status = dateStatuses[selected];
+
+        if (status === "Full" || status === "Closed") {
+            selectedUnavailableDate = selected;
+
+            const title = document.getElementById("unavailableTitle");
+            const message = document.getElementById("unavailableMessage");
+            const waitlistOption = document.getElementById("waitlistOption");
+
+            if (status === "Closed") {
+                title.textContent = "Date Closed";
+                message.textContent = "Sorry, this date is closed. Please choose another available date.";
+                waitlistOption.style.display = "none";
+            } else {
+                title.textContent = "Date Full";
+                message.textContent = "This date is fully booked. Join the waitlist to be notified if a slot opens up!";
+                waitlistOption.style.display = "block";
+                document.getElementById("waitlistName").value = "";
+                document.getElementById("waitlistEmail").value = "";
+                document.getElementById("waitlistMessage").style.display = "none";
+            }
+
             dateUnavailableModal.style.display = "block";
             dateInput.value = "";
         }
+    });
+
+    // Waitlist join handler
+    document.getElementById("joinWaitlistBtn")?.addEventListener("click", function () {
+        const name = document.getElementById("waitlistName").value.trim();
+        const email = document.getElementById("waitlistEmail").value.trim();
+        const msgEl = document.getElementById("waitlistMessage");
+
+        if (!name) {
+            msgEl.textContent = "Please enter your name.";
+            msgEl.style.color = "#e74c3c";
+            msgEl.style.display = "block";
+            return;
+        }
+
+        if (!email || !email.includes("@")) {
+            msgEl.textContent = "Please enter a valid email address.";
+            msgEl.style.color = "#e74c3c";
+            msgEl.style.display = "block";
+            return;
+        }
+
+        msgEl.textContent = "Joining waitlist...";
+        msgEl.style.color = "#555";
+        msgEl.style.display = "block";
+        this.disabled = true;
+
+        fetch("/waitlist/join", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") || "",
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+            body: JSON.stringify({
+                patron_name: name,
+                patron_email: email,
+                date: selectedUnavailableDate,
+            }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                this.disabled = false;
+                if (data.success) {
+                    dateUnavailableModal.style.display = "none";
+                    document.getElementById("waitlistSuccessModal").style.display = "block";
+                } else {
+                    msgEl.textContent = data.message || "Failed to join waitlist. Please try again.";
+                    msgEl.style.color = "#e74c3c";
+                    msgEl.style.display = "block";
+                }
+            })
+            .catch((err) => {
+                this.disabled = false;
+                msgEl.textContent = "An error occurred. Please try again.";
+                msgEl.style.color = "#e74c3c";
+                msgEl.style.display = "block";
+                console.error("Waitlist join error:", err);
+            });
     });
 
     closeUnavailableModal?.addEventListener("click", () => {
         dateUnavailableModal.style.display = "none";
     });
 
+    document.getElementById("closeWaitlistSuccessModal")?.addEventListener("click", () => {
+        document.getElementById("waitlistSuccessModal").style.display = "none";
+    });
+
     window.addEventListener("click", function (event) {
         if (event.target === dateUnavailableModal) {
             dateUnavailableModal.style.display = "none";
+        }
+        if (event.target === document.getElementById("waitlistSuccessModal")) {
+            document.getElementById("waitlistSuccessModal").style.display = "none";
         }
     });
 });

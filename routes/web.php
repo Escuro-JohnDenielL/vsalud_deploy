@@ -8,6 +8,7 @@ use App\Http\Controllers\Patron\PaymentController;
 
 // Unified
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\CancellationController;
 
 // Admin Controller Related
 use App\Http\Controllers\Admin\AuthController;
@@ -22,6 +23,9 @@ use App\Http\Controllers\Admin\ReservationController as AdminReservationControll
 use App\Http\Controllers\Admin\AdminManagementController;
 use App\Http\Controllers\Admin\AdminPermissionController;
 use App\Http\Controllers\Admin\FormBuilderController;
+use App\Http\Controllers\Admin\CancellationController as AdminCancellationController;
+use App\Http\Controllers\Admin\WaitlistController as AdminWaitlistController;
+use App\Http\Controllers\WaitlistController;
 use App\Models\Form;
 use App\Models\Inquiry;
 use Illuminate\Support\Facades\Log;
@@ -50,7 +54,17 @@ Route::name('patron.')->group(function () {
     // Route::view('/vreserve', 'patron.vreserve')->name('vreserve');
     Route::view('/faq', 'patron.faq')->name('faq');
     Route::view('/guidelines', 'patron.guidelines')->name('guidelines');
+
+    // Cancellation request
+    Route::get('/cancel-reservation', [CancellationController::class, 'index'])->name('cancel-reservation');
 });
+
+// Patron cancellation (public routes, no auth required — uses tracking code lookup)
+Route::post('/cancel-reservation/lookup', [CancellationController::class, 'lookup'])->name('cancel-reservation.lookup');
+Route::post('/cancel-reservation/submit', [CancellationController::class, 'submit'])->name('cancel-reservation.submit');
+
+// Waitlist (patron-facing)
+Route::post('/waitlist/join', [WaitlistController::class, 'join'])->name('waitlist.join');
 
 // Admin Authentication Routes (NO MIDDLEWARE - accessible to non-authenticated users)
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -83,6 +97,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'page.permissi
     // Availability for the calendar on admin making inquiry/reservation
     Route::get('/availability', [AvailabilityController::class, 'index'])->name('availability.index');
     Route::post('/availability', [AvailabilityController::class, 'toggle'])->name('availability.toggle');
+    Route::post('/availability/remove-override', [AvailabilityController::class, 'removeOverride'])->name('availability.remove-override');
 
     // Admin creates reservation (inquiry form)
     Route::get('/reserve', [ReservationController::class, 'create'])->name('reserve.create');
@@ -132,6 +147,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'page.permissi
     Route::view('/report', 'admin.report')->name('report');
 
     Route::post('/send-reply', [ReservationController::class, 'sendReply']);
+
+    // Cancellation requests (admin)
+    Route::get('/cancellations', [AdminCancellationController::class, 'index'])->name('cancellations');
+    Route::post('/cancellations/{id}/approve', [AdminCancellationController::class, 'approve'])->name('cancellations.approve');
+    Route::post('/cancellations/{id}/deny', [AdminCancellationController::class, 'deny'])->name('cancellations.deny');
+
+    // Waitlist (admin, read-only)
+    Route::get('/waitlist', [AdminWaitlistController::class, 'index'])->name('waitlist');
 });
 
 // Logout Route (accessible to authenticated users)
@@ -142,29 +165,58 @@ Route::post('/fetch-reservation', [ReservationController::class, 'fetchReservati
 Route::post('/submit-payment', [PaymentController::class, 'store'])->name('payment.store');
 
 Route::get('/calendar/availability', function () {
+    $maxInquiries = config('availability.max_inquiries', 4);
+
+    // 1. Collect all dates that have admin overrides
+    $overrides = \App\Models\Availability::where('is_override', true)
+        ->get()
+        ->keyBy(fn ($item) => $item->date->format('Y-m-d'));
+
+    // 2. Count inquiries per date for auto-calculation (exclude cancelled)
     $inquiries = Inquiry::selectRaw('date, COUNT(*) as total')
+        ->where('status', '!=', 'Cancelled')
         ->groupBy('date')
         ->get();
 
+    // 3. Gather all unique dates from both sources (all as strings)
+    $allDates = collect();
+    foreach ($overrides as $date => $_) {
+        $allDates->push($date);
+    }
+    foreach ($inquiries as $inquiry) {
+        $allDates->push($inquiry->date instanceof \Carbon\Carbon ? $inquiry->date->format('Y-m-d') : $inquiry->date);
+    }
+    $allDates = $allDates->unique()->sort();
+
     $availability = [];
 
-    Log::info($inquiries);
-
+    // Build a lookup for inquiry counts keyed by string date
+    $inquiryCounts = [];
     foreach ($inquiries as $inquiry) {
-        $count = $inquiry->total;
-        $date = $inquiry->date;
+        $dateStr = $inquiry->date instanceof \Carbon\Carbon ? $inquiry->date->format('Y-m-d') : $inquiry->date;
+        $inquiryCounts[$dateStr] = $inquiry->total;
+    }
 
-        if ($count >= 4) {
+    foreach ($allDates as $date) {
+        // Check override first — admin's manual status takes priority
+        if (isset($overrides[$date])) {
+            $availability[$date] = $overrides[$date]->status;
+            continue;
+        }
+
+        // Otherwise auto-calculate from inquiry count
+        $count = $inquiryCounts[$date] ?? 0;
+
+        if ($count >= $maxInquiries) {
             $availability[$date] = 'Full';
         } elseif ($count === 3) {
             $availability[$date] = 'Nearly';
         } elseif ($count === 2) {
             $availability[$date] = 'Half';
-        } elseif ($count === 1) {
+        } elseif ($count >= 1) {
             $availability[$date] = 'Available';
-        } else {
-            $availability[$date] = 'Available'; // Just in case
         }
+        // If count is 0 and no inquiry exists, skip (no data to send)
     }
 
     return response()->json($availability);

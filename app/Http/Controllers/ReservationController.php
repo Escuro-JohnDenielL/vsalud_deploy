@@ -11,6 +11,7 @@ use App\Models\Form;
 use App\Models\FormField;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationSubmitted;
+use App\Services\WaitlistService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cookie;
@@ -166,6 +167,16 @@ class ReservationController extends Controller
                 'status'            => 'Pending',
                 'form_data'         => $formData, // Store all dynamic field data as JSON
             ]);
+
+            // If the patron was on the waitlist (notified status), mark as claimed
+            try {
+                $inquiryDate = $hardcodedData['date'] ?? $formData['date'] ?? null;
+                if ($inquiryDate) {
+                    app(WaitlistService::class)->markAsClaimed($patron->email, $inquiryDate);
+                }
+            } catch (\Exception $e) {
+                Log::error('Failed to update waitlist claim: ' . $e->getMessage());
+            }
 
             // Send email with available data
             $emailData = [
