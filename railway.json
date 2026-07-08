@@ -1,0 +1,25 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Docker",
+    "watchPatterns": [
+      "app/**",
+      "config/**",
+      "resources/**",
+      "routes/**",
+      "database/**",
+      "composer.json",
+      "composer.lock",
+      "package.json",
+      "Docker"
+    ]
+  },
+  "deploy": {
+    "startCommand": "php artisan serve --host=0.0.0.0 --port=$PORT",
+    "healthcheckPath": "/up",
+    "healthcheckTimeout": 300,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}

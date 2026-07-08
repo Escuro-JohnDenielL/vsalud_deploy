@@ -1,12 +1,11 @@
 # Set base image
-FROM php:8.2-fpm
+FROM php:8.2-cli
 
 # Set working directory
 WORKDIR /var/www
 
-# Install dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    build-essential \
     libpng-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
@@ -18,21 +17,22 @@ RUN apt-get update && apt-get install -y \
     curl \
     nodejs \
     npm \
-    supervisor \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy existing app
+# Copy app files (excluding what .dockerignore would skip)
 COPY . .
 
-# Install Laravel dependencies
-RUN composer install --no-dev --optimize-autoloader \
- && npm install \
- && npm run build \
- && php artisan key:generate
+# Install PHP dependencies (production only)
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Expose port 8000 and run Laravel
+# Install & build frontend assets
+RUN npm install && npm run build && rm -rf node_modules
+
+# Expose the port Railway provides via $PORT
 EXPOSE 8000
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+
+# Start Laravel (APP_KEY must be set via Railway env variables)
+CMD php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
