@@ -8,10 +8,10 @@ class Availability extends Model
 {
     protected $table = 'availabilities';
 
-    protected $fillable = ['date', 'status'];
+    protected $fillable = ['date', 'status', 'is_override'];
 
     protected $casts = [
-        'date' => 'date', 
-
+        'date' => 'date',
+        'is_override' => 'boolean',
     ];
 }

@@ -31,6 +31,12 @@ class Inquiry extends Model
         // 'event_time',
         'message',
         'status',
+        'form_data',
+    ];
+
+    protected $casts = [
+        'form_data' => 'array',
+        'date' => 'date',
     ];
 
     protected static function boot()
@@ -66,5 +72,15 @@ class Inquiry extends Model
     public function patron()
     {
         return $this->belongsTo(Patron::class, 'patron_id', 'patron_id');
+    }
+
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class, 'admin_id', 'admin_id');
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(\App\Models\Payment::class, 'inquiry_id', 'inquiry_id');
     }
 }

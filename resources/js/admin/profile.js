@@ -22,8 +22,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const editBtn = document.getElementById("edit-profile-btn");
     const logoutBtn = document.getElementById("logout-btn");
     const changePasswordLink = document.getElementById("change-password-link");
-    const changePicBtn = document.getElementById("change-pic-btn");
-    const profilePicInput = document.getElementById("profile-pic-input");
+    // PROFILE PICTURE: commented out for now — re-enable later
+    // const changePicBtn = document.getElementById("change-pic-btn");
+    // const profilePicInput = document.getElementById("profile-pic-input");
     const successOkBtn = document.getElementById("success-ok-btn");
     const clearHistoryBtn = document.getElementById("clear-history-btn");
     const loadMoreBtn = document.getElementById("load-more-btn");
@@ -34,6 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const cancelEdit = document.getElementById("cancel-edit");
     const cancelPassword = document.getElementById("cancel-password");
     const confirmCancel = document.getElementById("confirm-cancel");
+    const confirmNo = document.getElementById("confirm-no");
     const confirmOk = document.getElementById("confirm-ok");
 
     // Get forms (these may not exist in HTML, so we'll handle gracefully)
@@ -45,7 +47,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const adminEmail = document.getElementById("admin-email");
     const adminPhone = document.getElementById("admin-phone");
     const adminUsername = document.getElementById("admin-username");
-    const profilePic = document.getElementById("profile-pic");
+    // PROFILE PICTURE: commented out for now — re-enable later
+    // const profilePic = document.getElementById("profile-pic");
 
     // Form input elements (these may not exist in HTML, so we'll handle gracefully)
     const editName = document.getElementById("edit-name");
@@ -70,14 +73,15 @@ document.addEventListener("DOMContentLoaded", function () {
     let currentFilter = "all";
     let confirmCallback = null;
 
-    const availableProfilePictures = [
-        { id: "boy.png", name: "Default Admin", src: "/images/boy.png" },
-        { id: "boy1.png", name: "Professional", src: "/images/boy1.png" },
-        { id: "boy2.png", name: "Casual", src: "/images/boy2.png" },
-        { id: "girl.png", name: "Formal", src: "/images/girl.png" },
-        { id: "girl1.png", name: "Modern", src: "/images/girl1.png" },
-        { id: "girl2.png", name: "Classic", src: "/images/gril2.png" },
-    ];
+    // PROFILE PICTURE: commented out for now — re-enable later
+    // const availableProfilePictures = [
+    //     { id: "boy.png", name: "Default Admin", src: "/images/boy.png" },
+    //     { id: "boy1.png", name: "Professional", src: "/images/boy1.png" },
+    //     { id: "boy2.png", name: "Casual", src: "/images/boy2.png" },
+    //     { id: "girl.png", name: "Formal", src: "/images/girl.png" },
+    //     { id: "girl1.png", name: "Modern", src: "/images/girl1.png" },
+    //     { id: "girl2.png", name: "Classic", src: "/images/gril2.png" },
+    // ];
 
     // Initialize history system
     initializeHistory();
@@ -279,120 +283,20 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     }
 
-    // FIXED FUNCTION: Create and show image selection modal
-    function createImageSelectionModal() {
-        // Check if modal already exists by looking for the actual element in DOM
-        const existingModal = document.getElementById("image-selection-modal");
-        if (existingModal) {
-            console.log("Image selection modal already exists");
-            return existingModal;
-        }
-
-        console.log("Creating new image selection modal");
-
-        // Create modal HTML
-        const modalHTML = `
-            <div id="image-selection-modal" class="modal" style="display: none;">
-                <div class="modal-content" style="max-width: 600px;">
-                    <div class="modal-header">
-                        <h3>Select Profile Picture</h3>
-                        <span class="close" id="close-image-modal">&times;</span>
-                    </div>
-                    <div class="modal-body">
-                        <div class="image-grid" id="image-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; padding: 20px 0;">
-                            ${availableProfilePictures
-                                .map(
-                                    (img) => `
-                                <div class="image-option" data-src="${img.src}" style="text-align: center; cursor: pointer; padding: 10px; border: 2px solid transparent; border-radius: 8px; transition: all 0.3s ease;">
-                                    <img src="${img.src}" alt="${img.name}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; margin-bottom: 8px;">
-                                    <p style="margin: 0; font-size: 14px; color: #666;">${img.name}</p>
-                                </div>
-                            `
-                                )
-                                .join("")}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        // Insert modal into document
-        document.body.insertAdjacentHTML("beforeend", modalHTML);
-
-        // Get the newly created modal elements
-        const newImageModal = document.getElementById("image-selection-modal");
-        const newCloseImageModal = document.getElementById("close-image-modal");
-        const imageGrid = document.getElementById("image-grid");
-
-        if (!newImageModal) {
-            console.error("Failed to create image selection modal");
-            return null;
-        }
-
-        console.log("Image selection modal created successfully");
-
-        // Add event listeners for the new modal
-        if (newCloseImageModal) {
-            newCloseImageModal.addEventListener("click", function () {
-                console.log("Close button clicked");
-                newImageModal.style.display = "none";
-            });
-        }
-
-        // Add click listeners to image options
-        const imageOptions = imageGrid.querySelectorAll(".image-option");
-        console.log(`Found ${imageOptions.length} image options`);
-
-        imageOptions.forEach((option, index) => {
-            option.addEventListener("click", function () {
-                const selectedSrc = this.getAttribute("data-src");
-                const selectedName = this.querySelector("p").textContent;
-
-                console.log(
-                    `Image ${
-                        index + 1
-                    } selected: ${selectedName} (${selectedSrc})`
-                );
-
-                // Update profile picture
-                if (profilePic) {
-                    profilePic.src = selectedSrc;
-                    addToHistory(
-                        "profile",
-                        "Profile picture updated",
-                        `Changed to: ${selectedName}`
-                    );
-                    showSuccessModal("Profile picture updated successfully!");
-                } else {
-                    console.error("Profile picture element not found");
-                }
-
-                // Close modal
-                newImageModal.style.display = "none";
-            });
-
-            // Add hover effects
-            option.addEventListener("mouseenter", function () {
-                this.style.borderColor = "#007bff";
-                this.style.backgroundColor = "#f8f9fa";
-            });
-
-            option.addEventListener("mouseleave", function () {
-                this.style.borderColor = "transparent";
-                this.style.backgroundColor = "transparent";
-            });
-        });
-
-        // Close modal when clicking outside
-        newImageModal.addEventListener("click", function (event) {
-            if (event.target === newImageModal) {
-                console.log("Modal background clicked, closing modal");
-                newImageModal.style.display = "none";
-            }
-        });
-
-        return newImageModal;
-    }
+    // PROFILE PICTURE: commented out for now — re-enable later
+    // function createImageSelectionModal() {
+    //     const existingModal = document.getElementById("image-selection-modal");
+    //     if (existingModal) {
+    //         console.log("Image selection modal already exists");
+    //         return existingModal;
+    //     }
+    //     console.log("Creating new image selection modal");
+    //     const modalHTML = `...`; // image selection modal HTML
+    //     document.body.insertAdjacentHTML("beforeend", modalHTML);
+    //     const newImageModal = document.getElementById("image-selection-modal");
+    //     // ... event listeners and image grid setup
+    //     return newImageModal;
+    // }
 
     // FIXED LOGOUT FUNCTION
     console.log("logoutBtn:", logoutBtn); // Debug log
@@ -450,56 +354,33 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // FIXED Profile Picture Change - Now opens image selection modal
-    if (changePicBtn) {
-        console.log("Change picture button found, adding event listener");
-
-        changePicBtn.addEventListener("click", function (e) {
-            e.preventDefault();
-            console.log("Change picture button clicked!");
-
-            // Create the modal (it will check if it already exists)
-            const imageModal = createImageSelectionModal();
-
-            if (imageModal) {
-                console.log("Showing image selection modal");
-                imageModal.style.display = "block";
-                addToHistory(
-                    "system",
-                    "Profile picture selection opened",
-                    "Opened image selection modal"
-                );
-            } else {
-                console.error("Failed to create or find image selection modal");
-            }
-        });
-    } else {
-        console.warn("Change picture button not found in DOM");
-    }
-
-    // Keep the original file input functionality as backup (hidden)
-    if (profilePicInput) {
-        profilePicInput.addEventListener("change", function (e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    if (profilePic) {
-                        profilePic.src = e.target.result;
-                        addToHistory(
-                            "profile",
-                            "Profile picture updated",
-                            "Changed admin profile picture via file upload"
-                        );
-                        showSuccessModal(
-                            "Profile picture updated successfully!"
-                        );
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
+    // PROFILE PICTURE: commented out for now — re-enable later
+    // if (changePicBtn) {
+    //     changePicBtn.addEventListener("click", function (e) {
+    //         e.preventDefault();
+    //         const imageModal = createImageSelectionModal();
+    //         if (imageModal) {
+    //             imageModal.style.display = "block";
+    //             addToHistory("system", "Profile picture selection opened", "Opened image selection modal");
+    //         }
+    //     });
+    // }
+    // if (profilePicInput) {
+    //     profilePicInput.addEventListener("change", function (e) {
+    //         const file = e.target.files[0];
+    //         if (file) {
+    //             const reader = new FileReader();
+    //             reader.onload = function (e) {
+    //                 if (profilePic) {
+    //                     profilePic.src = e.target.result;
+    //                     addToHistory("profile", "Profile picture updated", "Changed admin profile picture via file upload");
+    //                     showSuccessModal("Profile picture updated successfully!");
+    //                 }
+    //             };
+    //             reader.readAsDataURL(file);
+    //         }
+    //     });
+    // }
 
     // Edit Profile Button Click
     if (editBtn && editModal) {
@@ -583,6 +464,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    if (confirmNo && confirmModal) {
+        confirmNo.addEventListener("click", function () {
+            confirmModal.style.display = "none";
+            confirmCallback = null;
+        });
+    }
+
     if (confirmOk && confirmModal) {
         confirmOk.addEventListener("click", function () {
             if (confirmCallback) {
@@ -609,11 +497,11 @@ document.addEventListener("DOMContentLoaded", function () {
             confirmCallback = null;
         }
 
-        // Handle dynamically created image selection modal
-        const imageModal = document.getElementById("image-selection-modal");
-        if (imageModal && event.target === imageModal) {
-            imageModal.style.display = "none";
-        }
+        // PROFILE PICTURE: commented out for now — re-enable later
+        // const imageModal = document.getElementById("image-selection-modal");
+        // if (imageModal && event.target === imageModal) {
+        //     imageModal.style.display = "none";
+        // }
     });
 
     // Edit Profile Form Submit
@@ -767,16 +655,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // Show loading state (optional)
-            const submitBtn = passwordForm.querySelector(
-                'button[type="submit"]'
-            );
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = "Changing...";
-            submitBtn.disabled = true;
+            // Confirm before sending
+            showConfirmModal(
+                "Change Password",
+                "Are you sure you want to change your password?",
+                function () {
+                    // Show loading state (optional)
+                    const submitBtn = passwordForm.querySelector(
+                        'button[type="submit"]'
+                    );
+                    const originalText = submitBtn.textContent;
+                    submitBtn.textContent = "Changing...";
+                    submitBtn.disabled = true;
 
-            // Send request to backend - FIXED URL
-            fetch("/admin/profile/change-password", {
+                    // Send request to backend - FIXED URL
+                    fetch("/admin/profile/change-password", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -850,8 +743,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         "Network or server error occurred"
                     );
                 });
-        });
-    }
+        });  // closes showConfirmModal callback
+    });  // closes addEventListener submit
+}  // closes if (passwordForm)
 
     // Helper function to show success modal
     function showSuccessModal(message) {

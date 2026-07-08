@@ -14,16 +14,11 @@
 
 {{-- Package Cards --}}
 <section class="packages-grid" id="packagesContainer">
-    @foreach([
-    ['name' => 'Baptism Package', 'img' => 'baptism_package.jpg'],
-    ['name' => 'Debut Package', 'img' => 'debut_package.jpg'],
-    ['name' => 'Wedding Package', 'img' => 'wedding_package.jpg'],
-    ['name' => 'Kiddie Package', 'img' => 'kiddie_package.jpg'],
-    ] as $pkg)
-    <div class="package-card" data-package="{{ $pkg['name'] }}">
-        <img src="{{ asset('images/' . $pkg['img']) }}" alt="{{ $pkg['name'] }}">
+    @forelse($packages as $package)
+    <div class="package-card" data-package="{{ $package->name }}" data-id="{{ $package->id }}">
+        <img src="{{ asset(ltrim($package->image_path ?? 'images/default_package.jpg', '/')) }}" alt="{{ $package->name }}">
         <div class="package-content">
-            <h3>{{ $pkg['name'] }}</h3>
+            <h3>{{ $package->name }}</h3>
             <div class="package-details"></div>
             <div class="buttons-row">
                 <button class="btn btn-success btn-sm view-package" data-bs-toggle="modal" data-bs-target="#packageModal">View Package</button>
@@ -32,7 +27,11 @@
             </div>
         </div>
     </div>
-    @endforeach
+    @empty
+    <div class="text-center py-5">
+        <p class="text-muted">No packages found. Click "Add New Package" to create one.</p>
+    </div>
+    @endforelse
 </section>
 
 {{-- Add New Package Button --}}
@@ -175,6 +174,25 @@
                     <button type="submit" class="btn btn-success">Add Package</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+{{-- Confirm Delete Modal --}}
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteTitle">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmDeleteMessage">Are you sure you want to delete this package?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteYes">Delete</button>
+            </div>
         </div>
     </div>
 </div>

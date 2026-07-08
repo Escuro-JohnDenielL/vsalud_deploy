@@ -125,99 +125,23 @@
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
 
-                <form method="POST" action="{{ route('patron.mreserve.submit') }}">
-                    @csrf
+                @php
+                    $reservationForm = \App\Models\Form::with('activeFields')
+                        ->where('slug', 'reservation')
+                        ->where('is_published', true)
+                        ->first();
+                @endphp
 
-                    <div class="form-group">
-                        <label for="name">Name:<span>*</span></label>
-                        <input type="text" id="name" name="name" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email">Email:<span>*</span></label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="contact">Contact Number:<span>*</span></label>
-                        <input type="tel" id="contact" name="contact_number" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="date">Date:<span>*</span></label>
-                        <input type="date" id="date" name="date" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="period">Select Period:<span>*</span></label>
-                        <select id="period" name="period" required>
-                            <option value="" selected disabled>Choose AM or PM</option>
-                            <option value="AM">AM</option>
-                            <option value="PM">PM</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" id="timeSlotWrapper" style="display: none;">
-                        <label for="time_slot">Select Time Slot:<span>*</span></label>
-                        <select id="time_slot" name="time" required>
-                            <option value="">Select a time slot</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="venue">Venue:<span>*</span></label>
-                        <select id="venue" name="venue" required>
-                            <option value="" disabled selected>Choose a venue</option>
-                            <option value="Villa I">Villa I</option>
-                            <option value="Villa II">Villa II</option>
-                            <option value="Elizabeth Hall">Elizabeth Hall</option>
-                            <option value="Private Pool">Private Pool</option>
-                            <option value="Others">Others</option>
-                        </select>
-                        <input type="text" id="otherVenue" name="other_venue" style="display: none;"
-                            placeholder="Please specify">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="event_type">Event Type:<span>*</span></label>
-                        <select id="event_type" name="event_type" required>
-                            <option value="" disabled selected>Choose event type</option>
-                            <option value="Baptismal Package">Baptismal Package</option>
-                            <option value="Birthday Package">Birthday Package</option>
-                            <option value="Debut Package">Debut Package</option>
-                            <option value="Kiddie Package">Kiddie Package</option>
-                            <option value="Wedding Package">Wedding Package</option>
-                            <option value="Standard Package">Standard Package</option>
-                            <option value="Others">Others</option>
-                        </select>
-                        <input type="text" id="otherEventType" name="other_event_type" style="display: none;"
-                            placeholder="Please specify">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="theme_motif">Theme/Motif:<span>*</span></label>
-                        <select id="theme_motif" name="theme_motif" required>
-                            <option value="" disabled selected>Choose theme/motif</option>
-                            <option value="Floral">Floral</option>
-                            <option value="Rustic">Rustic</option>
-                            <option value="Elegant">Elegant</option>
-                            <option value="Beach">Beach</option>
-                            <option value="Modern">Modern</option>
-                            <option value="Others">Others</option>
-                        </select>
-                        <input type="text" id="otherThemeMotif" name="other_theme_motif" style="display: none;"
-                            placeholder="Please specify">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="message">Other Request:<span>*</span></label>
-                        <textarea id="message" name="message" required placeholder="Please describe your specific requirements..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <button type="submit">Submit Inquiry</button>
-                    </div>
-                </form>
+                @if($reservationForm)
+                    <x-dynamic-form
+                        :form="$reservationForm"
+                        action="{{ route('patron.mreserve.submit') }}"
+                        :errors="$errors"
+                        submitLabel="Submit Inquiry"
+                    />
+                @else
+                    <p style="color:#dc3545;">The reservation form is currently unavailable. Please contact the administrator.</p>
+                @endif
             </div>
 
             <div class="calendar-container">
@@ -243,8 +167,34 @@
     <div id="dateUnavailableModal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close-modal" id="closeUnavailableModal">&times;</span>
-            <h3>Date Not Available</h3>
-            <p>Sorry, the selected date is already full or closed. Please choose another available date.</p>
+            <h3 id="unavailableTitle">Date Not Available</h3>
+            <p id="unavailableMessage">Sorry, the selected date is already full or closed. Please choose another available date.</p>
+            <div id="waitlistOption" style="display: none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
+                <p style="font-size: 14px; color: #555; margin-bottom: 12px;">
+                    Want to be notified if a slot opens up? Join the waitlist!
+                </p>
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <input type="text" id="waitlistName" placeholder="Your Name" style="width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; box-sizing: border-box;">
+                </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <input type="email" id="waitlistEmail" placeholder="Your Email" style="width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; box-sizing: border-box;">
+                </div>
+                <div id="waitlistMessage" style="font-size: 13px; margin-bottom: 10px; display: none;"></div>
+                <button id="joinWaitlistBtn" style="background: #f39c12; color: white; border: none; padding: 10px 24px; border-radius: 5px; font-size: 14px; cursor: pointer; font-weight: 600;">
+                    Join Waitlist
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="waitlistSuccessModal" class="modal" style="display: none;">
+        <div class="modal-content" style="text-align: center;">
+            <span class="close-modal" id="closeWaitlistSuccessModal">&times;</span>
+            <h3 style="color: #27ae60;">✅ You're on the Waitlist!</h3>
+            <p style="font-size: 16px; margin: 16px 0;">We'll email you if a slot opens up for this date. You'll have 24 hours to claim it.</p>
+            <button onclick="document.getElementById('waitlistSuccessModal').style.display='none'" style="background: #27ae60; color: white; border: none; padding: 10px 24px; border-radius: 5px; font-size: 14px; cursor: pointer; font-weight: 600;">
+                Got it!
+            </button>
         </div>
     </div>
 @endsection

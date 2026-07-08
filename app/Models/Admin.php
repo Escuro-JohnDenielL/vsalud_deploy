@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Admin extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
     protected $table = 'admin';
     protected $primaryKey = 'admin_id';
@@ -21,7 +22,8 @@ class Admin extends Authenticatable
         'l_name',
         'phone',
         'password',
-        'profile_picture', 
+        'profile_picture',
+        'role',
     ];
 
     protected $hidden = [

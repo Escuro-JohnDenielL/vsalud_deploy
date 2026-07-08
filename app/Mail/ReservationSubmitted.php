@@ -27,16 +27,18 @@ class ReservationSubmitted extends Mailable
      */
     public function build()
     {
+        $this->replyTo('coheredit@gmail.com', 'Events Team');
+
         if ($this->reply) {
-            return $this->subject('Villa Salud reply to your inquiry.')
-                ->view('emails.reply') // You'll create this Blade view
+            return $this->subject('Reply to your inquiry.')
+                ->view('emails.reply')
                 ->with([
                     'data' => $this->reply,
                 ]);
         }
 
         return $this->subject('Your Reservation Has Been Submitted')
-            ->view('emails.reservation_submitted') // You'll create this Blade view
+            ->view('emails.reservation_submitted')
             ->with([
                 'data' => $this->reservationData,
             ]);

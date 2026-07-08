@@ -14,7 +14,7 @@
         <h2 style="color: #2c3e50;">👋 Hi {{ $data['name'] }},</h2>
 
         <p style="font-size: 16px;">
-            Thank you for reaching out to <strong>Villa Salud</strong>! 🎉<br>
+            Thank you for reaching out to us! 🎉<br>
             We have successfully received your reservation request. Below are the details you submitted:
         </p>
 
@@ -40,10 +40,10 @@
 
         <p style="margin-top: 30px;">
             Warm regards,<br>
-            <strong>Villa Salud Events Team</strong><br><br>
-            📞 <strong>Phone:</strong> (+63) 912 345 6789<br>
-            📧 <strong>Email:</strong> <a href="mailto:villasalud.events@gmail.com"
-                style="color: #3498db;">villasalud.events@gmail.com</a>
+            <strong>Events Team</strong><br><br>
+            {{-- 📞 <strong>Phone:</strong> {{ payment_setting('contact_phone', '(+63) 912 345 6789') }}<br> --}}
+            {{-- 📧 <strong>Email:</strong> <a href="mailto:{{ payment_setting('contact_email', 'coheredit@gmail.com') }}"
+                style="color: #3498db;">{{ payment_setting('contact_email', 'coheredit@gmail.com') }}</a> --}}
         </p>
     </div>
 

@@ -54,6 +54,18 @@
                     <button type="submit">Sign Up</button>
                 </form>
 
+                {{-- Confirm Signup Modal --}}
+                <div id="confirmSignupModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+                    <div style="background:#fff; border-radius:8px; padding:24px; max-width:420px; width:90%; box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+                        <h3 style="font-size:20px; color:#0d7a3e; margin:0 0 12px;">Confirm Your Details</h3>
+                        <div id="confirmSignupDetails" style="font-size:14px; color:#333; margin-bottom:20px; line-height:1.8;"></div>
+                        <div style="display:flex; gap:10px; justify-content:flex-end;">
+                            <button type="button" id="cancelSignupBtn" style="width:auto; padding:8px 20px; background:#6c757d;">Cancel</button>
+                            <button type="button" id="confirmSignupBtn" style="width:auto; padding:8px 20px; background:#0d7a3e;">Confirm</button>
+                        </div>
+                    </div>
+                </div>
+
                 <p class="login-link">
                     Already have an account? <a href="{{ route('admin.login') }}">Log in here!</a>
                 </p>

@@ -49,6 +49,12 @@
                 </a>
             </li>
             <li>
+                <a href="{{ route('patron.cancel-reservation') }}"
+                    class="{{ request()->routeIs('patron.cancel-reservation') ? 'active' : '' }}">
+                    Cancel Reservation
+                </a>
+            </li>
+            <li>
                 <a href="{{ route('patron.payment') }}"
                     class="{{ request()->routeIs('patron.payment') ? 'active' : '' }}">
                     Payment Order

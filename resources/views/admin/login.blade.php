@@ -12,7 +12,7 @@
     <a href="{{ url('/') }}" style="position: absolute; top: 18px; left: 18px; z-index: 10; display: inline-block; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,0.86); color: #165c34; text-decoration: none; font-weight: 700; font-size: 12px; border: 1px solid rgba(22,92,52,0.2);">
         Back to Home
     </a>
-    <di class="container">
+    <div class="container">
         <div class="left-section">
             <h1>Hello, Admin! Welcome to Villa Salud System</h1>
             <p>Your Event, Your Way - Log In to Start!</p>
@@ -49,10 +49,7 @@
                 </form>
 
                 <p class="login-link">
-                    Haven't signed up? <a href="{{ route('admin.signup') }}">Register here!</a>
-                </p>
-                <p class="login-link" style="margin-top: 8px;">
-                    IT staff? <a href="{{ route('it.login') }}">Open IT Access</a>
+                    Account registration is managed by IT administration.
                 </p>
             </div>
         </div>

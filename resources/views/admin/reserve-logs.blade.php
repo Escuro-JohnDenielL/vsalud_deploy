@@ -110,6 +110,7 @@
                             <th>Tracking Code</th>
                             <th>Reservation Code</th>
                             <th>Email</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -122,6 +123,14 @@
                                 <td>{{ $payment_log->tracking_code ?? '-' }}</td>
                                 <td>{{ $payment_log->reservation_code ?? '-' }}</td>
                                 <td>{{ $payment_log->email ?? '-' }}</td>
+                                <td>
+                                    <select class="payment-status-dropdown" data-payment-id="{{ $payment_log->payment_id }}">
+                                        <option value="pending" {{ $payment_log->status === 'pending' ? 'selected' : '' }}>Pending</option>
+                                        <option value="approved" {{ $payment_log->status === 'approved' ? 'selected' : '' }}>Approved</option>
+                                        <option value="rejected" {{ $payment_log->status === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                        <option value="refunded" {{ $payment_log->status === 'refunded' ? 'selected' : '' }}>Refunded</option>
+                                    </select>
+                                </td>
                                 <td>
                                     <a href="#" class="receipt-link1"
                                         data-receipt="{{ asset('storage/' . $payment_log->receipt_path) }}">View
@@ -171,6 +180,19 @@
         </div>
     </div>
 
+
+    {{-- Confirm Delete Modal --}}
+    <div id="confirmDeleteReservationModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width: 420px;">
+            <span class="close" id="closeConfirmDeleteModal" style="cursor:pointer;font-size:24px;float:right;">&times;</span>
+            <h3>Confirm Delete</h3>
+            <p id="confirmDeleteReservationMessage" style="font-size: 15px; margin: 20px 0;">Are you sure you want to delete this reservation?</p>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button id="confirmDeleteReservationNo" class="btn-view" style="background:#6c757d;color:#fff;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;">Cancel</button>
+                <button id="confirmDeleteReservationYes" class="btn-delete" style="border:none;padding:8px 16px;border-radius:4px;cursor:pointer;">Delete</button>
+            </div>
+        </div>
+    </div>
 
     @vite('resources/js/admin/reserve-logs.js')
 @endsection

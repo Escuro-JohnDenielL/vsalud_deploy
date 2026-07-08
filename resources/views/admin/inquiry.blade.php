@@ -122,6 +122,19 @@
         </div>
     </div>
 
+    {{-- Confirm Undo Modal --}}
+    <div id="confirmUndoModal" class="modal">
+        <div class="modal-content" style="max-width: 420px;">
+            <span class="close-btn" id="closeUndoModal">&times;</span>
+            <h3>Confirm Undo</h3>
+            <p id="confirmUndoMessage" style="font-size: 15px; margin: 16px 0;">Are you sure you want to undo this reservation?</p>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button id="confirmUndoNo" class="btn" style="background: #6c757d; color: #fff; padding: 8px 16px; border: none; border-radius: 4px;">Cancel</button>
+                <button id="confirmUndoYes" class="btn" style="background: #28a745; color: #fff; padding: 8px 16px; border: none; border-radius: 4px;">Undo</button>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @push('scripts')

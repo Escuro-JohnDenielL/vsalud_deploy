@@ -13,16 +13,45 @@ $user = Auth::guard('admin')->user() ?? (object)[
 'email' => 'admin@villasalud.com',
 'phone' => 'N/A'
 ];
+$isSuperAdmin = $user && $user->role === 'super_admin';
+$grantedPageCount = 0;
+if ($user && !$isSuperAdmin) {
+    $grantedPageCount = \App\Models\AdminPagePermission::where('admin_id', $user->admin_id)->count();
+}
 @endphp
+
+@if($user && !$isSuperAdmin && $grantedPageCount === 0)
+<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;">
+    <span style="font-size:22px;flex-shrink:0;">🔒</span>
+    <div>
+        <strong style="color:#856404;font-size:15px;display:block;margin-bottom:4px;">Limited Access</strong>
+        <p style="color:#6d5200;margin:0;font-size:14px;line-height:1.5;">
+            You don't have access to any pages yet. Please contact a Super Administrator to request access to the pages you need.
+        </p>
+    </div>
+</div>
+@elseif($user && !$isSuperAdmin && $grantedPageCount > 0 && $grantedPageCount < count(\App\Models\AdminPagePermission::availablePages()))
+<div style="background:#e8f4f8;border:1px solid #b6d4e6;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;">
+    <span style="font-size:22px;flex-shrink:0;">ℹ️</span>
+    <div>
+        <strong style="color:#1a5a7a;font-size:15px;display:block;margin-bottom:4px;">Partial Access</strong>
+        <p style="color:#1a5a7a;margin:0;font-size:14px;line-height:1.5;">
+            You have access to some pages. If you need access to additional modules, please contact a Super Administrator.
+        </p>
+    </div>
+</div>
+@endif
 
 <section class="dashboard-container">
   <div class="admin-profile">
     <div class="profile-header">
+      {{-- PROFILE PICTURE: commented out for now — re-enable later
       <div class="profile-pic-container">
         <img src="{{ asset('images/default.png') }}" alt="Admin Profile Picture" class="profile-pic" id="profile-pic">
         <button class="change-pic-btn" id="change-pic-btn">📷</button>
         <input type="file" id="profile-pic-input" accept="image/*" style="display: none;">
       </div>
+      --}}
       <h2 id="admin-name">{{ $user->name ?? ($user->f_name . ' ' . $user->l_name) }}</h2>
       <p>System Administrator</p>
     </div>
@@ -165,7 +194,7 @@ $user = Auth::guard('admin')->user() ?? (object)[
       </p>
       <div class="modal-buttons">
         <button id="confirm-ok" class="btn btn-primary">Yes</button>
-        <button id="confirm-cancel" class="btn btn-secondary">No</button>
+        <button id="confirm-no" class="btn btn-secondary">No</button>
       </div>
     </div>
   </div>

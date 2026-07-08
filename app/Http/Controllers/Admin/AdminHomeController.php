@@ -18,7 +18,7 @@ class AdminHomeController extends Controller
         $now = Carbon::now();
         $labels = [];
         $data = [];
-        $total = Inquiry::count();
+        $total = 0;
         $previousTotal = 0;
 
         switch ($filter) {
@@ -224,6 +224,7 @@ class AdminHomeController extends Controller
 
     public function index()
     {
-        return view('admin.home');
+        $packages = \App\Models\Package::all();
+        return view('admin.home', compact('packages'));
     }
 }

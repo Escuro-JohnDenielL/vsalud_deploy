@@ -1,6 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
-  document.getElementById("signupForm").addEventListener("submit", function (event) {
-      event.preventDefault(); // Prevents immediate form submission
+  const form = document.getElementById("signupForm");
+  const modal = document.getElementById("confirmSignupModal");
+  const modalDetails = document.getElementById("confirmSignupDetails");
+  const confirmBtn = document.getElementById("confirmSignupBtn");
+  const cancelBtn = document.getElementById("cancelSignupBtn");
+
+  form.addEventListener("submit", function (event) {
+      event.preventDefault();
 
       // Fetch form values
       let email = document.getElementById("email").value.trim();
@@ -9,10 +15,6 @@ document.addEventListener("DOMContentLoaded", function () {
       let contactNumber = document.getElementById("phone").value.trim();
       let password = document.getElementById("password").value;
       let confirmPassword = document.getElementById("confirm_password").value;
-      
-      // Get selected profile picture
-      let selectedAvatar = document.querySelector('input[name="profile_picture"]:checked');
-      let profilePicture = selectedAvatar ? selectedAvatar.value : 'default.png';
 
       // Validate contact number (must be 11 digits)
       if (!/^\d{11}$/.test(contactNumber)) {
@@ -26,16 +28,29 @@ document.addEventListener("DOMContentLoaded", function () {
           return;
       }
 
-      // Get avatar display name for confirmation
-      let avatarName = selectedAvatar ? selectedAvatar.nextElementSibling.nextElementSibling.textContent : 'Default';
+      // Show confirmation modal with details
+      modalDetails.innerHTML = `
+        <strong>Email:</strong> ${email}<br>
+        <strong>First Name:</strong> ${firstName}<br>
+        <strong>Last Name:</strong> ${lastName}<br>
+        <strong>Contact Number:</strong> ${contactNumber}<br>
+        <br>
+        <em>Are you sure you want to proceed?</em>
+      `;
+      modal.style.display = 'flex';
+  });
 
-      // Confirmation alert before submission
-      let confirmSignup = confirm(
-          `Please confirm your details:\n\nEmail: ${email}\nFirst Name: ${firstName}\nLast Name: ${lastName}\nContact Number: ${contactNumber}\nProfile Picture: ${avatarName}\n\nAre you sure you want to proceed?`
-      );
+  function closeModal() {
+      modal.style.display = 'none';
+  }
 
-      if (confirmSignup) {
-          this.submit(); // Submits the form
-      }
+  cancelBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', function(e) {
+      if (e.target === modal) closeModal();
+  });
+
+  confirmBtn.addEventListener('click', function() {
+      closeModal();
+      form.submit();
   });
 });

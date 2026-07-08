@@ -84,7 +84,7 @@ class AccessController extends Controller
             'l_name' => 'required|string|max:50',
             'phone' => 'required|digits:11',
             'password' => 'required|min:6|confirmed',
-            'profile_picture' => 'nullable|in:default.png,boy.png,boy1.png,boy2.png,girl.png,girl1.png,girl2.png',
+            // 'profile_picture' => 'nullable|in:default.png,boy.png,boy1.png,boy2.png,girl.png,girl1.png,girl2.png', // temporarily removed
         ]);
 
         if ($validator->fails()) {
@@ -97,7 +97,7 @@ class AccessController extends Controller
             'l_name' => $request->l_name,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'profile_picture' => $request->input('profile_picture', 'default.png'),
+            // 'profile_picture' => $request->input('profile_picture', 'default.png'), // temporarily removed
         ]);
 
         return back()->with('success', 'Admin account created.');

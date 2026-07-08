@@ -20,7 +20,8 @@
   position: relative;
 }
 
-.profile-pic {
+/* PROFILE PICTURE: commented out for now — re-enable later */
+/* .profile-pic {
   width: 120px;
   height: 120px;
   border-radius: 50%;
@@ -60,6 +61,7 @@
 #profile-pic-input {
   display: none;
 }
+*/
 
 h2 {
   margin: 5px 0;

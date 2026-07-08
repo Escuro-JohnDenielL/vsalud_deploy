@@ -8,7 +8,6 @@ class Reservation extends Model
 {
     protected $table = 'reservation';
     protected $primaryKey = 'reserve_id';
-    public $timestamps = false;
 
     protected $fillable = [
         'inquiry_id',
@@ -20,10 +19,27 @@ class Reservation extends Model
         'theme_motif',
         'message',
         'status',
+        'form_data',
+        'event_reminder_sent_at',
+        'payment_reminder_sent_at',
+    ];
+
+    protected $casts = [
+        'form_data' => 'array',
     ];
 
     public function patron()
     {
         return $this->belongsTo(\App\Models\Patron::class, 'patron_id', 'patron_id');
+    }
+
+    public function inquiry()
+    {
+        return $this->belongsTo(\App\Models\Inquiry::class, 'inquiry_id', 'inquiry_id');
+    }
+
+    public function cancellationRequests()
+    {
+        return $this->hasMany(\App\Models\CancellationRequest::class, 'reserve_id', 'reserve_id');
     }
 }
