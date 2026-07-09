@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Patron;
 use App\Models\Inquiry;
-use App\Models\GuestConsent;
 use App\Models\Form;
 use App\Models\FormField;
 use Illuminate\Support\Facades\Mail;
@@ -14,8 +13,6 @@ use App\Mail\ReservationSubmitted;
 use App\Services\WaitlistService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Str;
 
 class ReservationController extends Controller
 {
@@ -26,38 +23,8 @@ class ReservationController extends Controller
         }
 
         $agreementAccepted = (bool) $request->session()->get('guest_agreed', false);
-        $guestToken = $request->cookie('guest_token');
-        $consent = null;
 
-        if (!$agreementAccepted && $guestToken) {
-            $consent = GuestConsent::query()
-                ->where('guest_token', $guestToken)
-                ->where('expires_at', '>', now())
-                ->first();
-        }
-
-        if (!$agreementAccepted && !$consent) {
-            $consent = GuestConsent::query()
-                ->where('ip_address', $request->ip())
-                ->where('expires_at', '>', now())
-                ->latest('consented_at')
-                ->first();
-        }
-
-        if ($consent) {
-            $agreementAccepted = true;
-            $guestToken = $consent->guest_token;
-            $request->session()->put('guest_agreed', true);
-            $request->session()->put('guest_token', $guestToken);
-        }
-
-        $response = response()->view('patron.mreserve', compact('agreementAccepted'));
-
-        if ($guestToken) {
-            $response->cookie('guest_token', $guestToken, 60 * 24 * 30);
-        }
-
-        return $response;
+        return view('patron.mreserve', compact('agreementAccepted'));
     }
 
     public function fetch_vreserve(Request $request)
@@ -192,10 +159,13 @@ class ReservationController extends Controller
 
             Mail::to($patron->email)->send(new ReservationSubmitted($emailData, null));
 
-            return redirect()->back()->with('success', 'Inquiry successfully created!');
+            // Reset agreement so they must re-agree for their next reservation
+            $request->session()->forget('guest_agreed');
+
+            return redirect()->route('patron.home', ['toast' => 'success', 'toast_msg' => 'Inquiry successfully created!']);
         } catch (\Throwable $th) {
             Log::error('Failed to insert inquiry: ' . $th->getMessage());
-            return redirect()->back()->with('error', 'Failed to create inquiry. Please try again.');
+            return redirect()->route('patron.home', ['toast' => 'error', 'toast_msg' => 'Failed to create inquiry. Please try again.']);
         }
     }
 
@@ -263,49 +233,16 @@ class ReservationController extends Controller
         ]);
     }
 
-    public function acceptGuestConsent(Request $request)
+    /**
+     * Mark the guest agreement as accepted (session-only).
+     */
+    public function acceptAgreement(Request $request)
     {
-        $guestToken = $request->cookie('guest_token') ?: Str::random(40);
-        $expiresAt = now()->addDays(30);
-
-        GuestConsent::updateOrCreate(
-            ['guest_token' => $guestToken],
-            [
-                'consented_at' => now(),
-                'expires_at' => $expiresAt,
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-            ]
-        );
-
         $request->session()->put('guest_agreed', true);
-        $request->session()->put('guest_token', $guestToken);
 
         return response()->json([
             'success' => true,
-            'message' => 'Guest consent saved.',
-            'expires_at' => $expiresAt->toDateTimeString(),
-        ])->cookie('guest_token', $guestToken, 60 * 24 * 30);
-    }
-
-    public function renewGuest(Request $request)
-    {
-        $currentToken = $request->cookie('guest_token');
-        $newToken = Str::random(40);
-
-        // Only delete records belonging to this guest's token (or IP if no token)
-        $query = GuestConsent::query();
-        if ($currentToken) {
-            $query->where('guest_token', $currentToken);
-        } else {
-            $query->where('ip_address', $request->ip());
-        }
-        $query->delete();
-
-        $request->session()->forget(['guest_agreed', 'guest_token']);
-
-        return redirect('/')
-            ->with('success', 'Guest profile refreshed successfully.')
-            ->cookie('guest_token', $newToken, 60 * 24 * 30);
+            'message' => 'Agreement accepted.',
+        ]);
     }
 }

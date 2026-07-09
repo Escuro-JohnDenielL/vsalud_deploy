@@ -81,6 +81,27 @@
 
     </nav>
 
+    {{-- Toast notification --}}
+    <div id="toast" class="toast-notification"></div>
+    <script>
+    (function() {
+        var t = document.getElementById('toast');
+        if (!t) return;
+        var type = new URLSearchParams(window.location.search).get('toast');
+        var msg = new URLSearchParams(window.location.search).get('toast_msg');
+        if (msg && type) {
+            t.textContent = decodeURIComponent(msg);
+            t.className = 'toast-notification toast-' + type + ' show';
+            setTimeout(function(){ t.classList.remove('show'); }, 4500);
+            // Clean URL without reloading
+            if (history.replaceState) {
+                var url = window.location.protocol + '//' + window.location.host + window.location.pathname;
+                history.replaceState(null, '', url);
+            }
+        }
+    })();
+    </script>
+
     <main class="patron-content">
         @yield('content')
     </main>

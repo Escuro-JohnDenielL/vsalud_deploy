@@ -123,14 +123,6 @@
             color: #6b7d71;
             font-size: 13px;
         }
-        .token-box {
-            margin-top: 12px;
-            padding: 12px;
-            border-radius: 12px;
-            background: #f0f8f2;
-            border: 1px solid #d4e7d8;
-            word-break: break-word;
-        }
     </style>
 </head>
 <body>
@@ -165,10 +157,6 @@
             <div class="stat">
                 <strong>{{ $adminCount }}</strong>
                 <span>Admin accounts</span>
-            </div>
-            <div class="stat">
-                <strong>{{ $guestCount }}</strong>
-                <span>Guest passes</span>
             </div>
         </div>
 
@@ -219,32 +207,6 @@
                 </form>
             </div>
 
-            <div class="panel">
-                <h2>Create Guest Pass</h2>
-                <form method="POST" action="{{ route('it.guests.store') }}">
-                    @csrf
-                    <div class="field">
-                        <label>Guest Label</label>
-                        <input type="text" name="label" placeholder="e.g. John Guest" required>
-                    </div>
-                    <div class="field">
-                        <label>Email, optional</label>
-                        <input type="email" name="email" placeholder="guest@example.com">
-                    </div>
-                    <div class="field">
-                        <label>Valid Days</label>
-                        <input type="number" name="valid_days" value="30" min="1" max="365" required>
-                    </div>
-                    <button class="btn-primary" type="submit">Issue Guest Pass</button>
-                </form>
-
-                @if (session('guest_token'))
-                    <div class="token-box">
-                        <div class="muted">Guest token:</div>
-                        <strong>{{ session('guest_token') }}</strong>
-                    </div>
-                @endif
-            </div>
         </div>
 
         <div class="grid" style="margin-top: 20px;">
@@ -262,20 +224,6 @@
                 </ul>
             </div>
 
-            <div class="panel">
-                <h2>Recent Guest Passes</h2>
-                <ul class="list">
-                    @forelse ($recentGuests as $guest)
-                        <li>
-                            <strong>{{ $guest->label ?? 'Guest' }}</strong>
-                            <div class="muted">{{ $guest->email ?? 'No email' }}</div>
-                            <div class="muted">Expires: {{ optional($guest->expires_at)->format('M d, Y h:i A') }}</div>
-                        </li>
-                    @empty
-                        <li class="muted">No guest passes yet.</li>
-                    @endforelse
-                </ul>
-            </div>
         </div>
     </div>
 </body>

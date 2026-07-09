@@ -12,7 +12,6 @@
     <div id="toast" class="toast-notification"></div>
 
     <div class="hero">
-        <a href="{{ route('patron.guest.renew') }}" class="guest-reset-link">Reset Guest</a>
         <div class="image-section">
             <img src="{{ asset('./images/background_picture.jpeg') }}" alt="Background" class="background-image">
         </div>

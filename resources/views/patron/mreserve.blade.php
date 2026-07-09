@@ -113,17 +113,13 @@
 
     <script>
         window.guestAgreementAccepted = @json($agreementAccepted ?? false);
-        window.guestConsentAgreeUrl = @json(route('patron.guest.consent.agree'));
+        window.agreeUrl = @json(route('patron.agree'));
     </script>
 
     <div class="page-wrapper">
         <div class="container">
             <div class="reservation-container">
                 <h2>Let's bring your vision to life—just fill out the form.</h2>
-
-                @if (session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
 
                 @php
                     $reservationForm = \App\Models\Form::with('activeFields')

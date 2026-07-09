@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         agreeButton.addEventListener("click", () => {
             if (hasScrolledToBottom) {
-                fetch(window.guestConsentAgreeUrl, {
+                fetch(window.agreeUrl, {
                     method: "POST",
                     headers: {
                         "X-CSRF-TOKEN":
