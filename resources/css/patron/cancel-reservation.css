@@ -3,8 +3,13 @@
     margin: 50px auto;
     background-color: #fff;
     padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    transition: box-shadow var(--transition-base);
+}
+
+.cancel-reservation-container:hover {
+    box-shadow: var(--shadow-lg);
 }
 
 .cancel-reservation-container h2 {
@@ -47,14 +52,17 @@
     color: white;
     padding: 12px 20px;
     border: none;
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: 15px;
-    transition: background 0.3s ease;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-lookup:hover {
-    background-color: darkgreen;
+    background-color: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
 }
 
 .btn-submit-cancel {
@@ -62,14 +70,17 @@
     color: white;
     padding: 12px 20px;
     border: none;
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: 15px;
-    transition: background 0.3s ease;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-submit-cancel:hover {
     background-color: #c82333;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
 }
 
 .details-table {
@@ -92,7 +103,7 @@
 
 .alert {
     padding: 12px 16px;
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     font-size: 14px;
     margin-top: 15px;
 }

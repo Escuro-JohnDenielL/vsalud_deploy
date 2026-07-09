@@ -22,9 +22,14 @@
 
 .table-container {
     background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
     overflow: hidden;
+    transition: box-shadow var(--transition-base);
+}
+
+.table-container:hover {
+    box-shadow: var(--shadow-lg);
 }
 
 .table-wrapper {
@@ -52,6 +57,10 @@
     vertical-align: top;
 }
 
+.reservation-table tr {
+    transition: background var(--transition-fast);
+}
+
 .reservation-table tr:hover {
     background: #f8f9fa;
 }
@@ -67,10 +76,15 @@
 .status-dropdown {
     padding: 6px 10px;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     font-size: 13px;
     background: white;
     cursor: pointer;
+    transition: border-color var(--transition-fast);
+}
+
+.status-dropdown:hover {
+    border-color: #007b3d;
 }
 
 .status-dropdown option[value="active"] {
@@ -104,11 +118,12 @@
 .action-buttons button {
     padding: 6px 12px;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     font-size: 12px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base);
     font-weight: 500;
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-view {
@@ -118,6 +133,8 @@
 
 .btn-view:hover {
     background: #138496;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
 }
 
 .btn-delete {
@@ -127,6 +144,8 @@
 
 .btn-delete:hover {
     background: #c82333;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
 }
 
 .pagination {
@@ -143,14 +162,17 @@
     border: 1px solid #007b3d;
     background: white;
     color: #007b3d;
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-pagination:hover {
     background: #007b3d;
     color: white;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
 }
 
 .page-info {
@@ -175,10 +197,10 @@
     background-color: #fff;
     margin: 5% auto;
     padding: 20px;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     width: 90%;
     max-width: 600px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-xl);
     animation: slideIn 0.3s ease-in-out;
     position: relative;
 }
@@ -201,11 +223,13 @@
     font-weight: bold;
     color: #999;
     cursor: pointer;
-    transition: color 0.2s ease;
+    transition: color var(--transition-fast);
+    border-radius: var(--radius-sm);
 }
 
 .custom-modal-close:hover {
     color: #000;
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .custom-modal-body {

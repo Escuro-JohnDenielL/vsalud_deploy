@@ -8,8 +8,13 @@
 .payment-container {
   background: white;
   padding: 40px 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: box-shadow var(--transition-base);
+}
+
+.payment-container:hover {
+  box-shadow: var(--shadow-lg);
 }
 
 .payment-header {
@@ -91,15 +96,18 @@ input.error, select.error {
   font-weight: 600;
   font-size: 16px;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all var(--transition-base);
   font-family: inherit;
   margin-top: 10px;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-submit:hover {
   background-color: #005a2d;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-submit:disabled {

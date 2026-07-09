@@ -4,9 +4,14 @@
   margin: 40px auto;
   padding: 20px;
   background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
   line-height: 1.7;
+  transition: box-shadow var(--transition-base);
+}
+
+.guidelines-content:hover {
+  box-shadow: var(--shadow-lg);
 }
 
 .guidelines-content section {

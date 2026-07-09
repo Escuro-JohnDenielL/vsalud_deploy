@@ -4,8 +4,13 @@
   margin: 50px auto;
   padding: 20px;
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for elevated look */
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: box-shadow var(--transition-base);
+}
+
+.faq-container:hover {
+  box-shadow: var(--shadow-lg);
 }
 
 .faq-container h2 {

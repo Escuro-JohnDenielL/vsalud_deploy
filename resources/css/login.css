@@ -37,6 +37,11 @@ body {
   box-shadow: var(--shadow-xl);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  transition: box-shadow var(--transition-base);
+}
+
+.container:hover {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
 }
 
 .left-section {

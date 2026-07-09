@@ -69,6 +69,10 @@
   font-size: 14px;
 }
 
+.table-data tbody tr {
+  transition: background var(--transition-fast);
+}
+
 .table-data tbody tr:hover {
   background: var(--color-primary-50);
 }
@@ -92,10 +96,13 @@
   font-family: var(--font-body);
   font-size: 13px;
   transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
 }
 
 .view-feedback-btn:hover {
   background: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .delete-btn {
@@ -112,6 +119,8 @@
 
 .delete-btn:hover {
   background: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .d-inline {
@@ -158,6 +167,11 @@
   width: 90%;
   position: relative;
   box-shadow: var(--shadow-xl);
+  transition: box-shadow var(--transition-base);
+}
+
+.modal-content:hover {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
 }
 
 .close-btn {

@@ -19,7 +19,7 @@
   justify-content: center;
   align-items: stretch;
   overflow-x: auto;
-  gap: 24px;
+  gap: 28px;
   padding: 20px 40px;
   flex-wrap: nowrap !important;
 }
@@ -104,6 +104,12 @@
   cursor: pointer;
   transition: all var(--transition-base);
   text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.buttons-row .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 /* === Modal Enhancements === */

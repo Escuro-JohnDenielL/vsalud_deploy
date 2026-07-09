@@ -8,11 +8,17 @@
 
 .admin-profile {
   background: white;
-  border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
   padding: 20px;
   width: 350px;
   text-align: center;
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
+}
+
+.admin-profile:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
 
 .profile-header {
@@ -99,14 +105,17 @@ h3 {
   color: white;
   padding: 10px 15px;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
 }
 
 .edit-btn:hover {
   background: #00592a;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .logout-btn {
@@ -114,21 +123,24 @@ h3 {
   color: white;
   padding: 10px 15px;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
 }
 
 .logout-btn:hover {
   background: #a71d2a;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 /* Admin History Section */
 .admin-history {
   background: white;
-  border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
   padding: 20px;
   width: 100%;
   max-width: 500px;
@@ -137,6 +149,11 @@ h3 {
   flex-direction: column;
   box-sizing: border-box;
   overflow: hidden;
+  transition: box-shadow var(--transition-base);
+}
+
+.admin-history:hover {
+  box-shadow: var(--shadow-lg);
 }
 
 .history-header {

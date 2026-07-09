@@ -19,16 +19,26 @@
     margin: 50px auto;
     background-color: #fff;
     padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    transition: box-shadow var(--transition-base);
+}
+
+.reservation-container:hover {
+    box-shadow: var(--shadow-lg);
 }
 
 .reservation-notes {
     width: 60%;
     padding: 25px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     background: #fff;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--transition-base);
+}
+
+.reservation-notes:hover {
+    box-shadow: var(--shadow-md);
 }
 
 .reservation-notes h2 {
@@ -82,8 +92,13 @@ form input {
     text-align: center;
     background: white;
     padding: 25px;
-    border-radius: 10px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--transition-base);
+}
+
+.calendar:hover {
+    box-shadow: var(--shadow-md);
 }
 
 .month h3 {
@@ -111,12 +126,14 @@ button.next-month {
     padding: 8px 14px;
     cursor: pointer;
     margin: 10px;
-    transition: background 0.3s ease;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-base);
 }
 
 button.prev-month:hover,
 button.next-month:hover {
     background-color: #bbb;
+    transform: translateY(-1px);
 }
 
 .modal {

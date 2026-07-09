@@ -8,8 +8,13 @@
     margin: 40px auto;
     padding: 30px;
     background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    transition: box-shadow var(--transition-base);
+}
+
+.container:hover {
+    box-shadow: var(--shadow-lg);
 }
 
 /* === Reservation Form === */
@@ -70,15 +75,18 @@
     background: #007b3d;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
 }
 
 .form-group button:hover {
-    background: #28a745;
+    background: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
 }
 
 /* === Calendar === */
@@ -86,8 +94,13 @@
     width: 350px;
     padding: 20px;
     background: #fefefe;
-    border-radius: 12px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    transition: box-shadow var(--transition-base);
+}
+
+.calendar-container:hover {
+    box-shadow: var(--shadow-lg);
 }
 
 .calendar-header {
@@ -105,12 +118,13 @@
     padding: 6px 12px;
     cursor: pointer;
     font-size: 16px;
-    border-radius: 6px;
-    transition: background 0.2s;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-base);
 }
 
 .calendar-header button:hover {
     background: #c5c5c5;
+    transform: translateY(-1px);
 }
 
 #calendar {
@@ -352,12 +366,13 @@
     color: white;
     padding: 12px 30px;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     font-weight: 600;
     font-size: 16px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all var(--transition-base);
     margin-top: 20px;
+    box-shadow: var(--shadow-sm);
 }
 
 #agreeButton:disabled {
