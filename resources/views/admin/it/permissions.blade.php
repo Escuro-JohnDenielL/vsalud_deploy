@@ -5,43 +5,43 @@
 @push('styles')
 <style>
     .perm-container { max-width: 780px; margin: 0 auto; padding: 32px 20px 60px; }
-    .perm-title { font-family: Georgia, serif; font-size: 28px; color: #123b26; margin: 0 0 4px; }
-    .perm-subtitle { color: #587064; margin: 0 0 24px; }
-    .perm-admin-card { background: #f6faf5; border-radius: 14px; padding: 18px 22px; border: 1px solid #e2ece0; margin-bottom: 24px; display: flex; align-items: center; gap: 16px; }
-    .perm-admin-card .avatar { width: 48px; height: 48px; border-radius: 50%; background: #165c34; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px; flex-shrink: 0; }
-    .perm-admin-card .info h3 { margin: 0; font-size: 16px; color: #123b26; }
-    .perm-admin-card .info p { margin: 2px 0 0; color: #587064; font-size: 13px; }
+    .perm-title { font-family: Georgia, serif; font-size: 28px; color: #0d7a3e; margin: 0 0 4px; }
+    .perm-subtitle { color: #6b7280; margin: 0 0 24px; }
+    .perm-admin-card { background: #f9fafb; border-radius: 14px; padding: 18px 22px; border: 1px solid #e5e7eb; margin-bottom: 24px; display: flex; align-items: center; gap: 16px; }
+    .perm-admin-card .avatar { width: 48px; height: 48px; border-radius: 50%; background: #0d7a3e; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px; flex-shrink: 0; }
+    .perm-admin-card .info h3 { margin: 0; font-size: 16px; color: #2d2d2d; }
+    .perm-admin-card .info p { margin: 2px 0 0; color: #6b7280; font-size: 13px; }
 
     /* Presets */
     .presets-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
-    .preset-btn { background: #fff; border: 1px solid #d7dfd5; border-radius: 999px; padding: 8px 18px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; color: #22332a; }
-    .preset-btn:hover { border-color: #165c34; background: #f0f8f2; }
-    .preset-btn.active { background: #165c34; border-color: #165c34; color: #fff; }
+    .preset-btn { background: #fff; border: 1px solid #e5e7eb; border-radius: 999px; padding: 8px 18px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; color: #2d2d2d; }
+    .preset-btn:hover { border-color: #0d7a3e; background: #e8f5e9; }
+    .preset-btn.active { background: #0d7a3e; border-color: #0d7a3e; color: #fff; }
     .preset-btn .preset-desc { display: none; }
 
     /* Checklist */
-    .perm-panel { background: #fff; border-radius: 16px; border: 1px solid rgba(18,59,38,0.1); box-shadow: 0 10px 30px rgba(18,59,38,0.06); padding: 22px; }
-    .perm-panel h2 { font-size: 18px; color: #123b26; margin: 0 0 16px; }
-    .perm-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f0f4f0; }
+    .perm-panel { background: #fff; border-radius: 16px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 22px; }
+    .perm-panel h2 { font-size: 18px; color: #2d2d2d; margin: 0 0 16px; font-weight: 600; }
+    .perm-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
     .perm-item:last-child { border-bottom: none; }
-    .perm-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: #165c34; cursor: pointer; flex-shrink: 0; }
+    .perm-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: #0d7a3e; cursor: pointer; flex-shrink: 0; }
     .perm-item .perm-label { flex: 1; }
-    .perm-item .perm-label strong { display: block; font-size: 14px; color: #123b26; }
-    .perm-item .perm-label span { font-size: 12px; color: #8aa090; }
+    .perm-item .perm-label strong { display: block; font-size: 14px; color: #2d2d2d; }
+    .perm-item .perm-label span { font-size: 12px; color: #9ca3af; }
     .perm-item .perm-icon { font-size: 22px; width: 32px; text-align: center; flex-shrink: 0; }
 
     .perm-actions { margin-top: 20px; display: flex; gap: 10px; }
-    .btn-save-perms { background: #165c34; color: #fff; border: none; border-radius: 999px; padding: 12px 32px; font-weight: 600; font-size: 15px; cursor: pointer; }
-    .btn-save-perms:hover { background: #0f4728; }
+    .btn-save-perms { background: #0d7a3e; color: #fff; border: none; border-radius: 999px; padding: 12px 32px; font-weight: 600; font-size: 15px; cursor: pointer; }
+    .btn-save-perms:hover { background: #0a5e2f; }
     .btn-save-perms:disabled { opacity: 0.5; cursor: not-allowed; }
-    .back-link { display: inline-block; margin-top: 16px; color: #587064; font-size: 14px; text-decoration: none; }
-    .back-link:hover { text-decoration: underline; }
+    .back-link { display: inline-block; margin-top: 16px; color: #6b7280; font-size: 14px; text-decoration: none; }
+    .back-link:hover { text-decoration: underline; color: #0d7a3e; }
 
-    .toast { position: fixed; bottom: 24px; right: 24px; background: #165c34; color: #fff; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,0.15); z-index: 2000; opacity: 0; transform: translateY(20px); transition: all 0.3s; pointer-events: none; }
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #0d7a3e; color: #fff; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,0.15); z-index: 2000; opacity: 0; transform: translateY(20px); transition: all 0.3s; pointer-events: none; }
     .toast.show { opacity: 1; transform: translateY(0); }
     .toast.error { background: #dc3545; }
 
-    .page-slug-hint { font-size: 11px; color: #b0c4b8; font-family: monospace; }
+    .page-slug-hint { font-size: 11px; color: #9ca3af; font-family: monospace; }
 </style>
 @endpush
 
@@ -88,7 +88,7 @@
             @endforeach
         </div>
 
-        <p style="font-size:13px;color:#8aa090;margin-top:16px;">
+        <p style="font-size:13px;color:#6b7280;margin-top:16px;">
             <strong>Always accessible:</strong> Admin Profile, Logout
             @if(auth('admin')->user()?->role === 'super_admin')
                 &middot; IT Management

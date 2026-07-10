@@ -22,7 +22,7 @@
             <div class="package-details"></div>
             <div class="buttons-row">
                 <button class="btn btn-success btn-sm view-package" data-bs-toggle="modal" data-bs-target="#packageModal">View Package</button>
-                <button class="btn btn-warning btn-sm text-white edit-btn" data-bs-toggle="modal" data-bs-target="#editPackageModal">Edit</button>
+                <button class="btn btn-outline-primary btn-sm edit-btn" data-bs-toggle="modal" data-bs-target="#editPackageModal">Edit</button>
                 <button class="btn btn-danger btn-sm delete-btn">Delete</button>
             </div>
         </div>

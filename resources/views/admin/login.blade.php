@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <a href="{{ url('/') }}" style="position: absolute; top: 18px; left: 18px; z-index: 10; display: inline-block; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,0.86); color: #165c34; text-decoration: none; font-weight: 700; font-size: 12px; border: 1px solid rgba(22,92,52,0.2);">
+    <a href="{{ url('/') }}" style="position: absolute; top: 18px; left: 18px; z-index: 10; display: inline-block; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,0.86); color: #0d7a3e; text-decoration: none; font-weight: 700; font-size: 12px; border: 1px solid rgba(13,122,62,0.2);">
         Back to Home
     </a>
     <div class="container">
@@ -26,7 +26,7 @@
                 @endif
 
                 @if(session('success'))
-                    <div class="success-message" style="color: #155724; background: #d4edda; border: 1px solid #c3e6cb; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
+                    <div class="success-message" style="color: #0d7a3e; background: #e8f5e9; border: 1px solid #c8e6c9; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
                         {{ session('success') }}
                     </div>
                 @endif

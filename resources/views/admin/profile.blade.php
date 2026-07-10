@@ -21,21 +21,21 @@ if ($user && !$isSuperAdmin) {
 @endphp
 
 @if($user && !$isSuperAdmin && $grantedPageCount === 0)
-<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;">
+<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;">
     <span style="font-size:22px;flex-shrink:0;">🔒</span>
     <div>
-        <strong style="color:#856404;font-size:15px;display:block;margin-bottom:4px;">Limited Access</strong>
-        <p style="color:#6d5200;margin:0;font-size:14px;line-height:1.5;">
+        <strong style="color:#2d2d2d;font-size:15px;display:block;margin-bottom:4px;">Limited Access</strong>
+        <p style="color:#6b7280;margin:0;font-size:14px;line-height:1.5;">
             You don't have access to any pages yet. Please contact a Super Administrator to request access to the pages you need.
         </p>
     </div>
 </div>
 @elseif($user && !$isSuperAdmin && $grantedPageCount > 0 && $grantedPageCount < count(\App\Models\AdminPagePermission::availablePages()))
-<div style="background:#e8f4f8;border:1px solid #b6d4e6;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;">
+<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;">
     <span style="font-size:22px;flex-shrink:0;">ℹ️</span>
     <div>
-        <strong style="color:#1a5a7a;font-size:15px;display:block;margin-bottom:4px;">Partial Access</strong>
-        <p style="color:#1a5a7a;margin:0;font-size:14px;line-height:1.5;">
+        <strong style="color:#2d2d2d;font-size:15px;display:block;margin-bottom:4px;">Partial Access</strong>
+        <p style="color:#6b7280;margin:0;font-size:14px;line-height:1.5;">
             You have access to some pages. If you need access to additional modules, please contact a Super Administrator.
         </p>
     </div>
@@ -52,8 +52,8 @@ if ($user && !$isSuperAdmin) {
         <input type="file" id="profile-pic-input" accept="image/*" style="display: none;">
       </div>
       --}}
-      <h2 id="admin-name">{{ $user->name ?? ($user->f_name . ' ' . $user->l_name) }}</h2>
-      <p>System Administrator</p>
+      <h2 id="admin-name" style="color:#2d2d2d;font-weight:600;">{{ $user->name ?? ($user->f_name . ' ' . $user->l_name) }}</h2>
+      <p style="color:#6b7280;">System Administrator</p>
     </div>
     <div class="profile-info">
       <h3>Profile Information</h3>
@@ -139,7 +139,7 @@ if ($user && !$isSuperAdmin) {
         <div class="form-group">
           <label for="edit-username">Username:</label>
           <input type="text" id="edit-username" name="username" readonly style="background-color: #f5f5f5;">
-          <small style="color: #666; font-size: 12px;">Username is automatically generated from email</small>
+          <small style="color: #6b7280; font-size: 12px;">Username is automatically generated from email</small>
         </div>
         <div class="modal-buttons">
           <button type="submit" class="btn btn-primary">Save Changes</button>

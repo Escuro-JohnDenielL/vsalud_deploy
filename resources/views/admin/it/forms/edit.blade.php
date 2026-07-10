@@ -6,83 +6,83 @@
 <style>
     .fbe-container { padding: 32px 20px 60px; max-width: 1200px; margin: 0 auto; }
     .fbe-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
-    .fbe-header h1 { font-family: Georgia, serif; font-size: 28px; color: #123b26; margin: 0; }
-    .fbe-header p { color: #587064; margin: 4px 0 0; }
+    .fbe-header h1 { font-family: Georgia, serif; font-size: 28px; color: #0d7a3e; margin: 0; }
+    .fbe-header p { color: #6b7280; margin: 4px 0 0; }
     .fbe-status { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; }
-    .status-published { background: #d4edda; color: #155724; }
-    .status-draft { background: #fff3cd; color: #856404; }
+    .status-published { background: #e8f5e9; color: #2e7d32; }
+    .status-draft { background: #f5f5f5; color: #616161; }
 
     .fbe-layout { display: grid; grid-template-columns: 1fr 360px; gap: 24px; align-items: start; }
     @media (max-width: 900px) { .fbe-layout { grid-template-columns: 1fr; } }
 
     /* Fields list (left column) */
-    .fields-panel { background: #fff; border-radius: 16px; border: 1px solid rgba(18,59,38,0.1); box-shadow: 0 10px 30px rgba(18,59,38,0.06); padding: 20px; }
-    .fields-panel h2 { font-size: 18px; color: #123b26; margin: 0 0 16px; padding-bottom: 10px; border-bottom: 1px solid #eef2ed; }
-    .empty-fields { text-align: center; padding: 40px 20px; color: #587064; }
+    .fields-panel { background: #fff; border-radius: 16px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 20px; }
+    .fields-panel h2 { font-size: 18px; color: #2d2d2d; margin: 0 0 16px; padding-bottom: 10px; border-bottom: 1px solid #eef2ed; }
+    .empty-fields { text-align: center; padding: 40px 20px; color: #6b7280; }
 
-    .field-item { background: #f8faf8; border: 1px solid #e2ece0; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; cursor: grab; transition: box-shadow 0.15s; }
+    .field-item { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; cursor: grab; transition: box-shadow 0.15s; }
     .field-item:hover { box-shadow: 0 2px 8px rgba(18,59,38,0.08); }
     .field-item.dragging { opacity: 0.5; }
-    .field-item.drag-over { border-color: #165c34; border-style: dashed; }
-    .field-item .drag-handle { color: #b0c4b8; cursor: grab; font-size: 18px; flex-shrink: 0; }
+    .field-item.drag-over { border-color: #0d7a3e; border-style: dashed; }
+    .field-item .drag-handle { color: #9ca3af; cursor: grab; font-size: 18px; flex-shrink: 0; }
     .field-item .field-icon { font-size: 20px; flex-shrink: 0; width: 32px; text-align: center; }
     .field-item .field-info { flex: 1; min-width: 0; }
-    .field-item .field-info .field-label { font-weight: 600; color: #123b26; font-size: 14px; }
-    .field-item .field-info .field-meta { font-size: 12px; color: #8aa090; margin-top: 2px; }
+    .field-item .field-info .field-label { font-weight: 600; color: #2d2d2d; font-size: 14px; }
+    .field-item .field-info .field-meta { font-size: 12px; color: #9ca3af; margin-top: 2px; }
     .field-item .field-info .field-meta .req { color: #dc3545; font-weight: 600; }
     .field-item .field-actions { display: flex; gap: 6px; flex-shrink: 0; }
-    .field-item .field-actions button { background: none; border: 1px solid #d7dfd5; border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; color: #587064; transition: all 0.1s; }
+    .field-item .field-actions button { background: none; border: 1px solid #d7dfd5; border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; color: #6b7280; transition: all 0.1s; }
     .field-item .field-actions button:hover { background: #eef2ed; }
-    .field-item .field-actions .btn-edit-field { color: #165c34; border-color: #165c34; }
-    .field-item .field-actions .btn-edit-field:hover { background: #165c34; color: #fff; }
+    .field-item .field-actions .btn-edit-field { color: #0d7a3e; border-color: #0d7a3e; }
+    .field-item .field-actions .btn-edit-field:hover { background: #0d7a3e; color: #fff; }
     .field-item .field-actions .btn-del-field { color: #dc3545; border-color: #dc3545; }
     .field-item .field-actions .btn-del-field:hover { background: #dc3545; color: #fff; }
     .field-item.field-inactive { opacity: 0.55; }
     .field-item.field-fixed { background: #f0f5f0; border-color: #c8d8cc; }
 
     /* Add field panel (right column) */
-    .add-panel { background: #fff; border-radius: 16px; border: 1px solid rgba(18,59,38,0.1); box-shadow: 0 10px 30px rgba(18,59,38,0.06); padding: 20px; }
-    .add-panel h2 { font-size: 18px; color: #123b26; margin: 0 0 16px; }
+    .add-panel { background: #fff; border-radius: 16px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 20px; }
+    .add-panel h2 { font-size: 18px; color: #2d2d2d; margin: 0 0 16px; font-weight: 600; }
     .add-panel .form-group { margin-bottom: 14px; }
-    .add-panel label { display: block; font-weight: 600; margin-bottom: 4px; color: #22332a; font-size: 13px; }
-    .add-panel input, .add-panel select, .add-panel textarea { width: 100%; border: 1px solid #d7dfd5; border-radius: 10px; padding: 9px 12px; font-size: 14px; box-sizing: border-box; }
+    .add-panel label { display: block; font-weight: 600; margin-bottom: 4px; color: #2d2d2d; font-size: 13px; }
+    .add-panel input, .add-panel select, .add-panel textarea { width: 100%; border: 1px solid #e5e7eb; border-radius: 10px; padding: 9px 12px; font-size: 14px; box-sizing: border-box; }
     .add-panel .checkbox-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
     .add-panel .checkbox-row input[type="checkbox"] { width: auto; }
     .add-panel .checkbox-row label { margin: 0; }
-    .btn-add-field { background: #165c34; color: #fff; border: none; border-radius: 999px; padding: 10px 24px; font-weight: 600; cursor: pointer; width: 100%; font-size: 14px; }
-    .btn-add-field:hover { background: #0f4728; }
+    .btn-add-field { background: #0d7a3e; color: #fff; border: none; border-radius: 999px; padding: 10px 24px; font-weight: 600; cursor: pointer; width: 100%; font-size: 14px; }
+    .btn-add-field:hover { background: #0a5e2f; }
 
     /* Buttons row */
     .fbe-actions { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
     .btn-publish, .btn-preview, .btn-save-order { border: none; border-radius: 999px; padding: 10px 24px; font-weight: 600; cursor: pointer; font-size: 14px; text-decoration: none; display: inline-block; }
-    .btn-publish { background: #165c34; color: #fff; }
-    .btn-publish:hover { background: #0f4728; }
-    .btn-preview { background: #e2ece0; color: #165c34; }
-    .btn-preview:hover { background: #d0e0cc; }
+    .btn-publish { background: #0d7a3e; color: #fff; }
+    .btn-publish:hover { background: #0a5e2f; }
+    .btn-preview { background: #f3f4f6; color: #2d2d2d; border: 1px solid #e5e7eb; }
+    .btn-preview:hover { background: #e5e7eb; }
 
     /* Modal */
     .modal-overlay-fb { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center; }
     .modal-overlay-fb.active { display: flex; }
     .modal-box-fb { background: #fff; border-radius: 16px; padding: 28px; max-width: 520px; width: 90%; max-height: 90vh; overflow-y: auto; }
-    .modal-box-fb h3 { margin: 0 0 16px; color: #123b26; }
+    .modal-box-fb h3 { margin: 0 0 16px; color: #2d2d2d; }
     .modal-box-fb .form-group { margin-bottom: 14px; }
-    .modal-box-fb label { display: block; font-weight: 600; margin-bottom: 4px; color: #22332a; font-size: 13px; }
-    .modal-box-fb input, .modal-box-fb select, .modal-box-fb textarea { width: 100%; border: 1px solid #d7dfd5; border-radius: 10px; padding: 9px 12px; font-size: 14px; box-sizing: border-box; }
+    .modal-box-fb label { display: block; font-weight: 600; margin-bottom: 4px; color: #2d2d2d; font-size: 13px; }
+    .modal-box-fb input, .modal-box-fb select, .modal-box-fb textarea { width: 100%; border: 1px solid #e5e7eb; border-radius: 10px; padding: 9px 12px; font-size: 14px; box-sizing: border-box; }
     .modal-box-fb .checkbox-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
     .modal-box-fb .checkbox-row input[type="checkbox"] { width: auto; }
     .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
     .modal-actions button { border: none; border-radius: 999px; padding: 8px 20px; font-weight: 600; cursor: pointer; }
-    .modal-actions .btn-save { background: #165c34; color: #fff; }
-    .modal-actions .btn-cancel { background: #eef2ed; color: #587064; }
+    .modal-actions .btn-save { background: #0d7a3e; color: #fff; }
+    .modal-actions .btn-cancel { background: #f3f4f6; color: #2d2d2d; }
 
-    .options-editor { border: 1px solid #d7dfd5; border-radius: 10px; padding: 10px; margin-top: 6px; }
+    .options-editor { border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px; margin-top: 6px; }
     .option-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
-    .option-row input { flex: 1; border: 1px solid #d7dfd5; border-radius: 6px; padding: 6px 10px; font-size: 13px; }
+    .option-row input { flex: 1; border: 1px solid #e5e7eb; border-radius: 6px; padding: 6px 10px; font-size: 13px; }
     .option-row .remove-opt { background: none; border: none; color: #dc3545; cursor: pointer; font-size: 18px; padding: 0 4px; }
-    .add-opt-btn { background: none; border: 1px dashed #b0c4b8; border-radius: 6px; padding: 6px 12px; font-size: 12px; color: #587064; cursor: pointer; width: 100%; margin-top: 4px; }
-    .add-opt-btn:hover { background: #f8faf8; }
+    .add-opt-btn { background: none; border: 1px dashed #d1d5db; border-radius: 6px; padding: 6px 12px; font-size: 12px; color: #6b7280; cursor: pointer; width: 100%; margin-top: 4px; }
+    .add-opt-btn:hover { background: #f9fafb; }
 
-    .toast { position: fixed; bottom: 24px; right: 24px; background: #165c34; color: #fff; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,0.15); z-index: 2000; opacity: 0; transform: translateY(20px); transition: all 0.3s; pointer-events: none; }
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #0d7a3e; color: #fff; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,0.15); z-index: 2000; opacity: 0; transform: translateY(20px); transition: all 0.3s; pointer-events: none; }
     .toast.show { opacity: 1; transform: translateY(0); }
     .toast.error { background: #dc3545; }
 </style>
@@ -99,14 +99,14 @@
             </span>
         </div>
         <div style="text-align:right;">
-            <a href="{{ route('admin.forms.index') }}" style="color:#587064;font-size:14px;">&larr; Back to Forms</a>
+            <a href="{{ route('admin.forms.index') }}" style="color:#6b7280;font-size:14px;">&larr; Back to Forms</a>
         </div>
     </div>
 
     <div class="fbe-layout">
         {{-- LEFT: Fields list --}}
         <div class="fields-panel">
-            <h2>Form Fields <span style="font-weight:400;color:#8aa090;font-size:13px;">(drag to reorder)</span></h2>
+            <h2>Form Fields <span style="font-weight:400;color:#9ca3af;font-size:13px;">(drag to reorder)</span></h2>
 
             <div id="fieldsContainer">
                 @forelse ($form->fields as $field)
@@ -122,7 +122,7 @@
                                 {{ $field->name }} &middot; {{ $field->field_type }}
                                 @if($field->required) <span class="req">*required</span> @endif
                                 @if(!$field->is_active) <span style="color:#dc3545;">&middot; hidden</span> @endif
-                                @if($field->is_fixed) <span style="color:#8aa090;">&middot; fixed</span> @endif
+                                @if($field->is_fixed) <span style="color:#9ca3af;">&middot; fixed</span> @endif
                             </div>
                         </div>
                         <div class="field-actions">

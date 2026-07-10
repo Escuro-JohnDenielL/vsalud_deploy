@@ -4,13 +4,11 @@
   --color-primary-hover: #0a5e2f;
   --color-primary-light: #e8f5e9;
   --color-primary-50: rgba(13, 122, 62, 0.05);
-  --color-accent: #f4a236;
-  --color-accent-hover: #e08f2a;
 
   /* === Neutrals === */
   --color-bg: #f6f5f2;
   --color-surface: #ffffff;
-  --color-text: #1e1e1e;
+  --color-text: #2d2d2d;
   --color-text-muted: #6b7280;
   --color-text-light: #9ca3af;
   --color-border: #e5e7eb;
@@ -18,9 +16,7 @@
 
   /* === Semantic Colors === */
   --color-success: #0d7a3e;
-  --color-warning: #f4a236;
   --color-danger: #dc2626;
-  --color-info: #2563eb;
 
   /* === Modern Shadows === */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);

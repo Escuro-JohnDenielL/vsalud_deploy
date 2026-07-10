@@ -14,12 +14,13 @@
 
     .page-header h1 {
         font-size: 24px;
-        color: #2c3e50;
+        color: #2d2d2d;
         margin: 0 0 8px 0;
+        font-weight: 600;
     }
 
     .page-header p {
-        color: #666;
+        color: #6b7280;
         margin: 0;
         font-size: 14px;
     }
@@ -36,7 +37,7 @@
         background: white;
         border-radius: 8px;
         padding: 16px 24px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         flex: 1;
         min-width: 120px;
         text-align: center;
@@ -45,28 +46,28 @@
     .stat-card .number {
         font-size: 28px;
         font-weight: 700;
-        color: #2c3e50;
+        color: #0d7a3e;
         display: block;
     }
 
     .stat-card .label {
         font-size: 12px;
-        color: #888;
+        color: #6b7280;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         margin-top: 4px;
     }
 
-    .stat-card.waiting { border-top: 3px solid #f39c12; }
-    .stat-card.notified { border-top: 3px solid #3498db; }
-    .stat-card.claimed { border-top: 3px solid #27ae60; }
-    .stat-card.expired { border-top: 3px solid #95a5a6; }
+    .stat-card.waiting { border-top: 3px solid #e5e7eb; }
+    .stat-card.notified { border-top: 3px solid #e5e7eb; }
+    .stat-card.claimed { border-top: 3px solid #0d7a3e; }
+    .stat-card.expired { border-top: 3px solid #e5e7eb; }
 
     /* Table styles (reuse existing pattern) */
     .table-container {
         background: white;
         border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         overflow: hidden;
     }
 
@@ -82,7 +83,7 @@
         background: #f8f9fa;
         padding: 12px 20px;
         font-weight: 600;
-        color: #2c3e50;
+        color: #2d2d2d;
         font-size: 15px;
         border-bottom: 1px solid #eee;
     }
@@ -98,7 +99,7 @@
         font-size: 12px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        color: #888;
+        color: #6b7280;
         border-bottom: 1px solid #eee;
         background: #fafafa;
     }
@@ -107,7 +108,7 @@
         padding: 10px 16px;
         font-size: 14px;
         border-bottom: 1px solid #f0f0f0;
-        color: #333;
+        color: #2d2d2d;
     }
 
     .waitlist-table tr:last-child td {
@@ -122,10 +123,10 @@
         font-weight: 500;
     }
 
-    .badge-waiting { background: #fef3cd; color: #856404; }
-    .badge-notified { background: #cce5ff; color: #004085; }
-    .badge-claimed { background: #d4edda; color: #155724; }
-    .badge-expired { background: #e2e3e5; color: #383d41; }
+    .badge-waiting { background: #f5f5f5; color: #616161; }
+    .badge-notified { background: #e8f5e9; color: #2e7d32; }
+    .badge-claimed { background: #e8f5e9; color: #2e7d32; }
+    .badge-expired { background: #f5f5f5; color: #9ca3af; }
 
     .empty-state {
         text-align: center;

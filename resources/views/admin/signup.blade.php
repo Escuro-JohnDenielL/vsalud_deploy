@@ -25,7 +25,7 @@
                 @endif
 
                 @if(session('success'))
-                <div class="success-message" style="color: #28a745; background: #d4edda; border: 1px solid #c3e6cb; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
+                <div class="success-message" style="color: #0d7a3e; background: #e8f5e9; border: 1px solid #c8e6c9; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
                     {{ session('success') }}
                 </div>
                 @endif

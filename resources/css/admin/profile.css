@@ -71,20 +71,29 @@
 
 h2 {
   margin: 5px 0;
+  color: #2d2d2d;
+  font-weight: 600;
 }
 
 h3 {
   margin-bottom: 10px;
-  color: #007b3d;
+  color: #2d2d2d;
+  font-weight: 600;
+  font-size: 18px;
 }
 
 .profile-info p {
-  font-size: 16px;
+  font-size: 15px;
   margin: 8px 0;
+  color: #6b7280;
+}
+
+.profile-info p strong {
+  color: #2d2d2d;
 }
 
 .change-password {
-  color: #007b3d;
+  color: #0d7a3e;
   text-decoration: none;
   font-size: 14px;
 }
@@ -101,7 +110,7 @@ h3 {
 }
 
 .edit-btn {
-  background: #007b3d;
+  background: #0d7a3e;
   color: white;
   padding: 10px 15px;
   border: none;
@@ -113,7 +122,7 @@ h3 {
 }
 
 .edit-btn:hover {
-  background: #00592a;
+  background: #0a5e2f;
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
@@ -167,7 +176,8 @@ h3 {
 
 .history-header h3 {
   margin: 0;
-  color: #007b3d;
+  color: #2d2d2d;
+  font-weight: 600;
 }
 
 .history-controls {
@@ -181,17 +191,18 @@ h3 {
 
 .form-select {
   padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  border: 1px solid #e5e7eb;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   background: white;
   cursor: pointer;
   min-width: 150px;
+  color: #2d2d2d;
 }
 
 .form-select:focus {
   outline: none;
-  border-color: #007b3d;
+  border-color: #0d7a3e;
 }
 
 .btn {
@@ -236,14 +247,14 @@ h3 {
 .stat-number {
   display: block;
   font-size: 24px;
-  font-weight: bold;
-  color: #007b3d;
+  font-weight: 700;
+  color: #0d7a3e;
   margin-bottom: 5px;
 }
 
 .stat-label {
   font-size: 12px;
-  color: #666;
+  color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -267,17 +278,17 @@ h3 {
 
 .history-list li {
   padding: 12px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #f0f0f0;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
   gap: 12px;
-  transition: background 0.3s;
+  transition: background 0.15s ease;
   word-break: break-word;
 }
 
 .history-list li:hover {
-  background: #f8f9fa;
+  background: #f9fafb;
 }
 
 .history-list li:last-child {
@@ -297,16 +308,15 @@ h3 {
 }
 
 .history-icon.login { 
-  background: #28a745; 
+  background: #0d7a3e; 
 }
 
 .history-icon.profile { 
-  background: #007bff; 
+  background: #6b7280; 
 }
 
 .history-icon.system { 
-  background: #ffc107; 
-  color: #333; 
+  background: #6b7280; 
 }
 
 .history-icon.security { 
@@ -321,7 +331,7 @@ h3 {
 
 .history-action {
   font-weight: 500;
-  color: #333;
+  color: #2d2d2d;
   margin-bottom: 2px;
   word-break: break-word;
   font-size: 14px;
@@ -329,14 +339,14 @@ h3 {
 
 .history-details {
   font-size: 12px;
-  color: #666;
+  color: #6b7280;
   word-break: break-word;
   line-height: 1.3;
 }
 
 .history-time {
   font-size: 11px;
-  color: #999;
+  color: #9ca3af;
   text-align: right;
   flex-shrink: 0;
   word-break: break-word;
@@ -367,7 +377,7 @@ h3 {
 .history-empty {
   text-align: center;
   padding: 40px 20px;
-  color: #666;
+  color: #6b7280;
 }
 
 .empty-icon {
@@ -382,23 +392,25 @@ h3 {
 }
 
 .load-more-btn {
-  background: #007b3d;
+  background: #0d7a3e;
   color: white;
   padding: 10px 20px;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 14px;
-  transition: background 0.3s ease;
+  font-weight: 500;
+  transition: all var(--transition-base);
 }
 
 .load-more-btn:hover {
-  background: #00592a;
+  background: #0a5e2f;
+  transform: translateY(-1px);
 }
 
 /* Export Button */
 .export-btn {
-  background: #28a745;
+  background: #0d7a3e;
   color: white;
   padding: 8px 12px;
   border: none;
@@ -410,7 +422,7 @@ h3 {
 }
 
 .export-btn:hover {
-  background: #218838;
+  background: #0a5e2f;
 }
 
 /* Modal Styles */
@@ -491,7 +503,7 @@ h3 {
 
 .form-group input:focus {
   outline: none;
-  border-color: #007b3d;
+  border-color: #0d7a3e;
 }
 
 .modal {
@@ -523,9 +535,10 @@ h3 {
 }
 
 .modal-header h3 {
-  color: #007b3d;
+  color: #2d2d2d;
   font-size: 20px;
   margin: 0;
+  font-weight: 600;
 }
 
 .modal-body {
@@ -540,31 +553,31 @@ h3 {
 }
 
 .btn-primary {
-  background: #007b3d;
+  background: #0d7a3e;
   color: white;
   padding: 8px 16px;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   cursor: pointer;
 }
 
 .btn-primary:hover {
-  background: #00592a;
+  background: #0a5e2f;
 }
 
 .btn-secondary {
-  background: #6c757d;
-  color: white;
+  background: #f3f4f6;
+  color: #2d2d2d;
   padding: 8px 16px;
-  border: none;
-  border-radius: 5px;
+  border: 1px solid #e5e7eb;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   cursor: pointer;
 }
 
 .btn-secondary:hover {
-  background: #545b62;
+  background: #e5e7eb;
 }
 
 

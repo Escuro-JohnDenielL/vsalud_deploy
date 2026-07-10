@@ -148,10 +148,10 @@
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
-.metric-card.primary { border-left-color: #007b3d; }
-.metric-card.secondary { border-left-color: #2563eb; }
+.metric-card.primary { border-left-color: #0d7a3e; }
+.metric-card.secondary { border-left-color: #0d7a3e; }
 .metric-card.accent { border-left-color: #dc2626; }
-.metric-card.warning { border-left-color: #ea580c; }
+.metric-card.warning { border-left-color: #6b7280; }
 
 .metric-icon {
   width: 60px;
@@ -165,12 +165,12 @@
 }
 
 .primary .metric-icon {
-  background: linear-gradient(135deg, #007b3d, #005a2d);
+  background: linear-gradient(135deg, #0d7a3e, #0a5e2f);
   color: white;
 }
 
 .secondary .metric-icon {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: linear-gradient(135deg, #0d7a3e, #0a5e2f);
   color: white;
 }
 
@@ -180,7 +180,7 @@
 }
 
 .warning .metric-icon {
-  background: linear-gradient(135deg, #ea580c, #c2410c);
+  background: linear-gradient(135deg, #6b7280, #4b5563);
   color: white;
 }
 
@@ -192,7 +192,7 @@
 .metric-value {
   font-size: 32px;
   font-weight: 700;
-  color: #1f2937;
+  color: #2d2d2d;
   margin-bottom: 4px;
 }
 
@@ -211,7 +211,7 @@
   font-weight: 600;
 }
 
-.metric-change.positive { color: #16a34a; }
+.metric-change.positive { color: #0d7a3e; }
 .metric-change.negative { color: #dc2626; }
 .metric-change.neutral { color: #6b7280; }
 
@@ -249,8 +249,8 @@
 .panel-title h3 {
   margin: 0 0 5px 0;
   font-size: 20px;
-  color: #1f2937;
-  font-weight: 700;
+  color: #2d2d2d;
+  font-weight: 600;
 }
 
 .panel-title p {
@@ -277,13 +277,13 @@
 }
 
 .filter-select:hover {
-  border-color: #007b3d;
+  border-color: #0d7a3e;
 }
 
 .filter-select:focus {
   outline: none;
-  border-color: #007b3d;
-  box-shadow: 0 0 0 3px rgba(0, 123, 61, 0.1);
+  border-color: #0d7a3e;
+  box-shadow: 0 0 0 3px rgba(13, 122, 62, 0.1);
 }
 
 .icon-btn {
@@ -297,8 +297,8 @@
 }
 
 .icon-btn:hover {
-  background: #007b3d;
-  border-color: #007b3d;
+  background: #0d7a3e;
+  border-color: #0d7a3e;
   color: white;
 }
 
@@ -343,10 +343,10 @@
 .stat-value {
   font-size: 16px;
   font-weight: 700;
-  color: #1f2937;
+  color: #2d2d2d;
 }
 
-.stat-value.positive { color: #16a34a; }
+.stat-value.positive { color: #0d7a3e; }
 .stat-value.negative { color: #dc2626; }
 
 /* === Activity Section === */

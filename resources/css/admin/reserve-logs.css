@@ -10,13 +10,13 @@
 }
 
 .page-header h1 {
-    color: #007b3d;
+    color: #0d7a3e;
     font-size: 2.5em;
     margin-bottom: 10px;
 }
 
 .page-header p {
-    color: #666;
+    color: #6b7280;
     font-size: 1.1em;
 }
 
@@ -43,7 +43,7 @@
 }
 
 .reservation-table th {
-    background: #007b3d;
+    background: #0d7a3e;
     color: white;
     padding: 15px 10px;
     text-align: left;
@@ -84,11 +84,11 @@
 }
 
 .status-dropdown:hover {
-    border-color: #007b3d;
+    border-color: #0d7a3e;
 }
 
 .status-dropdown option[value="active"] {
-    color: #28a745;
+    color: #0d7a3e;
 }
 
 .status-dropdown option[value="canceled"] {
@@ -96,11 +96,11 @@
 }
 
 .status-dropdown option[value="completed"] {
-    color: #007bff;
+    color: #6b7280;
 }
 
 .receipt-link {
-    color: #007b3d;
+    color: #0d7a3e;
     text-decoration: none;
     font-weight: 500;
 }
@@ -127,12 +127,12 @@
 }
 
 .btn-view {
-    background: #17a2b8;
+    background: #0d7a3e;
     color: white;
 }
 
 .btn-view:hover {
-    background: #138496;
+    background: #0a5e2f;
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
 }
@@ -159,9 +159,9 @@
 
 .btn-pagination {
     padding: 10px 20px;
-    border: 1px solid #007b3d;
+    border: 1px solid #0d7a3e;
     background: white;
-    color: #007b3d;
+    color: #0d7a3e;
     border-radius: var(--radius-sm);
     cursor: pointer;
     transition: all var(--transition-base);
@@ -169,7 +169,7 @@
 }
 
 .btn-pagination:hover {
-    background: #007b3d;
+    background: #0d7a3e;
     color: white;
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
@@ -177,7 +177,7 @@
 
 .page-info {
     font-weight: 500;
-    color: #666;
+    color: #6b7280;
 }
 
 .custom-modal {

@@ -130,7 +130,7 @@
             <p id="confirmUndoMessage" style="font-size: 15px; margin: 16px 0;">Are you sure you want to undo this reservation?</p>
             <div style="display: flex; gap: 10px; justify-content: flex-end;">
                 <button id="confirmUndoNo" class="btn" style="background: #6c757d; color: #fff; padding: 8px 16px; border: none; border-radius: 4px;">Cancel</button>
-                <button id="confirmUndoYes" class="btn" style="background: #28a745; color: #fff; padding: 8px 16px; border: none; border-radius: 4px;">Undo</button>
+                <button id="confirmUndoYes" class="btn" style="background: #0d7a3e; color: #fff; padding: 8px 16px; border: none; border-radius: 4px;">Undo</button>
             </div>
         </div>
     </div>

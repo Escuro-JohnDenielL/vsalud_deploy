@@ -5,39 +5,39 @@
 @push('styles')
 <style>
     .it-container { padding: 32px 20px 60px; }
-    .it-title { font-family: Georgia, serif; font-size: 30px; color: #123b26; margin: 0 0 6px; }
-    .it-subtitle { color: #587064; margin: 0 0 24px; }
+    .it-title { font-family: Georgia, serif; font-size: 28px; color: #0d7a3e; margin: 0 0 6px; }
+    .it-subtitle { color: #6b7280; margin: 0 0 24px; }
     .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 28px; }
-    .stat-card { background: #f6faf5; border-radius: 14px; padding: 18px; border: 1px solid #e2ece0; text-align: center; }
-    .stat-card strong { display: block; font-size: 28px; color: #165c34; }
-    .stat-card span { color: #5d6f63; font-size: 13px; }
-    .panel { background: #fff; border-radius: 16px; border: 1px solid rgba(18,59,38,0.1); box-shadow: 0 10px 30px rgba(18,59,38,0.06); padding: 22px; margin-bottom: 24px; }
-    .panel h2 { font-size: 20px; margin: 0 0 16px; color: #123b26; }
+    .stat-card { background: #f9fafb; border-radius: 14px; padding: 18px; border: 1px solid #e5e7eb; text-align: center; }
+    .stat-card strong { display: block; font-size: 28px; color: #0d7a3e; }
+    .stat-card span { color: #6b7280; font-size: 13px; }
+    .panel { background: #fff; border-radius: 16px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 22px; margin-bottom: 24px; }
+    .panel h2 { font-size: 18px; margin: 0 0 16px; color: #2d2d2d; font-weight: 600; }
     .panel-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; border-bottom: 1px solid #eef2ed; padding-bottom: 10px; }
     .panel-header h2 { margin: 0; border-bottom: none; padding-bottom: 0; }
     .table-wrap { overflow-x: auto; }
     table.it-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    table.it-table th { text-align: left; padding: 10px 8px; border-bottom: 2px solid #e2ece0; color: #22332a; font-weight: 600; white-space: nowrap; }
-    table.it-table td { padding: 10px 8px; border-bottom: 1px solid #eef2ed; vertical-align: middle; }
-    table.it-table tr.deleted td { color: #999; font-style: italic; }
+    table.it-table th { text-align: left; padding: 10px 8px; border-bottom: 2px solid #e5e7eb; color: #6b7280; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+    table.it-table td { padding: 10px 8px; border-bottom: 1px solid #eef2ed; vertical-align: middle; font-size: 14px; color: #2d2d2d; }
+    table.it-table tr.deleted td { color: #9ca3af; font-style: italic; }
     .badge-role { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-    .badge-super { background: #fff3cd; color: #856404; }
-    .badge-admin { background: #e2ece0; color: #165c34; }
-    .badge-deleted { background: #f8d7da; color: #721c24; }
+    .badge-super { background: #e8f5e9; color: #2e7d32; }
+    .badge-admin { background: #f5f5f5; color: #616161; }
+    .badge-deleted { background: #fce4ec; color: #c62828; }
     .field { margin-bottom: 12px; }
     .field label { display: block; font-weight: 600; margin-bottom: 4px; color: #22332a; font-size: 13px; }
     .field input, .field select { width: 100%; border: 1px solid #d7dfd5; border-radius: 10px; padding: 9px 12px; font-size: 14px; }
     .btn-primary, .btn-sm { border: none; border-radius: 999px; font-weight: 600; cursor: pointer; display: inline-block; text-decoration: none; }
-    .btn-primary { background: #165c34; color: #fff; padding: 10px 20px; }
+    .btn-primary { background: #0d7a3e; color: #fff; padding: 10px 20px; }
+    .btn-primary:hover { background: #0a5e2f; }
     .btn-sm { padding: 6px 14px; font-size: 12px; }
-    .btn-success { background: #28a745; color: #fff; }
-    .btn-warning { background: #ffc107; color: #212529; }
+    .btn-success { background: #0d7a3e; color: #fff; }
     .btn-danger { background: #dc3545; color: #fff; }
     .alert { padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; }
-    .alert-success { background: #f0f8f2; border: 1px solid #d4e7d8; color: #155724; }
-    .alert-error { background: #fff6f6; border: 1px solid rgba(160,30,30,0.25); color: #721c24; }
-    .muted { color: #6b7d71; font-size: 13px; }
-    .pagination-info { font-size: 13px; color: #587064; margin-top: 12px; }
+    .alert-success { background: #e8f5e9; border: 1px solid #c8e6c9; color: #2e7d32; }
+    .alert-error { background: #fce4ec; border: 1px solid #f8bbd0; color: #c62828; }
+    .muted { color: #6b7280; font-size: 13px; }
+    .pagination-info { font-size: 13px; color: #6b7280; margin-top: 12px; }
     .action-group { display: flex; gap: 6px; flex-wrap: wrap; }
 </style>
 @endpush
@@ -65,14 +65,6 @@
             <strong>{{ $adminCount }}</strong>
             <span>Total Accounts</span>
         </div>
-    </div>
-
-    {{-- Quick Links --}}
-    <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
-        <a href="{{ route('admin.forms.index') }}"
-           style="background:#165c34;color:#fff;border:none;border-radius:999px;padding:10px 24px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;">
-           🏗️ Form Builder
-        </a>
     </div>
 
     {{-- Admin Accounts List --}}
@@ -118,9 +110,9 @@
                             <td>
                                 <div class="action-group">
                                     @if (!$admin->trashed())
-                                        <a href="{{ route('admin.it.edit', $admin->admin_id) }}" class="btn-sm btn-warning">Edit</a>
+                                        <a href="{{ route('admin.it.edit', $admin->admin_id) }}" class="btn-sm" style="background:#0d7a3e;color:#fff;">Edit</a>
                                         @if ($admin->role !== 'super_admin')
-                                            <a href="{{ route('admin.it.permissions', $admin->admin_id) }}" class="btn-sm" style="background:#6f42c1;color:#fff;">Permissions</a>
+                                            <a href="{{ route('admin.it.permissions', $admin->admin_id) }}" class="btn-sm" style="background:#0d7a3e;color:#fff;">Permissions</a>
                                         @endif
                                         @if ($admin->role !== 'super_admin' && (int) $admin->admin_id !== (int) auth('admin')->id())
                                             <form method="POST" action="{{ route('admin.it.deactivate', $admin->admin_id) }}" style="display:inline;" id="deactivate-form-{{ $admin->admin_id }}">
