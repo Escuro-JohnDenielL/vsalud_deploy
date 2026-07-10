@@ -5,25 +5,28 @@
 }
 
 .page-header {
-    margin-bottom: 30px;
+    margin-bottom: 24px;
     text-align: center;
 }
 
 .page-header h1 {
-    color: #0d7a3e;
-    font-size: 2.5em;
-    margin-bottom: 10px;
+    color: var(--color-primary);
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 6px;
 }
 
 .page-header p {
-    color: #6b7280;
-    font-size: 1.1em;
+    color: var(--color-text-muted);
+    font-size: 14px;
+    margin: 0;
 }
 
 .table-container {
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
     overflow: hidden;
 }
 
@@ -38,18 +41,20 @@
 }
 
 .cancellation-table th {
-    background: #0d7a3e;
+    background: var(--color-primary);
     color: white;
-    padding: 15px 10px;
+    padding: 12px 16px;
     text-align: left;
     font-weight: 600;
+    font-size: 13px;
     white-space: nowrap;
 }
 
 .cancellation-table td {
-    padding: 12px 10px;
-    border-bottom: 1px solid #eee;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--color-border);
     vertical-align: middle;
+    color: var(--color-text);
 }
 
 .cancellation-table tr:hover {
@@ -64,16 +69,7 @@
     background: #f0f0f0;
 }
 
-/* Badges */
-.badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
+/* Badges — using shared badge-modern from app.css */
 .badge-pending {
     background: #f5f5f5;
     color: #616161;
@@ -96,47 +92,57 @@
 }
 
 .btn-approve {
-    background-color: #0d7a3e;
+    background-color: var(--color-primary);
     color: white;
     padding: 8px 14px;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: 13px;
-    transition: background 0.2s;
+    font-weight: 600;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-approve:hover {
-    background-color: #0a5e2f;
+    background-color: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
 }
 
 .btn-deny {
-    background-color: #dc3545;
+    background-color: var(--color-danger);
     color: white;
     padding: 8px 14px;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: 13px;
-    transition: background 0.2s;
+    font-weight: 600;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-deny:hover {
     background-color: #b91c1c;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
 }
 
 .btn-cancel-modal {
-    background-color: #6c757d;
-    color: white;
+    background: #f3f4f6;
+    color: #374151;
     padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: 13px;
+    font-weight: 500;
+    transition: all var(--transition-base);
 }
 
 .btn-cancel-modal:hover {
-    background-color: #5a6268;
+    background: #e5e7eb;
 }
 
 /* Modal Styles */
@@ -151,16 +157,17 @@
 }
 
 .modal-content {
-    background: white;
+    background: var(--color-surface);
     margin: 10% auto;
     padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-xl);
     position: relative;
 }
 
 .modal-content h3 {
-    color: #333;
+    color: var(--color-text);
+    font-weight: 600;
     margin-bottom: 8px;
 }
 
@@ -170,11 +177,11 @@
     top: 15px;
     font-size: 24px;
     cursor: pointer;
-    color: #999;
+    color: var(--color-text-muted);
 }
 
 .close:hover {
-    color: #333;
+    color: var(--color-text);
 }
 
 .form-group {
@@ -226,11 +233,11 @@
 }
 
 .toast-success {
-    background-color: #0d7a3e;
+    background-color: var(--color-primary);
 }
 
 .toast-error {
-    background-color: #dc3545;
+    background-color: var(--color-danger);
 }
 
 @keyframes slideIn {

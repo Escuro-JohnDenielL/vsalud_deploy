@@ -20,7 +20,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Get button elements
     const editBtn = document.getElementById("edit-profile-btn");
-    const logoutBtn = document.getElementById("logout-btn");
     const changePasswordLink = document.getElementById("change-password-link");
     // PROFILE PICTURE: commented out for now — re-enable later
     // const changePicBtn = document.getElementById("change-pic-btn");
@@ -189,16 +188,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return adminHistory.filter((entry) => entry.type === currentFilter);
     }
 
-    function getHistoryIcon(type) {
-        const icons = {
-            login: "🔐",
-            profile: "👤",
-            system: "⚙️",
-            security: "🛡️",
-        };
-        return icons[type] || "📝";
-    }
-
     function displayHistory() {
         const filteredHistory = filterHistory();
         const historyToShow = filteredHistory.slice(
@@ -219,9 +208,6 @@ document.addEventListener("DOMContentLoaded", function () {
         historyToShow.forEach((entry) => {
             const li = document.createElement("li");
             li.innerHTML = `
-                <div class="history-icon ${entry.type}">
-                    ${getHistoryIcon(entry.type)}
-                </div>
                 <div class="history-content">
                     <div class="history-action">${entry.action}</div>
                     <div class="history-details">${entry.details}</div>
@@ -298,44 +284,6 @@ document.addEventListener("DOMContentLoaded", function () {
     //     return newImageModal;
     // }
 
-    // FIXED LOGOUT FUNCTION
-    console.log("logoutBtn:", logoutBtn); // Debug log
-
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", function (e) {
-            e.preventDefault();
-            console.log("Logout button clicked!"); // Debug log
-
-            showConfirmModal(
-                "Confirm Logout",
-                "Are you sure you want to logout?",
-                () => {
-                    console.log("Logout confirmed!"); // Debug log
-
-                    // Add to history before logout
-                    addToHistory(
-                        "login",
-                        "Admin logout",
-                        "Admin logged out of the system"
-                    );
-
-                    // Find the form and submit it
-                    const form = logoutBtn.closest("form");
-                    if (form) {
-                        console.log("Form found, submitting..."); // Debug log
-                        form.submit();
-                    } else {
-                        console.error("Logout form not found!");
-                        // Fallback: redirect to logout route
-                        window.location.href = "/admin/logout";
-                    }
-                }
-            );
-        });
-    } else {
-        console.warn("logout-btn element not found in DOM");
-    }
-
     // Event Listeners
     if (historyFilter) {
         historyFilter.addEventListener("change", function () {
@@ -407,6 +355,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if (changePasswordLink && passwordModal) {
         changePasswordLink.addEventListener("click", function (e) {
             e.preventDefault();
+            // Reset to step 1
+            resetPasswordModal();
             passwordModal.style.display = "block";
             addToHistory(
                 "security",
@@ -414,6 +364,29 @@ document.addEventListener("DOMContentLoaded", function () {
                 "Opened password change form"
             );
         });
+    }
+
+    // Helper to reset the password modal to step 1
+    function resetPasswordModal() {
+        const step1 = document.getElementById("password-step-1");
+        const step2 = document.getElementById("password-step-2");
+        const currentPw = document.getElementById("current-password");
+        const resetCode = document.getElementById("reset-code");
+        const newPw = document.getElementById("new-password");
+        const confirmPw = document.getElementById("confirm-password");
+        const step1Msg = document.getElementById("step-1-message");
+
+        if (step1) step1.style.display = "block";
+        if (step2) step2.style.display = "none";
+        if (currentPw) currentPw.value = "";
+        if (resetCode) resetCode.value = "";
+        if (newPw) newPw.value = "";
+        if (confirmPw) confirmPw.value = "";
+        if (step1Msg) {
+            step1Msg.style.display = "none";
+            step1Msg.textContent = "";
+            step1Msg.className = "info-message";
+        }
     }
 
     // Close Modal Functions - Only add listeners if elements exist
@@ -604,72 +577,28 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Change Password Form Submit - FIXED VERSION
-    if (passwordForm) {
-        passwordForm.addEventListener("submit", function (e) {
-            e.preventDefault();
+    // ===== PASSWORD CHANGE - TWO STEP FLOW =====
 
+    const sendCodeBtn = document.getElementById("send-code-btn");
+    const verifyCodeBtn = document.getElementById("verify-code-btn");
+    const backToStep1Btn = document.getElementById("back-to-step1");
+    const showPwFields = document.getElementById("show-password-fields");
+
+    // Step 1: Send verification code to email
+    if (sendCodeBtn) {
+        sendCodeBtn.addEventListener("click", function () {
             const currentPassword = document.getElementById("current-password");
-            const newPassword = document.getElementById("new-password");
-            const confirmPassword = document.getElementById("confirm-password");
-
-            if (!currentPassword || !newPassword || !confirmPassword) {
-                console.error("Password form elements not found");
+            if (!currentPassword || currentPassword.value === "") {
+                showErrorMessage("Please enter your current password.", passwordModal);
                 return;
             }
 
-            // Basic validation
-            if (newPassword.value !== confirmPassword.value) {
-                showErrorMessage("New passwords do not match!", passwordModal);
-                addToHistory(
-                    "security",
-                    "Password change failed",
-                    "Password confirmation mismatch"
-                );
-                return;
-            }
+            const btn = sendCodeBtn;
+            const originalText = btn.textContent;
+            btn.textContent = "Sending...";
+            btn.disabled = true;
 
-            if (newPassword.value.length < 6) {
-                showErrorMessage(
-                    "Password must be at least 6 characters long!",
-                    passwordModal
-                );
-                addToHistory(
-                    "security",
-                    "Password change failed",
-                    "Password too short (minimum 6 characters)"
-                );
-                return;
-            }
-
-            if (currentPassword.value === "") {
-                showErrorMessage(
-                    "Please enter your current password!",
-                    passwordModal
-                );
-                addToHistory(
-                    "security",
-                    "Password change failed",
-                    "Current password not provided"
-                );
-                return;
-            }
-
-            // Confirm before sending
-            showConfirmModal(
-                "Change Password",
-                "Are you sure you want to change your password?",
-                function () {
-                    // Show loading state (optional)
-                    const submitBtn = passwordForm.querySelector(
-                        'button[type="submit"]'
-                    );
-                    const originalText = submitBtn.textContent;
-                    submitBtn.textContent = "Changing...";
-                    submitBtn.disabled = true;
-
-                    // Send request to backend - FIXED URL
-                    fetch("/admin/profile/change-password", {
+            fetch("/admin/profile/send-reset-code", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -679,73 +608,158 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
                 body: JSON.stringify({
                     current_password: currentPassword.value,
-                    new_password: newPassword.value,
-                    new_password_confirmation: confirmPassword.value,
                 }),
             })
-                .then((response) => {
-                    // Reset button state
-                    submitBtn.textContent = originalText;
-                    submitBtn.disabled = false;
-
-                    return response.json();
-                })
+                .then((response) => response.json())
                 .then((data) => {
-                    if (data.success) {
-                        // Close modal and clear form
-                        if (passwordModal) passwordModal.style.display = "none";
-                        passwordForm.reset();
+                    btn.textContent = originalText;
+                    btn.disabled = false;
 
-                        showSuccessModal(data.message);
+                    if (data.success) {
+                        // Show step 2
+                        document.getElementById("password-step-1").style.display = "none";
+                        document.getElementById("password-step-2").style.display = "block";
                         addToHistory(
                             "security",
-                            "Password changed successfully",
-                            "Admin account password updated"
+                            "Verification code sent",
+                            "Password reset code sent to admin email"
                         );
                     } else {
-                        // Handle validation errors
                         if (data.errors) {
                             let errorMessage = "";
                             Object.values(data.errors).forEach((errors) => {
                                 errorMessage += errors.join(", ") + " ";
                             });
-                            showErrorMessage(
-                                errorMessage.trim(),
-                                passwordModal
-                            );
+                            showErrorMessage(errorMessage.trim(), passwordModal);
                         } else {
-                            showErrorMessage(
-                                data.message || "Password change failed.",
-                                passwordModal
-                            );
+                            showErrorMessage(data.message || "Failed to send code.", passwordModal);
                         }
-
-                        addToHistory(
-                            "security",
-                            "Password change failed",
-                            data.message || "Unknown error"
-                        );
+                        addToHistory("security", "Password reset code failed", data.message || "Unknown error");
                     }
                 })
                 .catch((err) => {
-                    // Reset button state
-                    submitBtn.textContent = originalText;
-                    submitBtn.disabled = false;
-
-                    console.error("Password update error", err);
-                    showErrorMessage(
-                        "An error occurred while updating password.",
-                        passwordModal
-                    );
-                    addToHistory(
-                        "security",
-                        "Password change error",
-                        "Network or server error occurred"
-                    );
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                    console.error("Send code error", err);
+                    showErrorMessage("An error occurred while sending the code.", passwordModal);
                 });
-        });  // closes showConfirmModal callback
-    });  // closes addEventListener submit
-}  // closes if (passwordForm)
+        });
+    }
+
+    // Step 2: Verify code and change password
+    if (verifyCodeBtn) {
+        verifyCodeBtn.addEventListener("click", function () {
+            const currentPassword = document.getElementById("current-password");
+            const resetCode = document.getElementById("reset-code");
+            const newPassword = document.getElementById("new-password");
+            const confirmPassword = document.getElementById("confirm-password");
+
+            if (!resetCode || resetCode.value.trim() === "") {
+                showErrorMessage("Please enter the verification code sent to your email.", passwordModal);
+                return;
+            }
+
+            if (resetCode.value.trim().length !== 6) {
+                showErrorMessage("Verification code must be 6 digits.", passwordModal);
+                return;
+            }
+
+            if (!newPassword || newPassword.value === "") {
+                showErrorMessage("Please enter a new password.", passwordModal);
+                return;
+            }
+
+            if (newPassword.value.length < 8) {
+                showErrorMessage("New password must be at least 8 characters long.", passwordModal);
+                return;
+            }
+
+            if (newPassword.value !== confirmPassword.value) {
+                showErrorMessage("New passwords do not match!", passwordModal);
+                addToHistory("security", "Password change failed", "Password confirmation mismatch");
+                return;
+            }
+
+            const btn = verifyCodeBtn;
+            const originalText = btn.textContent;
+            btn.textContent = "Changing...";
+            btn.disabled = true;
+
+            fetch("/admin/profile/change-password", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute("content"),
+                },
+                body: JSON.stringify({
+                    current_password: currentPassword ? currentPassword.value : "",
+                    reset_code: resetCode.value.trim(),
+                    new_password: newPassword.value,
+                    new_password_confirmation: confirmPassword.value,
+                }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+
+                    if (data.success) {
+                        passwordModal.style.display = "none";
+                        resetPasswordModal();
+                        showSuccessModal(data.message);
+                        addToHistory("security", "Password changed successfully", "Admin account password updated");
+                    } else {
+                        if (data.errors) {
+                            let errorMessage = "";
+                            Object.values(data.errors).forEach((errors) => {
+                                errorMessage += errors.join(", ") + " ";
+                            });
+                            showErrorMessage(errorMessage.trim(), passwordModal);
+                        } else {
+                            showErrorMessage(data.message || "Password change failed.", passwordModal);
+                        }
+                        addToHistory("security", "Password change failed", data.message || "Unknown error");
+                    }
+                })
+                .catch((err) => {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                    console.error("Password update error", err);
+                    showErrorMessage("An error occurred while changing password.", passwordModal);
+                    addToHistory("security", "Password change error", "Network or server error occurred");
+                });
+        });
+    }
+
+    // Back button: go from step 2 to step 1
+    if (backToStep1Btn) {
+        backToStep1Btn.addEventListener("click", function () {
+            document.getElementById("password-step-2").style.display = "none";
+            document.getElementById("password-step-1").style.display = "block";
+            // Clear step 2 fields
+            const resetCode = document.getElementById("reset-code");
+            const newPw = document.getElementById("new-password");
+            const confirmPw = document.getElementById("confirm-password");
+            if (resetCode) resetCode.value = "";
+            if (newPw) newPw.value = "";
+            if (confirmPw) confirmPw.value = "";
+        });
+    }
+
+    // Toggle show passwords on step 2
+    if (showPwFields) {
+        showPwFields.addEventListener("change", function () {
+            const newPw = document.getElementById("new-password");
+            const confirmPw = document.getElementById("confirm-password");
+            const type = this.checked ? "text" : "password";
+            if (newPw) newPw.type = type;
+            if (confirmPw) confirmPw.type = type;
+        });
+    }
+
+    // End of password change two-step flow
 
     // Helper function to show success modal
     function showSuccessModal(message) {

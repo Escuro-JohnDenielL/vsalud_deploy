@@ -148,9 +148,9 @@
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
-.metric-card.primary { border-left-color: #0d7a3e; }
-.metric-card.secondary { border-left-color: #0d7a3e; }
-.metric-card.accent { border-left-color: #dc2626; }
+.metric-card.primary { border-left-color: var(--color-primary); }
+.metric-card.secondary { border-left-color: var(--color-primary); }
+.metric-card.accent { border-left-color: var(--color-danger); }
 .metric-card.warning { border-left-color: #6b7280; }
 
 .metric-icon {
@@ -165,17 +165,17 @@
 }
 
 .primary .metric-icon {
-  background: linear-gradient(135deg, #0d7a3e, #0a5e2f);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
   color: white;
 }
 
 .secondary .metric-icon {
-  background: linear-gradient(135deg, #0d7a3e, #0a5e2f);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
   color: white;
 }
 
 .accent .metric-icon {
-  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  background: linear-gradient(135deg, var(--color-danger), #b91c1c);
   color: white;
 }
 
@@ -211,8 +211,8 @@
   font-weight: 600;
 }
 
-.metric-change.positive { color: #0d7a3e; }
-.metric-change.negative { color: #dc2626; }
+.metric-change.positive { color: var(--color-primary); }
+.metric-change.negative { color: var(--color-danger); }
 .metric-change.neutral { color: #6b7280; }
 
 /* === Chart Grid === */
@@ -277,12 +277,12 @@
 }
 
 .filter-select:hover {
-  border-color: #0d7a3e;
+  border-color: var(--color-primary);
 }
 
 .filter-select:focus {
   outline: none;
-  border-color: #0d7a3e;
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(13, 122, 62, 0.1);
 }
 
@@ -297,8 +297,8 @@
 }
 
 .icon-btn:hover {
-  background: #0d7a3e;
-  border-color: #0d7a3e;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
   color: white;
 }
 
@@ -346,8 +346,8 @@
   color: #2d2d2d;
 }
 
-.stat-value.positive { color: #0d7a3e; }
-.stat-value.negative { color: #dc2626; }
+.stat-value.positive { color: var(--color-primary); }
+.stat-value.negative { color: var(--color-danger); }
 
 /* === Activity Section === */
 .activity-section {

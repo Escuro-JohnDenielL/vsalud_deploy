@@ -24,9 +24,7 @@
         <img src="{{ asset('images/background_picture.jpeg') }}" alt="Villa Salud Header" class="header-banner">
     </header>
 
-    <a href="{{ url('/') }}" class="site-home-btn" title="Back to Homepage">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    </a>
+    {{-- Removed site-home-btn — use the Logout button in Settings to end your session properly --}}
 
     @php
         $adminUser = auth('admin')->user();
@@ -166,6 +164,14 @@
                         <a href="{{ route('admin.profile') }}" class="{{ request()->is('admin/profile') ? 'active' : '' }}">
                             Admin Profile
                         </a>
+                    </li>
+                    <li>
+                        <form method="POST" action="{{ route('admin.logout') }}" style="display:inline;">
+                            @csrf
+                            <button type="submit" style="background:none;border:none;color:#dc3545;cursor:pointer;font:inherit;padding:8px 20px;width:100%;text-align:left;">
+                                Logout
+                            </button>
+                        </form>
                     </li>
                 </ul>
             </li>

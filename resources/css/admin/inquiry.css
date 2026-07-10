@@ -38,12 +38,13 @@ nav i {
 
 .head-title h1 {
   color: var(--color-primary);
-  font-size: 2.5em;
-  margin-bottom: 10px;
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 6px;
 }
 
 .head-title p {
-  font-size: 16px;
+  font-size: 14px;
   color: var(--color-text-muted);
   margin: 0;
 }
@@ -52,27 +53,21 @@ nav i {
 .table-data {
   margin-top: 20px;
   background: var(--color-surface);
-  padding: 20px;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
-  overflow-x: auto;
   border: 1px solid var(--color-border);
+  overflow: hidden;
 }
 
-.table-data .head {
-  text-align: center;
-  margin-bottom: 20px;
+/* Scrollable table wrapper */
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-.table-data .head h3 {
-  font-size: 20px;
-  color: var(--color-text);
-  margin: 0;
-  font-family: var(--font-heading);
-}
-
-.table-data table {
+.table-wrapper table {
   width: 100%;
+  min-width: 900px;
   border-collapse: collapse;
 }
 
@@ -96,6 +91,44 @@ nav i {
 
 .table-data tbody tr {
   transition: background var(--transition-fast);
+}
+
+/* Sticky Actions column */
+.table-data .sticky-col {
+  position: sticky;
+  right: 0;
+  background: inherit;
+  z-index: 1;
+}
+
+.table-data thead .sticky-col {
+  background: var(--color-primary);
+}
+
+.table-data tbody tr .sticky-col {
+  background: var(--color-surface);
+}
+
+.table-data tbody tr:hover .sticky-col {
+  background: var(--color-primary-50);
+}
+
+.table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+  background: var(--color-bg);
+  border-radius: 4px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 4px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-hover);
 }
 
 .table-data tbody tr:hover {
@@ -331,7 +364,7 @@ select:focus {
   }
   
   .table-data {
-    overflow-x: scroll;
+    padding: 12px;
   }
   
   .status-dropdown {
@@ -346,25 +379,6 @@ select:focus {
   nav h2 {
     font-size: 22px;
   }
-}
-
-/* === Table scroll styling === */
-.table-data::-webkit-scrollbar {
-  height: 8px;
-}
-
-.table-data::-webkit-scrollbar-track {
-  background: var(--color-bg);
-  border-radius: 4px;
-}
-
-.table-data::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-  border-radius: 4px;
-}
-
-.table-data::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-hover);
 }
 
 /* Common style for both buttons (optional but neat) */

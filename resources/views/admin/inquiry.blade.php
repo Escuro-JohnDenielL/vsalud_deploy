@@ -17,9 +17,7 @@
 
                 <div class="table-data">
                     <div class="order">
-                        <div class="head">
-                            <h3>Recent Inquiries</h3>
-                        </div>
+                        <div class="table-wrapper">
                         <table>
                             <thead>
                                 <tr>
@@ -33,7 +31,7 @@
                                     <th>Theme and Motif</th>
                                     <th>Status</th>
                                     <th>Submitted By</th>
-                                    <th>Action</th>
+                                    <th class="sticky-col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -71,7 +69,7 @@
                                             </select>
                                         </td>
                                         <td>patron</td>
-                                        <td>
+                                        <td class="sticky-col">
                                             <button class="reply-btn" data-index="{{ $index }}">Reply</button>
                                             @if ($inquiry->status === 'Completed')
                                                 <button class="undo-btn"
@@ -82,6 +80,7 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 </div>
             </main>

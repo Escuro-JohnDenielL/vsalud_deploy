@@ -21,10 +21,6 @@
 
                 <div class="table-data">
                     <div class="order">
-                        <div class="head">
-                            <h3>All Feedback</h3>
-                        </div>
-
                         @if($feedbacks->isEmpty())
                             <p class="no-data">No feedback submitted yet.</p>
                         @else

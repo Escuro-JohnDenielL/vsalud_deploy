@@ -38,7 +38,7 @@ class AdminManagementController extends Controller
             'f_name'          => 'required|string|max:50',
             'l_name'          => 'required|string|max:50',
             'phone'           => 'required|digits:11',
-            'password'        => 'required|min:8|confirmed|regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?]).+$/',
+            'password'        => ['required', 'min:8', 'confirmed', 'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?]).+$/'],
             // 'profile_picture' => 'nullable|in:default.png,boy.png,boy1.png,boy2.png,girl.png,girl1.png,girl2.png', // temporarily removed
         ]);
 
@@ -91,7 +91,7 @@ class AdminManagementController extends Controller
 
         // Password is optional on update
         if ($request->filled('password')) {
-            $rules['password'] = 'min:8|confirmed|regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?]).+$/';
+            $rules['password'] = ['min:8', 'confirmed', 'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?]).+$/'];
         }
 
         $validator = Validator::make($request->all(), $rules);

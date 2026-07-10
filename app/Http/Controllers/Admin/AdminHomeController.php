@@ -11,6 +11,15 @@ use Illuminate\Support\Facades\DB;
 
 class AdminHomeController extends Controller
 {
+    /**
+     * Display the admin dashboard with packages.
+     */
+    public function index()
+    {
+        $packages = \App\Models\Package::all();
+        return view('admin.home', compact('packages'));
+    }
+
     public function getInquiryData(Request $request)
     {
         $filter = $request->query('filter', 'month'); // Default: month
@@ -222,9 +231,4 @@ class AdminHomeController extends Controller
         ]);
     }
 
-    public function index()
-    {
-        $packages = \App\Models\Package::all();
-        return view('admin.home', compact('packages'));
-    }
 }

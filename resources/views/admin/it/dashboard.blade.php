@@ -4,74 +4,56 @@
 
 @push('styles')
 <style>
-    .it-container { padding: 32px 20px 60px; }
-    .it-title { font-family: Georgia, serif; font-size: 28px; color: #0d7a3e; margin: 0 0 6px; }
-    .it-subtitle { color: #6b7280; margin: 0 0 24px; }
-    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 28px; }
-    .stat-card { background: #f9fafb; border-radius: 14px; padding: 18px; border: 1px solid #e5e7eb; text-align: center; }
-    .stat-card strong { display: block; font-size: 28px; color: #0d7a3e; }
-    .stat-card span { color: #6b7280; font-size: 13px; }
-    .panel { background: #fff; border-radius: 16px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 22px; margin-bottom: 24px; }
-    .panel h2 { font-size: 18px; margin: 0 0 16px; color: #2d2d2d; font-weight: 600; }
-    .panel-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; border-bottom: 1px solid #eef2ed; padding-bottom: 10px; }
-    .panel-header h2 { margin: 0; border-bottom: none; padding-bottom: 0; }
+    .it-container { padding: 28px 32px; }
     .table-wrap { overflow-x: auto; }
     table.it-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    table.it-table th { text-align: left; padding: 10px 8px; border-bottom: 2px solid #e5e7eb; color: #6b7280; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
-    table.it-table td { padding: 10px 8px; border-bottom: 1px solid #eef2ed; vertical-align: middle; font-size: 14px; color: #2d2d2d; }
+    table.it-table th { text-align: left; padding: 12px 16px; background: var(--color-primary); color: white; font-weight: 600; font-size: 13px; white-space: nowrap; }
+    table.it-table td { padding: 12px 16px; border-bottom: 1px solid var(--color-border); vertical-align: middle; font-size: 14px; color: var(--color-text); }
+    table.it-table tbody tr:hover { background: var(--color-primary-50); }
     table.it-table tr.deleted td { color: #9ca3af; font-style: italic; }
-    .badge-role { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .badge-role { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
     .badge-super { background: #e8f5e9; color: #2e7d32; }
     .badge-admin { background: #f5f5f5; color: #616161; }
     .badge-deleted { background: #fce4ec; color: #c62828; }
     .field { margin-bottom: 12px; }
     .field label { display: block; font-weight: 600; margin-bottom: 4px; color: #22332a; font-size: 13px; }
-    .field input, .field select { width: 100%; border: 1px solid #d7dfd5; border-radius: 10px; padding: 9px 12px; font-size: 14px; }
-    .btn-primary, .btn-sm { border: none; border-radius: 999px; font-weight: 600; cursor: pointer; display: inline-block; text-decoration: none; }
-    .btn-primary { background: #0d7a3e; color: #fff; padding: 10px 20px; }
-    .btn-primary:hover { background: #0a5e2f; }
-    .btn-sm { padding: 6px 14px; font-size: 12px; }
-    .btn-success { background: #0d7a3e; color: #fff; }
-    .btn-danger { background: #dc3545; color: #fff; }
-    .alert { padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; }
-    .alert-success { background: #e8f5e9; border: 1px solid #c8e6c9; color: #2e7d32; }
-    .alert-error { background: #fce4ec; border: 1px solid #f8bbd0; color: #c62828; }
-    .muted { color: #6b7280; font-size: 13px; }
-    .pagination-info { font-size: 13px; color: #6b7280; margin-top: 12px; }
-    .action-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .field input, .field select { width: 100%; border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 9px 12px; font-size: 14px; }
+    .pagination-info { font-size: 13px; color: var(--color-text-muted); margin-top: 12px; }
 </style>
 @endpush
 
 @section('content')
 <div class="it-container">
-    <h1 class="it-title">IT Management</h1>
-    <p class="it-subtitle">System administration — manage admin accounts.</p>
+    <div class="admin-page-header">
+        <h1>IT Management</h1>
+        <p>System administration — manage admin accounts.</p>
+    </div>
 
     @if (session('success'))
         <div class="alert alert-success" id="page-success">{{ session('success') }}</div>
     @endif
 
     {{-- Stats --}}
-    <div class="stats-row">
-        <div class="stat-card">
+    <div class="admin-stats-row">
+        <div class="admin-stat-card">
             <strong>{{ $activeAdminCount }}</strong>
             <span>Active Admins</span>
         </div>
-        <div class="stat-card">
+        <div class="admin-stat-card">
             <strong>{{ $deletedAdminCount }}</strong>
             <span>Deactivated</span>
         </div>
-        <div class="stat-card">
+        <div class="admin-stat-card">
             <strong>{{ $adminCount }}</strong>
             <span>Total Accounts</span>
         </div>
     </div>
 
     {{-- Admin Accounts List --}}
-    <div class="panel">
-        <div class="panel-header">
+    <div class="admin-panel">
+        <div class="admin-panel-header">
             <h2>All Admin Accounts</h2>
-            <button class="btn-primary" data-bs-toggle="modal" data-bs-target="#createAdminModal">+ Create New Admin</button>
+            <button class="admin-btn admin-btn-primary" data-bs-toggle="modal" data-bs-target="#createAdminModal">+ Create New Admin</button>
         </div>
         <div class="table-wrap">
             <table class="it-table">
@@ -108,27 +90,27 @@
                                 @endif
                             </td>
                             <td>
-                                <div class="action-group">
+                                <div class="admin-action-group">
                                     @if (!$admin->trashed())
-                                        <a href="{{ route('admin.it.edit', $admin->admin_id) }}" class="btn-sm" style="background:#0d7a3e;color:#fff;">Edit</a>
+                                        <a href="{{ route('admin.it.edit', $admin->admin_id) }}" class="admin-btn admin-btn-primary admin-btn-sm">Edit</a>
                                         @if ($admin->role !== 'super_admin')
-                                            <a href="{{ route('admin.it.permissions', $admin->admin_id) }}" class="btn-sm" style="background:#0d7a3e;color:#fff;">Permissions</a>
+                                            <a href="{{ route('admin.it.permissions', $admin->admin_id) }}" class="admin-btn admin-btn-primary admin-btn-sm">Permissions</a>
                                         @endif
                                         @if ($admin->role !== 'super_admin' && (int) $admin->admin_id !== (int) auth('admin')->id())
                                             <form method="POST" action="{{ route('admin.it.deactivate', $admin->admin_id) }}" style="display:inline;" id="deactivate-form-{{ $admin->admin_id }}">
                                                 @csrf
-                                                <button type="button" class="btn-sm btn-danger" onclick="showConfirmModal('Deactivate Admin', 'Deactivate {{ $admin->f_name }} {{ $admin->l_name }}?', 'deactivate-form-{{ $admin->admin_id }}')">Deactivate</button>
+                                                <button type="button" class="admin-btn admin-btn-danger admin-btn-sm" onclick="showConfirmModal('Deactivate Admin', 'Deactivate {{ $admin->f_name }} {{ $admin->l_name }}?', 'deactivate-form-{{ $admin->admin_id }}')">Deactivate</button>
                                             </form>
                                         @endif
                                     @else
                                         <form method="POST" action="{{ route('admin.it.restore', $admin->admin_id) }}" style="display:inline;">
                                             @csrf
-                                            <button type="submit" class="btn-sm btn-success">Restore</button>
+                                            <button type="submit" class="admin-btn admin-btn-primary admin-btn-sm">Restore</button>
                                         </form>
                                         <form method="POST" action="{{ route('admin.it.force-delete', $admin->admin_id) }}" style="display:inline;" id="force-delete-form-{{ $admin->admin_id }}">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="button" class="btn-sm btn-danger" onclick="showConfirmModal('Delete Forever', 'Permanently delete this account? This cannot be undone.', 'force-delete-form-{{ $admin->admin_id }}')">Delete Forever</button>
+                                            <button type="button" class="admin-btn admin-btn-danger admin-btn-sm" onclick="showConfirmModal('Delete Forever', 'Permanently delete this account? This cannot be undone.', 'force-delete-form-{{ $admin->admin_id }}')">Delete Forever</button>
                                         </form>
                                     @endif
                                 </div>

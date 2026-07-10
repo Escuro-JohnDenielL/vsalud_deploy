@@ -5,31 +5,29 @@
 }
 
 .page-header {
-    margin-bottom: 30px;
+    margin-bottom: 24px;
     text-align: center;
 }
 
 .page-header h1 {
-    color: #0d7a3e;
-    font-size: 2.5em;
-    margin-bottom: 10px;
+    color: var(--color-primary);
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 6px;
 }
 
 .page-header p {
-    color: #6b7280;
-    font-size: 1.1em;
+    color: var(--color-text-muted);
+    font-size: 14px;
+    margin: 0;
 }
 
 .table-container {
-    background: #fff;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-md);
     overflow: hidden;
-    transition: box-shadow var(--transition-base);
-}
-
-.table-container:hover {
-    box-shadow: var(--shadow-lg);
 }
 
 .table-wrapper {
@@ -43,64 +41,61 @@
 }
 
 .reservation-table th {
-    background: #0d7a3e;
+    background: var(--color-primary);
     color: white;
-    padding: 15px 10px;
+    padding: 12px 16px;
     text-align: left;
     font-weight: 600;
+    font-size: 13px;
     white-space: nowrap;
 }
 
 .reservation-table td {
-    padding: 12px 10px;
-    border-bottom: 1px solid #eee;
-    vertical-align: top;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+    color: var(--color-text);
 }
 
-.reservation-table tr {
-    transition: background var(--transition-fast);
-}
-
-.reservation-table tr:hover {
-    background: #f8f9fa;
-}
-
-.reservation-table tr:nth-child(even) {
-    background: #fafafa;
-}
-
-.reservation-table tr:nth-child(even):hover {
-    background: #f0f0f0;
+.reservation-table tbody tr:hover {
+    background: var(--color-primary-50);
 }
 
 .status-dropdown {
     padding: 6px 10px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     font-size: 13px;
     background: white;
     cursor: pointer;
     transition: border-color var(--transition-fast);
+    font-family: var(--font-body);
 }
 
 .status-dropdown:hover {
-    border-color: #0d7a3e;
+    border-color: var(--color-primary);
+}
+
+.status-dropdown:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(13, 122, 62, 0.1);
 }
 
 .status-dropdown option[value="active"] {
-    color: #0d7a3e;
+    color: var(--color-primary);
 }
 
 .status-dropdown option[value="canceled"] {
-    color: #dc3545;
+    color: var(--color-danger);
 }
 
 .status-dropdown option[value="completed"] {
-    color: #6b7280;
+    color: var(--color-text-muted);
 }
 
 .receipt-link {
-    color: #0d7a3e;
+    color: var(--color-primary);
     text-decoration: none;
     font-weight: 500;
 }
@@ -127,25 +122,21 @@
 }
 
 .btn-view {
-    background: #0d7a3e;
+    background: var(--color-primary);
     color: white;
 }
 
 .btn-view:hover {
-    background: #0a5e2f;
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+    background: var(--color-primary-hover);
 }
 
 .btn-delete {
-    background: #dc3545;
+    background: var(--color-danger);
     color: white;
 }
 
 .btn-delete:hover {
-    background: #c82333;
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+    background: #b91c1c;
 }
 
 .pagination {
@@ -158,26 +149,26 @@
 }
 
 .btn-pagination {
-    padding: 10px 20px;
-    border: 1px solid #0d7a3e;
+    padding: 8px 16px;
+    border: 1px solid var(--color-primary);
     background: white;
-    color: #0d7a3e;
+    color: var(--color-primary);
     border-radius: var(--radius-sm);
     cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
     transition: all var(--transition-base);
     box-shadow: var(--shadow-sm);
 }
 
 .btn-pagination:hover {
-    background: #0d7a3e;
+    background: var(--color-primary);
     color: white;
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
 }
 
 .page-info {
     font-weight: 500;
-    color: #6b7280;
+    color: var(--color-text-muted);
 }
 
 .custom-modal {
@@ -304,12 +295,19 @@
     justify-content: center;
 }
 .modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
+    background: var(--color-surface);
+    padding: 24px;
+    border-radius: var(--radius-md);
     width: 50%;
+    max-width: 600px;
+    box-shadow: var(--shadow-xl);
 }
 .close {
     float: right;
     cursor: pointer;
+    font-size: 24px;
+    color: var(--color-text-muted);
+}
+.close:hover {
+    color: var(--color-text);
 }

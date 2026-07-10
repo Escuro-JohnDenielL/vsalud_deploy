@@ -5,24 +5,7 @@
 @push('styles')
 <style>
     .waitlist-container {
-        padding: 20px;
-    }
-
-    .page-header {
-        margin-bottom: 24px;
-    }
-
-    .page-header h1 {
-        font-size: 24px;
-        color: #2d2d2d;
-        margin: 0 0 8px 0;
-        font-weight: 600;
-    }
-
-    .page-header p {
-        color: #6b7280;
-        margin: 0;
-        font-size: 14px;
+        padding: 28px 32px;
     }
 
     /* Stats cards */
@@ -34,10 +17,10 @@
     }
 
     .stat-card {
-        background: white;
-        border-radius: 8px;
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
         padding: 16px 24px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         flex: 1;
         min-width: 120px;
         text-align: center;
@@ -46,33 +29,26 @@
     .stat-card .number {
         font-size: 28px;
         font-weight: 700;
-        color: #0d7a3e;
+        color: var(--color-primary);
         display: block;
     }
 
     .stat-card .label {
         font-size: 12px;
-        color: #6b7280;
+        color: var(--color-text-muted);
         text-transform: uppercase;
         letter-spacing: 0.5px;
         margin-top: 4px;
     }
 
-    .stat-card.waiting { border-top: 3px solid #e5e7eb; }
-    .stat-card.notified { border-top: 3px solid #e5e7eb; }
-    .stat-card.claimed { border-top: 3px solid #0d7a3e; }
-    .stat-card.expired { border-top: 3px solid #e5e7eb; }
+    .stat-card.waiting { border-top: 3px solid var(--color-border); }
+    .stat-card.notified { border-top: 3px solid var(--color-border); }
+    .stat-card.claimed { border-top: 3px solid var(--color-primary); }
+    .stat-card.expired { border-top: 3px solid var(--color-border); }
 
-    /* Table styles (reuse existing pattern) */
-    .table-container {
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        overflow: hidden;
-    }
-
+    /* Date grouping */
     .date-group {
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid var(--color-border);
     }
 
     .date-group:last-child {
@@ -80,12 +56,12 @@
     }
 
     .date-header {
-        background: #f8f9fa;
+        background: #f9fafb;
         padding: 12px 20px;
         font-weight: 600;
-        color: #2d2d2d;
+        color: var(--color-text);
         font-size: 15px;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid var(--color-border);
     }
 
     .waitlist-table {
@@ -95,32 +71,39 @@
 
     .waitlist-table th {
         text-align: left;
-        padding: 10px 16px;
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: #6b7280;
-        border-bottom: 1px solid #eee;
-        background: #fafafa;
+        padding: 12px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        color: white;
+        background: var(--color-primary);
+        white-space: nowrap;
     }
 
     .waitlist-table td {
-        padding: 10px 16px;
+        padding: 12px 16px;
         font-size: 14px;
-        border-bottom: 1px solid #f0f0f0;
-        color: #2d2d2d;
+        border-bottom: 1px solid var(--color-border);
+        color: var(--color-text);
     }
 
-    .waitlist-table tr:last-child td {
+    .waitlist-table tbody tr:hover {
+        background: var(--color-primary-50);
+    }
+
+    .waitlist-table tbody tr:last-child td {
         border-bottom: none;
     }
 
-    .badge {
+    /* Badges */
+    .badge-waiting,
+    .badge-notified,
+    .badge-claimed,
+    .badge-expired {
         display: inline-block;
-        padding: 3px 10px;
-        border-radius: 12px;
+        padding: 4px 12px;
+        border-radius: 999px;
         font-size: 12px;
-        font-weight: 500;
+        font-weight: 600;
     }
 
     .badge-waiting { background: #f5f5f5; color: #616161; }
@@ -131,7 +114,7 @@
     .empty-state {
         text-align: center;
         padding: 60px 20px;
-        color: #888;
+        color: var(--color-text-muted);
     }
 
     .empty-state p {

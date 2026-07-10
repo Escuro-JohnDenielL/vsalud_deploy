@@ -1,6 +1,7 @@
 .dashboard-container {
   display: flex;
   justify-content: center;
+  align-items: flex-start;
   gap: 30px;
   padding: 40px;
   flex-wrap: wrap;
@@ -13,12 +14,6 @@
   padding: 20px;
   width: 350px;
   text-align: center;
-  transition: box-shadow var(--transition-base), transform var(--transition-base);
-}
-
-.admin-profile:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
 }
 
 .profile-header {
@@ -93,7 +88,7 @@ h3 {
 }
 
 .change-password {
-  color: #0d7a3e;
+  color: var(--color-primary);
   text-decoration: none;
   font-size: 14px;
 }
@@ -110,7 +105,7 @@ h3 {
 }
 
 .edit-btn {
-  background: #0d7a3e;
+  background: var(--color-primary);
   color: white;
   padding: 10px 15px;
   border: none;
@@ -127,29 +122,11 @@ h3 {
   box-shadow: var(--shadow-md);
 }
 
-.logout-btn {
-  background: #dc3545;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  cursor: pointer;
-  transition: all var(--transition-base);
-  box-shadow: var(--shadow-sm);
-}
-
-.logout-btn:hover {
-  background: #a71d2a;
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
 /* Admin History Section */
 .admin-history {
   background: white;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   padding: 20px;
   width: 100%;
   max-width: 500px;
@@ -158,11 +135,6 @@ h3 {
   flex-direction: column;
   box-sizing: border-box;
   overflow: hidden;
-  transition: box-shadow var(--transition-base);
-}
-
-.admin-history:hover {
-  box-shadow: var(--shadow-lg);
 }
 
 .history-header {
@@ -190,19 +162,20 @@ h3 {
 }
 
 .form-select {
-  padding: 8px 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
   background: white;
   cursor: pointer;
-  min-width: 150px;
-  color: #2d2d2d;
+  min-width: 140px;
+  color: #374151;
 }
 
 .form-select:focus {
   outline: none;
-  border-color: #0d7a3e;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.1);
 }
 
 .btn {
@@ -215,12 +188,13 @@ h3 {
 }
 
 .btn-danger {
-  background: #dc3545;
-  color: white;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
 }
 
 .btn-danger:hover {
-  background: #a71d2a;
+  background: #fee2e2;
 }
 
 .btn-sm {
@@ -232,11 +206,12 @@ h3 {
 .history-stats {
   display: flex;
   justify-content: space-around;
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 20px;
-  gap: 10px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 16px;
+  gap: 8px;
 }
 
 .stat-item {
@@ -246,17 +221,15 @@ h3 {
 
 .stat-number {
   display: block;
-  font-size: 24px;
-  font-weight: 700;
-  color: #0d7a3e;
-  margin-bottom: 5px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 2px;
 }
 
 .stat-label {
-  font-size: 12px;
+  font-size: 11px;
   color: #6b7280;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 /* Scrollable History List */
@@ -277,50 +250,16 @@ h3 {
 }
 
 .history-list li {
-  padding: 12px;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 10px 8px;
+  border-bottom: 1px solid #e5e7eb;
   display: flex;
-  flex-wrap: wrap;
   align-items: flex-start;
-  gap: 12px;
-  transition: background 0.15s ease;
+  gap: 8px;
   word-break: break-word;
-}
-
-.history-list li:hover {
-  background: #f9fafb;
 }
 
 .history-list li:last-child {
   border-bottom: none;
-}
-
-.history-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  color: white;
-  flex-shrink: 0;
-}
-
-.history-icon.login { 
-  background: #0d7a3e; 
-}
-
-.history-icon.profile { 
-  background: #6b7280; 
-}
-
-.history-icon.system { 
-  background: #6b7280; 
-}
-
-.history-icon.security { 
-  background: #dc3545; 
 }
 
 .history-content {
@@ -330,18 +269,16 @@ h3 {
 }
 
 .history-action {
-  font-weight: 500;
-  color: #2d2d2d;
+  font-weight: 600;
+  color: #1f2937;
   margin-bottom: 2px;
-  word-break: break-word;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .history-details {
   font-size: 12px;
   color: #6b7280;
-  word-break: break-word;
-  line-height: 1.3;
+  line-height: 1.4;
 }
 
 .history-time {
@@ -349,9 +286,8 @@ h3 {
   color: #9ca3af;
   text-align: right;
   flex-shrink: 0;
-  word-break: break-word;
-  min-width: 70px;
-  line-height: 1.2;
+  white-space: nowrap;
+  line-height: 1.4;
 }
 
 /* Scrollbar Styling */
@@ -376,14 +312,9 @@ h3 {
 /* Empty State */
 .history-empty {
   text-align: center;
-  padding: 40px 20px;
+  padding: 24px 20px;
   color: #6b7280;
-}
-
-.empty-icon {
-  font-size: 48px;
-  margin-bottom: 15px;
-  opacity: 0.5;
+  font-size: 13px;
 }
 
 /* Load More Button */
@@ -392,29 +323,27 @@ h3 {
 }
 
 .load-more-btn {
-  background: #0d7a3e;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: var(--radius-sm);
+  background: #f3f4f6;
+  color: #374151;
+  padding: 8px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all var(--transition-base);
+  font-size: 13px;
+  transition: background 0.15s ease;
 }
 
 .load-more-btn:hover {
-  background: #0a5e2f;
-  transform: translateY(-1px);
+  background: #e5e7eb;
 }
 
 /* Export Button */
 .export-btn {
-  background: #0d7a3e;
+  background: var(--color-primary);
   color: white;
   padding: 8px 12px;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   font-size: 12px;
   cursor: pointer;
   margin-left: 5px;
@@ -503,7 +432,7 @@ h3 {
 
 .form-group input:focus {
   outline: none;
-  border-color: #0d7a3e;
+  border-color: var(--color-primary);
 }
 
 .modal {
@@ -620,7 +549,7 @@ h3 {
 
 /* Error Message */
 .error-message {
-  color: #dc3545;
+  color: var(--color-danger);
   background: #f8d7da;
   border: 1px solid #f5c6cb;
   padding: 8px 12px;
@@ -631,6 +560,40 @@ h3 {
 }
 
 /* Responsive Design */
+/* Password Reset Step Info */
+.info-message {
+  color: var(--color-primary);
+  background: #e8f5e9;
+  border: 1px solid #c8e6c9;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin: 10px 0;
+  display: block;
+  font-size: 14px;
+}
+
+.info-message.error {
+  color: var(--color-danger);
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+
+.info-message.success {
+  color: var(--color-primary);
+  background: #e8f5e9;
+  border: 1px solid #c8e6c9;
+}
+
+#password-step-1 .form-group,
+#password-step-2 .form-group {
+  text-align: left;
+}
+
+#password-step-2 small {
+  display: block;
+  margin-top: 4px;
+}
+
 @media (max-width: 768px) {
   .dashboard-container {
     flex-direction: column;

@@ -27,7 +27,7 @@ class AuthController extends Controller
             'f_name' => 'required|string|max:50',
             'l_name' => 'required|string|max:50',
             'phone' => 'required|digits:11',
-            'password' => 'required|min:8|regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?]).+$/',
+            'password' => ['required', 'min:8', 'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?]).+$/'],
             'confirm_password' => 'required|same:password',
             // 'profile_picture' => 'nullable|in:default.png,boy.png,boy1.png,boy2.png,girl.png,girl1.png,girl2.png', // temporarily removed
         ]);

@@ -110,7 +110,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
     Route::view('/profile', 'admin.profile')->name('profile');
     Route::post('profile/update', [AdminProfileController::class, 'update'])->name('profile.update');
 
-    // For change password
+    // For change password (step 1: send email code)
+    Route::post('profile/send-reset-code', [AdminProfileController::class, 'sendPasswordResetCode'])->name('password.send-code')->middleware('auth.session');
+
+    // For change password (step 2: verify code & update)
     Route::post('profile/change-password', [AdminProfileController::class, 'changePassword'])->name('password.change')->middleware('auth.session');
 
     // All activities of Admin in the reports tab
@@ -255,3 +258,25 @@ Route::prefix('admin/permissions')->name('admin.permissions.')->middleware(['aut
     Route::post('/{id}/update', [AdminPermissionController::class, 'update'])->name('update');
     Route::post('/{id}/preset', [AdminPermissionController::class, 'applyPreset'])->name('preset');
 });
+
+// -------------------------------------------------------------------
+// IT Management Routes (User model + web guard — for IT administrators)
+// -------------------------------------------------------------------
+Route::prefix('it')->name('it.')->group(function () {
+    Route::get('/login', [\App\Http\Controllers\It\AccessController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [\App\Http\Controllers\It\AccessController::class, 'login'])->name('login.submit');
+});
+
+Route::prefix('it')->name('it.')->middleware(['auth:web', 'role:it'])->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\It\AccessController::class, 'dashboard'])->name('dashboard');
+    Route::post('/logout', [\App\Http\Controllers\It\AccessController::class, 'logout'])->name('logout');
+    Route::post('/admins', [\App\Http\Controllers\It\AccessController::class, 'storeAdmin'])->name('admins.store');
+});
+
+// -------------------------------------------------------------------
+// Generic fallback route named 'login' — used by Authenticate middleware
+// when no specific guard is matched
+// -------------------------------------------------------------------
+Route::get('/login', function () {
+    return redirect()->route('admin.login');
+})->name('login');

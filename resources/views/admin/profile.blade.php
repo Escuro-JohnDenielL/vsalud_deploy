@@ -64,10 +64,6 @@ if ($user && !$isSuperAdmin) {
     </div>
     <div class="buttons">
       <button class="edit-btn" id="edit-profile-btn">Edit Profile</button>
-      <form method="POST" action="{{ route('admin.logout') }}">
-        @csrf
-        <button type="button" id="logout-btn" class="logout-btn">Logout</button>
-      </form>
     </div>
   </div>
 
@@ -103,7 +99,6 @@ if ($user && !$isSuperAdmin) {
     <div class="history-list-container">
       <ul id="history-list" class="history-list"></ul>
       <div id="history-empty" class="history-empty" style="display: none;">
-        <div class="empty-icon">📋</div>
         <p>No history found.</p>
       </div>
     </div>
@@ -158,25 +153,45 @@ if ($user && !$isSuperAdmin) {
       <span class="close" id="close-password-modal">&times;</span>
     </div>
     <div class="modal-body">
-      <form id="password-form">
-        @csrf
+      {{-- Step 1: Verify current password & send code --}}
+      <div id="password-step-1">
+        <div id="step-1-message" style="display: none;" class="info-message"></div>
         <div class="form-group">
           <label for="current-password">Current Password:</label>
-          <input type="password" id="current-password" name="current_password" required>
+          <input type="password" id="current-password" name="current_password" required autocomplete="off">
+        </div>
+        <div class="modal-buttons">
+          <button type="button" id="send-code-btn" class="btn btn-primary">Send Code to Email</button>
+          <button type="button" id="cancel-password" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+
+      {{-- Step 2: Enter code & new password --}}
+      <div id="password-step-2" style="display: none;">
+        <div class="form-group">
+          <label for="reset-code">Verification Code:</label>
+          <input type="text" id="reset-code" name="reset_code" maxlength="6" placeholder="Enter 6-digit code" required autocomplete="off">
+          <small style="color: #6b7280; font-size: 12px;">Enter the code sent to your email</small>
         </div>
         <div class="form-group">
           <label for="new-password">New Password:</label>
-          <input type="password" id="new-password" name="new_password" required>
+          <input type="password" id="new-password" name="new_password" required autocomplete="off">
+          <small style="color: #6b7280; font-size: 12px;">Min 8 characters, 1 uppercase, 1 number, 1 special character</small>
         </div>
         <div class="form-group">
           <label for="confirm-password">Confirm New Password:</label>
-          <input type="password" id="confirm-password" name="confirm_password" required>
+          <input type="password" id="confirm-password" name="confirm_password" required autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="show-password-fields"> Show Passwords
+          </label>
         </div>
         <div class="modal-buttons">
-          <button type="submit" class="btn btn-primary">Change Password</button>
-          <button type="button" id="cancel-password" class="btn btn-secondary">Cancel</button>
+          <button type="button" id="verify-code-btn" class="btn btn-primary">Change Password</button>
+          <button type="button" id="back-to-step1" class="btn btn-secondary">Back</button>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>
