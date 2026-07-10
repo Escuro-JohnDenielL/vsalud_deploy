@@ -73,7 +73,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 // Protected Admin Routes (WITH MIDDLEWARE - requires authentication + page permissions)
-Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'page.permission'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session', 'page.permission'])->group(function () {
     // Admin Homepage
     Route::get('/home', [AdminHomeController::class, 'index'])->name('home');
 

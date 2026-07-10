@@ -82,7 +82,7 @@ class AdminProfileController extends Controller
             // Validate the request
             $validated = $request->validate([
                 'current_password' => 'required|string',
-                'new_password' => 'required|string|min:6',
+                'new_password' => 'required|string|min:8|regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?]).+$/',
                 'new_password_confirmation' => 'required|string|same:new_password',
             ]);
 

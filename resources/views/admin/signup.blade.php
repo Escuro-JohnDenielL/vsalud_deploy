@@ -46,7 +46,13 @@
                     <input type="text" id="phone" name="phone" required ><br>
 
                     <label>Password:</label>
-                    <input type="password" id="password" name="password" required><br>
+                    <input type="password" id="password" name="password" required>
+                    <div class="password-strength-container" style="margin-top:6px; margin-bottom:10px;">
+                        <div style="height:6px; background:#e0e0e0; border-radius:4px; overflow:hidden;">
+                            <div id="password-strength-bar" style="width:0%; height:100%; background:#dc3545; border-radius:4px;"></div>
+                        </div>
+                        <span id="password-strength-text" style="font-size:12px; color:#999;"></span>
+                    </div>
 
                     <label>Confirm Password:</label>
                     <input type="password" id="confirm_password" name="confirm_password" required><br>

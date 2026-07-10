@@ -27,7 +27,7 @@ class AuthController extends Controller
             'f_name' => 'required|string|max:50',
             'l_name' => 'required|string|max:50',
             'phone' => 'required|digits:11',
-            'password' => 'required|min:6',
+            'password' => 'required|min:8|regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?]).+$/',
             'confirm_password' => 'required|same:password',
             // 'profile_picture' => 'nullable|in:default.png,boy.png,boy1.png,boy2.png,girl.png,girl1.png,girl2.png', // temporarily removed
         ]);
@@ -100,6 +100,15 @@ class AuthController extends Controller
         }
 
         RateLimiter::hit($key, 60);
+
+        // Log the failed login attempt
+        ActivityLog::create([
+            'admin_id' => 0,
+            'activity_type' => 'failed_login',
+            'description' => "Failed login attempt for email '{$request->input('email')}' from IP {$request->ip()}",
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
 
         $remaining = 5 - RateLimiter::attempts($key);
 
