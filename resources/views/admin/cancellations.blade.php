@@ -77,6 +77,9 @@
                     </tbody>
                 </table>
             </div>
+            <div style="margin-top: 16px;">
+                {{ $requests->links() }}
+            </div>
         </div>
     </div>
 

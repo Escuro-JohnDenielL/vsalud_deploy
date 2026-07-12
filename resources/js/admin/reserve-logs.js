@@ -177,6 +177,7 @@ function viewReservation(id) {
             body.innerHTML = `
             <p><strong>Name:</strong> ${data.patron?.name || "N/A"}</p>
             <p><strong>Email:</strong> ${data.patron?.email || "N/A"}</p>
+            <p><strong>Code:</strong> ${data.tracking_code || "N/A"}</p>
             <p><strong>Date:</strong> ${data.date || "N/A"}</p>
             <p><strong>Time:</strong> ${data.time || "N/A"}</p>
             <p><strong>Venue:</strong> ${data.venue || "N/A"}</p>

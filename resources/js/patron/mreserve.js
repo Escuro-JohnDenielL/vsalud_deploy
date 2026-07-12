@@ -22,6 +22,9 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("field_other_event_type");
 
     const form = document.querySelector("form");
+    // Reset form on page load (prevents browser bfcache from restoring stale data)
+    if (form) form.reset();
+
     const dateInput = document.getElementById("field_date");
 
     const periodSelect = document.getElementById("field_period");

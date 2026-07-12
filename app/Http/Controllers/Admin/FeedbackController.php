@@ -9,7 +9,7 @@ class FeedbackController extends Controller
 {
     public function index()
     {
-        $feedbacks = Feedback::latest()->get();
+        $feedbacks = Feedback::latest()->paginate(10);
         return view('admin.feedback', compact('feedbacks'));
     }
 

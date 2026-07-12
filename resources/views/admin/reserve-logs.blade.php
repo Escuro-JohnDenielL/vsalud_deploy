@@ -20,6 +20,7 @@
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
+                            <th>Code</th>
                             <th>Date</th>
                             <th>Time</th>
                             <th>Message</th>
@@ -36,6 +37,7 @@
                             <tr>
                                 <td>{{ $reservation->patron->name ?? 'N/A' }}</td>
                                 <td>{{ $reservation->patron->email ?? '-' }}</td>
+                                <td><strong>{{ $reservation->inquiry->tracking_code ?? 'RSV-' . str_pad($reservation->reserve_id, 6, '0', STR_PAD_LEFT) }}</strong></td>
                                 <td>{{ $reservation->date ?? '-' }}</td>
                                 <td>{{ $reservation->time ?? '-' }}</td>
                                 <td>{{ \Illuminate\Support\Str::limit($reservation->message, 50) ?? '-' }}</td>
@@ -67,7 +69,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="11" class="text-center">No reservations found.</td>
+                                <td colspan="12" class="text-center">No reservations found.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -86,17 +88,15 @@
             </div>
 
 
-            <div class="pagination">
-                <button class="btn-pagination" onclick="prevPage('reservationTableBody')">Previous</button>
-                <span class="page-info" id="reservationPageInfo">Page 1</span>
-                <button class="btn-pagination" onclick="nextPage('reservationTableBody')">Next</button>
+            <div class="pagination" style="margin-top:16px;">
+                {{ $reservations->links() }}
             </div>
 
         </div>
 
         <div class="page-header">
             <br>
-            <h1>Reservation Logs</h1>
+            <h1>Payment Logs</h1>
         </div>
 
         <div class="table-container">
@@ -160,10 +160,8 @@
             </div>
 
 
-            <div class="pagination">
-                <button class="btn-pagination" onclick="prevPage('paymentTableBody')">Previous</button>
-                <span class="page-info" id="paymentPageInfo">Page 1</span>
-                <button class="btn-pagination" onclick="nextPage('paymentTableBody')">Next</button>
+            <div class="pagination" style="margin-top:16px;">
+                {{ $payment_logs->links() }}
             </div>
 
         </div>

@@ -12,12 +12,12 @@ class ReservationController extends Controller
 {
     public function showReservationLogs()
     {
-        $reservations = Reservation::with('patron')
+        $reservations = Reservation::with(['patron', 'inquiry'])
             ->select('*')
             ->latest()
-            ->get();
+            ->paginate(10);
 
-        $payment_logs = Payment::latest()->get();
+        $payment_logs = Payment::latest()->paginate(10);
 
         return view('admin.reserve-logs', compact('reservations', 'payment_logs'));
     }
@@ -25,7 +25,7 @@ class ReservationController extends Controller
     public function getReservation($id)
     {
         try {
-            $reservation = \App\Models\Reservation::with('patron')->find($id);
+            $reservation = \App\Models\Reservation::with(['patron', 'inquiry'])->find($id);
 
             if (!$reservation) {
                 return response()->json([
@@ -37,6 +37,7 @@ class ReservationController extends Controller
             // Make sure all required fields are available
             $responseData = [
                 'id' => $reservation->id,
+                'tracking_code' => $reservation->inquiry->tracking_code ?? 'RSV-' . str_pad($reservation->reserve_id, 6, '0', STR_PAD_LEFT),
                 'date' => $reservation->date,
                 'time' => $reservation->time,
                 'venue' => $reservation->venue ?? 'N/A',

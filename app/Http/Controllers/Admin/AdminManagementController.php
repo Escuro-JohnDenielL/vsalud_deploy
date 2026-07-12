@@ -18,7 +18,7 @@ class AdminManagementController extends Controller
         $activeAdminCount = Admin::whereNull('deleted_at')->count();
         $deletedAdminCount = Admin::onlyTrashed()->count();
 
-        $admins = Admin::withTrashed()->latest('admin_id')->paginate(20);
+        $admins = Admin::withTrashed()->latest('admin_id')->paginate(10);
 
         return view('admin.it.dashboard', compact(
             'adminCount',

@@ -89,8 +89,8 @@
   max-width: min(720px, 92vw);
 }
 
-/* === Title === */
-h1 {
+/* === Title (landing page only) === */
+.content h1 {
   color: var(--color-primary);
   font-family: var(--font-display);
   font-size: clamp(30px, 4vw, 33px);
@@ -108,11 +108,11 @@ h1 {
   text-stroke: 0.5px rgba(255, 255, 255, 0.7);
 }
 
-h1 span {
+.content h1 span {
   display: block;
 }
 
-h1 span + span {
+.content h1 span + span {
   margin-top: 0.1em;
 }
 
@@ -184,4 +184,12 @@ h1 span + span {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
   pointer-events: auto;
+}
+
+.toast-success {
+  background-color: var(--color-primary);
+}
+
+.toast-error {
+  background-color: var(--color-danger);
 }

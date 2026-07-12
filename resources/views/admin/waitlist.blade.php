@@ -203,5 +203,8 @@
                 @endforeach
             @endif
         </div>
+        <div style="margin-top: 16px;">
+            {{ $entries->links() }}
+        </div>
     </div>
 @endsection

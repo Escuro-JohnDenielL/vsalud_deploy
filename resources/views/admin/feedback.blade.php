@@ -55,6 +55,9 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            <div style="margin-top: 16px;">
+                                {{ $feedbacks->links() }}
+                            </div>
                         @endif
                     </div>
                 </div>

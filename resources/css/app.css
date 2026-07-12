@@ -1,5 +1,6 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
 @import "variables.css";
+@import "index.css";
 
 /* === Global Reset / Base === */
 *,
@@ -551,11 +552,11 @@ textarea:focus,
   padding: 36px 28px;
 }
 
-/* === Modal Backdrop — darken screen around modals === */
+/* === Modal Backdrop — modal itself darkens the screen (same as profile page) === */
 .modal-backdrop {
-  background-color: #000 !important;
+  display: none !important;
 }
 
-.modal-backdrop.show {
-  opacity: 0.5 !important;
+.modal.show {
+  background-color: rgba(0, 0, 0, 0.5);
 }

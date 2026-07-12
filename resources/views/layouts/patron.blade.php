@@ -92,7 +92,11 @@
         if (msg && type) {
             t.textContent = decodeURIComponent(msg);
             t.className = 'toast-notification toast-' + type + ' show';
-            setTimeout(function(){ t.classList.remove('show'); }, 4500);
+            setTimeout(function(){
+                t.classList.remove('show');
+                t.textContent = '';
+                t.className = 'toast-notification';
+            }, 4500);
             // Clean URL without reloading
             if (history.replaceState) {
                 var url = window.location.protocol + '//' + window.location.host + window.location.pathname;

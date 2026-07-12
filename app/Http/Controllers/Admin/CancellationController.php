@@ -24,7 +24,7 @@ class CancellationController extends Controller
     {
         $requests = CancellationRequest::with(['reservation.patron', 'reservation.inquiry', 'admin'])
             ->latest()
-            ->get();
+            ->paginate(10);
 
         return view('admin.cancellations', compact('requests'));
     }

@@ -24,6 +24,7 @@
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Contact Number</th>
+                                    <th>Tracking Code</th>
                                     <th>Time</th>
                                     <th>Date</th>
                                     <th>Venue</th>
@@ -40,6 +41,7 @@
                                         <td>{{ $inquiry->patron->name ?? 'N/A' }}</td>
                                         <td>{{ $inquiry->patron->email ?? '-' }}</td>
                                         <td>{{ $inquiry->patron->contact_number ?? '-' }}</td>
+                                        <td><strong>{{ $inquiry->tracking_code ?? '-' }}</strong></td>
                                         <td>{{ $inquiry->time ?? '-' }}</td>
                                         <td>{{ $inquiry->date ?? '-' }}</td>
                                         <td>{{ ($inquiry->venue === 'Others' ? $inquiry->other_venue : $inquiry->venue) ?? '-' }}
@@ -80,8 +82,9 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        </div>
-                    </div>
+                        </div>                        <div style="margin-top: 16px;">
+                            {{ $inquiries->links() }}
+                        </div>                    </div>
                 </div>
             </main>
         </section>

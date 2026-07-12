@@ -162,9 +162,19 @@ class ReservationController extends Controller
             // Reset agreement so they must re-agree for their next reservation
             $request->session()->forget('guest_agreed');
 
+            // Redirect admin to admin home, patrons to patron home
+            if ($request->is('admin/*')) {
+                return redirect()->route('admin.home', ['toast' => 'success', 'toast_msg' => 'Inquiry successfully created!']);
+            }
+
             return redirect()->route('patron.home', ['toast' => 'success', 'toast_msg' => 'Inquiry successfully created!']);
         } catch (\Throwable $th) {
             Log::error('Failed to insert inquiry: ' . $th->getMessage());
+
+            if ($request->is('admin/*')) {
+                return redirect()->route('admin.home', ['toast' => 'error', 'toast_msg' => 'Failed to create inquiry. Please try again.']);
+            }
+
             return redirect()->route('patron.home', ['toast' => 'error', 'toast_msg' => 'Failed to create inquiry. Please try again.']);
         }
     }

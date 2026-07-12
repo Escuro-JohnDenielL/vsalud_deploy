@@ -1,59 +1,16 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Form logic for 'Others' fields
-    const venueSelect = document.getElementById("venue");
-    const otherVenueInput = document.getElementById("otherVenue");
-
-    const themeMotifSelect = document.getElementById("theme_motif");
-    const otherThemeMotifInput = document.getElementById("otherThemeMotif");
-
-    const eventTypeSelect = document.getElementById("event_type");
-    const otherEventTypeInput = document.getElementById("otherEventType");
-
     const form = document.querySelector("form");
-
-    function toggleOtherInput(selectElement, otherInput, otherValue) {
-        if (selectElement && otherInput) {
-            otherInput.style.display =
-                selectElement.value === otherValue ? "block" : "none";
-            otherInput.required = selectElement.value === otherValue;
-            if (selectElement.value !== otherValue) {
-                otherInput.value = "";
-            }
-        }
-    }
-
-    // Add event listeners and initialize state for "Others" fields
-    if (venueSelect && otherVenueInput) {
-        venueSelect.addEventListener("change", () =>
-            toggleOtherInput(venueSelect, otherVenueInput, "Others")
-        );
-        toggleOtherInput(venueSelect, otherVenueInput, "Others");
-    }
-
-    if (themeMotifSelect && otherThemeMotifInput) {
-        themeMotifSelect.addEventListener("change", () =>
-            toggleOtherInput(themeMotifSelect, otherThemeMotifInput, "Others")
-        );
-        toggleOtherInput(themeMotifSelect, otherThemeMotifInput, "Others");
-    }
-
-    if (eventTypeSelect && otherEventTypeInput) {
-        eventTypeSelect.addEventListener("change", () =>
-            toggleOtherInput(eventTypeSelect, otherEventTypeInput, "Others")
-        );
-        toggleOtherInput(eventTypeSelect, otherEventTypeInput, "Others");
-    }
 
     // Form validation
     if (form) {
         form.addEventListener("submit", function (event) {
-            const name = document.getElementById("name")?.value.trim();
-            const email = document.getElementById("email")?.value.trim();
-            const contact = document.getElementById("contact")?.value.trim();
-            const message = document.getElementById("message")?.value.trim();
-            const date = document.getElementById("date")?.value.trim();
-            const period = document.getElementById("period")?.value.trim();
-            const timeSlot = document.getElementById("time_slot")?.value.trim();
+            const name = document.getElementById("field_name")?.value.trim();
+            const email = document.getElementById("field_email")?.value.trim();
+            const contact = document.getElementById("field_contact_number")?.value.trim();
+            const message = document.getElementById("field_message")?.value.trim();
+            const date = document.getElementById("field_date")?.value.trim();
+            const period = document.getElementById("field_period")?.value.trim();
+            const timeSlot = document.getElementById("field_time")?.value.trim();
 
             // Check required fields
             if (!name || !email || !contact || !message || !date || !period) {
@@ -70,10 +27,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             // Validate venue selection
+            const venueSelect = document.getElementById("field_venue");
             if (
-                !venueSelect.value ||
-                (venueSelect.value === "Others" &&
-                    !otherVenueInput.value.trim())
+                !venueSelect?.value
             ) {
                 alert("Please specify the venue.");
                 event.preventDefault();
@@ -81,10 +37,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             // Validate event type selection
+            const eventTypeSelect = document.getElementById("field_event_type");
             if (
-                !eventTypeSelect.value ||
-                (eventTypeSelect.value === "Others" &&
-                    !otherEventTypeInput.value.trim())
+                !eventTypeSelect?.value
             ) {
                 alert("Please specify the event type.");
                 event.preventDefault();
@@ -92,10 +47,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             // Validate theme/motif selection
+            const themeMotifSelect = document.getElementById("field_theme_motif");
             if (
-                !themeMotifSelect.value ||
-                (themeMotifSelect.value === "Others" &&
-                    !otherThemeMotifInput.value.trim())
+                !themeMotifSelect?.value
             ) {
                 alert("Please specify the theme/motif.");
                 event.preventDefault();
@@ -345,9 +299,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // ---------------------------- //
     //   AM/PM → Time Slot Filter   //
     // ---------------------------- //
-    const periodSelect = document.getElementById("period");
-    const timeSlotWrapper = document.getElementById("timeSlotWrapper");
-    const timeSlotSelect = document.getElementById("time_slot");
+    const periodSelect = document.getElementById("field_period");
+    const timeSlotSelect = document.getElementById("field_time");
+    const timeSlotWrapper = timeSlotSelect?.closest(".form-group");
 
     const timeSlots = {
         AM: ["9am–11am", "10am–12pm", "11am–1pm"],
@@ -382,9 +336,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 timeSlotSelect.required = true;
             } else {
                 // Hide and disable if no valid period
-                timeSlotSelect.disabled = false;
-                timeSlotSelect.required = true;
-                timeSlotWrapper.style.display = "block";
+                timeSlotSelect.disabled = true;
+                timeSlotSelect.required = false;
+                timeSlotWrapper.style.display = "none";
             }
         });
     }
@@ -513,47 +467,12 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Phone number formatting
-    const contactInput = document.getElementById("contact");
-    if (contactInput) {
-        contactInput.addEventListener("input", function (e) {
-            let value = e.target.value.replace(/\D/g, "");
-            if (value.length >= 10) {
-                value = value.substring(0, 10);
-                e.target.value = value.replace(
-                    /(\d{3})(\d{3})(\d{4})/,
-                    "($1) $2-$3"
-                );
-            }
-        });
-    }
-
-    // Auto-save form data to localStorage for user convenience
-    const formInputs = document.querySelectorAll(
-        'input[type="text"], input[type="email"], textarea, select'
-    );
-    formInputs.forEach((input) => {
-        // Load saved data
-        const savedValue = localStorage.getItem(`form_${input.id}`);
-        if (savedValue && input.type !== "date") {
-            input.value = savedValue;
-        }
-
-        // Save data on change
-        input.addEventListener("change", function () {
-            localStorage.setItem(`form_${input.id}`, input.value);
-        });
-    });
-
-    // Clear saved form data on successful submission
+    // Reset form fields on page load (prevents browser bfcache from showing stale data)
     if (form) {
-        form.addEventListener("submit", function () {
-            // Clear saved data after a delay to allow form processing
-            setTimeout(() => {
-                formInputs.forEach((input) => {
-                    localStorage.removeItem(`form_${input.id}`);
-                });
-            }, 1000);
+        form.reset();
+        // Clear any leftover auto-saved form data from previous sessions
+        document.querySelectorAll('.dynamic-form [id]').forEach(el => {
+            localStorage.removeItem(`form_${el.id}`);
         });
     }
 

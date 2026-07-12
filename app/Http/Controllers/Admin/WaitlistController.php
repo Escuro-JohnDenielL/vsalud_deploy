@@ -14,22 +14,23 @@ class WaitlistController extends Controller
     {
         $entries = Waitlist::orderBy('requested_date', 'desc')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(10);
 
         // Group by date for easier reading
-        $grouped = $entries->groupBy(function ($entry) {
+        $grouped = $entries->getCollection()->groupBy(function ($entry) {
             return $entry->requested_date->format('Y-m-d');
         });
 
-        // Summary stats
+        // Summary stats (use all entries for accurate stats)
+        $allEntries = Waitlist::select('status')->get();
         $stats = [
-            'total'    => $entries->count(),
-            'waiting'  => $entries->where('status', 'waiting')->count(),
-            'notified' => $entries->where('status', 'notified')->count(),
-            'claimed'  => $entries->where('status', 'claimed')->count(),
-            'expired'  => $entries->where('status', 'expired')->count(),
+            'total'    => $allEntries->count(),
+            'waiting'  => $allEntries->where('status', 'waiting')->count(),
+            'notified' => $allEntries->where('status', 'notified')->count(),
+            'claimed'  => $allEntries->where('status', 'claimed')->count(),
+            'expired'  => $allEntries->where('status', 'expired')->count(),
         ];
 
-        return view('admin.waitlist', compact('grouped', 'stats'));
+        return view('admin.waitlist', compact('entries', 'grouped', 'stats'));
     }
 }
