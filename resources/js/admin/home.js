@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const addPackageModal = new bootstrap.Modal(document.getElementById("addPackageModal"));
     const editPackageModal = new bootstrap.Modal(document.getElementById("editPackageModal"));
     const successModal = new bootstrap.Modal(document.getElementById("successModal"));
+    const confirmDeleteModal = new bootstrap.Modal(document.getElementById("confirmDeleteModal"));
 
     const packages = {};
 
@@ -32,6 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(() => {
             card.remove();
             delete packages[packageName];
+            confirmDeleteModal.hide();
             showSuccessModal(`"${packageName}" has been deleted successfully!`);
         })
         .catch(err => {
@@ -216,7 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
             pendingDelete = { card, packageName };
             document.getElementById('confirmDeleteTitle').textContent = 'Delete Package';
             document.getElementById('confirmDeleteMessage').textContent = `Are you sure you want to delete "${packageName}"?`;
-            new bootstrap.Modal(document.getElementById('confirmDeleteModal')).show();
+            confirmDeleteModal.show();
         });
     }
 

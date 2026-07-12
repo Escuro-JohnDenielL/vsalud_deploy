@@ -21,8 +21,8 @@
             <h3>{{ $package->name }}</h3>
             <div class="package-details"></div>
             <div class="buttons-row">
-                <button class="btn btn-success btn-sm view-package" data-bs-toggle="modal" data-bs-target="#packageModal">View Package</button>
-                <button class="btn btn-outline-primary btn-sm edit-btn" data-bs-toggle="modal" data-bs-target="#editPackageModal">Edit</button>
+                <button class="btn btn-success btn-sm view-package">View Package</button>
+                <button class="btn btn-outline-primary btn-sm edit-btn">Edit</button>
                 <button class="btn btn-danger btn-sm delete-btn">Delete</button>
             </div>
         </div>

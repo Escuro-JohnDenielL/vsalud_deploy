@@ -550,3 +550,12 @@ textarea:focus,
   margin: 0 auto;
   padding: 36px 28px;
 }
+
+/* === Modal Backdrop — darken screen around modals === */
+.modal-backdrop {
+  background-color: #000 !important;
+}
+
+.modal-backdrop.show {
+  opacity: 0.5 !important;
+}

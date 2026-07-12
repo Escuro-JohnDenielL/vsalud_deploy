@@ -79,10 +79,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
 
     // Packages on Admin homepage
     Route::get('/packages', [PackageController::class, 'index']);
-    Route::post('/packages', [PackageController::class, 'store']);
+    Route::post('/packages', [PackageController::class, 'store'])->name('admin.packages.store');
     Route::put('/packages/{package}', [PackageController::class, 'update']);
-    Route::delete('/admin/packages/{package}', [PackageController::class, 'destroy'])->name('admin.packages.destroy');
-    Route::post('/admin/packages', [PackageController::class, 'store'])->name('admin.packages.store');
+    Route::delete('/packages/{package}', [PackageController::class, 'destroy'])->name('admin.packages.destroy');
 
     // Inquiry
     Route::get('/inquiry', [InquiryController::class, 'index'])->name('inquiry');
