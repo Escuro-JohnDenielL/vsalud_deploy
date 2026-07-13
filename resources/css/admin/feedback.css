@@ -165,11 +165,16 @@
 
 .close-btn {
   position: absolute;
-  top: 15px;
-  right: 20px;
-  font-size: 28px;
+  top: 14px;
+  right: 18px;
+  font-size: 24px;
+  font-weight: normal;
   cursor: pointer;
   color: var(--color-text-muted);
+  background: none;
+  border: none;
+  line-height: 1;
+  padding: 0;
 }
 
 .close-btn:hover {

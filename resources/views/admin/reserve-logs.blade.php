@@ -182,7 +182,7 @@
     {{-- Confirm Delete Modal --}}
     <div id="confirmDeleteReservationModal" class="modal" style="display:none;">
         <div class="modal-content" style="max-width: 420px;">
-            <span class="close" id="closeConfirmDeleteModal" style="cursor:pointer;font-size:24px;float:right;">&times;</span>
+            <span class="close" id="closeConfirmDeleteModal">&times;</span>
             <h3>Confirm Delete</h3>
             <p id="confirmDeleteReservationMessage" style="font-size: 15px; margin: 20px 0;">Are you sure you want to delete this reservation?</p>
             <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">

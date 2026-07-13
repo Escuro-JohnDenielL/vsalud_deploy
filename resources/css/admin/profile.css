@@ -393,16 +393,23 @@ h3 {
 }
 
 .close {
-  color: #aaa;
-  font-size: 28px;
-  font-weight: bold;
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  font-size: 24px;
+  font-weight: normal;
   cursor: pointer;
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
   line-height: 1;
+  padding: 0;
+  float: none;
 }
 
 .close:hover,
 .close:focus {
-  color: #000;
+  color: var(--color-text);
   text-decoration: none;
 }
 
