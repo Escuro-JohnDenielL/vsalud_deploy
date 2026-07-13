@@ -580,7 +580,7 @@ textarea:focus,
 
 .modal-content.modal-sm {
   max-width: 420px;
-  padding: 22px 28px 18px;
+  padding: 22px 28px 2px;
 }
 
 .modal-content.modal-lg {
