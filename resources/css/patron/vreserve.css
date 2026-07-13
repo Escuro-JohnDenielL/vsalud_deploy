@@ -1,18 +1,3 @@
-/* === Banner === */
-.banner {
-    background: #007b3d;
-    color: white;
-    text-align: center;
-    font-size: 16px;
-    font-weight: bold;
-    padding: 12px;
-    width: 50%;
-    max-width: 100%;
-    border-radius: 10px;
-    margin: 20px auto;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-}
-
 /* === Reservation Section === */
 .reservation-container {
     max-width: 600px;
@@ -28,46 +13,24 @@
     box-shadow: var(--shadow-lg);
 }
 
-.reservation-notes {
-    width: 60%;
-    padding: 25px;
-    border-radius: var(--radius-md);
-    background: #fff;
-    box-shadow: var(--shadow-sm);
-    transition: box-shadow var(--transition-base);
-}
-
-.reservation-notes:hover {
-    box-shadow: var(--shadow-md);
-}
-
-.reservation-notes h2 {
-    margin-bottom: 15px;
-}
-
-.reservation-notes p {
-    font-size: 16px;
-    margin-bottom: 15px;
-}
-
-.reservation-notes ul {
-    padding-left: 30px;
-}
-
 /* === Buttons === */
 button.view-details {
-    background-color: #007b3d;
+    background-color: var(--color-primary);
     color: white;
     padding: 12px 15px;
     border: none;
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     margin-top: 15px;
-    transition: background 0.3s ease;
+    transition: background var(--transition-base);
+    font-size: 15px;
+    box-shadow: var(--shadow-sm);
 }
 
 button.view-details:hover {
-    background-color: darkgreen;
+    background-color: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
 }
 
 /* === Form Styles === */
@@ -75,104 +38,51 @@ form label {
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
+    color: #333;
 }
 
 form input {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     margin-bottom: 15px;
     border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-/* === Calendar === */
-.calendar {
-    width: 35%;
-    text-align: center;
-    background: white;
-    padding: 25px;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
-    transition: box-shadow var(--transition-base);
-}
-
-.calendar:hover {
-    box-shadow: var(--shadow-md);
-}
-
-.month h3 {
-    margin-bottom: 15px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-table th,
-table td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: center;
-}
-
-/* === Calendar Controls === */
-button.prev-month,
-button.next-month {
-    background-color: #ddd;
-    border: none;
-    padding: 8px 14px;
-    cursor: pointer;
-    margin: 10px;
     border-radius: var(--radius-sm);
-    transition: all var(--transition-base);
+    box-sizing: border-box;
+    font-size: 14px;
 }
 
-button.prev-month:hover,
-button.next-month:hover {
-    background-color: #bbb;
-    transform: translateY(-1px);
-}
-
+/* === Modal — redesigned with rich detail sections === */
 .modal {
     display: none;
     position: fixed;
     z-index: 1000;
-    padding: 1rem;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5); /* dark backdrop */
-    /* display: flex;
-    align-items: center;
-    justify-content: center; */
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
     background-color: #fff;
     padding: 2rem;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     width: 90%;
-    max-width: 600px;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    max-width: 580px;
+    box-shadow: var(--shadow-xl);
     position: relative;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     animation: fadeIn 0.3s ease-in-out;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; transform: translate(-50%, -48%); }
+    to   { opacity: 1; transform: translate(-50%, -50%); }
 }
 
 .close-btn {
@@ -184,20 +94,144 @@ button.next-month:hover {
     color: #888;
     cursor: pointer;
     transition: color 0.2s;
+    z-index: 1;
 }
 
 .close-btn:hover {
     color: #000;
 }
 
-#reservationDetails p {
-    margin: 0.5rem 0;
-    font-size: 1rem;
-    color: #333;
+/* === Detail Section Styles (mirrors admin modal) === */
+.modal-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
 }
 
-#reservationDetails strong {
-    color: #444;
+.modal-detail-header .detail-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2d2d2d;
+    margin: 0;
+}
+
+.detail-section {
+    margin-bottom: 20px;
+}
+
+.detail-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+    margin-bottom: 12px;
+}
+
+.detail-section-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #e5e7eb;
+}
+
+.detail-section-card {
+    background: #f6f5f2;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+}
+
+.detail-row {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 8px 16px;
+    padding: 6px 0;
+    align-items: baseline;
+}
+
+.detail-row + .detail-row {
+    border-top: 1px solid #f0f0f0;
+}
+
+.detail-label {
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.detail-value {
+    font-size: 14px;
+    color: #2d2d2d;
+    font-weight: 400;
+}
+
+.detail-value .detail-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.detail-value .detail-icon svg {
+    flex-shrink: 0;
+}
+
+.detail-message-block {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-top: 4px;
+    white-space: pre-wrap;
+    line-height: 1.7;
+    font-size: 14px;
+    max-height: 200px;
+    overflow-y: auto;
+    color: #2d2d2d;
+}
+
+.detail-message-block::-webkit-scrollbar {
+    width: 6px;
+}
+
+.detail-message-block::-webkit-scrollbar-thumb {
+    background: #e5e7eb;
+    border-radius: 3px;
+}
+
+/* Badge styles */
+.badge-modern {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.badge-modern.badge-success {
+    background: #e8f5e9;
+    color: #0d7a3e;
+}
+
+.badge-modern.badge-info {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.badge-modern.badge-danger {
+    background: #fce4ec;
+    color: #c62828;
+}
 }
 
 

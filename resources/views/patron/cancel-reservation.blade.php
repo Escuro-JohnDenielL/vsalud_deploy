@@ -21,27 +21,36 @@
             <button type="submit" class="btn-lookup">Look Up Reservation</button>
         </form>
 
+        {{-- Messages (appear above details when a reservation is found) --}}
+        <div id="messageContainer"></div>
+
         {{-- Step 2: Reservation Details + Cancellation Form (hidden initially) --}}
         <div id="reservationDetails" style="display: none;">
-            <h3>Reservation Details</h3>
-            <div id="detailsContent"></div>
+            <div class="details-card">
+                <h3>Reservation Details</h3>
+                <div id="detailsContent"></div>
+            </div>
 
-            <form id="cancelForm" style="margin-top: 20px;">
-                @csrf
-                <input type="hidden" id="reserve_id" name="reserve_id" />
-                <input type="hidden" id="patron_email" name="patron_email" />
+            {{-- Visual separator between details and cancellation form --}}
+            <div class="cancel-section-divider">
+                <span class="cancel-section-divider-label">Request Cancellation</span>
+            </div>
 
-                <div class="form-group">
-                    <label for="reason">Reason for Cancellation (optional):</label>
-                    <textarea id="reason" name="reason" rows="4" placeholder="Tell us why you'd like to cancel..."></textarea>
-                </div>
+            <div class="cancel-form-card">
+                <form id="cancelForm">
+                    @csrf
+                    <input type="hidden" id="reserve_id" name="reserve_id" />
+                    <input type="hidden" id="patron_email" name="patron_email" />
 
-                <button type="submit" class="btn-submit-cancel">Submit Cancellation Request</button>
-            </form>
+                    <div class="form-group">
+                        <label for="reason">Reason for Cancellation (optional):</label>
+                        <textarea id="reason" name="reason" rows="4" placeholder="Tell us why you'd like to cancel..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-submit-cancel">Submit Cancellation Request</button>
+                </form>
+            </div>
         </div>
-
-        {{-- Messages --}}
-        <div id="messageContainer" style="margin-top: 20px;"></div>
     </div>
 @endsection
 
