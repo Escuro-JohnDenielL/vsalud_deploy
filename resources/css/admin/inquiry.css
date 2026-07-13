@@ -1,185 +1,172 @@
-/* === Main Content Wrapper === */
-#content {
-  position: relative;
-  width: 100%;
-  margin: 0 auto;
-  padding: 28px 32px;
+/* === Layout — full width on this page only === */
+.admin-content {
+    max-width: none;
 }
 
-/* === Internal Content Navigation Bar === */
-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  padding: 15px;
-  border: none;
-  margin-bottom: 40px;
+.container {
+    max-width: none;
+    padding: 0 32px 28px;
 }
 
-nav h2 {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--color-primary);
-  text-align: center;
+.page-header {
+    margin-bottom: 24px;
+    text-align: center;
 }
 
-nav i {
-  font-size: 24px;
-  cursor: pointer;
+.page-header h1 {
+    color: var(--color-primary);
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 6px;
+    text-align: center;
 }
 
-/* === Heading Title === */
-.head-title {
-  margin-bottom: 30px;
-  text-align: center;
+.page-header p {
+    color: var(--color-text-muted);
+    font-size: 14px;
+    margin: 0;
 }
 
-.head-title h1 {
-  color: var(--color-primary);
-  font-size: 28px;
-  font-weight: 600;
-  margin: 0 0 6px;
-  text-align: center;
+.table-container {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
 }
 
-.head-title p {
-  font-size: 14px;
-  color: var(--color-text-muted);
-  margin: 0;
-}
-
-/* === Table Styling === */
-.table-data {
-  margin-top: 20px;
-  background: var(--color-surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--color-border);
-  overflow: hidden;
-}
-
-/* Scrollable table wrapper */
 .table-wrapper {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+    /* No scrollbars — table compresses to fit */
 }
 
-.table-wrapper table {
-  width: 100%;
-  min-width: 900px;
-  border-collapse: collapse;
+.inquiry-table {
+    width: 100%;
+    table-layout: auto;
+    border-collapse: collapse;
+    font-size: 14px;
 }
 
-.table-data th {
-  background: var(--color-primary);
-  color: white;
-  padding: 12px 16px;
-  text-align: left;
-  font-weight: 600;
-  font-size: 13px;
-  letter-spacing: 0.02em;
+.inquiry-table th {
+    background: var(--color-primary);
+    color: white;
+    padding: 12px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
 }
 
-.table-data td {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--color-border);
-  color: var(--color-text);
-  vertical-align: middle;
-  font-size: 14px;
+.inquiry-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+    color: var(--color-text);
 }
 
-.table-data tbody tr {
-  transition: background var(--transition-fast);
+/* Let columns auto-size but constrain the widest ones */
+.inquiry-table td:nth-child(2)  { word-break: break-all; }  /* Email — break if too long */
+.inquiry-table td:nth-child(8),
+.inquiry-table td:nth-child(9)  { word-break: break-word; } /* Event Type, Theme */
+.inquiry-table td:nth-child(4)  { white-space: nowrap; }    /* Code — keep intact */
+.inquiry-table td:nth-child(5),
+.inquiry-table td:nth-child(6)  { white-space: nowrap; }    /* Time, Date — keep intact */
+
+.inquiry-table tbody tr:hover {
+    background: var(--color-primary-50);
 }
 
-/* Sticky Actions column */
-.table-data .sticky-col {
-  position: sticky;
-  right: 0;
-  background: inherit;
-  z-index: 1;
-}
-
-.table-data thead .sticky-col {
-  background: var(--color-primary);
-}
-
-.table-data tbody tr .sticky-col {
-  background: var(--color-surface);
-}
-
-.table-data tbody tr:hover .sticky-col {
-  background: var(--color-primary-50);
-}
-
-.table-wrapper::-webkit-scrollbar {
-  height: 8px;
-}
-
-.table-wrapper::-webkit-scrollbar-track {
-  background: var(--color-bg);
-  border-radius: 4px;
-}
-
-.table-wrapper::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-  border-radius: 4px;
-}
-
-.table-wrapper::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-hover);
-}
-
-.table-data tbody tr:hover {
-  background: var(--color-primary-50);
-}
-
-/* === Status Dropdown Styling === */
+/* === Status Dropdown === */
 .status-dropdown {
-  padding: 6px 10px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-body);
-  font-size: 14px;
-  min-width: 100px;
-  cursor: pointer;
-  transition: all var(--transition-base);
+    padding: 6px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 13px;
+    width: 100%;
+    max-width: 100%;
+    cursor: pointer;
+    transition: all var(--transition-base);
 }
 
 .status-dropdown:hover {
-  border-color: var(--color-primary);
-  box-shadow: var(--shadow-sm);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
 }
 
 .status-dropdown:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
 }
 
-/* Status-specific styling will be applied via JavaScript */
 .status-dropdown option {
-  padding: 5px;
-  background: white;
-  color: black;
+    padding: 5px;
+    background: white;
+    color: black;
 }
 
-/* === Buttons === */
-/* .reply-btn, .status-btn — now using .admin-btn classes from app.css */
+/* === Action Buttons === */
+.action-buttons {
+    display: flex;
+    gap: 4px;
+    flex-wrap: nowrap;
+}
 
-/* #closeModalBtn — now using shared .admin-btn-ghost from app.css */
+.action-buttons .admin-btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+}
 
-/* === Modal === */
-/* .modal — now using shared system from app.css */
+/* === Reply Modal === */
+#replyModal .modal-content {
+    max-width: 600px;
+}
 
-.modal select {
-  width: 100%;
-  padding: 8px;
-  margin: 10px 0;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-body);
+#replyModal .reply-select {
+    width: 100%;
+    padding: 10px 14px;
+    margin: 8px 0 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 14px;
+    background: var(--color-surface);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    cursor: pointer;
+}
+
+#replyModal .reply-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(13, 122, 62, 0.1);
+}
+
+#replyModal textarea {
+    width: 100%;
+    padding: 12px 14px;
+    margin: 8px 0 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    background: var(--color-bg);
+    color: var(--color-text);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+#replyModal textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(13, 122, 62, 0.1);
+    background: var(--color-surface);
+}
+
+#replyModal label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    margin-top: 4px;
 }
 
 /* === Accessibility Focus === */
@@ -246,70 +233,26 @@ select:focus {
 }
 
 
-/* === Responsive Adjustments === */
+/* === Responsive === */
 @media (max-width: 768px) {
-  #content {
-    width: 95%;
-    padding: 16px;
-  }
+    .container {
+        padding: 0 16px 20px;
+    }
 
-  .modal {
-    width: 90%;
-  }
-  
-  .table-data {
-    padding: 12px;
-  }
-  
-  .status-dropdown {
-    min-width: 80px;
-    font-size: 12px;
-  }
-  
-  .head-title h1 {
-    font-size: 24px;
-  }
-  
-  nav h2 {
-    font-size: 22px;
-  }
-}
+    .inquiry-table {
+        font-size: 11px;
+    }
 
-/* Common style for both buttons (optional but neat) */
-/* .reply-btn, .undo-btn — now using .admin-btn classes from app.css */
+    .inquiry-table th,
+    .inquiry-table td {
+        padding: 6px 4px;
+    }
 
-/* .reply-btn, .undo-btn — now using .admin-btn classes from app.css */
+    .inquiry-table th {
+        padding: 10px 8px;
+    }
 
-/* Make buttons container inline */
-td button {
-  vertical-align: middle;
-}
-
-.inquiry-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: var(--color-surface);
-  padding: 20px;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  overflow-x: auto;
-  border: 1px solid var(--color-border);
-}
-
-.inquiry-table th {
-  background: var(--color-primary);
-  color: white;
-  padding: 12px 16px;
-  text-align: left;
-  font-weight: 600;
-  font-size: 13px;
-  letter-spacing: 0.02em;
-}
-
-.inquiry-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--color-border);
-  color: var(--color-text);
-  vertical-align: middle;
-  font-size: 14px;
+    .status-dropdown {
+        font-size: 10px;
+    }
 }

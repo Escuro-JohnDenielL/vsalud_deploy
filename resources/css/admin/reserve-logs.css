@@ -160,6 +160,11 @@
 
 /* .custom-modal — now using shared modal system from app.css */
 
+/* Slightly wider modal for grouped reservation details */
+#viewModal .modal-content {
+  max-width: 560px;
+}
+
 .receipt-image {
     max-width: 100%;
     height: auto;

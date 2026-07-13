@@ -32,6 +32,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 "Share contact information for day-of coordination",
                 "Include any last-minute instructions",
             ],
+            Cancelled: [
+                "Acknowledge cancellation request",
+                "Confirm cancellation has been processed",
+                "Provide refund or rescheduling information",
+                "Invite them to rebook in the future",
+            ],
         };
 
         replyOptions.innerHTML = `<option value="" disabled selected>Select a suggestion</option>`;
@@ -95,16 +101,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelectorAll(".reply-btn").forEach((button) => {
         button.addEventListener("click", function () {
-            const row = this.closest("tr");
-
-            inquiryId = row.dataset.inquiryId;
-
-            const select = row.querySelector(".status-dropdown");
-            const status = select ? select.value : "Pending";
-
-            selectedEmail = row
-                .querySelector("td:nth-child(2)")
-                .textContent.trim(); // Capture email
+            inquiryId = this.dataset.inquiryId;
+            selectedEmail = this.dataset.email;
+            const status = this.dataset.status || "Pending";
             openReplyModal(status);
         });
     });

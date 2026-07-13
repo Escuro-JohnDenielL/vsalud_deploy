@@ -108,21 +108,12 @@
   font-family: var(--font-heading);
 }
 
-.feedback-detail p {
-  margin: 8px 0;
-  line-height: 1.6;
+/* Slightly wider modal for the grouped feedback layout */
+#feedbackModal .modal-content {
+  max-width: 560px;
 }
 
-.detail-message {
-  background: var(--color-bg);
-  padding: 15px;
-  border-radius: var(--radius-sm);
-  margin-top: 8px;
-  white-space: pre-wrap;
-  line-height: 1.6;
-  max-height: 250px;
-  overflow-y: auto;
-}
+/* detail-group styling now uses shared .detail-section / .detail-row / .detail-message-block from app.css */
 
 /* === Responsive === */
 @media (max-width: 768px) {

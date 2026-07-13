@@ -1,3 +1,11 @@
+// Helper: escape HTML to prevent XSS when injecting user data
+function escHtml(str) {
+    if (!str) return str;
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+}
+
 // Reservation Logs JavaScript Functions
 document.addEventListener("DOMContentLoaded", function () {
     setupEventListeners();
@@ -178,17 +186,89 @@ function viewReservation(id) {
                 throw new Error(data.message);
             }
 
+            const status = (data.status || "N/A").toLowerCase();
+            let badgeClass = "info";
+            if (status === "active") badgeClass = "success";
+            else if (status === "completed") badgeClass = "info";
+            else if (status === "canceled") badgeClass = "danger";
+
+            const statusLabel = data.status ? data.status.charAt(0).toUpperCase() + data.status.slice(1) : "N/A";
+
             body.innerHTML = `
-            <p><strong>Name:</strong> ${data.patron?.name || "N/A"}</p>
-            <p><strong>Email:</strong> ${data.patron?.email || "N/A"}</p>
-            <p><strong>Code:</strong> ${data.tracking_code || "N/A"}</p>
-            <p><strong>Date:</strong> ${data.date || "N/A"}</p>
-            <p><strong>Time:</strong> ${data.time || "N/A"}</p>
-            <p><strong>Venue:</strong> ${data.venue || "N/A"}</p>
-            <p><strong>Event Type:</strong> ${data.event_type || "N/A"}</p>
-            <p><strong>Theme:</strong> ${data.theme_motif || "N/A"}</p>
-            <p><strong>Message:</strong> ${data.message || "N/A"}</p>
-            <p><strong>Status:</strong> ${data.status || "N/A"}</p>
+            <!-- Header: Name + Status badge -->
+            <div class="modal-detail-header">
+                <h3 class="detail-name">${escHtml(data.patron?.name || "N/A")}</h3>
+                <span class="badge-modern ${badgeClass}">${statusLabel}</span>
+            </div>
+
+            <!-- Contact -->
+            <div class="detail-section">
+                <div class="detail-section-title">Contact</div>
+                <div class="detail-row">
+                    <span class="detail-label">Email</span>
+                    <span class="detail-value">
+                        <span class="detail-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            ${escHtml(data.patron?.email || "N/A")}
+                        </span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Booking Details -->
+            <div class="detail-section">
+                <div class="detail-section-title">Booking Details</div>
+                <div class="detail-section-card">
+                    <div class="detail-row">
+                        <span class="detail-label">Code</span>
+                        <span class="detail-value"><span class="code-chip">${escHtml(data.tracking_code || "N/A")}</span></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Date</span>
+                        <span class="detail-value">
+                            <span class="detail-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                ${escHtml(data.date || "N/A")}
+                            </span>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Time</span>
+                        <span class="detail-value">
+                            <span class="detail-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                ${escHtml(data.time || "N/A")}
+                            </span>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Venue</span>
+                        <span class="detail-value">
+                            <span class="detail-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                ${escHtml(data.venue || "N/A")}
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Package Info -->
+            <div class="detail-section">
+                <div class="detail-section-title">Package Info</div>
+                <div class="detail-row">
+                    <span class="detail-label">Event Type</span>
+                    <span class="detail-value">${escHtml(data.event_type || "N/A")}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Theme</span>
+                    <span class="detail-value">${escHtml(data.theme_motif || "N/A")}</span>
+                </div>
+                <div class="detail-row" style="border:none;">
+                    <span class="detail-label">Message</span>
+                    <span class="detail-value"><div class="detail-message-block">${escHtml(data.message || "N/A")}</div></span>
+                </div>
+            </div>
         `;
         })
         .catch((err) => {

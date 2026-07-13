@@ -357,6 +357,128 @@ textarea:focus,
   color: #2e7d32;
 }
 
+/* === Modal Detail Layout (grouped fields inside modals) === */
+.modal-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal-detail-header .detail-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.detail-section {
+  margin-bottom: 20px;
+}
+
+.detail-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+}
+
+.detail-section-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.detail-section-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+}
+
+.detail-row {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 8px 16px;
+  padding: 6px 0;
+  align-items: baseline;
+}
+
+.detail-row + .detail-row {
+  border-top: 1px solid var(--color-border-light);
+}
+
+.detail-label {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: 14px;
+  color: var(--color-text);
+  font-weight: 400;
+}
+
+.detail-value .detail-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detail-value .detail-icon svg {
+  flex-shrink: 0;
+}
+
+/* Code chip — makes the reservation code stand out */
+.code-chip {
+  display: inline-flex;
+  align-items: center;
+  font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  padding: 3px 12px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(13, 122, 62, 0.15);
+}
+
+/* Message block inside modals */
+.detail-message-block {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-top: 4px;
+  white-space: pre-wrap;
+  line-height: 1.7;
+  font-size: 14px;
+  max-height: 200px;
+  overflow-y: auto;
+  color: var(--color-text);
+}
+
+.detail-message-block::-webkit-scrollbar {
+  width: 6px;
+}
+
+.detail-message-block::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
 /* === Shared Admin Page Header === */
 .admin-page-header {
   margin-bottom: 24px;
@@ -545,7 +667,12 @@ textarea:focus,
 }
 
 /* === Admin/Patron Content Area === */
-.admin-content,
+.admin-content {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 36px 28px;
+}
+
 .patron-content {
   max-width: 1400px;
   margin: 0 auto;

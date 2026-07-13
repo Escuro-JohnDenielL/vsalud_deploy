@@ -71,11 +71,25 @@
             <span class="close-btn" id="closeModalBtn">&times;</span>
             <h2>Feedback Details</h2>
             <div class="feedback-detail">
-                <p><strong>Name:</strong> <span id="detail-name"></span></p>
-                <p><strong>Email:</strong> <span id="detail-email"></span></p>
-                <p><strong>Submitted:</strong> <span id="detail-date"></span></p>
-                <p><strong>Message:</strong></p>
-                <div id="detail-message" class="detail-message"></div>
+                <div class="detail-section">
+                    <div class="detail-section-title">Sender</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Name</span>
+                        <span class="detail-value" id="detail-name"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value" id="detail-email"></span>
+                    </div>
+                    <div class="detail-row" style="border:none;">
+                        <span class="detail-label">Submitted</span>
+                        <span class="detail-value" id="detail-date"></span>
+                    </div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-section-title">Message</div>
+                    <div id="detail-message" class="detail-message-block"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -96,6 +110,13 @@
 
 @push('scripts')
 <script>
+    function escHtml(str) {
+        if (!str) return str;
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('feedbackModal');
         const closeBtn = document.getElementById('closeModalBtn');
@@ -103,15 +124,18 @@
         document.querySelectorAll('.view-feedback-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.getElementById('detail-name').textContent = this.dataset.name;
-                document.getElementById('detail-email').textContent = this.dataset.email;
+                const emailEl = document.getElementById('detail-email');
+                const email = this.dataset.email;
+                emailEl.innerHTML = '<a href="mailto:' + encodeURIComponent(email) + '">' + escHtml(email) + '</a>';
                 document.getElementById('detail-date').textContent = this.dataset.date;
                 document.getElementById('detail-message').textContent = this.dataset.message;
                 modal.style.display = 'flex';
+                modal.classList.add('open');
             });
         });
 
-        closeBtn.addEventListener('click', () => modal.style.display = 'none');
-        window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+        closeBtn.addEventListener('click', () => { modal.style.display = 'none'; modal.classList.remove('open'); });
+        window.addEventListener('click', (e) => { if (e.target === modal) { modal.style.display = 'none'; modal.classList.remove('open'); } });
 
         // Confirm delete modal logic
         const confirmModal = document.getElementById('confirmDeleteModal');
