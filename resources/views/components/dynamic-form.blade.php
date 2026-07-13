@@ -177,7 +177,7 @@
     .dynamic-form .field-error { color: #dc3545; font-size: 13px; margin-top: 4px; }
     .dynamic-form .radio-group, .dynamic-form .checkbox-group { display: flex; flex-direction: column; gap: 6px; }
     .dynamic-form .radio-label, .dynamic-form .checkbox-label { font-weight: 400; font-size: 14px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
-    .dynamic-form .btn-submit { background: var(--color-primary); color: #fff; border: none; border-radius: var(--radius-sm); padding: 12px 32px; font-weight: 600; font-size: 15px; cursor: pointer; transition: background 0.15s; }
+    .dynamic-form .btn-submit { background: var(--color-primary); color: #fff; border: none; border-radius: var(--radius-sm); padding: 12px 32px; font-weight: 600; font-size: 15px; cursor: pointer; transition: background 0.15s; width: 100%; box-sizing: border-box; }
     .dynamic-form .btn-submit:hover { background: var(--color-primary-hover); }
 </style>
 

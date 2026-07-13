@@ -35,13 +35,13 @@
     overflow-x: auto;
 }
 
-.reservation-table {
+.payment-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 14px;
 }
 
-.reservation-table th {
+.payment-table th {
     background: var(--color-primary);
     color: white;
     padding: 12px 16px;
@@ -51,18 +51,18 @@
     white-space: nowrap;
 }
 
-.reservation-table td {
+.payment-table td {
     padding: 12px 16px;
     border-bottom: 1px solid var(--color-border);
     vertical-align: middle;
     color: var(--color-text);
 }
 
-.reservation-table tbody tr:hover {
+.payment-table tbody tr:hover {
     background: var(--color-primary-50);
 }
 
-.status-dropdown {
+.payment-status-dropdown {
     padding: 6px 10px;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
@@ -73,35 +73,23 @@
     font-family: var(--font-body);
 }
 
-.status-dropdown:hover {
+.payment-status-dropdown:hover {
     border-color: var(--color-primary);
 }
 
-.status-dropdown:focus {
+.payment-status-dropdown:focus {
     outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 0 2px rgba(13, 122, 62, 0.1);
 }
 
-.status-dropdown option[value="active"] {
-    color: var(--color-primary);
-}
-
-.status-dropdown option[value="canceled"] {
-    color: var(--color-danger);
-}
-
-.status-dropdown option[value="completed"] {
-    color: var(--color-text-muted);
-}
-
-.receipt-link {
+.receipt-link1 {
     color: var(--color-primary);
     text-decoration: none;
     font-weight: 500;
 }
 
-.receipt-link:hover {
+.receipt-link1:hover {
     text-decoration: underline;
 }
 
@@ -111,38 +99,12 @@
     flex-wrap: wrap;
 }
 
-.action-buttons button {
-    padding: 6px 12px;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-size: 12px;
-    cursor: pointer;
-    transition: all var(--transition-base);
-    font-weight: 500;
-    box-shadow: var(--shadow-sm);
-    min-width: 70px;
-    text-align: center;
-}
-
-/* .btn-view, .btn-delete — now using .admin-btn-primary / .admin-btn-danger from app.css */
-
-/* Pagination — uses default Bootstrap styles (same as View Inquiries) */
-
-/* .custom-modal — now using shared modal system from app.css */
-
-/* Slightly wider modal for grouped reservation details */
-#viewModal .modal-content {
-  max-width: 560px;
-}
-
 .receipt-image {
     max-width: 100%;
     height: auto;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
-
-/* Animations — now using modalFadeIn from app.css */
 
 /* Responsive Design */
 @media (max-width: 1200px) {
@@ -152,23 +114,12 @@
 }
 
 @media (max-width: 768px) {
-    .reservation-table {
+    .payment-table {
         font-size: 12px;
     }
 
-    .reservation-table th,
-    .reservation-table td {
+    .payment-table th,
+    .payment-table td {
         padding: 8px 6px;
     }
-
-    .action-buttons {
-        flex-direction: column;
-    }
-
-    .action-buttons button {
-        width: 100%;
-        margin-bottom: 2px;
-    }
 }
-
-/* .modal, .modal-content, .close-btn — now using shared system from app.css */

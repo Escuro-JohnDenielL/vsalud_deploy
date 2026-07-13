@@ -47,8 +47,8 @@
     <nav class="navbar">
         <ul class="navbar">
             {{-- Bookings Dropdown --}}
-            @if($canAccess('reservations') || $canAccess('inquiries') || $canAccess('reserve-logs') || $canAccess('cancellations') || $canAccess('waitlist'))
-            <li class="nav-dropdown {{ $isActive(['admin/reserve', 'admin/inquiry', 'admin/reserve-logs', 'admin/cancellations', 'admin/waitlist']) ? 'active' : '' }}">
+            @if($canAccess('reservations') || $canAccess('inquiries') || $canAccess('reserve-logs') || $canAccess('payment-logs') || $canAccess('cancellations') || $canAccess('waitlist'))
+            <li class="nav-dropdown {{ $isActive(['admin/reserve', 'admin/inquiry', 'admin/reserve-logs', 'admin/payment-logs', 'admin/cancellations', 'admin/waitlist']) ? 'active' : '' }}">
                 <a class="nav-dropdown-toggle" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                     Bookings
@@ -75,6 +75,14 @@
                         <a href="{{ route('admin.reserve-logs') }}"
                             class="{{ request()->is('admin/reserve-logs') ? 'active' : '' }}">
                             Reservation Logs
+                        </a>
+                    </li>
+                    @endif
+                    @if($canAccess('payment-logs'))
+                    <li>
+                        <a href="{{ route('admin.payment-logs') }}"
+                            class="{{ request()->is('admin/payment-logs') ? 'active' : '' }}">
+                            Payment Logs
                         </a>
                     </li>
                     @endif

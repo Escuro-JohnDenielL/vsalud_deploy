@@ -28,6 +28,7 @@ class AdminPagePermission extends Model
             'reservations'  => 'Reservations',
             'inquiries'     => 'Inquiries',
             'reserve-logs'  => 'Reservation Logs',
+            'payment-logs'  => 'Payment Logs',
             'cancellations' => 'Cancellation Requests',
             'waitlist'      => 'Waitlist',
             'reports'       => 'Reports',
@@ -43,13 +44,13 @@ class AdminPagePermission extends Model
         return [
             'full-access' => [
                 'label' => 'Full Access',
-                'description' => 'All pages (packages, reservations, inquiries, logs, cancellations, waitlist, reports, feedback)',
-                'pages' => ['packages', 'reservations', 'inquiries', 'reserve-logs', 'cancellations', 'waitlist', 'reports', 'feedback'],
+                'description' => 'All pages (packages, reservations, inquiries, logs, cancellations, waitlist, payment logs, reports, feedback)',
+                'pages' => ['packages', 'reservations', 'inquiries', 'reserve-logs', 'payment-logs', 'cancellations', 'waitlist', 'reports', 'feedback'],
             ],
             'view-only' => [
                 'label' => 'View Only',
-                'description' => 'Read monitoring — inquiries, logs, feedback, reports',
-                'pages' => ['inquiries', 'reserve-logs', 'feedback', 'reports'],
+                'description' => 'Read monitoring — inquiries, logs, payment logs, feedback, reports',
+                'pages' => ['inquiries', 'reserve-logs', 'payment-logs', 'feedback', 'reports'],
             ],
             'reports-only' => [
                 'label' => 'Reports Only',
@@ -58,13 +59,13 @@ class AdminPagePermission extends Model
             ],
             'reservation-handler' => [
                 'label' => 'Reservation Handler',
-                'description' => 'Reservations, logs, and inquiries',
-                'pages' => ['reservations', 'reserve-logs', 'inquiries'],
+                'description' => 'Reservations, logs, payment logs, and inquiries',
+                'pages' => ['reservations', 'reserve-logs', 'payment-logs', 'inquiries'],
             ],
             'customer-service' => [
                 'label' => 'Customer Service',
-                'description' => 'Inquiries and feedback management',
-                'pages' => ['inquiries', 'feedback', 'reserve-logs'],
+                'description' => 'Inquiries, feedback, and logs management',
+                'pages' => ['inquiries', 'feedback', 'reserve-logs', 'payment-logs'],
             ],
             'no-access' => [
                 'label' => 'No Access',

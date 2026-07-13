@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Reservation;
-use App\Models\Payment;
 use Illuminate\Support\Facades\Log;
 
 class ReservationController extends Controller
@@ -17,9 +16,7 @@ class ReservationController extends Controller
             ->latest()
             ->paginate(10);
 
-        $payment_logs = Payment::latest()->paginate(10);
-
-        return view('admin.reserve-logs', compact('reservations', 'payment_logs'));
+        return view('admin.reserve-logs', compact('reservations'));
     }
 
     public function getReservation($id)

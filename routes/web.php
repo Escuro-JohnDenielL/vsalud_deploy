@@ -156,6 +156,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
 
     // Waitlist (admin, read-only)
     Route::get('/waitlist', [AdminWaitlistController::class, 'index'])->name('waitlist');
+
+    // Payment Logs (admin)
+    Route::get('/payment-logs', [\App\Http\Controllers\Admin\PaymentLogsController::class, 'index'])->name('payment-logs');
 });
 
 // Logout Route (accessible to authenticated users)

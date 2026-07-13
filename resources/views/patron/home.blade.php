@@ -15,13 +15,12 @@
 
     <div class="packages">
         @foreach ($packages as $package)
-            <div class="package-card">
-                <img src="{{ asset($package->image_path) }}" alt="{{ $package->name }}">
-
-                <h3>{{ $package->name }}</h3>
-                <p>{{ $package->description }}</p>
-                <strong>₱{{ number_format($package->price, 2) }}</strong>
-            </div>
+            <x-package-card
+                :name="$package->name"
+                :description="$package->description"
+                :price="$package->price"
+                :imagePath="$package->image_path"
+            />
         @endforeach
 
         {{-- Optionally, fallback if no packages exist --}}

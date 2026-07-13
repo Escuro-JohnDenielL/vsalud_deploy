@@ -4,10 +4,6 @@
 
 @push('styles')
 <style>
-    .waitlist-container {
-        padding: 28px 32px;
-    }
-
     /* Stats cards */
     .stats-row {
         display: flex;
@@ -94,8 +90,6 @@
         border-bottom: none;
     }
 
-    /* Badges — now using .badge-modern from app.css */
-
     .empty-state {
         text-align: center;
         padding: 60px 20px;
@@ -110,7 +104,7 @@
 @endpush
 
 @section('content')
-    <div class="waitlist-container">
+    <div class="container">
         <div class="page-header">
             <h1>Waitlist</h1>
             <p>Track patrons waiting for available dates. Read-only — entries are managed automatically.</p>
@@ -188,7 +182,7 @@
                 @endforeach
             @endif
         </div>
-        <div style="margin-top: 16px;">
+        <div style="margin-top: 16px; padding: 16px 20px;">
             {{ $entries->links() }}
         </div>
     </div>
