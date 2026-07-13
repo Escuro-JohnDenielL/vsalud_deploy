@@ -5,30 +5,33 @@ document.addEventListener("DOMContentLoaded", function () {
     paginateTable("paymentTableBody");
     paginateTable("reservationTableBody");
 
-    const modal = document.getElementById("viewModal1");
+    const receiptModal = document.getElementById("receiptModal");
     const modalImage = document.getElementById("receiptImage1");
-    const closeModalBtn = document.querySelector(".close1");
+    const closeReceiptBtn = document.getElementById("closeReceiptModal");
 
-    // Open modal
+    // Open receipt modal
     document.querySelectorAll(".receipt-link1").forEach((link) => {
         link.addEventListener("click", function (e) {
             e.preventDefault();
             const receiptUrl = this.getAttribute("data-receipt");
             modalImage.src = receiptUrl;
-            modal.style.display = "block";
+            receiptModal.style.display = "flex";
+            receiptModal.classList.add('open');
         });
     });
 
-    // Close modal
-    closeModalBtn.addEventListener("click", function () {
-        modal.style.display = "none";
+    // Close receipt modal
+    closeReceiptBtn.addEventListener("click", function () {
+        receiptModal.style.display = "none";
+        receiptModal.classList.remove('open');
         modalImage.src = "";
     });
 
-    // Close modal when clicking outside
+    // Close receipt modal when clicking outside
     window.addEventListener("click", function (e) {
-        if (e.target === modal) {
-            modal.style.display = "none";
+        if (e.target === receiptModal) {
+            receiptModal.style.display = "none";
+            receiptModal.classList.remove('open');
             modalImage.src = "";
         }
     });
@@ -137,6 +140,7 @@ function viewReservation(id) {
     const body = document.getElementById("modalBody");
 
     modal.style.display = "flex";
+    modal.classList.add('open');
     body.innerHTML = `Loading reservation #${id}...`;
 
     // Get CSRF token
@@ -194,7 +198,16 @@ function viewReservation(id) {
 }
 
 function closeModal() {
-    document.getElementById("viewModal").style.display = "none";
+    const viewModal = document.getElementById("viewModal");
+    const viewModalPayment = document.getElementById("viewModalPayment");
+    if (viewModal) {
+        viewModal.style.display = "none";
+        viewModal.classList.remove('open');
+    }
+    if (viewModalPayment) {
+        viewModalPayment.style.display = "none";
+        viewModalPayment.classList.remove('open');
+    }
 }
 
 // DELETE BUTTON HANDLER
@@ -204,6 +217,7 @@ function deleteReservation(id) {
     const modal = document.getElementById('confirmDeleteReservationModal');
     document.getElementById('confirmDeleteReservationMessage').textContent = `Are you sure you want to delete reservation #${id}?`;
     modal.style.display = 'flex';
+    modal.classList.add('open');
     pendingDeleteId = id;
 }
 
@@ -214,7 +228,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const yesBtn = document.getElementById('confirmDeleteReservationYes');
 
     function closeModal() {
-        if (modal) modal.style.display = 'none';
+        if (modal) {
+            modal.style.display = 'none';
+            modal.classList.remove('open');
+        }
         pendingDeleteId = null;
     }
 

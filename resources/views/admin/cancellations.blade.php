@@ -43,20 +43,20 @@
                                 <td>{{ \Illuminate\Support\Str::limit($req->reason, 60) ?: '—' }}</td>
                                 <td>
                                     @if($req->status === 'pending')
-                                        <span class="badge badge-pending">Pending</span>
+                                        <span class="badge-modern warning">Pending</span>
                                     @elseif($req->status === 'approved')
-                                        <span class="badge badge-approved">Approved</span>
+                                        <span class="badge-modern success">Approved</span>
                                     @elseif($req->status === 'denied')
-                                        <span class="badge badge-denied">Denied</span>
+                                        <span class="badge-modern danger">Denied</span>
                                     @endif
                                 </td>
                                 <td>{{ $req->created_at->format('M d, Y g:i A') }}</td>
                                 <td>
                                     @if($req->status === 'pending')
                                         <div class="action-buttons">
-                                            <button class="btn-approve"
+                                            <button class="admin-btn admin-btn-primary admin-btn-sm"
                                                 data-request-id="{{ $req->id }}">Approve</button>
-                                            <button class="btn-deny"
+                                            <button class="admin-btn admin-btn-danger admin-btn-sm"
                                                 data-request-id="{{ $req->id }}">Deny</button>
                                         </div>
                                     @else
@@ -84,9 +84,9 @@
     </div>
 
     {{-- Approve Modal --}}
-    <div id="approveModal" class="modal" style="display:none;">
-        <div class="modal-content" style="max-width: 480px;">
-            <span class="close" onclick="closeModal('approveModal')">&times;</span>
+    <div id="approveModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('approveModal')">&times;</span>
             <h3>Approve Cancellation</h3>
             <p style="font-size: 14px; margin: 12px 0;">The reservation will be cancelled and the patron will be notified.</p>
             <form id="approveForm">
@@ -96,18 +96,18 @@
                     <label for="approveNote">Admin Note (optional, included in email):</label>
                     <textarea id="approveNote" name="admin_note" rows="3" placeholder="Add a note..."></textarea>
                 </div>
-                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px;">
-                    <button type="button" class="btn-cancel-modal" onclick="closeModal('approveModal')">Cancel</button>
-                    <button type="submit" class="btn-approve">Confirm Approve</button>
+                <div class="modal-footer">
+                    <button type="button" class="admin-btn admin-btn-ghost" onclick="closeModal('approveModal')">Cancel</button>
+                    <button type="submit" class="admin-btn admin-btn-primary">Confirm Approve</button>
                 </div>
             </form>
         </div>
     </div>
 
     {{-- Deny Modal --}}
-    <div id="denyModal" class="modal" style="display:none;">
-        <div class="modal-content" style="max-width: 480px;">
-            <span class="close" onclick="closeModal('denyModal')">&times;</span>
+    <div id="denyModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('denyModal')">&times;</span>
             <h3>Deny Cancellation</h3>
             <p style="font-size: 14px; margin: 12px 0;">The patron will be notified that their request was denied.</p>
             <form id="denyForm">
@@ -117,9 +117,9 @@
                     <label for="denyNote">Reason for Denial (optional, included in email):</label>
                     <textarea id="denyNote" name="admin_note" rows="3" placeholder="Explain why the request was denied..."></textarea>
                 </div>
-                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px;">
-                    <button type="button" class="btn-cancel-modal" onclick="closeModal('denyModal')">Cancel</button>
-                    <button type="submit" class="btn-deny">Confirm Deny</button>
+                <div class="modal-footer">
+                    <button type="button" class="admin-btn admin-btn-ghost" onclick="closeModal('denyModal')">Cancel</button>
+                    <button type="submit" class="admin-btn admin-btn-danger">Confirm Deny</button>
                 </div>
             </form>
         </div>

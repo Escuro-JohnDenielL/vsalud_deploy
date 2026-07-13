@@ -228,133 +228,28 @@
 }
 
 /* === Modal === */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
+/* .modal — using shared system from app.css */
 
-.modal-box {
-    background: white;
-    padding: 20px;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    width: 90%;
-    max-width: 400px;
-}
-
-.modal-box h3 {
+.modal-content h3 {
     margin: 0 0 15px 0;
     font-size: 18px;
-    color: #333;
+    color: var(--color-text);
 }
 
-.modal-box select {
+.modal-content select {
     width: 100%;
     padding: 8px;
     margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-}
-
-.modal-buttons {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.modal-box button {
-    flex: 1;
-    padding: 8px 12px;
-    cursor: pointer;
-    border: none;
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     font-size: 14px;
-    min-width: 80px;
-    transition: all var(--transition-base);
+    font-family: var(--font-body);
 }
 
-.modal-box #saveStatus {
-    background: #28a745;
-    color: white;
-}
+/* .modal-buttons — using shared .modal-footer from app.css */
 
-.modal-box #saveStatus:hover {
-    background: #218838;
-    transform: translateY(-1px);
-}
-
-.modal-box #closeModal {
-    background: #6c757d;
-    color: white;
-}
-
-.modal-box #closeModal:hover {
-    background: #5a6268;
-    transform: translateY(-1px);
-}
-
-.modal-box #undoStatus {
-    background: #dc3545;
-    color: white;
-}
-
-.modal-box #undoStatus:hover {
-    background: #c82333;
-    transform: translateY(-1px);
-}
-
-.modal1 {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    padding-top: 100px;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-}
-
-.modal-content1 {
-    margin: auto;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    position: relative;
-}
-
-.close-modal1 {
-    position: absolute;
-    top: 14px;
-    right: 18px;
-    font-size: 24px;
-    font-weight: normal;
-    color: var(--color-text-muted);
-    cursor: pointer;
-    background: none;
-    border: none;
-    line-height: 1;
-    padding: 0;
-    float: none;
-}
-
-.close-modal1:hover {
-    color: var(--color-text);
-}
+/* .modal, .modal-content, .close-btn — now using shared system from app.css 
+   (was .modal1 / .modal-content1 / .close-modal1) */
 
 /* === Responsive === */
 @media (max-width: 900px) {
@@ -382,12 +277,11 @@
         margin: 0 auto;
     }
 
-    .modal-buttons {
+    .modal-footer {
         flex-direction: column;
     }
 
-    .modal-box button {
+    .modal-footer button {
         width: 100%;
-        margin-bottom: 5px;
     }
 }

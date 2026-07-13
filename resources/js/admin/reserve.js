@@ -506,18 +506,21 @@ document.addEventListener("DOMContentLoaded", function () {
             dateStatuses[selected] === "Closed"
         ) {
             // alert("This date is not available. Please choose another.");
-            dateUnavailableModal.style.display = "block";
+            dateUnavailableModal.style.display = "flex";
+            dateUnavailableModal.classList.add('open');
             dateInput.value = "";
         }
     });
 
     closeUnavailableModal?.addEventListener("click", () => {
         dateUnavailableModal.style.display = "none";
+        dateUnavailableModal.classList.remove('open');
     });
 
     window.addEventListener("click", function (event) {
         if (event.target === dateUnavailableModal) {
             dateUnavailableModal.style.display = "none";
+            dateUnavailableModal.classList.remove('open');
         }
     });
 });

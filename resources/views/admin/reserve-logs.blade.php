@@ -60,9 +60,9 @@
 
                                 <td>
                                     <div class="action-buttons">
-                                        <button class="btn-view" data-reservation-id="{{ $reservation->reserve_id }}"
+                                        <button class="admin-btn admin-btn-primary admin-btn-sm" data-reservation-id="{{ $reservation->reserve_id }}"
                                             onclick="viewReservation(this.dataset.reservationId)">View</button>
-                                        <button class="btn-delete" data-reservation-id="{{ $reservation->reserve_id }}"
+                                        <button class="admin-btn admin-btn-danger admin-btn-sm" data-reservation-id="{{ $reservation->reserve_id }}"
                                             onclick="deleteReservation(this.dataset.reservationId)">Delete</button>
                                     </div>
                                 </td>
@@ -77,9 +77,9 @@
             </div>
 
             <!-- View Modal -->
-            <div id="viewModal" class="modal" style="display:none;">
+            <div id="viewModal" class="modal">
                 <div class="modal-content">
-                    <span class="close" onclick="closeModal()">&times;</span>
+                    <span class="close-btn" onclick="closeModal()">&times;</span>
                     <h2>Reservation Details</h2>
                     <div id="modalBody">
                         Loading...
@@ -148,12 +148,12 @@
                 </table>
             </div>
 
-            <!-- View Modal -->
-            <div id="viewModal" class="modal" style="display:none;">
+            <!-- View Modal (payment) -->
+            <div id="viewModalPayment" class="modal">
                 <div class="modal-content">
-                    <span class="close" onclick="closeModal()">&times;</span>
+                    <span class="close-btn" onclick="closeModal()">&times;</span>
                     <h2>Reservation Details</h2>
-                    <div id="modalBody">
+                    <div id="modalBodyPayment">
                         Loading...
                     </div>
                 </div>
@@ -167,12 +167,12 @@
         </div>
     </div>
 
-    <!-- View Modal -->
-    <div id="viewModal1" class="modal1 custom-modal">
-        <div class="custom-modal-content modal-content1">
-            <button class="close1 custom-modal-close" onclick="closeModal()">&times;</button>
-            <h2 class="custom-modal-title">Payment Receipt</h2>
-            <div class="custom-modal-body">
+    <!-- Payment Receipt Modal -->
+    <div id="receiptModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeReceiptModal">&times;</span>
+            <h2>Payment Receipt</h2>
+            <div style="text-align:center;">
                 <img id="receiptImage1" src="" alt="Receipt Image" class="receipt-image">
             </div>
         </div>
@@ -180,14 +180,14 @@
 
 
     {{-- Confirm Delete Modal --}}
-    <div id="confirmDeleteReservationModal" class="modal" style="display:none;">
-        <div class="modal-content" style="max-width: 420px;">
-            <span class="close" id="closeConfirmDeleteModal">&times;</span>
+    <div id="confirmDeleteReservationModal" class="modal">
+        <div class="modal-content modal-sm">
+            <span class="close-btn" id="closeConfirmDeleteModal">&times;</span>
             <h3>Confirm Delete</h3>
-            <p id="confirmDeleteReservationMessage" style="font-size: 15px; margin: 20px 0;">Are you sure you want to delete this reservation?</p>
-            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                <button id="confirmDeleteReservationNo" class="btn-view" style="background:#6c757d;color:#fff;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;">Cancel</button>
-                <button id="confirmDeleteReservationYes" class="btn-delete" style="border:none;padding:8px 16px;border-radius:4px;cursor:pointer;">Delete</button>
+            <p id="confirmDeleteReservationMessage" style="font-size: 15px; margin: 12px 0;">Are you sure you want to delete this reservation?</p>
+            <div class="modal-footer">
+                <button id="confirmDeleteReservationNo" class="admin-btn admin-btn-ghost">Cancel</button>
+                <button id="confirmDeleteReservationYes" class="admin-btn admin-btn-danger">Delete</button>
             </div>
         </div>
     </div>

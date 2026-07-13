@@ -44,11 +44,11 @@
                                             <td class="message-cell">{{ Str::limit($feedback->message, 120) }}</td>
                                             <td>{{ $feedback->created_at ? $feedback->created_at->format('M d, Y h:i A') : '-' }}</td>
                                             <td>
-                                                <button class="view-feedback-btn" data-id="{{ $feedback->id }}" data-name="{{ $feedback->name }}" data-email="{{ $feedback->email }}" data-message="{{ $feedback->message }}" data-date="{{ $feedback->created_at ? $feedback->created_at->format('M d, Y h:i A') : '-' }}">View</button>
+                                                <button class="admin-btn admin-btn-primary admin-btn-sm view-feedback-btn" data-id="{{ $feedback->id }}" data-name="{{ $feedback->name }}" data-email="{{ $feedback->email }}" data-message="{{ $feedback->message }}" data-date="{{ $feedback->created_at ? $feedback->created_at->format('M d, Y h:i A') : '-' }}">View</button>
                                                 <form action="{{ route('admin.feedback.destroy', $feedback->id) }}" method="POST" class="d-inline" id="delete-feedback-form-{{ $feedback->id }}">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="button" class="delete-btn" onclick="confirmDeleteFeedback({{ $feedback->id }})">Delete</button>
+                                                    <button type="button" class="admin-btn admin-btn-danger admin-btn-sm" onclick="confirmDeleteFeedback({{ $feedback->id }})">Delete</button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -82,13 +82,13 @@
 
     {{-- Confirm Delete Modal --}}
     <div id="confirmDeleteModal" class="modal">
-        <div class="modal-content" style="max-width: 420px;">
+        <div class="modal-content modal-sm">
             <span class="close-btn" id="closeConfirmModal">&times;</span>
             <h3>Confirm Delete</h3>
-            <p id="confirmDeleteMessage" style="font-size: 15px; margin: 16px 0;">Are you sure you want to delete this feedback?</p>
-            <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                <button id="confirmDeleteNo" class="delete-btn" style="background: #6c757d;">Cancel</button>
-                <button id="confirmDeleteYes" class="delete-btn" style="background: #dc3545;">Delete</button>
+            <p id="confirmDeleteMessage" style="font-size: 15px; margin: 12px 0;">Are you sure you want to delete this feedback?</p>
+            <div class="modal-footer">
+                <button id="confirmDeleteNo" class="admin-btn admin-btn-ghost">Cancel</button>
+                <button id="confirmDeleteYes" class="admin-btn admin-btn-danger">Delete</button>
             </div>
         </div>
     </div>

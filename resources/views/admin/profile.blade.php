@@ -52,7 +52,7 @@ if ($user && !$isSuperAdmin) {
         <input type="file" id="profile-pic-input" accept="image/*" style="display: none;">
       </div>
       --}}
-      <h2 id="admin-name" style="color:#2d2d2d;font-weight:600;">{{ $user->name ?? ($user->f_name . ' ' . $user->l_name) }}</h2>
+      <h2 id="admin-name" style="color:var(--color-primary);font-weight:600;">{{ $user->name ?? ($user->f_name . ' ' . $user->l_name) }}</h2>
       <p style="color:#6b7280;">System Administrator</p>
     </div>
     <div class="profile-info">
@@ -63,7 +63,7 @@ if ($user && !$isSuperAdmin) {
       <p><strong>Password:</strong> •••••••• <a href="#" class="change-password" id="change-password-link">Change</a></p>
     </div>
     <div class="buttons">
-      <button class="edit-btn" id="edit-profile-btn">Edit Profile</button>
+      <button class="admin-btn admin-btn-primary" id="edit-profile-btn">Edit Profile</button>
     </div>
   </div>
 
@@ -110,87 +110,79 @@ if ($user && !$isSuperAdmin) {
 </section>
 
 {{-- Edit Profile Modal --}}
-<div id="edit-modal" class="modal" style="display: none;">
+<div id="edit-modal" class="modal">
   <div class="modal-content">
-    <div class="modal-header">
-      <h3>Edit Profile</h3>
-      <span class="close" id="close-modal">&times;</span>
-    </div>
-    <div class="modal-body">
-      <form id="edit-form">
-        @csrf
-        <div class="form-group">
-          <label for="edit-name">Full Name:</label>
-          <input type="text" id="edit-name" name="name" required>
-        </div>
-        <div class="form-group">
-          <label for="edit-email">Email:</label>
-          <input type="email" id="edit-email" name="email" required>
-        </div>
-        <div class="form-group">
-          <label for="edit-phone">Phone:</label>
-          <input type="text" id="edit-phone" name="phone">
-        </div>
-        <div class="form-group">
-          <label for="edit-username">Username:</label>
-          <input type="text" id="edit-username" name="username" readonly style="background-color: #f5f5f5;">
-          <small style="color: #6b7280; font-size: 12px;">Username is automatically generated from email</small>
-        </div>
-        <div class="modal-buttons">
-          <button type="submit" class="btn btn-primary">Save Changes</button>
-          <button type="button" id="cancel-edit" class="btn btn-secondary">Cancel</button>
-        </div>
-      </form>
-    </div>
+    <span class="close-btn" id="close-modal">&times;</span>
+    <h3>Edit Profile</h3>
+    <form id="edit-form">
+      @csrf
+      <div class="form-group">
+        <label for="edit-name">Full Name:</label>
+        <input type="text" id="edit-name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="edit-email">Email:</label>
+        <input type="email" id="edit-email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="edit-phone">Phone:</label>
+        <input type="text" id="edit-phone" name="phone">
+      </div>
+      <div class="form-group">
+        <label for="edit-username">Username:</label>
+        <input type="text" id="edit-username" name="username" readonly style="background-color: #f5f5f5;">
+        <small style="color: #6b7280; font-size: 12px;">Username is automatically generated from email</small>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="cancel-edit" class="admin-btn admin-btn-ghost">Cancel</button>
+        <button type="submit" class="admin-btn admin-btn-primary">Save Changes</button>
+      </div>
+    </form>
   </div>
 </div>
 
 {{-- Change Password Modal --}}
-<div id="password-modal" class="modal" style="display: none;">
+<div id="password-modal" class="modal">
   <div class="modal-content">
-    <div class="modal-header">
-      <h3>Change Password</h3>
-      <span class="close" id="close-password-modal">&times;</span>
-    </div>
-    <div class="modal-body">
-      {{-- Step 1: Verify current password & send code --}}
-      <div id="password-step-1">
-        <div id="step-1-message" style="display: none;" class="info-message"></div>
-        <div class="form-group">
-          <label for="current-password">Current Password:</label>
-          <input type="password" id="current-password" name="current_password" required autocomplete="off">
-        </div>
-        <div class="modal-buttons">
-          <button type="button" id="send-code-btn" class="btn btn-primary">Send Code to Email</button>
-          <button type="button" id="cancel-password" class="btn btn-secondary">Cancel</button>
-        </div>
+    <span class="close-btn" id="close-password-modal">&times;</span>
+    <h3>Change Password</h3>
+    {{-- Step 1: Verify current password & send code --}}
+    <div id="password-step-1">
+      <div id="step-1-message" style="display: none;" class="info-message"></div>
+      <div class="form-group">
+        <label for="current-password">Current Password:</label>
+        <input type="password" id="current-password" name="current_password" required autocomplete="off">
       </div>
+      <div class="modal-footer">
+        <button type="button" id="cancel-password" class="admin-btn admin-btn-ghost">Cancel</button>
+        <button type="button" id="send-code-btn" class="admin-btn admin-btn-primary">Send Code to Email</button>
+      </div>
+    </div>
 
-      {{-- Step 2: Enter code & new password --}}
-      <div id="password-step-2" style="display: none;">
-        <div class="form-group">
-          <label for="reset-code">Verification Code:</label>
-          <input type="text" id="reset-code" name="reset_code" maxlength="6" placeholder="Enter 6-digit code" required autocomplete="off">
-          <small style="color: #6b7280; font-size: 12px;">Enter the code sent to your email</small>
-        </div>
-        <div class="form-group">
-          <label for="new-password">New Password:</label>
-          <input type="password" id="new-password" name="new_password" required autocomplete="off">
-          <small style="color: #6b7280; font-size: 12px;">Min 8 characters, 1 uppercase, 1 number, 1 special character</small>
-        </div>
-        <div class="form-group">
-          <label for="confirm-password">Confirm New Password:</label>
-          <input type="password" id="confirm-password" name="confirm_password" required autocomplete="off">
-        </div>
-        <div class="form-group">
-          <label>
-            <input type="checkbox" id="show-password-fields"> Show Passwords
-          </label>
-        </div>
-        <div class="modal-buttons">
-          <button type="button" id="verify-code-btn" class="btn btn-primary">Change Password</button>
-          <button type="button" id="back-to-step1" class="btn btn-secondary">Back</button>
-        </div>
+    {{-- Step 2: Enter code & new password --}}
+    <div id="password-step-2" style="display: none;">
+      <div class="form-group">
+        <label for="reset-code">Verification Code:</label>
+        <input type="text" id="reset-code" name="reset_code" maxlength="6" placeholder="Enter 6-digit code" required autocomplete="off">
+        <small style="color: #6b7280; font-size: 12px;">Enter the code sent to your email</small>
+      </div>
+      <div class="form-group">
+        <label for="new-password">New Password:</label>
+        <input type="password" id="new-password" name="new_password" required autocomplete="off">
+        <small style="color: #6b7280; font-size: 12px;">Min 8 characters, 1 uppercase, 1 number, 1 special character</small>
+      </div>
+      <div class="form-group">
+        <label for="confirm-password">Confirm New Password:</label>
+        <input type="password" id="confirm-password" name="confirm_password" required autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="show-password-fields"> Show Passwords
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="back-to-step1" class="admin-btn admin-btn-ghost">Back</button>
+        <button type="button" id="verify-code-btn" class="admin-btn admin-btn-primary">Change Password</button>
       </div>
     </div>
   </div>
@@ -198,30 +190,26 @@ if ($user && !$isSuperAdmin) {
 
 {{-- Confirm Modal --}}
 <div id="confirm-modal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>Confirm Logout</h3>
-      <span class="close" id="confirm-cancel" style="cursor: pointer;">&times;</span>
-    </div>
-    <div class="modal-body">
-      <p id="confirm-message" style="font-size: 16px; margin-bottom: 20px;">
-        Are you sure you want to logout?
-      </p>
-      <div class="modal-buttons">
-        <button id="confirm-ok" class="btn btn-primary">Yes</button>
-        <button id="confirm-no" class="btn btn-secondary">No</button>
-      </div>
+  <div class="modal-content modal-sm">
+    <span class="close-btn" id="confirm-cancel">&times;</span>
+    <h3>Confirm Logout</h3>
+    <p id="confirm-message" style="font-size: 16px; margin-bottom: 20px;">
+      Are you sure you want to logout?
+    </p>
+    <div class="modal-footer">
+      <button id="confirm-no" class="admin-btn admin-btn-ghost">No</button>
+      <button id="confirm-ok" class="admin-btn admin-btn-primary">Yes</button>
     </div>
   </div>
 </div>
 
 {{-- Success Modal --}}
-<div id="success-modal" class="modal" style="display: none;">
-  <div class="modal-content">
+<div id="success-modal" class="modal">
+  <div class="modal-content modal-sm">
     <h3>Success</h3>
     <p id="success-message-text">Action successful.</p>
-    <div class="modal-buttons">
-      <button id="success-ok-btn" class="btn btn-success">OK</button>
+    <div class="modal-footer">
+      <button id="success-ok-btn" class="admin-btn admin-btn-primary">OK</button>
     </div>
   </div>
 </div>

@@ -6,24 +6,22 @@
 <style>
     .fbe-container { padding: 32px 20px 60px; max-width: 1200px; margin: 0 auto; }
     .fbe-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
-    .fbe-header h1 { font-family: Georgia, serif; font-size: 28px; color: #0d7a3e; margin: 0; }
-    .fbe-header p { color: #6b7280; margin: 4px 0 0; }
-    .fbe-status { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; }
-    .status-published { background: #e8f5e9; color: #2e7d32; }
-    .status-draft { background: #f5f5f5; color: #616161; }
+    .fbe-header h1 { font-family: var(--font-heading); font-size: 28px; color: var(--color-primary); margin: 0; }
+    .fbe-header p { color: var(--color-text-muted); margin: 4px 0 0; }
+    /* .fbe-status — now using .badge-modern from app.css */
 
     .fbe-layout { display: grid; grid-template-columns: 1fr 360px; gap: 24px; align-items: start; }
     @media (max-width: 900px) { .fbe-layout { grid-template-columns: 1fr; } }
 
     /* Fields list (left column) */
-    .fields-panel { background: #fff; border-radius: 16px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 20px; }
+    .fields-panel { background: var(--color-surface); border-radius: 16px; border: 1px solid var(--color-border); box-shadow: var(--shadow-sm); padding: 20px; }
     .fields-panel h2 { font-size: 18px; color: #2d2d2d; margin: 0 0 16px; padding-bottom: 10px; border-bottom: 1px solid #eef2ed; }
     .empty-fields { text-align: center; padding: 40px 20px; color: #6b7280; }
 
-    .field-item { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; cursor: grab; transition: box-shadow 0.15s; }
+    .field-item { background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; cursor: grab; transition: box-shadow 0.15s; }
     .field-item:hover { box-shadow: 0 2px 8px rgba(18,59,38,0.08); }
     .field-item.dragging { opacity: 0.5; }
-    .field-item.drag-over { border-color: #0d7a3e; border-style: dashed; }
+    .field-item.drag-over { border-color: var(--color-primary); border-style: dashed; }
     .field-item .drag-handle { color: #9ca3af; cursor: grab; font-size: 18px; flex-shrink: 0; }
     .field-item .field-icon { font-size: 20px; flex-shrink: 0; width: 32px; text-align: center; }
     .field-item .field-info { flex: 1; min-width: 0; }
@@ -33,15 +31,15 @@
     .field-item .field-actions { display: flex; gap: 6px; flex-shrink: 0; }
     .field-item .field-actions button { background: none; border: 1px solid #d7dfd5; border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; color: #6b7280; transition: all 0.1s; }
     .field-item .field-actions button:hover { background: #eef2ed; }
-    .field-item .field-actions .btn-edit-field { color: #0d7a3e; border-color: #0d7a3e; }
-    .field-item .field-actions .btn-edit-field:hover { background: #0d7a3e; color: #fff; }
+    .field-item .field-actions .btn-edit-field { color: var(--color-primary); border-color: var(--color-primary); }
+    .field-item .field-actions .btn-edit-field:hover { background: var(--color-primary); color: #fff; }
     .field-item .field-actions .btn-del-field { color: #dc3545; border-color: #dc3545; }
     .field-item .field-actions .btn-del-field:hover { background: #dc3545; color: #fff; }
     .field-item.field-inactive { opacity: 0.55; }
     .field-item.field-fixed { background: #f0f5f0; border-color: #c8d8cc; }
 
     /* Add field panel (right column) */
-    .add-panel { background: #fff; border-radius: 16px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 20px; }
+    .add-panel { background: var(--color-surface); border-radius: 16px; border: 1px solid var(--color-border); box-shadow: var(--shadow-sm); padding: 20px; }
     .add-panel h2 { font-size: 18px; color: #2d2d2d; margin: 0 0 16px; font-weight: 600; }
     .add-panel .form-group { margin-bottom: 14px; }
     .add-panel label { display: block; font-weight: 600; margin-bottom: 4px; color: #2d2d2d; font-size: 13px; }
@@ -49,12 +47,12 @@
     .add-panel .checkbox-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
     .add-panel .checkbox-row input[type="checkbox"] { width: auto; }
     .add-panel .checkbox-row label { margin: 0; }
-    .btn-add-field { background: #0d7a3e; color: #fff; border: none; border-radius: 999px; padding: 10px 24px; font-weight: 600; cursor: pointer; width: 100%; font-size: 14px; }
+    .btn-add-field { background: var(--color-primary); color: #fff; border: none; border-radius: var(--radius-sm); padding: 10px 24px; font-weight: 600; cursor: pointer; width: 100%; font-size: 14px; }
     .btn-add-field:hover { background: #0a5e2f; }
 
     /* Buttons row */
     .fbe-actions { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
-    .btn-publish, .btn-preview, .btn-save-order { border: none; border-radius: 999px; padding: 10px 24px; font-weight: 600; cursor: pointer; font-size: 14px; text-decoration: none; display: inline-block; }
+    .btn-publish, .btn-preview, .btn-save-order { border: none; border-radius: var(--radius-sm); padding: 10px 24px; font-weight: 600; cursor: pointer; font-size: 14px; text-decoration: none; display: inline-block; }
     .btn-publish { background: #0d7a3e; color: #fff; }
     .btn-publish:hover { background: #0a5e2f; }
     .btn-preview { background: #f3f4f6; color: #2d2d2d; border: 1px solid #e5e7eb; }
@@ -71,7 +69,7 @@
     .modal-box-fb .checkbox-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
     .modal-box-fb .checkbox-row input[type="checkbox"] { width: auto; }
     .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
-    .modal-actions button { border: none; border-radius: 999px; padding: 8px 20px; font-weight: 600; cursor: pointer; }
+    .modal-actions button { border: none; border-radius: var(--radius-sm); padding: 8px 20px; font-weight: 600; cursor: pointer; }
     .modal-actions .btn-save { background: #0d7a3e; color: #fff; }
     .modal-actions .btn-cancel { background: #f3f4f6; color: #2d2d2d; }
 
@@ -82,7 +80,7 @@
     .add-opt-btn { background: none; border: 1px dashed #d1d5db; border-radius: 6px; padding: 6px 12px; font-size: 12px; color: #6b7280; cursor: pointer; width: 100%; margin-top: 4px; }
     .add-opt-btn:hover { background: #f9fafb; }
 
-    .toast { position: fixed; bottom: 24px; right: 24px; background: #0d7a3e; color: #fff; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,0.15); z-index: 2000; opacity: 0; transform: translateY(20px); transition: all 0.3s; pointer-events: none; }
+    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--color-primary); color: #fff; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,0.15); z-index: 2000; opacity: 0; transform: translateY(20px); transition: all 0.3s; pointer-events: none; }
     .toast.show { opacity: 1; transform: translateY(0); }
     .toast.error { background: #dc3545; }
 </style>
@@ -94,7 +92,7 @@
         <div>
             <h1>{{ $form->name }}</h1>
             <p>{{ $form->description ?? 'No description' }}</p>
-            <span class="fbe-status {{ $form->is_published ? 'status-published' : 'status-draft' }}" id="publishStatus">
+            <span class="badge-modern {{ $form->is_published ? 'success' : 'warning' }}" id="publishStatus">
                 {{ $form->is_published ? 'Published' : 'Unpublished changes' }}
             </span>
         </div>
@@ -138,10 +136,10 @@
             </div>
 
             <div class="fbe-actions">
-                <button class="btn-publish" onclick="togglePublish()">
+                <button class="admin-btn admin-btn-primary" onclick="togglePublish()">
                     {{ $form->is_published ? 'Unpublish' : 'Publish Changes' }}
                 </button>
-                <a href="{{ route('admin.forms.preview', $form) }}" class="btn-preview" target="_blank">Preview Form</a>
+                <a href="{{ route('admin.forms.preview', $form) }}" class="admin-btn admin-btn-ghost" target="_blank">Preview Form</a>
             </div>
         </div>
 
@@ -192,7 +190,7 @@
                         <button type="button" class="add-opt-btn" onclick="addOptionRow('newOptionsEditor')">+ Add option</button>
                     </div>
                 </div>
-                <button type="submit" class="btn-add-field">+ Add Field</button>
+                <button type="submit" class="admin-btn admin-btn-primary" style="width:100%;">+ Add Field</button>
             </form>
         </div>
     </div>
@@ -460,7 +458,7 @@
                 showToast(d.message);
                 const badge = document.getElementById('publishStatus');
                 badge.textContent = d.is_published ? 'Published' : 'Unpublished changes';
-                badge.className = 'fbe-status ' + (d.is_published ? 'status-published' : 'status-draft');
+                badge.className = 'badge-modern ' + (d.is_published ? 'success' : 'warning');
                 // Update button text
                 const btn = document.querySelector('.btn-publish');
                 btn.textContent = d.is_published ? 'Unpublish' : 'Publish Changes';

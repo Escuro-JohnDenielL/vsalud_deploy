@@ -72,9 +72,9 @@
                                         </td>
                                         <td>patron</td>
                                         <td class="sticky-col">
-                                            <button class="reply-btn" data-index="{{ $index }}">Reply</button>
+                                            <button class="admin-btn admin-btn-primary admin-btn-sm reply-btn" data-index="{{ $index }}">Reply</button>
                                             @if ($inquiry->status === 'Completed')
-                                                <button class="undo-btn"
+                                                <button class="admin-btn admin-btn-ghost admin-btn-sm"
                                                     data-inquiry-id="{{ $inquiry->inquiry_id }}">Undo</button>
                                             @endif
                                         </td>
@@ -90,22 +90,25 @@
         </section>
 
         <div id="statusModal" class="modal">
-            <div class="modal-content">
-                <h2>Set Inquiry Status</h2>
+            <div class="modal-content modal-sm">
+                <span class="close-btn" id="closeStatusModalBtn">&times;</span>
+                <h3>Set Inquiry Status</h3>
                 <select id="statusSelect">
                     <option value="Pending">Pending</option>
                     <option value="In Progress">In Progress</option>
                     <option value="Completed">Completed</option>
                     <option value="Cancelled">Cancelled</option>
                 </select>
-                <button id="saveStatusBtn">Save</button>
-                <button id="closeModalBtn">Close</button>
+                <div class="modal-footer">
+                    <button id="closeModalBtn" class="admin-btn admin-btn-ghost">Close</button>
+                    <button id="saveStatusBtn" class="admin-btn admin-btn-primary">Save</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="replyModal" class="modal reply-modal">
-        <div class="modal-content">
+    <div id="replyModal" class="modal">
+        <div class="modal-content modal-lg">
             <span class="close-btn" id="closeReplyModal">&times;</span>
             <h2>Reply to Inquiry</h2>
 
@@ -117,22 +120,22 @@
             <label for="replyMessage">Message:</label>
             <textarea id="replyMessage" placeholder="Type your reply..." rows="6"></textarea>
 
-            <div class="modal-actions">
-                <button id="sendReplyBtn">Send Reply</button>
-                <button id="cancelReplyBtn">Cancel</button>
+            <div class="modal-footer">
+                <button id="cancelReplyBtn" class="admin-btn admin-btn-ghost">Cancel</button>
+                <button id="sendReplyBtn" class="admin-btn admin-btn-primary">Send Reply</button>
             </div>
         </div>
     </div>
 
     {{-- Confirm Undo Modal --}}
     <div id="confirmUndoModal" class="modal">
-        <div class="modal-content" style="max-width: 420px;">
+        <div class="modal-content modal-sm">
             <span class="close-btn" id="closeUndoModal">&times;</span>
             <h3>Confirm Undo</h3>
             <p id="confirmUndoMessage" style="font-size: 15px; margin: 16px 0;">Are you sure you want to undo this reservation?</p>
-            <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                <button id="confirmUndoNo" class="btn" style="background: #6c757d; color: #fff; padding: 8px 16px; border: none; border-radius: 4px;">Cancel</button>
-                <button id="confirmUndoYes" class="btn" style="background: #0d7a3e; color: #fff; padding: 8px 16px; border: none; border-radius: 4px;">Undo</button>
+            <div class="modal-footer">
+                <button id="confirmUndoNo" class="admin-btn admin-btn-ghost">Cancel</button>
+                <button id="confirmUndoYes" class="admin-btn admin-btn-primary">Undo</button>
             </div>
         </div>
     </div>

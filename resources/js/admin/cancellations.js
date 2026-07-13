@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Make closeModal globally accessible for inline onclick usage
     window.closeModal = function (modalId) {
         document.getElementById(modalId).style.display = "none";
+        document.getElementById(modalId).classList.remove('open');
     };
 
     function showToast(message, type) {
@@ -18,7 +19,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".btn-approve[data-request-id]").forEach((btn) => {
         btn.addEventListener("click", () => {
             document.getElementById("approveRequestId").value = btn.dataset.requestId;
-            document.getElementById("approveModal").style.display = "block";
+            document.getElementById("approveModal").style.display = "flex";
+            document.getElementById("approveModal").classList.add('open');
         });
     });
 
@@ -26,7 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".btn-deny[data-request-id]").forEach((btn) => {
         btn.addEventListener("click", () => {
             document.getElementById("denyRequestId").value = btn.dataset.requestId;
-            document.getElementById("denyModal").style.display = "block";
+            document.getElementById("denyModal").style.display = "flex";
+            document.getElementById("denyModal").classList.add('open');
         });
     });
 
@@ -34,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("click", (e) => {
         if (e.target.classList.contains("modal")) {
             e.target.style.display = "none";
+            e.target.classList.remove('open');
         }
     });
 
@@ -100,9 +104,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Close modal buttons
-    document.querySelectorAll(".close, .btn-cancel-modal").forEach((btn) => {
+    document.querySelectorAll(".close-btn, .admin-btn-ghost").forEach((btn) => {
         btn.addEventListener("click", () => {
-            document.querySelectorAll(".modal").forEach((m) => (m.style.display = "none"));
+            document.querySelectorAll(".modal").forEach((m) => {
+                m.style.display = "none";
+                m.classList.remove("open");
+            });
         });
     });
 });

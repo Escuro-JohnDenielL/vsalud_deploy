@@ -94,22 +94,7 @@
         border-bottom: none;
     }
 
-    /* Badges */
-    .badge-waiting,
-    .badge-notified,
-    .badge-claimed,
-    .badge-expired {
-        display: inline-block;
-        padding: 4px 12px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 600;
-    }
-
-    .badge-waiting { background: #f5f5f5; color: #616161; }
-    .badge-notified { background: #e8f5e9; color: #2e7d32; }
-    .badge-claimed { background: #e8f5e9; color: #2e7d32; }
-    .badge-expired { background: #f5f5f5; color: #9ca3af; }
+    /* Badges — now using .badge-modern from app.css */
 
     .empty-state {
         text-align: center;
@@ -183,13 +168,13 @@
                                         <td>{{ $entry->patron_email }}</td>
                                         <td>
                                             @if($entry->status === 'waiting')
-                                                <span class="badge badge-waiting">Waiting</span>
+                                                <span class="badge-modern warning">Waiting</span>
                                             @elseif($entry->status === 'notified')
-                                                <span class="badge badge-notified">Notified</span>
+                                                <span class="badge-modern success">Notified</span>
                                             @elseif($entry->status === 'claimed')
-                                                <span class="badge badge-claimed">Claimed</span>
+                                                <span class="badge-modern success">Claimed</span>
                                             @elseif($entry->status === 'expired')
-                                                <span class="badge badge-expired">Expired</span>
+                                                <span class="badge-modern danger">Expired</span>
                                             @endif
                                         </td>
                                         <td>{{ $entry->created_at->format('M d, Y g:i A') }}</td>

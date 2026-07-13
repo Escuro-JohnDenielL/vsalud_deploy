@@ -11,12 +11,9 @@
     table.it-table td { padding: 12px 16px; border-bottom: 1px solid var(--color-border); vertical-align: middle; font-size: 14px; color: var(--color-text); }
     table.it-table tbody tr:hover { background: var(--color-primary-50); }
     table.it-table tr.deleted td { color: #9ca3af; font-style: italic; }
-    .badge-role { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-    .badge-super { background: #e8f5e9; color: #2e7d32; }
-    .badge-admin { background: #f5f5f5; color: #616161; }
-    .badge-deleted { background: #fce4ec; color: #c62828; }
+    /* .badge-role — now using .badge-modern from app.css */
     .field { margin-bottom: 12px; }
-    .field label { display: block; font-weight: 600; margin-bottom: 4px; color: #22332a; font-size: 13px; }
+    .field label { display: block; font-weight: 600; margin-bottom: 4px; color: var(--color-text); font-size: 13px; }
     .field input, .field select { width: 100%; border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 9px 12px; font-size: 14px; }
     .pagination-info { font-size: 13px; color: var(--color-text-muted); margin-top: 12px; }
 </style>
@@ -77,16 +74,16 @@
                             <td>{{ $admin->phone }}</td>
                             <td>
                                 @if ($admin->role === 'super_admin')
-                                    <span class="badge-role badge-super">Super Admin</span>
+                                    <span class="badge-modern success">Super Admin</span>
                                 @else
-                                    <span class="badge-role badge-admin">Admin</span>
+                                    <span class="badge-modern warning">Admin</span>
                                 @endif
                             </td>
                             <td>
                                 @if ($admin->trashed())
-                                    <span class="badge-role badge-deleted">Deactivated</span>
+                                    <span class="badge-modern danger">Deactivated</span>
                                 @else
-                                    <span class="badge-role badge-admin">Active</span>
+                                    <span class="badge-modern success">Active</span>
                                 @endif
                             </td>
                             <td>
@@ -189,8 +186,8 @@
                     --}}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success">Create Admin</button>
+                    <button type="button" class="admin-btn admin-btn-ghost" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="admin-btn admin-btn-primary">Create Admin</button>
                 </div>
             </form>
         </div>
@@ -208,8 +205,8 @@
                 <p id="confirmModalMessage">Are you sure?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="confirmModalNo">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmModalYes">Confirm</button>
+                <button type="button" class="admin-btn admin-btn-ghost" data-bs-dismiss="modal" id="confirmModalNo">Cancel</button>
+                <button type="button" class="admin-btn admin-btn-danger" id="confirmModalYes">Confirm</button>
             </div>
         </div>
     </div>

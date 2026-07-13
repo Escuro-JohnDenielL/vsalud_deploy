@@ -4,7 +4,7 @@
 
 @section('content')
 <div style="max-width: 720px; margin: 32px auto; padding: 0 20px;">
-    <h1 style="font-family: Georgia, serif; font-size: 28px; color: #0d7a3e; margin: 0 0 6px;">Payment Settings</h1>
+    <h1 style="font-family: var(--font-heading); font-size: 28px; color: var(--color-primary); margin: 0 0 6px;">Payment Settings</h1>
     <p style="color: #6b7280; margin: 0 0 24px;">Manage payment instructions shown to patrons. Changes take effect immediately.</p>
 
     @if (session('success'))
@@ -71,7 +71,7 @@
         </div>
 
         <div style="margin-top:24px;">
-            <button type="submit" style="background:#0d7a3e;color:#fff;border:none;border-radius:999px;padding:10px 28px;font-weight:600;cursor:pointer;">Save Settings</button>
+            <button type="submit" class="admin-btn admin-btn-primary" style="padding:10px 28px;">Save Settings</button>
             <a href="{{ route('admin.home') }}" style="color:#6b7280;font-size:14px;margin-left:16px;">&larr; Back to Dashboard</a>
         </div>
     </form>

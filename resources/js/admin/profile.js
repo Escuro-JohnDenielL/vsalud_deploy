@@ -342,7 +342,8 @@ document.addEventListener("DOMContentLoaded", function () {
             if (editUsername && adminUsername)
                 editUsername.value = adminUsername.textContent;
 
-            editModal.style.display = "block";
+            editModal.style.display = "flex";
+            editModal.classList.add('open');
             addToHistory(
                 "system",
                 "Edit profile form opened",
@@ -357,7 +358,8 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault();
             // Reset to step 1
             resetPasswordModal();
-            passwordModal.style.display = "block";
+            passwordModal.style.display = "flex";
+            passwordModal.classList.add('open');
             addToHistory(
                 "security",
                 "Password change initiated",
@@ -390,21 +392,28 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Close Modal Functions - Only add listeners if elements exist
-    if (closeModal && editModal) {
-        closeModal.addEventListener("click", function () {
-            editModal.style.display = "none";
+    function closeProfileModals() {
+        const modals = [editModal, passwordModal, successModal, confirmModal];
+        modals.forEach(m => {
+            if (m) {
+                m.style.display = "none";
+                m.classList.remove('open');
+            }
         });
     }
 
+    if (closeModal && editModal) {
+        closeModal.addEventListener("click", closeProfileModals);
+    }
+
     if (closePasswordModal && passwordModal) {
-        closePasswordModal.addEventListener("click", function () {
-            passwordModal.style.display = "none";
-        });
+        closePasswordModal.addEventListener("click", closeProfileModals);
     }
 
     if (cancelEdit && editModal) {
         cancelEdit.addEventListener("click", function () {
             editModal.style.display = "none";
+            editModal.classList.remove('open');
             addToHistory(
                 "system",
                 "Profile edit cancelled",
@@ -416,6 +425,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (cancelPassword && passwordModal) {
         cancelPassword.addEventListener("click", function () {
             passwordModal.style.display = "none";
+            passwordModal.classList.remove('open');
             addToHistory(
                 "security",
                 "Password change cancelled",
@@ -427,12 +437,14 @@ document.addEventListener("DOMContentLoaded", function () {
     if (successOkBtn && successModal) {
         successOkBtn.addEventListener("click", function () {
             successModal.style.display = "none";
+            successModal.classList.remove('open');
         });
     }
 
     if (confirmCancel && confirmModal) {
         confirmCancel.addEventListener("click", function () {
             confirmModal.style.display = "none";
+            confirmModal.classList.remove('open');
             confirmCallback = null;
         });
     }
@@ -440,6 +452,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (confirmNo && confirmModal) {
         confirmNo.addEventListener("click", function () {
             confirmModal.style.display = "none";
+            confirmModal.classList.remove('open');
             confirmCallback = null;
         });
     }
@@ -450,6 +463,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 confirmCallback();
             }
             confirmModal.style.display = "none";
+            confirmModal.classList.remove('open');
             confirmCallback = null;
         });
     }
@@ -458,15 +472,19 @@ document.addEventListener("DOMContentLoaded", function () {
     window.addEventListener("click", function (event) {
         if (editModal && event.target === editModal) {
             editModal.style.display = "none";
+            editModal.classList.remove('open');
         }
         if (passwordModal && event.target === passwordModal) {
             passwordModal.style.display = "none";
+            passwordModal.classList.remove('open');
         }
         if (successModal && event.target === successModal) {
             successModal.style.display = "none";
+            successModal.classList.remove('open');
         }
         if (confirmModal && event.target === confirmModal) {
             confirmModal.style.display = "none";
+            confirmModal.classList.remove('open');
             confirmCallback = null;
         }
 
@@ -498,7 +516,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 adminUsername.textContent = editUsername.value;
 
             // Close modal
-            if (editModal) editModal.style.display = "none";
+            if (editModal) {
+                editModal.style.display = "none";
+                editModal.classList.remove('open');
+            }
 
             // Track specific changes
             let changes = [];
@@ -707,6 +728,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     if (data.success) {
                         passwordModal.style.display = "none";
+                        passwordModal.classList.remove('open');
                         resetPasswordModal();
                         showSuccessModal(data.message);
                         addToHistory("security", "Password changed successfully", "Admin account password updated");

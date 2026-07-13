@@ -168,17 +168,17 @@
 {{-- Inline styles --}}
 <style>
     .dynamic-form .form-group { margin-bottom: 18px; }
-    .dynamic-form .form-group label { display: block; font-weight: 600; margin-bottom: 4px; color: #22332a; font-size: 14px; }
+    .dynamic-form .form-group label { display: block; font-weight: 600; margin-bottom: 4px; color: var(--color-text); font-size: 14px; }
     .dynamic-form .form-group .required-star { color: #dc3545; }
-    .dynamic-form .form-control { width: 100%; border: 1px solid #d7dfd5; border-radius: 10px; padding: 10px 14px; font-size: 14px; box-sizing: border-box; transition: border-color 0.15s; }
-    .dynamic-form .form-control:focus { border-color: #165c34; outline: none; box-shadow: 0 0 0 2px rgba(22,92,52,0.1); }
+    .dynamic-form .form-control { width: 100%; border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 14px; box-sizing: border-box; transition: border-color 0.15s; }
+    .dynamic-form .form-control:focus { border-color: var(--color-primary); outline: none; box-shadow: 0 0 0 2px rgba(13,122,62,0.1); }
     .dynamic-form textarea.form-control { min-height: 100px; resize: vertical; }
     .dynamic-form .form-group.has-error .form-control { border-color: #dc3545; }
     .dynamic-form .field-error { color: #dc3545; font-size: 13px; margin-top: 4px; }
     .dynamic-form .radio-group, .dynamic-form .checkbox-group { display: flex; flex-direction: column; gap: 6px; }
     .dynamic-form .radio-label, .dynamic-form .checkbox-label { font-weight: 400; font-size: 14px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
-    .dynamic-form .btn-submit { background: #165c34; color: #fff; border: none; border-radius: 999px; padding: 12px 32px; font-weight: 600; font-size: 15px; cursor: pointer; transition: background 0.15s; }
-    .dynamic-form .btn-submit:hover { background: #0f4728; }
+    .dynamic-form .btn-submit { background: var(--color-primary); color: #fff; border: none; border-radius: var(--radius-sm); padding: 12px 32px; font-weight: 600; font-size: 15px; cursor: pointer; transition: background 0.15s; }
+    .dynamic-form .btn-submit:hover { background: var(--color-primary-hover); }
 </style>
 
 {{-- JS for "Others" toggle --}}

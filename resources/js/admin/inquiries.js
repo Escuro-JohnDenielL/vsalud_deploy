@@ -45,7 +45,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         replyMessage.value = "";
-        replyModal.style.display = "block";
+        replyModal.style.display = "flex";
+        replyModal.classList.add('open');
     }
 
     replyOptions.addEventListener("change", function () {
@@ -54,10 +55,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     cancelReplyBtn.addEventListener("click", () => {
         replyModal.style.display = "none";
+        replyModal.classList.remove('open');
     });
 
     closeReplyModal.addEventListener("click", () => {
         replyModal.style.display = "none";
+        replyModal.classList.remove('open');
     });
 
     sendReplyBtn.addEventListener("click", () => {
@@ -82,6 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then((data) => {
                 alert(data.message || "Reply sent successfully.");
                 replyModal.style.display = "none";
+                replyModal.classList.remove('open');
             })
             .catch((err) => {
                 console.error("Error:", err);
@@ -165,6 +169,7 @@ function attachEventListeners() {
 
             function closeConfirmModal() {
                 modal.style.display = 'none';
+                modal.classList.remove('open');
                 closeModal.removeEventListener('click', closeConfirmModal);
                 noBtn.removeEventListener('click', closeConfirmModal);
                 yesBtn.removeEventListener('click', handleConfirm);

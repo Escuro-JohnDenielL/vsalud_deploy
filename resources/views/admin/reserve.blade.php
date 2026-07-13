@@ -59,8 +59,8 @@
     </div>
 
     <!-- Admin Status Selection Modal -->
-    <div id="statusModal" class="modal-overlay" style="display: none;">
-        <div class="modal-box">
+    <div id="statusModal" class="modal">
+        <div class="modal-content modal-sm">
             <h3>Select Status</h3>
             <select id="statusSelect">
                 <option value="">No Status</option>
@@ -69,19 +69,18 @@
                 <option value="Nearly">Nearly Full</option>
                 <option value="Full">Full</option>
                 <option value="Closed">Closed</option>
-
             </select>
-            <div class="modal-buttons">
-                <button type="button" id="saveStatus">Save</button>
-                <button type="button" id="closeModal">Cancel</button>
-                <button type="button" id="undoStatus">Undo Status</button>
+            <div class="modal-footer">
+                <button type="button" id="undoStatus" class="admin-btn admin-btn-danger">Undo Status</button>
+                <button type="button" id="closeModal" class="admin-btn admin-btn-ghost">Cancel</button>
+                <button type="button" id="saveStatus" class="admin-btn admin-btn-primary">Save</button>
             </div>
         </div>
     </div>
 
-    <div id="dateUnavailableModal" class="modal1" style="display: none;">
-        <div class="modal-content1">
-            <span class="close-modal1" id="closeUnavailableModal">&times;</span>
+    <div id="dateUnavailableModal" class="modal">
+        <div class="modal-content modal-sm">
+            <span class="close-btn" id="closeUnavailableModal">&times;</span>
             <h3>Date Not Available</h3>
             <p>Sorry, the selected date is already full or closed. Please choose another available date.</p>
         </div>

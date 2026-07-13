@@ -386,7 +386,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #007b3d;
+  background: var(--color-primary);
   animation: pulse 1.4s ease-in-out infinite both;
 }
 
@@ -422,7 +422,7 @@
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #007b3d, #005a2d);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
   color: white;
   display: flex;
   align-items: center;
@@ -451,7 +451,7 @@
 button:focus,
 input:focus,
 select:focus {
-  outline: 2px solid #007b3d;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -557,12 +557,12 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #007b3d;
+  background: var(--color-primary);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #005a2d;
+  background: var(--color-primary-hover);
 }
 
 .header-left {

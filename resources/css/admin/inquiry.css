@@ -2,8 +2,8 @@
 #content {
   position: relative;
   width: 100%;
-  margin: 20px auto;
-  padding: 10px;
+  margin: 0 auto;
+  padding: 28px 32px;
 }
 
 /* === Internal Content Navigation Bar === */
@@ -166,54 +166,12 @@ nav i {
 }
 
 /* === Buttons === */
-.reply-btn,
-.status-btn {
-  background: var(--color-primary);
-  color: white;
-  padding: 8px 14px;
-  border: none;
-  cursor: pointer;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 500;
-  transition: all var(--transition-base);
-}
+/* .reply-btn, .status-btn — now using .admin-btn classes from app.css */
 
-.reply-btn:hover,
-.status-btn:hover {
-  background: var(--color-primary-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
-}
-
-#closeModalBtn {
-  background: #ccc;
-  color: black;
-}
-
-#closeModalBtn:hover {
-  background: #aaa;
-}
+/* #closeModalBtn — now using shared .admin-btn-ghost from app.css */
 
 /* === Modal === */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-}
-
-.modal h2 {
-  font-size: 20px;
-  margin-bottom: 10px;
-  color: var(--color-text);
-  font-family: var(--font-heading);
-}
+/* .modal — now using shared system from app.css */
 
 .modal select {
   width: 100%;
@@ -232,28 +190,13 @@ select:focus {
   outline-offset: 3px;
 }
 
-.reply-modal .modal-content {
+.modal-content.reply-modal-content {
     max-width: 600px;
     max-height: 80vh;
     overflow-y: auto;
 }
 
-.modal-content {
-    background-color: var(--color-surface);
-    margin: 5% auto;
-    padding: 28px 30px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    width: 90%;
-    max-width: 500px;
-    box-shadow: var(--shadow-xl);
-    animation: fadeIn 0.3s ease-in-out;
-    position: relative;
-}
-
-.modal-content h2 {
-    margin-top: 0;
-}
+/* .modal-content — now using shared system from app.css */
 
 .reply-select,
 #replyMessage {
@@ -276,61 +219,11 @@ select:focus {
     transform: translateY(-1px);
 }
 
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
+/* .modal-actions — replaced by shared .modal-footer from app.css */
 
-.modal-actions button {
-    padding: 8px 16px;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-weight: 600;
-    cursor: pointer;
-    font-family: var(--font-body);
-    transition: all var(--transition-base);
-}
+/* #sendReplyBtn, #cancelReplyBtn — now using shared .admin-btn classes from app.css */
 
-#sendReplyBtn {
-    background-color: var(--color-primary);
-    color: #fff;
-}
-
-#sendReplyBtn:hover {
-    background-color: var(--color-primary-hover);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
-}
-
-#cancelReplyBtn {
-    background-color: var(--color-danger);
-    color: white;
-}
-
-#cancelReplyBtn:hover {
-    opacity: 0.9;
-}
-
-.close-btn {
-    position: absolute;
-    top: 14px;
-    right: 18px;
-    font-size: 24px;
-    font-weight: normal;
-    cursor: pointer;
-    background: none;
-    border: none;
-    color: var(--color-text-muted);
-    line-height: 1;
-    padding: 0;
-    float: none;
-}
-
-.close-btn:hover {
-    color: var(--color-text);
-    opacity: 1;
-}
+/* .close-btn — now using shared system from app.css */
 
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-20px); }
@@ -339,16 +232,15 @@ select:focus {
 
 @media (max-width: 600px) {
     .modal-content {
-        margin-top: 30%;
-        padding: 15px;
+        padding: 20px;
     }
 
-    .modal-actions {
+    .modal-footer {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .modal-actions button {
+    .modal-footer button {
         width: 100%;
     }
 }
@@ -384,43 +276,9 @@ select:focus {
 }
 
 /* Common style for both buttons (optional but neat) */
-.reply-btn,
-.undo-btn {
-  display: inline-block;
-  margin: 2px 2px;
-  padding: 6px 14px;
-  font-weight: 600;
-  border-radius: var(--radius-sm);
-  border: none;
-  cursor: pointer;
-  font-family: var(--font-body);
-  font-size: 13px;
-  transition: all var(--transition-base);
-  box-shadow: var(--shadow-sm);
-}
+/* .reply-btn, .undo-btn — now using .admin-btn classes from app.css */
 
-/* Specific colors for each button */
-.reply-btn {
-  background-color: var(--color-primary);
-  color: white;
-}
-
-.reply-btn:hover {
-  background-color: var(--color-primary-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.undo-btn {
-  background-color: var(--color-danger);
-  color: white;
-}
-
-.undo-btn:hover {
-  background-color: #b91c1c;
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
+/* .reply-btn, .undo-btn — now using .admin-btn classes from app.css */
 
 /* Make buttons container inline */
 td button {

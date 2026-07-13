@@ -6,18 +6,18 @@
 <style>
     .edit-container { max-width: 600px; margin: 32px auto; padding: 0 20px 60px; }
     .edit-card { background: #fff; border-radius: 16px; border: 1px solid rgba(18,59,38,0.1); box-shadow: 0 10px 30px rgba(18,59,38,0.06); padding: 28px; }
-    .edit-card h1 { font-family: Georgia, serif; font-size: 26px; color: #0d7a3e; margin: 0 0 6px; }
-    .edit-card .back-link { display: inline-block; margin-bottom: 16px; color: #0d7a3e; font-weight: 600; text-decoration: none; font-size: 14px; }
+    .edit-card h1 { font-family: var(--font-heading); font-size: 26px; color: var(--color-primary); margin: 0 0 6px; }
+    .edit-card .back-link { display: inline-block; margin-bottom: 16px; color: var(--color-primary); font-weight: 600; text-decoration: none; font-size: 14px; }
     .edit-card .back-link:hover { text-decoration: underline; }
     .field { margin-bottom: 14px; }
     .field label { display: block; font-weight: 600; margin-bottom: 4px; color: #2d2d2d; font-size: 13px; }
     .field input, .field select { width: 100%; border: 1px solid #e5e7eb; border-radius: 10px; padding: 9px 12px; font-size: 14px; }
     .field .hint { font-size: 12px; color: #6b7280; margin-top: 4px; }
     .btn-group { display: flex; gap: 10px; margin-top: 20px; }
-    .btn-primary, .btn-ghost { border: none; border-radius: 999px; font-weight: 600; cursor: pointer; display: inline-block; text-decoration: none; padding: 10px 20px; font-size: 14px; }
-    .btn-primary { background: #0d7a3e; color: #fff; }
+    .btn-primary, .btn-ghost { border: none; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; display: inline-block; text-decoration: none; padding: 10px 20px; font-size: 14px; }
+    .btn-primary { background: var(--color-primary); color: #fff; }
     .btn-primary:hover { background: #0a5e2f; }
-    .btn-ghost { background: #f3f4f6; color: #2d2d2d; border: 1px solid #e5e7eb; }
+    .btn-ghost { background: #f3f4f6; color: var(--color-text); border: 1px solid var(--color-border); }
     .alert { padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; }
     .alert-success { background: #e8f5e9; border: 1px solid #c8e6c9; color: #2e7d32; }
     .alert-error { background: #fce4ec; border: 1px solid #f8bbd0; color: #c62828; }
@@ -80,14 +80,14 @@
                 <input type="password" name="password_confirmation">
             </div>
 
-            <div style="margin: 6px 0 0; font-size: 13px; color: #6b7280;">
+            <div style="margin: 6px 0 0; font-size: 13px; color: var(--color-text-muted);">
                 Role: <span class="role-badge">{{ $admin->role === 'super_admin' ? 'Super Admin' : 'Admin' }}</span>
                 &middot; Status: {{ $admin->trashed() ? 'Deactivated' : 'Active' }}
             </div>
 
             <div class="btn-group">
-                <button type="submit" class="btn-primary">Save Changes</button>
-                <a href="{{ route('admin.it.dashboard') }}" class="btn-ghost">Cancel</a>
+                <button type="submit" class="admin-btn admin-btn-primary">Save Changes</button>
+                <a href="{{ route('admin.it.dashboard') }}" class="admin-btn admin-btn-ghost">Cancel</a>
             </div>
         </form>
     </div>

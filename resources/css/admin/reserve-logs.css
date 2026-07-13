@@ -1,7 +1,7 @@
 .container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 28px 32px;
 }
 
 .page-header {
@@ -120,25 +120,11 @@
     transition: all var(--transition-base);
     font-weight: 500;
     box-shadow: var(--shadow-sm);
+    min-width: 70px;
+    text-align: center;
 }
 
-.btn-view {
-    background: var(--color-primary);
-    color: white;
-}
-
-.btn-view:hover {
-    background: var(--color-primary-hover);
-}
-
-.btn-delete {
-    background: var(--color-danger);
-    color: white;
-}
-
-.btn-delete:hover {
-    background: #b91c1c;
-}
+/* .btn-view, .btn-delete — now using .admin-btn-primary / .admin-btn-danger from app.css */
 
 .pagination {
     display: flex;
@@ -172,61 +158,7 @@
     color: var(--color-text-muted);
 }
 
-.custom-modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.6);
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-.custom-modal-content {
-    background-color: #fff;
-    margin: 5% auto;
-    padding: 20px;
-    border-radius: var(--radius-lg);
-    width: 90%;
-    max-width: 600px;
-    box-shadow: var(--shadow-xl);
-    animation: slideIn 0.3s ease-in-out;
-    position: relative;
-}
-
-.custom-modal-title {
-    margin-top: 0;
-    font-size: 22px;
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.custom-modal-close {
-    position: absolute;
-    top: 14px;
-    right: 18px;
-    background: none;
-    border: none;
-    font-size: 24px;
-    font-weight: normal;
-    color: var(--color-text-muted);
-    cursor: pointer;
-    line-height: 1;
-    padding: 0;
-}
-
-.custom-modal-close:hover {
-    color: var(--color-text);
-    background: none;
-}
-
-.custom-modal-body {
-    text-align: center;
-}
+/* .custom-modal — now using shared modal system from app.css */
 
 .receipt-image {
     max-width: 100%;
@@ -235,26 +167,7 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* Animations */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateY(-20px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
+/* Animations — now using modalFadeIn from app.css */
 
 /* Responsive Design */
 @media (max-width: 1200px) {
@@ -283,41 +196,4 @@
     }
 }
 
-.modal {
-    position: fixed;
-    z-index: 1000;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.modal-content {
-    background: var(--color-surface);
-    padding: 24px;
-    border-radius: var(--radius-md);
-    width: 50%;
-    max-width: 600px;
-    box-shadow: var(--shadow-xl);
-    position: relative;
-}
-.close {
-    position: absolute;
-    top: 14px;
-    right: 18px;
-    font-size: 24px;
-    font-weight: normal;
-    cursor: pointer;
-    color: var(--color-text-muted);
-    background: none;
-    border: none;
-    line-height: 1;
-    padding: 0;
-    float: none;
-}
-.close:hover {
-    color: var(--color-text);
-}
+/* .modal, .modal-content, .close-btn — now using shared system from app.css */

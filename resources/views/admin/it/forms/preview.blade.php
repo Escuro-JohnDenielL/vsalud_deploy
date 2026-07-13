@@ -9,7 +9,7 @@
     .preview-container .sub { color: #587064; margin-bottom: 24px; }
     .preview-form { background: #fff; border-radius: 16px; border: 1px solid rgba(18,59,38,0.1); box-shadow: 0 10px 30px rgba(18,59,38,0.06); padding: 28px; }
     .pf-group { margin-bottom: 18px; }
-    .pf-group label { display: block; font-weight: 600; margin-bottom: 4px; color: #22332a; font-size: 14px; }
+    .pf-group label { display: block; font-weight: 600; margin-bottom: 4px; color: var(--color-text); font-size: 14px; }
     .pf-group label .req { color: #dc3545; }
     .pf-group input, .pf-group select, .pf-group textarea { width: 100%; border: 1px solid #d7dfd5; border-radius: 10px; padding: 10px 14px; font-size: 14px; box-sizing: border-box; background: #f9fbf9; }
     .pf-group textarea { min-height: 100px; resize: vertical; }
