@@ -171,7 +171,7 @@ class ReservationController extends Controller
                     ],
                     CURLOPT_POSTFIELDS => json_encode([
                         'from'    => 'onboarding@resend.dev',
-                        'to'      => $patron->email,
+                        'to'      => 'coheredit@gmail.com',
                         'subject' => 'Your Reservation Has Been Submitted',
                         'html'    => $emailHtml,
                     ]),
