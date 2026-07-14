@@ -146,30 +146,51 @@ class ReservationController extends Controller
                 Log::error('Failed to update waitlist claim: ' . $e->getMessage());
             }
 
-            // Send email with available data (wrapped in try-catch so email failure doesn't break the flow)
+            // Send email via Resend API directly (no package dependency needed)
             try {
-                $emailData = [
-                    'name'         => $patron->name,
-                    'tracking_code' => $inquiry->tracking_code,
-                    'date'         => $hardcodedData['date'] ?? $formData['date'] ?? 'N/A',
-                    'time'         => $hardcodedData['time'] ?? $formData['time'] ?? 'N/A',
-                    'venue'        => $hardcodedData['venue'] ?? $formData['venue'] ?? 'N/A',
-                    'event_type'   => $hardcodedData['event_type'] ?? $formData['event_type'] ?? 'N/A',
-                    'theme_motif'  => $hardcodedData['theme_motif'] ?? $formData['theme_motif'] ?? 'N/A',
-                    'message'      => $hardcodedData['message'] ?? $formData['message'] ?? '',
-                ];
+                $resendKey = env('RESEND_KEY');
+                $emailHtml = view('emails.reservation_submitted', [
+                    'data' => [
+                        'name'         => $patron->name,
+                        'tracking_code' => $inquiry->tracking_code,
+                        'date'         => $hardcodedData['date'] ?? $formData['date'] ?? 'N/A',
+                        'time'         => $hardcodedData['time'] ?? $formData['time'] ?? 'N/A',
+                        'venue'        => $hardcodedData['venue'] ?? $formData['venue'] ?? 'N/A',
+                        'event_type'   => $hardcodedData['event_type'] ?? $formData['event_type'] ?? 'N/A',
+                        'theme_motif'  => $hardcodedData['theme_motif'] ?? $formData['theme_motif'] ?? 'N/A',
+                        'message'      => $hardcodedData['message'] ?? $formData['message'] ?? '',
+                    ],
+                ])->render();
 
-                error_log('[RESERVATION] Attempting to send email to ' . $patron->email . ' via ' . config('mail.default'));
-                Log::warning('Attempting to send email', [
-                    'to' => $patron->email,
-                    'mailer' => config('mail.default'),
-                    'tracking_code' => $inquiry->tracking_code,
+                $ch = curl_init('https://api.resend.com/emails');
+                curl_setopt_array($ch, [
+                    CURLOPT_POST => true,
+                    CURLOPT_HTTPHEADER => [
+                        'Authorization: Bearer ' . $resendKey,
+                        'Content-Type: application/json',
+                    ],
+                    CURLOPT_POSTFIELDS => json_encode([
+                        'from'    => 'onboarding@resend.dev',
+                        'to'      => $patron->email,
+                        'subject' => 'Your Reservation Has Been Submitted',
+                        'html'    => $emailHtml,
+                    ]),
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_TIMEOUT => 10,
                 ]);
 
-                Mail::to($patron->email)->send(new ReservationSubmitted($emailData, null));
+                $response = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                $curlError = curl_error($ch);
+                curl_close($ch);
 
-                error_log('[RESERVATION] Email sent successfully to ' . $patron->email);
-                Log::warning('Email sent successfully to ' . $patron->email);
+                if ($curlError) {
+                    error_log('[RESERVATION] cURL error: ' . $curlError);
+                    Log::error('Resend cURL error: ' . $curlError);
+                } else {
+                    error_log('[RESERVATION] Resend response (' . $httpCode . '): ' . $response);
+                    Log::warning('Resend email sent', ['code' => $httpCode, 'response' => $response]);
+                }
             } catch (\Throwable $emailError) {
                 error_log('[RESERVATION] FAILED: ' . $emailError->getMessage());
                 Log::error('Failed to send reservation confirmation email: ' . $emailError->getMessage(), [
