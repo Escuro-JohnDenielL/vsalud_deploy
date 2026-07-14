@@ -34,7 +34,8 @@ class ReservationController extends Controller
 
     public function store(Request $request)
     {
-        Log::info('Reservation form submission', $request->all());
+        error_log('[RESERVATION] Form submission received');
+        Log::warning('Reservation form submission', $request->all());
 
         // Load the published reservation form definition
         $form = Form::with('activeFields')->where('slug', 'reservation')->where('is_published', true)->first();
@@ -158,7 +159,8 @@ class ReservationController extends Controller
                     'message'      => $hardcodedData['message'] ?? $formData['message'] ?? '',
                 ];
 
-                Log::info('Attempting to send email', [
+                error_log('[RESERVATION] Attempting to send email to ' . $patron->email . ' via ' . config('mail.default'));
+                Log::warning('Attempting to send email', [
                     'to' => $patron->email,
                     'mailer' => config('mail.default'),
                     'tracking_code' => $inquiry->tracking_code,
@@ -166,8 +168,10 @@ class ReservationController extends Controller
 
                 Mail::to($patron->email)->send(new ReservationSubmitted($emailData, null));
 
-                Log::info('Email sent successfully to ' . $patron->email);
+                error_log('[RESERVATION] Email sent successfully to ' . $patron->email);
+                Log::warning('Email sent successfully to ' . $patron->email);
             } catch (\Throwable $emailError) {
+                error_log('[RESERVATION] FAILED: ' . $emailError->getMessage());
                 Log::error('Failed to send reservation confirmation email: ' . $emailError->getMessage(), [
                     'patron_id' => $patron->patron_id,
                     'inquiry_id' => $inquiry->inquiry_id,
