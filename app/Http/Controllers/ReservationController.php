@@ -145,19 +145,27 @@ class ReservationController extends Controller
                 Log::error('Failed to update waitlist claim: ' . $e->getMessage());
             }
 
-            // Send email with available data
-            $emailData = [
-                'name'         => $patron->name,
-                'tracking_code' => $inquiry->tracking_code,
-                'date'         => $hardcodedData['date'] ?? $formData['date'] ?? 'N/A',
-                'time'         => $hardcodedData['time'] ?? $formData['time'] ?? 'N/A',
-                'venue'        => $hardcodedData['venue'] ?? $formData['venue'] ?? 'N/A',
-                'event_type'   => $hardcodedData['event_type'] ?? $formData['event_type'] ?? 'N/A',
-                'theme_motif'  => $hardcodedData['theme_motif'] ?? $formData['theme_motif'] ?? 'N/A',
-                'message'      => $hardcodedData['message'] ?? $formData['message'] ?? '',
-            ];
+            // Send email with available data (wrapped in try-catch so email failure doesn't break the flow)
+            try {
+                $emailData = [
+                    'name'         => $patron->name,
+                    'tracking_code' => $inquiry->tracking_code,
+                    'date'         => $hardcodedData['date'] ?? $formData['date'] ?? 'N/A',
+                    'time'         => $hardcodedData['time'] ?? $formData['time'] ?? 'N/A',
+                    'venue'        => $hardcodedData['venue'] ?? $formData['venue'] ?? 'N/A',
+                    'event_type'   => $hardcodedData['event_type'] ?? $formData['event_type'] ?? 'N/A',
+                    'theme_motif'  => $hardcodedData['theme_motif'] ?? $formData['theme_motif'] ?? 'N/A',
+                    'message'      => $hardcodedData['message'] ?? $formData['message'] ?? '',
+                ];
 
-            Mail::to($patron->email)->send(new ReservationSubmitted($emailData, null));
+                Mail::to($patron->email)->send(new ReservationSubmitted($emailData, null));
+            } catch (\Throwable $emailError) {
+                Log::error('Failed to send reservation confirmation email: ' . $emailError->getMessage(), [
+                    'patron_id' => $patron->patron_id,
+                    'inquiry_id' => $inquiry->inquiry_id,
+                    'email' => $patron->email,
+                ]);
+            }
 
             // Reset agreement so they must re-agree for their next reservation
             $request->session()->forget('guest_agreed');
