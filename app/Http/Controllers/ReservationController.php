@@ -158,12 +158,21 @@ class ReservationController extends Controller
                     'message'      => $hardcodedData['message'] ?? $formData['message'] ?? '',
                 ];
 
+                Log::info('Attempting to send email', [
+                    'to' => $patron->email,
+                    'mailer' => config('mail.default'),
+                    'tracking_code' => $inquiry->tracking_code,
+                ]);
+
                 Mail::to($patron->email)->send(new ReservationSubmitted($emailData, null));
+
+                Log::info('Email sent successfully to ' . $patron->email);
             } catch (\Throwable $emailError) {
                 Log::error('Failed to send reservation confirmation email: ' . $emailError->getMessage(), [
                     'patron_id' => $patron->patron_id,
                     'inquiry_id' => $inquiry->inquiry_id,
                     'email' => $patron->email,
+                    'trace' => $emailError->getTraceAsString(),
                 ]);
             }
 
