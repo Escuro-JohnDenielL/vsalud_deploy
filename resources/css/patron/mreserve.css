@@ -24,7 +24,7 @@
 
 .reservation-container h2 {
     margin-bottom: 30px;
-    color: #2b2b2b;
+    color: var(--color-primary);
     font-size: 22px;
 }
 

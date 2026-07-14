@@ -15,7 +15,7 @@
 
     /* Fields list (left column) */
     .fields-panel { background: var(--color-surface); border-radius: 16px; border: 1px solid var(--color-border); box-shadow: var(--shadow-sm); padding: 20px; }
-    .fields-panel h2 { font-size: 18px; color: #2d2d2d; margin: 0 0 16px; padding-bottom: 10px; border-bottom: 1px solid #eef2ed; }
+    .fields-panel h2 { font-size: 18px; color: var(--color-primary); margin: 0 0 16px; padding-bottom: 10px; border-bottom: 1px solid #eef2ed; }
     .empty-fields { text-align: center; padding: 40px 20px; color: #6b7280; }
 
     .field-item { background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; cursor: grab; transition: box-shadow 0.15s; }
@@ -40,7 +40,7 @@
 
     /* Add field panel (right column) */
     .add-panel { background: var(--color-surface); border-radius: 16px; border: 1px solid var(--color-border); box-shadow: var(--shadow-sm); padding: 20px; }
-    .add-panel h2 { font-size: 18px; color: #2d2d2d; margin: 0 0 16px; font-weight: 600; }
+    .add-panel h2 { font-size: 18px; color: var(--color-primary); margin: 0 0 16px; font-weight: 600; }
     .add-panel .form-group { margin-bottom: 14px; }
     .add-panel label { display: block; font-weight: 600; margin-bottom: 4px; color: #2d2d2d; font-size: 13px; }
     .add-panel input, .add-panel select, .add-panel textarea { width: 100%; border: 1px solid #e5e7eb; border-radius: 10px; padding: 9px 12px; font-size: 14px; box-sizing: border-box; }
@@ -62,7 +62,7 @@
     .modal-overlay-fb { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center; }
     .modal-overlay-fb.active { display: flex; }
     .modal-box-fb { background: #fff; border-radius: 16px; padding: 28px; max-width: 520px; width: 90%; max-height: 90vh; overflow-y: auto; }
-    .modal-box-fb h3 { margin: 0 0 16px; color: #2d2d2d; }
+    .modal-box-fb h3 { margin: 0 0 16px; color: var(--color-primary); }
     .modal-box-fb .form-group { margin-bottom: 14px; }
     .modal-box-fb label { display: block; font-weight: 600; margin-bottom: 4px; color: #2d2d2d; font-size: 13px; }
     .modal-box-fb input, .modal-box-fb select, .modal-box-fb textarea { width: 100%; border: 1px solid #e5e7eb; border-radius: 10px; padding: 9px 12px; font-size: 14px; box-sizing: border-box; }

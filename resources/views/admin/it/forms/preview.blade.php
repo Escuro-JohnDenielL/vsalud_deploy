@@ -5,7 +5,7 @@
 @push('styles')
 <style>
     .preview-container { max-width: 720px; margin: 0 auto; padding: 32px 20px 60px; }
-    .preview-container h1 { font-family: Georgia, serif; font-size: 28px; color: #123b26; margin: 0 0 4px; }
+    .preview-container h1 { font-family: Georgia, serif; font-size: 28px; color: var(--color-primary); margin: 0 0 4px; }
     .preview-container .sub { color: #587064; margin-bottom: 24px; }
     .preview-form { background: #fff; border-radius: 16px; border: 1px solid rgba(18,59,38,0.1); box-shadow: 0 10px 30px rgba(18,59,38,0.06); padding: 28px; }
     .pf-group { margin-bottom: 18px; }

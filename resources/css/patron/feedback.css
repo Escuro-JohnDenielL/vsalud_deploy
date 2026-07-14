@@ -39,12 +39,13 @@
 /* === Headings === */
 h1 {
   font-size: 24px;
-  color: #333;
+  color: var(--color-primary);
 }
 
 h2 {
   font-size: 22px;
   text-align: center;
+  color: var(--color-primary);
 }
 
 /* === Form Styles === */

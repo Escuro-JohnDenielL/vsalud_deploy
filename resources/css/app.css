@@ -717,7 +717,7 @@ textarea:focus,
 .modal-content h2,
 .modal-content h3 {
   margin-top: 0;
-  color: var(--color-text);
+  color: var(--color-primary);
   font-weight: 600;
   font-family: var(--font-heading);
 }

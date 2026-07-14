@@ -90,6 +90,10 @@
         border-bottom: none;
     }
 
+    .page-header h1 {
+        color: var(--color-primary);
+    }
+
     .empty-state {
         text-align: center;
         padding: 60px 20px;

@@ -13,6 +13,17 @@
     box-shadow: var(--shadow-lg);
 }
 
+.reservation-container h2 {
+    color: var(--color-primary);
+    margin-bottom: 16px;
+}
+
+.reservation-container > p {
+    color: var(--color-text-muted);
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
 /* === Buttons === */
 button.view-details {
     background-color: var(--color-primary);
@@ -99,6 +110,13 @@ form input {
 
 .close-btn:hover {
     color: #000;
+}
+
+.modal-content h3 {
+    color: var(--color-primary);
+    margin: 0 0 16px;
+    font-size: 20px;
+    font-weight: 600;
 }
 
 /* === Detail Section Styles (mirrors admin modal) === */

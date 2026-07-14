@@ -15,6 +15,23 @@
     .field { margin-bottom: 12px; }
     .field label { display: block; font-weight: 600; margin-bottom: 4px; color: var(--color-text); font-size: 13px; }
     .field input, .field select { width: 100%; border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 9px 12px; font-size: 14px; }
+    .admin-page-header h1 {
+        font-size: 28px;
+        font-weight: 600;
+        color: var(--color-primary);
+        margin: 0 0 6px;
+    }
+    .admin-page-header p {
+        color: var(--color-text-muted);
+        font-size: 14px;
+        margin: 0 0 24px;
+    }
+    .admin-panel-header h2 {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--color-primary);
+        margin: 0;
+    }
     .pagination-info { font-size: 13px; color: var(--color-text-muted); margin-top: 12px; }
 </style>
 @endpush

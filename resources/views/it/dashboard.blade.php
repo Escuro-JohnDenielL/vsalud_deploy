@@ -26,7 +26,7 @@
             font-family: Georgia, serif;
             font-size: 34px;
             margin: 0;
-            color: #123b26;
+            color: var(--color-primary);
         }
         .it-subtitle {
             margin: 6px 0 0;
@@ -52,7 +52,7 @@
         .panel h2 {
             font-size: 20px;
             margin: 0 0 16px;
-            color: #123b26;
+            color: var(--color-primary);
         }
         .stats {
             display: grid;
