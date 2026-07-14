@@ -79,7 +79,8 @@
             "php-http/discovery": true
         },
         "disable-tls": true,
-        "secure-http": false
+        "secure-http": false,
+        "cafile": "C:/EZ BABY/vsalud_deploy/cacert.pem"
     },
     "minimum-stability": "stable",
     "prefer-stable": true
