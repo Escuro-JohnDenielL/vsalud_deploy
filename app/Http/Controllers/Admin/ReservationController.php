@@ -33,7 +33,7 @@ class ReservationController extends Controller
 
             // Make sure all required fields are available
             $responseData = [
-                'id' => $reservation->id,
+                'id' => $reservation->reserve_id,
                 'tracking_code' => $reservation->inquiry->tracking_code ?? 'RSV-' . str_pad($reservation->reserve_id, 6, '0', STR_PAD_LEFT),
                 'date' => $reservation->date,
                 'time' => $reservation->time,
