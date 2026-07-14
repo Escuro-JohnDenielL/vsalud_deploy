@@ -423,10 +423,40 @@ function addNotificationStyles() {
     document.head.insertAdjacentHTML("beforeend", styles);
 }
 
-// BACKEND HOOKS (to implement later)
+// Update reservation status via AJAX (same pattern as inquiries)
 function updateReservationStatus(id, status) {
-    // You can use fetch or axios to call your backend route
-    console.log(`Updating reservation ${id} to status: ${status}`);
+    const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        ?.getAttribute("content");
+
+    fetch(`/admin/reservations/${id}/status`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "X-CSRF-TOKEN": csrfToken,
+        },
+        body: JSON.stringify({ status: status }),
+    })
+        .then(async (response) => {
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Server error ${response.status}: ${errorText}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            if (data.success) {
+                console.log("Reservation status updated successfully.");
+            } else {
+                console.error("Failed to update status:", data.message);
+                showNotification(data.message || "Failed to update status", "error");
+            }
+        })
+        .catch((error) => {
+            console.error("Error updating reservation status:", error.message);
+            showNotification("Failed to update reservation status", "error");
+        });
 }
 
 function deleteReservationFromServer(id) {

@@ -135,6 +135,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
 
     // API routes for reservation management (for AJAX calls)
     Route::get('/reservations/{id}', [AdminReservationController::class, 'getReservation'])->name('reservations.show');
+    Route::patch('/reservations/{id}/status', [AdminReservationController::class, 'updateStatus'])->name('reservations.status');
     Route::delete('/reservations/{id}', [AdminReservationController::class, 'deleteReservation'])->name('reservations.delete');
 
     // Payment status management

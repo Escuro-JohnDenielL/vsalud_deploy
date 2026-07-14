@@ -59,6 +59,38 @@ class ReservationController extends Controller
         }
     }
 
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|string|in:active,cancelled,completed',
+        ]);
+
+        try {
+            $reservation = Reservation::findOrFail($id);
+            $reservation->status = $request->input('status');
+            $reservation->save();
+
+            // Also update the linked inquiry status if cancelling
+            if ($request->input('status') === 'cancelled' && $reservation->inquiry) {
+                $inquiry = $reservation->inquiry;
+                $inquiry->status = 'Cancelled';
+                $inquiry->save();
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Reservation status updated successfully.',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error updating reservation status: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update reservation status.',
+            ], 500);
+        }
+    }
+
     public function deleteReservation($id)
     {
         try {

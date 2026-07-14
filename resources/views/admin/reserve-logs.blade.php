@@ -48,11 +48,11 @@
                                     <a href="#" class="receipt-link">View Receipt</a>
                                 </td> --}}
                                 <td>
-                                    <select class="status-dropdown" data-id="{{ $reservation->id }}">
+                                    <select class="status-dropdown" data-id="{{ $reservation->reserve_id }}">
                                         <option value="active" {{ $reservation->status === 'active' ? 'selected' : '' }}>
                                             Active</option>
-                                        <option value="canceled"
-                                            {{ $reservation->status === 'canceled' ? 'selected' : '' }}>Canceled</option>
+                                        <option value="cancelled"
+                                            {{ $reservation->status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                                         <option value="completed"
                                             {{ $reservation->status === 'completed' ? 'selected' : '' }}>Completed</option>
                                     </select>

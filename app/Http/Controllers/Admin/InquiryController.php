@@ -66,7 +66,7 @@ class InquiryController extends Controller
                         'event_type'         => $inquiry->event_type,
                         'theme_motif'        => $inquiry->theme_motif,
                         'message'            => $inquiry->message,
-                        'status'             => 'Active',
+                        'status'             => 'active',
                         'form_data'          => $inquiry->form_data, // carry forward dynamic data
                     ]);
 

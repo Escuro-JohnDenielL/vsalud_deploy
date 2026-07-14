@@ -54,9 +54,9 @@
                                 <td>
                                     @if($req->status === 'pending')
                                         <div class="action-buttons">
-                                            <button class="admin-btn admin-btn-primary admin-btn-sm"
+                                            <button class="admin-btn admin-btn-primary admin-btn-sm btn-approve"
                                                 data-request-id="{{ $req->id }}">Approve</button>
-                                            <button class="admin-btn admin-btn-danger admin-btn-sm"
+                                            <button class="admin-btn admin-btn-danger admin-btn-sm btn-deny"
                                                 data-request-id="{{ $req->id }}">Deny</button>
                                         </div>
                                     @else
