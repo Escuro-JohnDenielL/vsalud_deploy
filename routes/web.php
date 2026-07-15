@@ -283,3 +283,23 @@ Route::prefix('it')->name('it.')->middleware(['auth:web', 'role:it'])->group(fun
 Route::get('/login', function () {
     return redirect()->route('admin.login');
 })->name('login');
+
+// -------------------------------------------------------------------
+// Test email route — send a test email via Resend to verify setup
+// -------------------------------------------------------------------
+use App\Mail\WelcomeEmail;
+use Illuminate\Support\Facades\Mail;
+
+Route::get('/test-email', function () {
+    $email = request('to', 'coheredit@gmail.com');
+
+    try {
+        Mail::to($email)->send(new WelcomeEmail([
+            'name' => 'Test User',
+        ]));
+
+        return 'Test email sent successfully to ' . $email . '! Check your inbox.';
+    } catch (\Exception $e) {
+        return 'Failed to send email: ' . $e->getMessage();
+    }
+});

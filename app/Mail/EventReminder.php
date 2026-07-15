@@ -25,7 +25,7 @@ class EventReminder extends Mailable
      */
     public function build()
     {
-        $this->replyTo('coheredit@gmail.com', 'Events Team');
+        $this->replyTo('events@send.villasalud.online', 'Villa Salud');
 
         return $this->subject('Upcoming Reservation Reminder')
             ->view('emails.event_reminder')

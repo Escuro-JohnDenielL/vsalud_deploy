@@ -6,23 +6,27 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class WaitlistSlotAvailable extends Mailable
+class WelcomeEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $data;
 
+    /**
+     * Create a new message instance.
+     */
     public function __construct($data)
     {
         $this->data = $data;
     }
 
+    /**
+     * Build the message.
+     */
     public function build()
     {
-        $this->replyTo('events@send.villasalud.online', 'Villa Salud');
-
-        return $this->subject('A Slot Has Opened Up — Book Now!')
-            ->view('emails.waitlist_slot_available')
+        return $this->subject('Welcome to Villa Salud!')
+            ->view('emails.welcome')
             ->with(['data' => $this->data]);
     }
 }

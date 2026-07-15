@@ -27,7 +27,7 @@ class ReservationSubmitted extends Mailable
      */
     public function build()
     {
-        $this->replyTo('coheredit@gmail.com', 'Events Team');
+        $this->replyTo('events@send.villasalud.online', 'Villa Salud');
 
         if ($this->reply) {
             return $this->subject('Reply to your inquiry.')

@@ -25,7 +25,7 @@ class PaymentReminder extends Mailable
      */
     public function build()
     {
-        $this->replyTo('coheredit@gmail.com', 'Events Team');
+        $this->replyTo('events@send.villasalud.online', 'Villa Salud');
 
         return $this->subject('Payment Reminder for Your Reservation')
             ->view('emails.payment_reminder')

@@ -19,7 +19,7 @@ class WaitlistSlotExpired extends Mailable
 
     public function build()
     {
-        $this->replyTo('coheredit@gmail.com', 'Events Team');
+        $this->replyTo('events@send.villasalud.online', 'Villa Salud');
 
         return $this->subject('Your Reservation Window Has Expired')
             ->view('emails.waitlist_slot_expired')
