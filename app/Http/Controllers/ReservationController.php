@@ -146,51 +146,20 @@ class ReservationController extends Controller
                 Log::error('Failed to update waitlist claim: ' . $e->getMessage());
             }
 
-            // Send email via Resend API directly (no package dependency needed)
+            // Send reservation confirmation email via Laravel mail system
             try {
-                $resendKey = env('RESEND_KEY');
-                $emailHtml = view('emails.reservation_submitted', [
-                    'data' => [
-                        'name'         => $patron->name,
-                        'tracking_code' => $inquiry->tracking_code,
-                        'date'         => $hardcodedData['date'] ?? $formData['date'] ?? 'N/A',
-                        'time'         => $hardcodedData['time'] ?? $formData['time'] ?? 'N/A',
-                        'venue'        => $hardcodedData['venue'] ?? $formData['venue'] ?? 'N/A',
-                        'event_type'   => $hardcodedData['event_type'] ?? $formData['event_type'] ?? 'N/A',
-                        'theme_motif'  => $hardcodedData['theme_motif'] ?? $formData['theme_motif'] ?? 'N/A',
-                        'message'      => $hardcodedData['message'] ?? $formData['message'] ?? '',
-                    ],
-                ])->render();
+                Mail::to($patron->email)->send(new ReservationSubmitted([
+                    'name'         => $patron->name,
+                    'tracking_code' => $inquiry->tracking_code,
+                    'date'         => $hardcodedData['date'] ?? $formData['date'] ?? 'N/A',
+                    'time'         => $hardcodedData['time'] ?? $formData['time'] ?? 'N/A',
+                    'venue'        => $hardcodedData['venue'] ?? $formData['venue'] ?? 'N/A',
+                    'event_type'   => $hardcodedData['event_type'] ?? $formData['event_type'] ?? 'N/A',
+                    'theme_motif'  => $hardcodedData['theme_motif'] ?? $formData['theme_motif'] ?? 'N/A',
+                    'message'      => $hardcodedData['message'] ?? $formData['message'] ?? '',
+                ], null));
 
-                $ch = curl_init('https://api.resend.com/emails');
-                curl_setopt_array($ch, [
-                    CURLOPT_POST => true,
-                    CURLOPT_HTTPHEADER => [
-                        'Authorization: Bearer ' . $resendKey,
-                        'Content-Type: application/json',
-                    ],
-                    CURLOPT_POSTFIELDS => json_encode([
-                        'from'    => 'onboarding@resend.dev',
-                        'to'      => 'coheredit@gmail.com',
-                        'subject' => 'Your Reservation Has Been Submitted',
-                        'html'    => $emailHtml,
-                    ]),
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_TIMEOUT => 10,
-                ]);
-
-                $response = curl_exec($ch);
-                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                $curlError = curl_error($ch);
-                curl_close($ch);
-
-                if ($curlError) {
-                    error_log('[RESERVATION] cURL error: ' . $curlError);
-                    Log::error('Resend cURL error: ' . $curlError);
-                } else {
-                    error_log('[RESERVATION] Resend response (' . $httpCode . '): ' . $response);
-                    Log::warning('Resend email sent', ['code' => $httpCode, 'response' => $response]);
-                }
+                Log::info('Reservation submitted email sent to ' . $patron->email);
             } catch (\Throwable $emailError) {
                 error_log('[RESERVATION] FAILED: ' . $emailError->getMessage());
                 Log::error('Failed to send reservation confirmation email: ' . $emailError->getMessage(), [
