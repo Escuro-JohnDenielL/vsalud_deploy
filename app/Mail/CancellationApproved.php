@@ -25,7 +25,7 @@ class CancellationApproved extends Mailable
      */
     public function build()
     {
-        $this->replyTo('events@send.villasalud.online', 'Villa Salud');
+        $this->replyTo('events@villasalud.online', 'Villa Salud');
 
         return $this->subject('Your Cancellation Request Has Been Approved')
             ->view('emails.cancellation_approved')

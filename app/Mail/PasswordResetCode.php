@@ -25,7 +25,7 @@ class PasswordResetCode extends Mailable
      */
     public function build()
     {
-        $this->replyTo('events@send.villasalud.online', 'Villa Salud');
+        $this->replyTo('events@villasalud.online', 'Villa Salud');
 
         return $this->subject('Your Password Reset Code')
             ->view('emails.password_reset_code')

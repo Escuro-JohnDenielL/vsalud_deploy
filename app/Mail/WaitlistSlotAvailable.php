@@ -19,7 +19,7 @@ class WaitlistSlotAvailable extends Mailable
 
     public function build()
     {
-        $this->replyTo('events@send.villasalud.online', 'Villa Salud');
+        $this->replyTo('events@villasalud.online', 'Villa Salud');
 
         return $this->subject('A Slot Has Opened Up — Book Now!')
             ->view('emails.waitlist_slot_available')

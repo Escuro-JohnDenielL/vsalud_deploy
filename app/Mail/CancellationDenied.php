@@ -25,7 +25,7 @@ class CancellationDenied extends Mailable
      */
     public function build()
     {
-        $this->replyTo('events@send.villasalud.online', 'Villa Salud');
+        $this->replyTo('events@villasalud.online', 'Villa Salud');
 
         return $this->subject('Update on Your Cancellation Request')
             ->view('emails.cancellation_denied')

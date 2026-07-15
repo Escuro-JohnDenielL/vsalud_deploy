@@ -25,7 +25,7 @@ class ReservationConfirmed extends Mailable
      */
     public function build()
     {
-        $this->replyTo('events@send.villasalud.online', 'Villa Salud');
+        $this->replyTo('events@villasalud.online', 'Villa Salud');
 
         return $this->subject('Your Reservation Has Been Confirmed')
             ->view('emails.reservation_confirmed')
