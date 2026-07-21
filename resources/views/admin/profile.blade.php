@@ -170,6 +170,19 @@ if ($user && !$isSuperAdmin) {
         <label for="new-password">New Password:</label>
         <input type="password" id="new-password" name="new_password" required autocomplete="off">
         <small style="color: #6b7280; font-size: 12px;">Min 8 characters, 1 uppercase, 1 number, 1 special character</small>
+        <div class="password-strength-container" style="margin-top:8px;">
+          <div style="height:6px; background:#e0e0e0; border-radius:4px; overflow:hidden;">
+            <div id="strength-bar" style="width:0%; height:100%; background:#dc3545; border-radius:4px; transition:all 0.3s ease;"></div>
+          </div>
+          <span id="strength-text" style="font-size:12px; color:#999;"></span>
+        </div>
+        <div id="password-requirements" style="font-size:12px; margin-top:6px; line-height:2;">
+          <div id="req-length" style="color:#999;">✗ At least 8 characters</div>
+          <div id="req-uppercase" style="color:#999;">✗ At least 1 uppercase letter</div>
+          <div id="req-lowercase" style="color:#999;">✗ At least 1 lowercase letter</div>
+          <div id="req-number" style="color:#999;">✗ At least 1 number</div>
+          <div id="req-special" style="color:#999;">✗ At least 1 special character</div>
+        </div>
       </div>
       <div class="form-group">
         <label for="confirm-password">Confirm New Password:</label>

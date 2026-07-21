@@ -389,6 +389,15 @@ document.addEventListener("DOMContentLoaded", function () {
             step1Msg.textContent = "";
             step1Msg.className = "info-message";
         }
+        // Reset strength bar & checklist
+        const sBar = document.getElementById("strength-bar");
+        const sText = document.getElementById("strength-text");
+        if (sBar) { sBar.style.width = "0%"; sBar.style.backgroundColor = "#dc3545"; }
+        if (sText) sText.textContent = "";
+        ["req-length","req-uppercase","req-lowercase","req-number","req-special"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.style.color = "#999"; el.textContent = "✗ " + el.textContent.replace(/^[✓✗]\s*/, ""); }
+        });
     }
 
     // Close Modal Functions - Only add listeners if elements exist
@@ -755,6 +764,86 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // ── Real-time Password Strength & Requirements Checklist ──
+    const newPwInput = document.getElementById("new-password");
+    const strengthBar = document.getElementById("strength-bar");
+    const strengthText = document.getElementById("strength-text");
+
+    const reqs = {
+      length: document.getElementById("req-length"),
+      uppercase: document.getElementById("req-uppercase"),
+      lowercase: document.getElementById("req-lowercase"),
+      number: document.getElementById("req-number"),
+      special: document.getElementById("req-special"),
+    };
+
+    function updatePasswordStrength(val) {
+      let score = 0;
+
+      // Length checks
+      if (val.length >= 8) score += 1;
+      if (val.length >= 12) score += 1;
+
+      // Complexity checks
+      if (/[A-Z]/.test(val)) score += 1;
+      if (/[a-z]/.test(val)) score += 1;
+      if (/\d/.test(val)) score += 1;
+      if (/[!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?]/.test(val)) score += 1;
+
+      // Update requirement checklist
+      if (reqs.length) {
+        const ok = val.length >= 8;
+        reqs.length.style.color = ok ? "#28a745" : "#999";
+        reqs.length.textContent = (ok ? "✓" : "✗") + " At least 8 characters";
+      }
+      if (reqs.uppercase) {
+        const ok = /[A-Z]/.test(val);
+        reqs.uppercase.style.color = ok ? "#28a745" : "#999";
+        reqs.uppercase.textContent = (ok ? "✓" : "✗") + " At least 1 uppercase letter";
+      }
+      if (reqs.lowercase) {
+        const ok = /[a-z]/.test(val);
+        reqs.lowercase.style.color = ok ? "#28a745" : "#999";
+        reqs.lowercase.textContent = (ok ? "✓" : "✗") + " At least 1 lowercase letter";
+      }
+      if (reqs.number) {
+        const ok = /\d/.test(val);
+        reqs.number.style.color = ok ? "#28a745" : "#999";
+        reqs.number.textContent = (ok ? "✓" : "✗") + " At least 1 number";
+      }
+      if (reqs.special) {
+        const ok = /[!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?]/.test(val);
+        reqs.special.style.color = ok ? "#28a745" : "#999";
+        reqs.special.textContent = (ok ? "✓" : "✗") + " At least 1 special character";
+      }
+
+      // Map score to strength level
+      const levels = [
+        { label: "Very Weak", color: "#dc3545", width: "10%" },
+        { label: "Weak",      color: "#dc3545", width: "25%" },
+        { label: "Fair",      color: "#ffc107", width: "45%" },
+        { label: "Good",      color: "#17a2b8", width: "65%" },
+        { label: "Strong",    color: "#28a745", width: "85%" },
+        { label: "Very Strong", color: "#28a745", width: "100%" },
+      ];
+
+      const idx = Math.min(score, levels.length - 1);
+      if (strengthBar) {
+        strengthBar.style.width = levels[idx].width;
+        strengthBar.style.backgroundColor = levels[idx].color;
+      }
+      if (strengthText) {
+        strengthText.textContent = val.length > 0 ? levels[idx].label : "";
+        strengthText.style.color = levels[idx].color;
+      }
+    }
+
+    if (newPwInput) {
+      newPwInput.addEventListener("input", function () {
+        updatePasswordStrength(this.value);
+      });
+    }
+
     // Back button: go from step 2 to step 1
     if (backToStep1Btn) {
         backToStep1Btn.addEventListener("click", function () {
@@ -765,8 +854,13 @@ document.addEventListener("DOMContentLoaded", function () {
             const newPw = document.getElementById("new-password");
             const confirmPw = document.getElementById("confirm-password");
             if (resetCode) resetCode.value = "";
-            if (newPw) newPw.value = "";
             if (confirmPw) confirmPw.value = "";
+            // Reset strength UI
+            if (strengthBar) { strengthBar.style.width = "0%"; strengthBar.style.backgroundColor = "#dc3545"; }
+            if (strengthText) strengthText.textContent = "";
+            Object.values(reqs).forEach(el => {
+              if (el) { el.style.color = "#999"; el.textContent = el.textContent.replace(/^[✓✗]/, "✗"); }
+            });
         });
     }
 
