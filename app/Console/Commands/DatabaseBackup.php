@@ -28,7 +28,7 @@ class DatabaseBackup extends Command
             '--port=' . env('DB_PORT'),
             '--user=' . env('DB_USERNAME'),
             '--password=' . env('DB_PASSWORD'),
-            '--ssl-mode=DISABLED',
+            '--skip-ssl',
             '--single-transaction',
             '--routines',
             '--triggers',
