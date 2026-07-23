@@ -43,4 +43,18 @@ For critical CVEs that can't wait for the next cadence:
 
 ---
 
+## Reporting a Security Issue or System Incident
+
+If you discover a security vulnerability, suspect a breach, or need to report a system issue affecting Villa Salud:
+
+- **Email**: `security@villasalud.com` — monitored by the system administrator
+- **Response time**: Within 48 hours on business days
+- **What to include**: A brief description of the issue, how it was discovered, and any relevant system logs or timestamps.
+
+For urgent incidents (e.g., active data breach, service outage), contact the administrator directly via phone or messaging in addition to email.
+
+All reported issues are logged in the **Incident Log** (accessible from the admin Settings menu) and tracked until resolution.
+
+---
+
 *Policy last reviewed: July 2026*

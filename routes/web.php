@@ -160,6 +160,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
 
     // Payment Logs (admin)
     Route::get('/payment-logs', [\App\Http\Controllers\Admin\PaymentLogsController::class, 'index'])->name('payment-logs');
+
+    // Incident Logs (admin)
+    Route::get('/incident-logs', [\App\Http\Controllers\Admin\IncidentLogController::class, 'index'])->name('incident-logs');
+    Route::post('/incident-logs', [\App\Http\Controllers\Admin\IncidentLogController::class, 'store'])->name('incident-logs.store');
+    Route::get('/incident-logs/{id}', [\App\Http\Controllers\Admin\IncidentLogController::class, 'show'])->name('incident-logs.show');
+    Route::post('/incident-logs/{id}', [\App\Http\Controllers\Admin\IncidentLogController::class, 'update'])->name('incident-logs.update');
+    Route::delete('/incident-logs/{id}', [\App\Http\Controllers\Admin\IncidentLogController::class, 'destroy'])->name('incident-logs.destroy');
 });
 
 // Logout Route (accessible to authenticated users)

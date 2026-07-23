@@ -116,6 +116,16 @@
             </li>
             @endif
 
+            {{-- Incident Logs (standalone) --}}
+            @if($canAccess('incident-logs'))
+            <li>
+                <a href="{{ route('admin.incident-logs') }}" class="{{ request()->is('admin/incident-logs') ? 'active' : '' }}">
+                    <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    Incidents
+                </a>
+            </li>
+            @endif
+
             {{-- Reports Dropdown --}}
             @if($canAccess('reports') || $canAccess('feedback'))
             <li class="nav-dropdown {{ $isActive(['admin/report', 'admin/feedback']) ? 'active' : '' }}">
@@ -174,6 +184,12 @@
                         </a>
                     </li>
                     <li>
+                        <a href="#" id="reportIssueLink" style="color:#6b7280;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;vertical-align:middle;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            Report an Issue
+                        </a>
+                    </li>
+                    <li>
                         <form method="POST" action="{{ route('admin.logout') }}" style="display:inline;">
                             @csrf
                             <button type="submit" style="background:none;border:none;color:#dc3545;cursor:pointer;font:inherit;padding:8px 20px;width:100%;text-align:left;">
@@ -189,6 +205,61 @@
     <main class="admin-content">
         @yield('content')
     </main>
+
+    {{-- Report an Issue Modal --}}
+    <div id="reportIssueModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeReportIssueModal()">&times;</span>
+            <h2>Report a Security Issue</h2>
+            <p style="font-size: 14px; color: var(--color-text-muted); margin: -8px 0 20px;">For reporting security vulnerabilities, suspected breaches, or system problems.</p>
+
+            <div class="detail-section">
+                <div class="detail-section-title">Contact</div>
+                <div class="detail-section-card">
+                    <div class="detail-row">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value"><a href="mailto:security@villasalud.com">security@villasalud.com</a></span>
+                    </div>
+                    <div class="detail-row" style="border:none;">
+                        <span class="detail-label">Response</span>
+                        <span class="detail-value">Within 48 hours on business days</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <div class="detail-section-title">What to Include</div>
+                <ul style="font-size: 14px; color: var(--color-text); line-height: 1.7; padding-left: 20px; margin: 0;">
+                    <li>A brief description of the issue</li>
+                    <li>How and when it was discovered</li>
+                    <li>Any relevant system logs or timestamps</li>
+                    <li>Steps to reproduce (if applicable)</li>
+                </ul>
+            </div>
+
+            <div class="detail-section">
+                <div class="detail-section-title">Already Logged?</div>
+                <p style="font-size: 14px; color: var(--color-text); margin: 0; line-height: 1.6;">
+                    Once reported, incidents should be recorded in the <a href="{{ route('admin.incident-logs') }}">Incident Log</a> for tracking.
+                    For urgent issues (active breach, service outage), contact the administrator directly.
+                </p>
+            </div>
+
+            <div class="modal-footer">
+                <button class="admin-btn admin-btn-ghost" onclick="closeReportIssueModal()">Close</button>
+                <a href="mailto:security@villasalud.com" class="admin-btn admin-btn-primary">Send Email</a>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    .detail-section-card {
+        background: var(--color-bg);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--radius-sm);
+        padding: 16px 18px;
+    }
+    </style>
 
     @stack('scripts')
 
@@ -239,9 +310,30 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeAll();
+                closeReportIssueModal();
             }
         });
     }
+
+    // Report an Issue modal
+    function closeReportIssueModal() {
+        var m = document.getElementById('reportIssueModal');
+        if (m) m.classList.remove('open');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var link = document.getElementById('reportIssueLink');
+        var modal = document.getElementById('reportIssueModal');
+        if (link && modal) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                modal.classList.add('open');
+            });
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) closeReportIssueModal();
+            });
+        }
+    });
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initNavbar);
