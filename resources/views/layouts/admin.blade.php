@@ -209,7 +209,7 @@
     {{-- Report an Issue Modal --}}
     <div id="reportIssueModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeReportIssueModal()">&times;</span>
+            <span class="js-modal-close close-btn">&times;</span>
             <h2>Report a Security Issue</h2>
             <p style="font-size: 14px; color: var(--color-text-muted); margin: -8px 0 20px;">For reporting security vulnerabilities, suspected breaches, or system problems.</p>
 
@@ -246,7 +246,7 @@
             </div>
 
             <div class="modal-footer">
-                <button class="admin-btn admin-btn-ghost" onclick="closeReportIssueModal()">Close</button>
+                <button class="admin-btn admin-btn-ghost js-modal-close">Close</button>
                 <a href="mailto:security@villasalud.com" class="admin-btn admin-btn-primary">Send Email</a>
             </div>
         </div>
@@ -306,39 +306,52 @@
             }
         });
 
-        // Escape to close
+        // Escape to close all modals
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeAll();
-                closeReportIssueModal();
+                document.querySelectorAll('.modal.open').forEach(function(m) {
+                    m.classList.remove('open');
+                });
             }
         });
     }
 
-    // Report an Issue modal
-    function closeReportIssueModal() {
-        var m = document.getElementById('reportIssueModal');
-        if (m) m.classList.remove('open');
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
+    // Global modal helpers — works for report issue modal and any .modal on the page
+    function initModals() {
+        // Open report issue modal
         var link = document.getElementById('reportIssueLink');
-        var modal = document.getElementById('reportIssueModal');
-        if (link && modal) {
+        var reportModal = document.getElementById('reportIssueModal');
+        if (link && reportModal) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
-                modal.classList.add('open');
-            });
-            modal.addEventListener('click', function(e) {
-                if (e.target === this) closeReportIssueModal();
+                reportModal.classList.add('open');
             });
         }
-    });
+
+        // Close any modal when clicking the backdrop, X button, or Close button
+        document.addEventListener('click', function(e) {
+            var closeBtn = e.target.closest('.js-modal-close');
+            var modal = e.target.closest('.modal');
+            if (closeBtn && modal) {
+                modal.classList.remove('open');
+                return;
+            }
+            // Click on backdrop (the modal itself, not its content)
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('open');
+            }
+        });
+    }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initNavbar);
+        document.addEventListener('DOMContentLoaded', function() {
+            initNavbar();
+            initModals();
+        });
     } else {
         initNavbar();
+        initModals();
     }
 })();
 </script>
