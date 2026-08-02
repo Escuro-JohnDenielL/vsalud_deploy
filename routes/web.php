@@ -72,8 +72,26 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 });
 
-// Protected Admin Routes (WITH MIDDLEWARE - requires authentication + page permissions)
-Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session', 'page.permission'])->group(function () {
+// MFA Routes (authenticated but before page permission check — MFA check happens inside)
+Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'])->group(function () {
+    // MFA Setup (first-time)
+    Route::get('/mfa/setup', [\App\Http\Controllers\Admin\MfaController::class, 'showSetup'])->name('mfa.setup');
+    Route::post('/mfa/setup', [\App\Http\Controllers\Admin\MfaController::class, 'setup'])->name('mfa.setup.submit');
+    Route::post('/mfa/setup/send-otp', [\App\Http\Controllers\Admin\MfaController::class, 'sendSetupOtp'])->name('mfa.send-setup-otp');
+
+    // MFA Challenge (during login)
+    Route::get('/mfa/challenge', [\App\Http\Controllers\Admin\MfaController::class, 'showChallenge'])->name('mfa.challenge');
+    Route::post('/mfa/challenge', [\App\Http\Controllers\Admin\MfaController::class, 'challenge'])->name('mfa.challenge.submit');
+    Route::post('/mfa/resend-otp', [\App\Http\Controllers\Admin\MfaController::class, 'resendOtp'])->name('mfa.resend-otp');
+
+    // MFA management (from profile)
+    Route::post('/mfa/disable', [\App\Http\Controllers\Admin\MfaController::class, 'disable'])->name('mfa.disable');
+    Route::get('/mfa/trusted-devices', [\App\Http\Controllers\Admin\MfaController::class, 'trustedDevices'])->name('mfa.trusted-devices');
+    Route::delete('/mfa/trusted-devices/{id}', [\App\Http\Controllers\Admin\MfaController::class, 'revokeDevice'])->name('mfa.revoke-device');
+});
+
+// Protected Admin Routes (WITH MIDDLEWARE - requires authentication + MFA + page permissions)
+Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session', 'mfa', 'page.permission'])->group(function () {
     // Admin Homepage
     Route::get('/home', [AdminHomeController::class, 'index'])->name('home');
 
@@ -268,21 +286,6 @@ Route::prefix('admin/permissions')->name('admin.permissions.')->middleware(['aut
     Route::post('/{id}/update', [AdminPermissionController::class, 'update'])->name('update');
     Route::post('/{id}/preset', [AdminPermissionController::class, 'applyPreset'])->name('preset');
 });
-
-// -------------------------------------------------------------------
-// IT Management Routes (User model + web guard — for IT administrators)
-// -------------------------------------------------------------------
-Route::prefix('it')->name('it.')->group(function () {
-    Route::get('/login', [\App\Http\Controllers\It\AccessController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [\App\Http\Controllers\It\AccessController::class, 'login'])->name('login.submit');
-});
-
-Route::prefix('it')->name('it.')->middleware(['auth:web', 'role:it'])->group(function () {
-    Route::get('/dashboard', [\App\Http\Controllers\It\AccessController::class, 'dashboard'])->name('dashboard');
-    Route::post('/logout', [\App\Http\Controllers\It\AccessController::class, 'logout'])->name('logout');
-    Route::post('/admins', [\App\Http\Controllers\It\AccessController::class, 'storeAdmin'])->name('admins.store');
-});
-
 // -------------------------------------------------------------------
 // Generic fallback route named 'login' — used by Authenticate middleware
 // when no specific guard is matched

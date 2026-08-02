@@ -74,7 +74,6 @@ class AuthController extends Controller
         }
 
         if (Auth::guard('admin')->attempt($credentials)) {
-            Log::info('nag true');
             RateLimiter::clear($key);
             
             $admin = Auth::guard('admin')->user();
@@ -90,6 +89,22 @@ class AuthController extends Controller
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
             ]);
+
+            // MFA Check: check if DB mfa_verified_at is still within 6 hours
+            if ($admin->hasMfaEnabled()) {
+                $dbVerifiedAt = $admin->mfa_verified_at ? \Carbon\Carbon::parse($admin->mfa_verified_at) : null;
+                if ($dbVerifiedAt && now()->diffInHours($dbVerifiedAt) < 6) {
+                    // Still within the 6-hour window — set session and proceed
+                    session(['mfa_verified_at' => $dbVerifiedAt]);
+                } else {
+                    // Expired or not set — redirect to challenge
+                    session()->forget('mfa_verified_at');
+                    return redirect()->route('admin.mfa.challenge');
+                }
+            } else {
+                // MFA not set up — redirect to setup page
+                return redirect()->route('admin.mfa.setup');
+            }
 
             // Redirect permissionless admins to their profile instead of the home page
             if ($admin->role !== 'super_admin' && !\App\Models\AdminPagePermission::where('admin_id', $admin->admin_id)->exists()) {
