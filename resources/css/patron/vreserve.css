@@ -250,8 +250,6 @@ form input {
     background: #fce4ec;
     color: #c62828;
 }
-}
-
 
 @media (max-width: 480px) {
     .modal-content {
