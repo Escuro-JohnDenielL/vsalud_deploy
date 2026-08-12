@@ -43,6 +43,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | MFA Dev Code Display
+    |--------------------------------------------------------------------------
+    |
+    | DEVELOPMENT-ONLY workaround: when enabled, the generated MFA code is
+    | shown directly on the MFA page so testers who cannot access their
+    | email can still complete 2FA. Enabled by default when APP_DEBUG=true.
+    | NEVER enable this in production.
+    |
+    */
+
+    'mfa_show_code_dev' => env('MFA_SHOW_CODE_DEV', (bool) env('APP_DEBUG', false)),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application URL
     |--------------------------------------------------------------------------
     |

@@ -9,8 +9,8 @@
 </head>
 
 <body>
-    <a href="{{ url('/') }}" style="position: absolute; top: 18px; left: 18px; z-index: 10; display: inline-block; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,0.86); color: #0d7a3e; text-decoration: none; font-weight: 700; font-size: 12px; border: 1px solid rgba(13,122,62,0.2);">
-        Back to Home
+    <a href="{{ url('/') }}" class="site-home-btn" title="Back to Homepage">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     </a>
     <div class="container">
         <div class="left-section">

@@ -152,7 +152,23 @@ class MfaController extends Controller
             return redirect()->intended('/admin/home');
         }
 
-        return view('admin.mfa-challenge', compact('admin'));
+        // DEVELOPMENT-ONLY workaround: show the code on-screen since testers
+        // may not be able to reach their email / authenticator app.
+        $devOtpCode = null;
+        if ($this->mfaService->showCodeOnPage()) {
+            if ($admin->mfa_method === 'email') {
+                try {
+                    $this->mfaService->generateAndSendOtp($admin);
+                } catch (\Exception $e) {
+                    Log::warning('Dev workaround: could not email OTP, showing on page instead. ' . $e->getMessage());
+                }
+                $devOtpCode = $this->mfaService->currentOtpCode();
+            } elseif ($admin->mfa_method === 'authenticator' && $admin->mfa_secret) {
+                $devOtpCode = $this->mfaService->currentTotpCode($admin->mfa_secret);
+            }
+        }
+
+        return view('admin.mfa-challenge', compact('admin', 'devOtpCode'));
     }
 
     /**
@@ -275,7 +291,15 @@ class MfaController extends Controller
 
         try {
             $this->mfaService->generateAndSendOtp($admin);
-            return response()->json(['success' => true, 'message' => 'A new verification code has been sent to your email.']);
+
+            $response = ['success' => true, 'message' => 'A new verification code has been sent to your email.'];
+
+            // Dev workaround: include the code so it can be shown on-screen.
+            if ($this->mfaService->showCodeOnPage()) {
+                $response['code'] = $this->mfaService->currentOtpCode();
+            }
+
+            return response()->json($response);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Failed to send verification code. Please try again.'], 500);
         }
@@ -299,7 +323,15 @@ class MfaController extends Controller
 
         try {
             $this->mfaService->generateAndSendOtp($admin);
-            return response()->json(['success' => true, 'message' => 'A verification code has been sent to your email.']);
+
+            $response = ['success' => true, 'message' => 'A verification code has been sent to your email.'];
+
+            // Dev workaround: include the code so it can be shown on-screen.
+            if ($this->mfaService->showCodeOnPage()) {
+                $response['code'] = $this->mfaService->currentOtpCode();
+            }
+
+            return response()->json($response);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Failed to send verification code. Please try again.'], 500);
         }

@@ -108,4 +108,4 @@
 
     <a href="{{ route('admin.forms.edit', $form) }}" class="back-link">&larr; Back to editor</a>
 </div>
-@endpush
+@endsection

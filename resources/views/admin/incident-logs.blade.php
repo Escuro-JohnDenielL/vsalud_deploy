@@ -242,9 +242,9 @@
     <script>
         window.incidentLogRoutes = {
             store: '{{ route('admin.incident-logs.store') }}',
-            show: '{{ route('admin.incident-logs.show', '') }}',
-            update: '{{ route('admin.incident-logs.update', '') }}',
-            destroy: '{{ route('admin.incident-logs.destroy', '') }}',
+            show: '{{ url('admin/incident-logs') }}',
+            update: '{{ url('admin/incident-logs') }}',
+            destroy: '{{ url('admin/incident-logs') }}',
         };
     </script>
     @vite('resources/js/admin/incident-logs.js')

@@ -52,6 +52,45 @@ class MfaService
     }
 
     /**
+     * DEVELOPMENT-ONLY workaround: whether the OTP code should be shown on-screen.
+     * Controlled by config('app.mfa_show_code_dev') (e.g. MFA_SHOW_CODE_DEV=true).
+     */
+    public function showCodeOnPage(): bool
+    {
+        return (bool) config('app.mfa_show_code_dev');
+    }
+
+    /**
+     * Get the currently active OTP code from session (for on-screen display in dev).
+     * Returns null if none is active or it has expired.
+     */
+    public function currentOtpCode(): ?string
+    {
+        $code = session('mfa_otp_code');
+        $expiresAt = session('mfa_otp_expires_at');
+
+        if (!$code || !$expiresAt || now()->timestamp > $expiresAt) {
+            return null;
+        }
+
+        return (string) $code;
+    }
+
+    /**
+     * Generate the current TOTP code for a stored secret (for on-screen display in dev).
+     */
+    public function currentTotpCode(string $secret): ?string
+    {
+        $decodedSecret = $this->base32Decode($secret);
+        if ($decodedSecret === false || strlen($decodedSecret) === 0) {
+            return null;
+        }
+
+        $counter = intdiv(time(), 30);
+        return $this->generateTotpCode($decodedSecret, $counter);
+    }
+
+    /**
      * Verify the OTP code entered by the user against the session-stored code.
      */
     public function verifyOtp(string $userCode): bool

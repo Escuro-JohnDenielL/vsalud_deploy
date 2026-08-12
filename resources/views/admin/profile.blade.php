@@ -52,7 +52,7 @@ if ($user && !$isSuperAdmin) {
         <input type="file" id="profile-pic-input" accept="image/*" style="display: none;">
       </div>
       --}}
-      <h2 id="admin-name" style="color:var(--color-primary);font-weight:600;">{{ $user->name ?? ($user->f_name . ' ' . $user->l_name) }}</h2>
+      <h2 id="admin-name" style="color:var(--color-primary);font-weight:600;font-size:20px;line-height:1.35;overflow-wrap:anywhere;word-break:break-word;">{{ $user->name ?? ($user->f_name . ' ' . $user->l_name) }}</h2>
       <p style="color:#6b7280;">System Administrator</p>
     </div>
     <div class="profile-info">
@@ -68,7 +68,7 @@ if ($user && !$isSuperAdmin) {
   </div>
 
   {{-- MFA Section --}}
-  <div class="profile-info" style="margin-top: 24px;">
+  <div class="profile-info" style="background:#ffffff;border-radius:var(--radius-lg);box-shadow:var(--shadow-md);padding:20px;width:350px;box-sizing:border-box;align-self:flex-start;">
     <h3>Two-Factor Authentication (2FA) <span id="mfa-status-badge" style="display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;vertical-align:middle;margin-left:8px;
       {{ $user->hasMfaEnabled() ? 'background:#f0fdf4;color:#0d7a3e;' : 'background:#fef2f2;color:#dc2626;' }}">
       {{ $user->hasMfaEnabled() ? 'Enabled' : 'Not Set Up' }}
@@ -82,37 +82,16 @@ if ($user && !$isSuperAdmin) {
         <p style="margin-bottom:12px;font-size:13px;color:#6b7280;">
           You will be prompted for a verification code on every login.
         </p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="admin-btn admin-btn-danger" id="disable-mfa-btn" style="font-size:13px;padding:8px 16px;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;">Disable 2FA</button>
-        </div>
+        <p style="margin:0;font-size:13px;font-weight:500;color:#0d7a3e;display:flex;align-items:center;gap:6px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Two-factor authentication is mandated and cannot be disabled.
+        </p>
       @else
         <p style="font-size:14px;color:#6b7280;margin-bottom:12px;">
           Two-factor authentication adds an extra layer of security to your account.
         </p>
         <a href="{{ route('admin.mfa.setup') }}" class="admin-btn admin-btn-primary" style="display:inline-block;padding:10px 20px;font-size:14px;text-decoration:none;">Set Up Two-Factor Authentication</a>
       @endif
-    </div>
-  </div>
-
-  {{-- Disable MFA Confirmation Modal --}}
-  <div id="disable-mfa-modal" class="modal">
-    <div class="modal-content modal-sm">
-      <span class="close-btn" id="close-disable-modal">&times;</span>
-      <h3>Disable Two-Factor Authentication</h3>
-      <p style="font-size:14px;color:#6b7280;margin-bottom:16px;">
-        Disabling 2FA will make your account less secure. Please confirm your password to proceed.
-      </p>
-      <form id="disable-mfa-form">
-        @csrf
-        <div class="form-group">
-          <label for="mfa-disable-password">Current Password:</label>
-          <input type="password" id="mfa-disable-password" name="current_password" required style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:8px;font-size:14px;">
-        </div>
-        <div class="modal-footer">
-          <button type="button" id="cancel-disable-mfa" class="admin-btn admin-btn-ghost">Cancel</button>
-          <button type="submit" class="admin-btn admin-btn-danger" style="background:#dc2626;color:#fff;">Disable 2FA</button>
-        </div>
-      </form>
     </div>
   </div>
 
@@ -280,89 +259,4 @@ if ($user && !$isSuperAdmin) {
 
 @push('scripts')
   @vite('resources/js/admin/profile.js')
-  <script>
-    // MFA Trusted Devices Management
-    document.addEventListener('DOMContentLoaded', function() {
-      const disableMfaBtn = document.getElementById('disable-mfa-btn');
-      const disableMfaModal = document.getElementById('disable-mfa-modal');
-      const closeDisableModal = document.getElementById('close-disable-modal');
-      const cancelDisableMfa = document.getElementById('cancel-disable-mfa');
-      const disableMfaForm = document.getElementById('disable-mfa-form');
-
-      if (disableMfaBtn) {
-        disableMfaBtn.addEventListener('click', function() {
-          disableMfaModal.style.display = 'flex';
-        });
-      }
-
-      if (closeDisableModal) {
-        closeDisableModal.addEventListener('click', function() {
-          disableMfaModal.style.display = 'none';
-        });
-      }
-
-      if (cancelDisableMfa) {
-        cancelDisableMfa.addEventListener('click', function() {
-          disableMfaModal.style.display = 'none';
-        });
-      }
-
-      if (disableMfaForm) {
-        disableMfaForm.addEventListener('submit', function(e) {
-          e.preventDefault();
-          const password = document.getElementById('mfa-disable-password').value;
-          const btn = this.querySelector('button[type="submit"]');
-          btn.disabled = true;
-          btn.textContent = 'Disabling...';
-
-          fetch('{{ route("admin.mfa.disable") }}', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ current_password: password })
-          })
-          .then(r => r.json())
-          .then(data => {
-            btn.disabled = false;
-            btn.textContent = 'Disable 2FA';
-            if (data.success) {
-              disableMfaModal.style.display = 'none';
-              document.getElementById('mfa-status-section').innerHTML = `
-                <p style="font-size:14px;color:#6b7280;margin-bottom:12px;">
-                  Two-factor authentication adds an extra layer of security to your account.
-                </p>
-                <a href="{{ route('admin.mfa.setup') }}" class="admin-btn admin-btn-primary" style="display:inline-block;padding:10px 20px;font-size:14px;text-decoration:none;">Set Up Two-Factor Authentication</a>
-              `;
-              const badge = document.getElementById('mfa-status-badge');
-              if (badge) {
-                badge.textContent = 'Not Set Up';
-                badge.style.background = '#fef2f2';
-                badge.style.color = '#dc2626';
-              }
-              showSuccessMessage('Two-factor authentication has been disabled.');
-            } else {
-              alert(data.message || 'Failed to disable 2FA.');
-            }
-          })
-          .catch(err => {
-            btn.disabled = false;
-            btn.textContent = 'Disable 2FA';
-            alert('An error occurred. Please try again.');
-          });
-        });
-      }
-
-      function showSuccessMessage(message) {
-        const modal = document.getElementById('success-modal');
-        const text = document.getElementById('success-message-text');
-        if (modal && text) {
-          text.textContent = message;
-          modal.style.display = 'flex';
-          setTimeout(() => { modal.style.display = 'none'; }, 3000);
-        }
-      }
-    });
-  </script>
 @endpush

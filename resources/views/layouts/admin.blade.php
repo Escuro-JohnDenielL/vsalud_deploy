@@ -116,16 +116,6 @@
             </li>
             @endif
 
-            {{-- Incident Logs (standalone) --}}
-            @if($canAccess('incident-logs'))
-            <li>
-                <a href="{{ route('admin.incident-logs') }}" class="{{ request()->is('admin/incident-logs') ? 'active' : '' }}">
-                    <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                    Incidents
-                </a>
-            </li>
-            @endif
-
             {{-- Reports Dropdown --}}
             @if($canAccess('reports') || $canAccess('feedback'))
             <li class="nav-dropdown {{ $isActive(['admin/report', 'admin/feedback']) ? 'active' : '' }}">
@@ -199,6 +189,16 @@
                     </li>
                 </ul>
             </li>
+
+            {{-- Incident Logs (standalone) --}}
+            @if($canAccess('incident-logs'))
+            <li>
+                <a href="{{ route('admin.incident-logs') }}" class="{{ request()->is('admin/incident-logs') ? 'active' : '' }}">
+                    <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    Incidents
+                </a>
+            </li>
+            @endif
         </ul>
     </nav>
 
