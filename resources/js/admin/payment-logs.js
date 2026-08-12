@@ -2,37 +2,52 @@
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    // ── Receipt Modal ──
+    // ── Receipt Modal (image or PDF) ──
     const receiptModal = document.getElementById('receiptModal');
     const closeReceiptBtn = document.getElementById('closeReceiptModal');
     const receiptImage = document.getElementById('receiptImage1');
+    const receiptFrame = document.getElementById('receiptFrame1');
+    const receiptMissing = document.getElementById('receiptMissing');
+
+    function openReceipt(url) {
+        if (receiptImage) { receiptImage.style.display = 'none'; receiptImage.src = ''; }
+        if (receiptFrame) { receiptFrame.style.display = 'none'; receiptFrame.src = ''; }
+        if (receiptMissing) receiptMissing.style.display = 'none';
+
+        if (url && /\.pdf($|\?)/i.test(url)) {
+            if (receiptFrame) { receiptFrame.src = url; receiptFrame.style.display = 'block'; }
+        } else if (url && receiptImage) {
+            receiptImage.src = url;
+            receiptImage.style.display = 'block';
+        } else if (receiptMissing) {
+            receiptMissing.style.display = 'block';
+        }
+
+        receiptModal.style.display = 'flex';
+        receiptModal.classList.add('open');
+    }
+
+    function closeReceipt() {
+        receiptModal.style.display = 'none';
+        receiptModal.classList.remove('open');
+        if (receiptImage) receiptImage.src = '';
+        if (receiptFrame) receiptFrame.src = '';
+        if (receiptMissing) receiptMissing.style.display = 'none';
+    }
 
     document.querySelectorAll('.receipt-link1').forEach(link => {
         link.addEventListener('click', function (e) {
             e.preventDefault();
-            const src = this.dataset.receipt;
-            if (src) {
-                receiptImage.src = src;
-                receiptModal.style.display = 'flex';
-                receiptModal.classList.add('open');
-            }
+            openReceipt(this.dataset.receipt);
         });
     });
 
     if (closeReceiptBtn) {
-        closeReceiptBtn.addEventListener('click', function () {
-            receiptModal.style.display = 'none';
-            receiptModal.classList.remove('open');
-            receiptImage.src = '';
-        });
+        closeReceiptBtn.addEventListener('click', closeReceipt);
     }
 
     window.addEventListener('click', function (e) {
-        if (e.target === receiptModal) {
-            receiptModal.style.display = 'none';
-            receiptModal.classList.remove('open');
-            receiptImage.src = '';
-        }
+        if (e.target === receiptModal) closeReceipt();
     });
 
     // ── Payment Status Update ──

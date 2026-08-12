@@ -27,7 +27,7 @@
                             <th>Venue</th>
                             <th>Event Type</th>
                             <th>Theme/Motif</th>
-                            {{-- <th>Receipt</th> --}}
+                            <th>Receipt</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -44,9 +44,20 @@
                                 <td>{{ $reservation->venue ?? '-' }}</td>
                                 <td>{{ $reservation->event_type ?? '-' }}</td>
                                 <td>{{ $reservation->theme_motif ?? '-' }}</td>
-                                {{-- <td>
-                                    <a href="#" class="receipt-link">View Receipt</a>
-                                </td> --}}
+                                <td>
+                                    @php
+                                        $visibleReceipts = collect($reservation->inquiry?->payments ?? [])
+                                            ->filter(fn($p) => !empty($p->receipt_path));
+                                    @endphp
+                                    @forelse($visibleReceipts as $pay)
+                                        <a href="#" class="receipt-link1"
+                                            data-receipt="{{ route('admin.receipts.show', $pay->payment_id) }}">
+                                            View Receipt{{ $visibleReceipts->count() > 1 ? ' (' . ucfirst($pay->payment_type ?? 'Payment') . ')' : '' }}
+                                        </a><br>
+                                    @empty
+                                        <span class="text-muted">—</span>
+                                    @endforelse
+                                </td>
                                 <td>
                                     <select class="status-dropdown" data-id="{{ $reservation->reserve_id }}">
                                         <option value="active" {{ $reservation->status === 'active' ? 'selected' : '' }}>
@@ -105,6 +116,19 @@
             <div class="modal-footer">
                 <button id="confirmDeleteReservationNo" class="admin-btn admin-btn-ghost">Cancel</button>
                 <button id="confirmDeleteReservationYes" class="admin-btn admin-btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    {{-- Payment Receipt Modal (image or PDF) --}}
+    <div id="receiptModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeReceiptModal">&times;</span>
+            <h2>Payment Receipt</h2>
+            <div style="text-align:center;">
+                <img id="receiptImage1" src="" alt="Receipt Image" class="receipt-image" style="display:none;">
+                <iframe id="receiptFrame1" src="" style="width:100%;height:480px;border:none;border-radius:8px;display:none;" title="Receipt PDF"></iframe>
+                <p id="receiptMissing" class="text-muted" style="display:none;">No receipt available.</p>
             </div>
         </div>
     </div>

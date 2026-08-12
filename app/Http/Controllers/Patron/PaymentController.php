@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Patron;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Inquiry;
 use App\Models\Reservation;
@@ -75,8 +76,15 @@ class PaymentController extends Controller
 
         $trackingCode = 'VS-' . substr(time(), -6) . '-' . rand(1000, 9999);
 
-        // Store receipt
-        $receiptPath = $request->file('receipt')->store('receipts', 'public');
+        // Store the receipt on R2 so it persists across Railway restarts (the
+        // container filesystem is ephemeral). Fall back to the local public disk
+        // if the cloud upload fails, so the payment record is still created.
+        try {
+            $receiptPath = $request->file('receipt')->store('receipts', 'r2');
+        } catch (\Throwable $e) {
+            Log::warning('R2 receipt upload failed, falling back to local storage: ' . $e->getMessage());
+            $receiptPath = $request->file('receipt')->store('receipts', 'public');
+        }
 
         $payment = Payment::create([
             'full_name' => $validated['full_name'],

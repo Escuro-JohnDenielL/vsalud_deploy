@@ -47,7 +47,7 @@
                                 </td>
                                 <td>
                                     <a href="#" class="receipt-link1"
-                                        data-receipt="{{ asset('storage/' . $payment_log->receipt_path) }}">View
+                                        data-receipt="{{ route('admin.receipts.show', $payment_log->payment_id) }}">View
                                         Receipt</a>
                                 </td>
                             </tr>
@@ -66,13 +66,15 @@
         </div>
     </div>
 
-    <!-- Payment Receipt Modal -->
+    <!-- Payment Receipt Modal (image or PDF) -->
     <div id="receiptModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" id="closeReceiptModal">&times;</span>
             <h2>Payment Receipt</h2>
             <div style="text-align:center;">
-                <img id="receiptImage1" src="" alt="Receipt Image" class="receipt-image">
+                <img id="receiptImage1" src="" alt="Receipt Image" class="receipt-image" style="display:none;">
+                <iframe id="receiptFrame1" src="" style="width:100%;height:480px;border:none;border-radius:8px;display:none;" title="Receipt PDF"></iframe>
+                <p id="receiptMissing" class="text-muted" style="display:none;">No receipt available.</p>
             </div>
         </div>
     </div>

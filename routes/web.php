@@ -179,6 +179,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
     // Payment Logs (admin)
     Route::get('/payment-logs', [\App\Http\Controllers\Admin\PaymentLogsController::class, 'index'])->name('payment-logs');
 
+    // Stream a payment receipt (image/PDF) from the storage disk — Railway-safe
+    // (does not depend on the public/storage symlink). Admin auth + MFA required.
+    Route::get('/receipts/{payment}', [\App\Http\Controllers\Admin\PaymentLogsController::class, 'showReceipt'])->name('receipts.show');
+
     // Incident Logs (admin)
     Route::get('/incident-logs', [\App\Http\Controllers\Admin\IncidentLogController::class, 'index'])->name('incident-logs');
     Route::post('/incident-logs', [\App\Http\Controllers\Admin\IncidentLogController::class, 'store'])->name('incident-logs.store');
