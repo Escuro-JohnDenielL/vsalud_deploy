@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationConfirmed;
+use App\Services\AiReplyService;
 
 
 class InquiryController extends Controller
@@ -102,6 +103,43 @@ class InquiryController extends Controller
 
 
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Generate an AI-assisted reply draft for an inquiry (Google Gemini).
+     */
+    public function draftReply(Request $request)
+    {
+        $request->validate([
+            'inquiry_id' => 'required|exists:inquiry,inquiry_id',
+        ]);
+
+        $inquiry = Inquiry::with('patron')->find($request->inquiry_id);
+
+        if (! $inquiry) {
+            return response()->json(['success' => false, 'message' => 'Inquiry not found.'], 404);
+        }
+
+        $context = [
+            'patron_name' => $inquiry->patron->name ?? 'Valued Customer',
+            'event_type'  => $inquiry->event_type === 'Others' ? ($inquiry->other_event_type ?? '') : ($inquiry->event_type ?? ''),
+            'venue'       => $inquiry->venue === 'Others' ? ($inquiry->other_venue ?? '') : ($inquiry->venue ?? ''),
+            'theme_motif' => $inquiry->theme_motif === 'Others' ? ($inquiry->other_theme_motif ?? '') : ($inquiry->theme_motif ?? ''),
+            'date'        => $inquiry->date ? $inquiry->date->format('F j, Y') : '',
+            'time'        => $inquiry->time ?? '',
+            'status'      => $inquiry->status ?? 'Pending',
+            'message'     => $inquiry->message ?? '',
+        ];
+
+        try {
+            $draft = AiReplyService::generateDraft($context);
+
+            return response()->json(['success' => true, 'draft' => $draft]);
+        } catch (\Throwable $e) {
+            Log::error('AI draft reply failed: '.$e->getMessage());
+
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
     }
 
 

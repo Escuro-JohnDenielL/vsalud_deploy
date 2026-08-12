@@ -99,10 +99,14 @@
             <div class="detail-section">
                 <div class="detail-section-title">Your Message</div>
                 <textarea id="replyMessage" placeholder="Type your reply..." rows="6"></textarea>
+                <p id="aiDraftStatus" class="ai-draft-status"></p>
             </div>
 
             <div class="modal-footer">
                 <button id="cancelReplyBtn" class="admin-btn admin-btn-ghost">Cancel</button>
+                <button id="aiDraftBtn" class="admin-btn admin-btn-ghost" type="button">
+                    <span id="aiDraftLabel">✨ AI Draft Reply</span>
+                </button>
                 <button id="sendReplyBtn" class="admin-btn admin-btn-primary">Send Reply</button>
             </div>
         </div>

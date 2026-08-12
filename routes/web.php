@@ -106,6 +106,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
     Route::post('/inquiries/{id}/update-status', [InquiryController::class, 'updateStatusAjax']);
     Route::post('/inquiry', [InquiryController::class, 'store'])->name('inquiry.store');
 
+    // AI-assisted reply draft (Google Gemini) — max 10 requests per minute
+    Route::post('/inquiries/draft-reply', [InquiryController::class, 'draftReply'])
+        ->name('inquiries.draft-reply')
+        ->middleware('throttle:10,1');
+
     // Feedback
     Route::get('/feedback', [AdminFeedbackController::class, 'index'])->name('feedback');
     Route::delete('/feedback/{id}', [AdminFeedbackController::class, 'destroy'])->name('feedback.destroy');

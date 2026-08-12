@@ -11,6 +11,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const sendReplyBtn = document.getElementById("sendReplyBtn");
     const cancelReplyBtn = document.getElementById("cancelReplyBtn");
     const closeReplyModal = document.getElementById("closeReplyModal");
+    const aiDraftBtn = document.getElementById("aiDraftBtn");
+    const aiDraftLabel = document.getElementById("aiDraftLabel");
+    const aiDraftStatus = document.getElementById("aiDraftStatus");
 
     function openReplyModal(status) {
         const suggestions = {
@@ -51,6 +54,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         replyMessage.value = "";
+        aiDraftStatus.textContent = "";
+        aiDraftStatus.className = "ai-draft-status";
         replyModal.style.display = "flex";
         replyModal.classList.add('open');
     }
@@ -97,6 +102,47 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Error:", err);
                 alert("Failed to send reply.");
             });
+    });
+
+    // AI-assisted reply draft (Google Gemini)
+    aiDraftBtn.addEventListener("click", async () => {
+        if (!inquiryId) return;
+
+        aiDraftBtn.disabled = true;
+        aiDraftLabel.textContent = "Generating draft...";
+        aiDraftStatus.textContent = "";
+        aiDraftStatus.className = "ai-draft-status";
+
+        try {
+            const res = await fetch("/admin/inquiries/draft-reply", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]'
+                    ).content,
+                },
+                body: JSON.stringify({ inquiry_id: inquiryId }),
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                replyMessage.value = data.draft;
+                aiDraftStatus.textContent = "Draft generated — review and edit before sending.";
+                aiDraftStatus.className = "ai-draft-status ai-draft-success";
+            } else {
+                aiDraftStatus.textContent = data.message || "Could not generate a draft.";
+                aiDraftStatus.className = "ai-draft-status ai-draft-error";
+            }
+        } catch (err) {
+            console.error("Error:", err);
+            aiDraftStatus.textContent = "Failed to reach the AI service.";
+            aiDraftStatus.className = "ai-draft-status ai-draft-error";
+        } finally {
+            aiDraftBtn.disabled = false;
+            aiDraftLabel.textContent = "✨ AI Draft Reply";
+        }
     });
 
     document.querySelectorAll(".reply-btn").forEach((button) => {

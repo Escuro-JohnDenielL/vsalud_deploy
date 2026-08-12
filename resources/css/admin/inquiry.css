@@ -212,6 +212,22 @@ select:focus {
 
 /* .close-btn — now using shared system from app.css */
 
+/* AI-assisted reply draft status */
+.ai-draft-status {
+    font-size: 13px;
+    margin-top: 8px;
+    min-height: 18px;
+    line-height: 1.4;
+}
+
+.ai-draft-success {
+    color: #047857;
+}
+
+.ai-draft-error {
+    color: #b91c1c;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
