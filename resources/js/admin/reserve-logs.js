@@ -12,73 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     paginateTable("paymentTableBody");
     paginateTable("reservationTableBody");
-
-    const receiptModal = document.getElementById("receiptModal");
-    const modalImage = document.getElementById("receiptImage1");
-    const modalFrame = document.getElementById("receiptFrame1");
-    const receiptMissing = document.getElementById("receiptMissing");
-    const closeReceiptBtn = document.getElementById("closeReceiptModal");
-
-    // Open receipt modal (event delegation — works for static table rows and
-    // any dynamically injected modal content)
-    document.addEventListener("click", function (e) {
-        const link = e.target.closest(".receipt-link1");
-        if (link) {
-            e.preventDefault();
-            openReceipt(
-                link.getAttribute("data-receipt"),
-                receiptModal,
-                modalImage,
-                modalFrame,
-                receiptMissing
-            );
-        }
-    });
-
-    // Close receipt modal
-    if (closeReceiptBtn) {
-        closeReceiptBtn.addEventListener("click", function () {
-            closeReceipt(receiptModal, modalImage, modalFrame, receiptMissing);
-        });
-    }
-
-    // Close receipt modal when clicking outside
-    window.addEventListener("click", function (e) {
-        if (e.target === receiptModal) {
-            closeReceipt(receiptModal, modalImage, modalFrame, receiptMissing);
-        }
-    });
 });
-
-// Open the receipt modal, supporting both images and PDFs.
-function openReceipt(url, modal, img, frame, missing) {
-    if (!modal) return;
-    if (img) { img.style.display = "none"; img.src = ""; }
-    if (frame) { frame.style.display = "none"; frame.src = ""; }
-    if (missing) missing.style.display = "none";
-
-    if (url && /\.pdf($|\?)/i.test(url)) {
-        if (frame) { frame.src = url; frame.style.display = "block"; }
-    } else if (url && img) {
-        img.src = url;
-        img.style.display = "block";
-    } else if (missing) {
-        missing.style.display = "block";
-    }
-
-    modal.style.display = "flex";
-    modal.classList.add("open");
-}
-
-function closeReceipt(modal, img, frame, missing) {
-    if (modal) {
-        modal.style.display = "none";
-        modal.classList.remove("open");
-    }
-    if (img) img.src = "";
-    if (frame) frame.src = "";
-    if (missing) missing.style.display = "none";
-}
 
 let currentPages = {
     paymentTableBody: 1,
@@ -230,22 +164,6 @@ function viewReservation(id) {
 
             const statusLabel = data.status ? data.status.charAt(0).toUpperCase() + data.status.slice(1) : "N/A";
 
-            // Receipts from the linked payment order(s)
-            let receiptsHtml = '';
-            if (data.payments && data.payments.length > 0) {
-                const receiptLinks = data.payments
-                    .filter(p => p.receipt_url)
-                    .map(p => `<a href="#" class="receipt-link1" data-receipt="${escHtml(p.receipt_url)}">View Receipt${p.payment_type ? ' (' + escHtml(p.payment_type) + ')' : ''}</a>`)
-                    .join('<br>');
-                if (receiptLinks) {
-                    receiptsHtml = `
-                        <div class="detail-section">
-                            <div class="detail-section-title">Payment Receipts</div>
-                            ${receiptLinks}
-                        </div>`;
-                }
-            }
-
             body.innerHTML = `
             <!-- Header: Name + Status badge -->
             <div class="modal-detail-header">
@@ -321,8 +239,6 @@ function viewReservation(id) {
                     <span class="detail-value"><div class="detail-message-block">${escHtml(data.message || "N/A")}</div></span>
                 </div>
             </div>
-
-            ${receiptsHtml}
         `;
         })
         .catch((err) => {
@@ -432,15 +348,9 @@ function executeDelete(id) {
             });
 }
 
-// RECEIPT VIEW — open the receipt modal for a given receipt URL (image or PDF).
+// RECEIPT VIEW (stub)
 function viewReceipt(file) {
-    openReceipt(
-        file,
-        document.getElementById("receiptModal"),
-        document.getElementById("receiptImage1"),
-        document.getElementById("receiptFrame1"),
-        document.getElementById("receiptMissing")
-    );
+    showNotification(`Opening receipt: ${file}`, "info");
 }
 
 // NOTIFICATION SYSTEM

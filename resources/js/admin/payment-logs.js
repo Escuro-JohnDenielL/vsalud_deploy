@@ -17,6 +17,13 @@ document.addEventListener('DOMContentLoaded', function () {
         if (url && /\.pdf($|\?)/i.test(url)) {
             if (receiptFrame) { receiptFrame.src = url; receiptFrame.style.display = 'block'; }
         } else if (url && receiptImage) {
+            // If the image fails to load (e.g. the file was lost from
+            // ephemeral storage on Railway), show a clear message instead
+            // of a blank image.
+            receiptImage.onerror = function () {
+                receiptImage.style.display = 'none';
+                if (receiptMissing) receiptMissing.style.display = 'block';
+            };
             receiptImage.src = url;
             receiptImage.style.display = 'block';
         } else if (receiptMissing) {
@@ -30,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function closeReceipt() {
         receiptModal.style.display = 'none';
         receiptModal.classList.remove('open');
-        if (receiptImage) receiptImage.src = '';
+        if (receiptImage) { receiptImage.onerror = null; receiptImage.src = ''; }
         if (receiptFrame) receiptFrame.src = '';
         if (receiptMissing) receiptMissing.style.display = 'none';
     }

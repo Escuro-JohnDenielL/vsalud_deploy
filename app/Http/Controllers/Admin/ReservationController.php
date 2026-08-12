@@ -11,7 +11,7 @@ class ReservationController extends Controller
 {
     public function showReservationLogs()
     {
-        $reservations = Reservation::with(['patron', 'inquiry.payments'])
+        $reservations = Reservation::with(['patron', 'inquiry'])
             ->select('*')
             ->latest()
             ->paginate(10);
@@ -45,18 +45,7 @@ class ReservationController extends Controller
                 'patron' => [
                     'name' => $reservation->patron->name ?? 'N/A',
                     'email' => $reservation->patron->email ?? 'N/A'
-                ],
-                'payments' => $reservation->inquiry?->payments->map(function ($p) {
-                    return [
-                        'id' => $p->payment_id,
-                        'payment_type' => $p->payment_type,
-                        'payment_method' => $p->payment_method,
-                        'status' => $p->status,
-                        'receipt_url' => $p->receipt_path
-                            ? route('admin.receipts.show', $p->payment_id)
-                            : null,
-                    ];
-                })->values() ?? [],
+                ]
             ];
 
             return response()->json($responseData);

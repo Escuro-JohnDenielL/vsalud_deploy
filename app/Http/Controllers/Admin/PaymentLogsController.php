@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class PaymentLogsController extends Controller
@@ -35,13 +36,19 @@ class PaymentLogsController extends Controller
         }
 
         // New uploads live on R2 (persistent across Railway restarts); legacy
-        // uploads are on the local public disk. Check both so old rows still work.
+        // uploads are on the local public disk. Check both so old rows still
+        // work, and so one disk failing never 500s the request.
         foreach (['r2', 'public'] as $diskName) {
-            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-            $disk = Storage::disk($diskName);
+            try {
+                /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+                $disk = Storage::disk($diskName);
 
-            if ($disk->exists($path)) {
-                return $disk->response($path);
+                if ($disk->exists($path)) {
+                    return $disk->response($path);
+                }
+            } catch (\Throwable $e) {
+                Log::warning("Receipt lookup failed on disk [{$diskName}]: " . $e->getMessage());
+                continue;
             }
         }
 
