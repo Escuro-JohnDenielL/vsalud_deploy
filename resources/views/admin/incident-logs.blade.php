@@ -233,9 +233,6 @@
             </div>
         </div>
     </div>
-
-    {{-- Toast --}}
-    <div id="toast" class="toast-notification" style="display:none;"></div>
 @endsection
 
 @push('scripts')

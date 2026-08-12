@@ -210,7 +210,16 @@
     font-weight: 500;
     z-index: 9999;
     box-shadow: var(--shadow-lg);
-    animation: toastIn 0.3s ease-out;
+    opacity: 0;
+    visibility: hidden;
+    transform: none;
+    transition: opacity 0.3s ease;
+}
+
+.toast-notification.show {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
 }
 
 .toast-notification.toast-success {

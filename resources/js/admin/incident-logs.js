@@ -4,15 +4,19 @@
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
     // --- Toast helper ---
+    let toastHideTimer = null;
     function showToast(message, type) {
         const toast = document.getElementById('toast');
         if (!toast) return;
+        clearTimeout(toastHideTimer);
         toast.textContent = message;
-        toast.className = 'toast-notification toast-' + type + ' show';
-        toast.style.display = 'block';
-        setTimeout(() => {
-            toast.style.display = 'none';
-            toast.className = 'toast-notification';
+        toast.className = 'toast-notification toast-' + type;
+        // Force reflow so the entrance animation restarts on repeated toasts
+        void toast.offsetWidth;
+        toast.classList.add('show');
+        toastHideTimer = setTimeout(() => {
+            toast.classList.remove('show');
+            toast.textContent = '';
         }, 4000);
     }
 
