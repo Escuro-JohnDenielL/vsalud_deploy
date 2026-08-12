@@ -45,7 +45,20 @@ class MfaController extends Controller
         // Store the generated secret in session for verification
         session(['mfa_pending_totp_secret' => $totpSecret]);
 
-        return view('admin.mfa-setup', compact('admin', 'totpSecret', 'totpUri'));
+        // DEVELOPMENT-ONLY workaround: generate the email OTP and show it on-screen
+        // immediately so testers who can't reach their email can still finish setup.
+        // (Email itself is sent by the page's auto "Send Verification Code" call.)
+        $devOtpCode = null;
+        if ($this->mfaService->showCodeOnPage()) {
+            try {
+                $this->mfaService->generateAndSendOtp($admin, false);
+            } catch (\Exception $e) {
+                Log::warning('Dev workaround: could not prepare OTP for setup page. ' . $e->getMessage());
+            }
+            $devOtpCode = $this->mfaService->currentOtpCode();
+        }
+
+        return view('admin.mfa-setup', compact('admin', 'totpSecret', 'totpUri', 'devOtpCode'));
     }
 
     /**

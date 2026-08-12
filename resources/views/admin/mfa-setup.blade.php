@@ -173,10 +173,10 @@
         </div>
 
         <!-- Development workaround: show OTP on-screen during testing -->
-        <div class="dev-code" id="setup-dev-code" style="display:none;margin-bottom:16px;">
+        <div class="dev-code" id="setup-dev-code" style="{{ !empty($devOtpCode) ? 'display:block' : 'display:none' }};margin-bottom:16px;">
             <strong style="display:block;margin-bottom:4px;">⚠️ Development Mode — Testing Workaround</strong>
             <div style="font-size:13px;color:#92400e;margin-bottom:4px;">Here's your verification code (since email isn't reachable during testing):</div>
-            <div id="setup-dev-code-value" style="font-size:30px;font-weight:800;letter-spacing:8px;color:#b45309;">------</div>
+            <div id="setup-dev-code-value" style="font-size:30px;font-weight:800;letter-spacing:8px;color:#b45309;">{{ $devOtpCode ?? '------' }}</div>
             <div style="font-size:12px;color:#b45309;margin-top:4px;">Shown only while the app is in development. Remove before production.</div>
         </div>
 

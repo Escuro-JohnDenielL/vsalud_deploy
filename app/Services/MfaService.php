@@ -24,8 +24,11 @@ class MfaService
     /**
      * Generate a 6-digit OTP code and store it in the admin's session.
      * Returns the generated code.
+     *
+     * @param bool $sendEmail whether to also email the code (set false when the
+     *                        code is only shown on-screen in dev mode).
      */
-    public function generateAndSendOtp(Admin $admin): string
+    public function generateAndSendOtp(Admin $admin, bool $sendEmail = true): string
     {
         $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
@@ -36,16 +39,18 @@ class MfaService
         ]);
 
         // Send email
-        try {
-            Mail::to($admin->email)->send(new MfaOtpMail([
-                'name' => $admin->name,
-                'code' => $code,
-                'expiry_minutes' => self::OTP_EXPIRY_MINUTES,
-            ]));
-            Log::info('MFA OTP sent to admin: ' . $admin->email);
-        } catch (\Exception $e) {
-            Log::error('Failed to send MFA OTP email: ' . $e->getMessage());
-            throw $e;
+        if ($sendEmail) {
+            try {
+                Mail::to($admin->email)->send(new MfaOtpMail([
+                    'name' => $admin->name,
+                    'code' => $code,
+                    'expiry_minutes' => self::OTP_EXPIRY_MINUTES,
+                ]));
+                Log::info('MFA OTP sent to admin: ' . $admin->email);
+            } catch (\Exception $e) {
+                Log::error('Failed to send MFA OTP email: ' . $e->getMessage());
+                throw $e;
+            }
         }
 
         return $code;
