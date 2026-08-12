@@ -72,10 +72,6 @@
                                             data-inquiry-id="{{ $inquiry->inquiry_id }}"
                                             data-email="{{ $inquiry->patron->email ?? '-' }}"
                                             data-status="{{ $inquiry->status ?? 'Pending' }}">Reply</button>
-                                        @if ($inquiry->status === 'Completed')
-                                            <button class="admin-btn admin-btn-ghost admin-btn-sm undo-btn"
-                                                data-inquiry-id="{{ $inquiry->inquiry_id }}">Undo</button>
-                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -178,18 +174,6 @@
         </div>
     </div>
 
-    {{-- Confirm Undo Modal --}}
-    <div id="confirmUndoModal" class="modal">
-        <div class="modal-content modal-sm">
-            <span class="close-btn" id="closeUndoModal">&times;</span>
-            <h3>Confirm Undo</h3>
-            <p id="confirmUndoMessage" style="font-size: 15px; margin: 16px 0;">Are you sure you want to undo this reservation?</p>
-            <div class="modal-footer">
-                <button id="confirmUndoNo" class="admin-btn admin-btn-ghost">Cancel</button>
-                <button id="confirmUndoYes" class="admin-btn admin-btn-primary">Undo</button>
-            </div>
-        </div>
-    </div>
 @endsection
 
 @push('scripts')

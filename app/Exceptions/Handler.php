@@ -37,14 +37,14 @@ class Handler extends ExceptionHandler
                 break;
             case 'web':
                 if ($request->is('it') || $request->is('it/*')) {
-                    $login = route('it.login');
+                    $login = route('admin.login');
                 } else {
                     $login = route('login');
                 }
                 break;
             default:
                 if ($request->is('it') || $request->is('it/*')) {
-                    $login = route('it.login');
+                    $login = route('admin.login');
                 } elseif ($request->is('admin') || $request->is('admin/*')) {
                     $login = route('admin.login');
                 } else {

@@ -147,7 +147,6 @@
                     <button id="nextMonth">▶</button>
                 </div>
                 <div id="calendar"></div>
-                <div id="calendar" class="calendar-grid"></div>
 
                 <div class="calendar-legend">
                     <p><span class="legend-box Available"></span> Available (1-2 left)</p>

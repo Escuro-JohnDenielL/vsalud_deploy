@@ -1059,29 +1059,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }, 60000); // Update every minute
 
-    // Export history functionality (for future use)
-        // Add export button dynamically (optional)
-    const exportBtn = document.createElement("button");
-    exportBtn.textContent = "Export";
-    exportBtn.className = "export-btn";
-    exportBtn.style.cssText = `
-        background: #28a745;
-        color: white;
-        padding: 8px 12px;
-        border: none;
-        border-radius: 5px;
-        font-size: 12px;
-        cursor: pointer;
-        margin-left: 5px;
-    `;
-    exportBtn.addEventListener("click", exportHistory);
-
-    // Add export button to history controls
-    const historyControls = document.querySelector(".history-controls");
-    if (historyControls) {
-        historyControls.appendChild(exportBtn);
-    }
-
     console.log(
         "Admin Profile with Enhanced History System loaded successfully!"
     );

@@ -403,8 +403,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Delete status from backend
     function deleteStatusFromBackend(date) {
-        fetch("/admin/availability", {
-            method: "DELETE",
+        fetch("/admin/availability/remove-override", {
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "X-CSRF-TOKEN":

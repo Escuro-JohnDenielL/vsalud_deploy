@@ -575,48 +575,6 @@ class DashboardManager {
         }
     }
 
-    // Export functionality
-    exportData(type, format = "csv") {
-        const exportButton = document.querySelector(`[data-export="${type}"]`);
-        if (exportButton) {
-            exportButton.classList.add("loading");
-        }
-
-        fetch(`export_data.php?type=${type}&format=${format}`)
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Export failed");
-                }
-                return response.blob();
-            })
-            .then((blob) => {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `${type}_export_${
-                    new Date().toISOString().split("T")[0]
-                }.${format}`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-
-                this.showNotification(
-                    `${type} data exported successfully`,
-                    "success"
-                );
-            })
-            .catch((error) => {
-                console.error("Export error:", error);
-                this.showNotification("Export failed", "error");
-            })
-            .finally(() => {
-                if (exportButton) {
-                    exportButton.classList.remove("loading");
-                }
-            });
-    }
-
     // Utility method to handle responsive chart resizing
     handleResize() {
         Object.values(this.charts).forEach((chart) => {
@@ -644,15 +602,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Handle window resize for responsive charts
     window.addEventListener("resize", () => {
         window.dashboardManager.handleResize();
-    });
-
-    // Setup export buttons
-    document.querySelectorAll("[data-export]").forEach((button) => {
-        button.addEventListener("click", (e) => {
-            const type = e.target.dataset.export;
-            const format = e.target.dataset.format || "csv";
-            window.dashboardManager.exportData(type, format);
-        });
     });
 });
 

@@ -9,73 +9,10 @@ function escHtml(str) {
 // Reservation Logs JavaScript Functions
 document.addEventListener("DOMContentLoaded", function () {
     setupEventListeners();
-
-    paginateTable("paymentTableBody");
-    paginateTable("reservationTableBody");
 });
-
-let currentPages = {
-    paymentTableBody: 1,
-    reservationTableBody: 1,
-};
-
-const rowsPerPage = 5;
-
-function paginateTable(tableId) {
-    const tbody = document.getElementById(tableId);
-    if (!tbody) return;
-    const rows = Array.from(tbody.querySelectorAll("tr"));
-    const totalPages = Math.ceil(rows.length / rowsPerPage);
-    const pageInfo = document.getElementById(
-        tableId.replace("TableBody", "PageInfo")
-    );
-    const currentPage = currentPages[tableId];
-
-    // Hide all rows
-    rows.forEach((row) => (row.style.display = "none"));
-
-    // Show rows for current page
-    const start = (currentPage - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-    rows.slice(start, end).forEach((row) => (row.style.display = ""));
-
-    if (pageInfo) {
-        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-    }
-}
-
-function nextPage(tableId) {
-    const tbody = document.getElementById(tableId);
-    const rows = Array.from(tbody.querySelectorAll("tr"));
-    const totalPages = Math.ceil(rows.length / rowsPerPage);
-
-    if (currentPages[tableId] < totalPages) {
-        currentPages[tableId]++;
-        paginateTable(tableId);
-    }
-}
-
-function prevPage(tableId) {
-    if (currentPages[tableId] > 1) {
-        currentPages[tableId]--;
-        paginateTable(tableId);
-    }
-}
 
 // Setup for pagination and dropdown events
 function setupEventListeners() {
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
-
-    if (prevBtn) {
-        prevBtn.disabled = true;
-        prevBtn.style.opacity = "0.5";
-    }
-    if (nextBtn) {
-        nextBtn.disabled = true;
-        nextBtn.style.opacity = "0.5";
-    }
-
     document.addEventListener("change", function (e) {
         if (e.target.classList.contains("status-dropdown")) {
             handleStatusChange(e.target);
@@ -471,5 +408,3 @@ window.viewReservation = viewReservation;
 window.deleteReservation = deleteReservation;
 window.viewReceipt = viewReceipt;
 window.closeModal = closeModal;
-window.nextPage = nextPage;
-window.prevPage = prevPage;

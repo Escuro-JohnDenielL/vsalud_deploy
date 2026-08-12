@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
     applyStatusColors();
-    attachEventListeners();
 
     let selectedEmail = "";
     let inquiryId;
@@ -199,64 +198,6 @@ function updateStatusColor(select) {
             select.style.color = "#6c757d";
             break;
     }
-}
-
-function attachEventListeners() {
-    document.querySelectorAll(".undo-btn").forEach((button) => {
-        button.addEventListener("click", function () {
-            const inquiryId = this.getAttribute("data-inquiry-id");
-            const modal = document.getElementById('confirmUndoModal');
-            const message = document.getElementById('confirmUndoMessage');
-            message.textContent = 'Are you sure you want to undo this reservation?';
-            modal.style.display = 'flex';
-
-            const closeModal = document.getElementById('closeUndoModal');
-            const noBtn = document.getElementById('confirmUndoNo');
-            const yesBtn = document.getElementById('confirmUndoYes');
-
-            function closeConfirmModal() {
-                modal.style.display = 'none';
-                modal.classList.remove('open');
-                closeModal.removeEventListener('click', closeConfirmModal);
-                noBtn.removeEventListener('click', closeConfirmModal);
-                yesBtn.removeEventListener('click', handleConfirm);
-            }
-
-            function handleConfirm() {
-                closeConfirmModal();
-                fetch("undo_reservation.php", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ inquiry_id: inquiryId }),
-                })
-                    .then((res) => res.json())
-                    .then((data) => {
-                        if (data.success) {
-                            alert("Undo successful. Please refresh the page.");
-                            location.reload();
-                        } else {
-                            alert("Undo failed: " + data.message);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("Undo error:", error);
-                        alert("Something went wrong.");
-                    });
-            }
-
-            closeModal.addEventListener('click', closeConfirmModal);
-            noBtn.addEventListener('click', closeConfirmModal);
-            yesBtn.addEventListener('click', handleConfirm);
-            window.addEventListener('click', function handler(e) {
-                if (e.target === modal) {
-                    closeConfirmModal();
-                    window.removeEventListener('click', handler);
-                }
-            });
-        });
-    });
 }
 
 function saveStatusToDatabase(selectElement, newStatus) {
