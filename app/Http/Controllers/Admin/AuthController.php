@@ -93,7 +93,7 @@ class AuthController extends Controller
             // MFA Check: check if DB mfa_verified_at is still within 6 hours
             if ($admin->hasMfaEnabled()) {
                 $dbVerifiedAt = $admin->mfa_verified_at ? \Carbon\Carbon::parse($admin->mfa_verified_at) : null;
-                if ($dbVerifiedAt && now()->diffInHours($dbVerifiedAt) < 6) {
+                if ($dbVerifiedAt && $dbVerifiedAt->gt(now()->subHours(6))) {
                     // Still within the 6-hour window — set session and proceed
                     session(['mfa_verified_at' => $dbVerifiedAt]);
                 } else {

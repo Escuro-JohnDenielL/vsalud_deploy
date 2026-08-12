@@ -28,3 +28,6 @@ nul
 
 # Thesis markdown files
 THESIS_*.md
+
+# Local sensitive/private folder
+/hide

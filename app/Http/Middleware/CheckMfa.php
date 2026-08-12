@@ -41,7 +41,7 @@ class CheckMfa
                 $mfaVerifiedAt = $admin->mfa_verified_at;
             }
 
-            if ($mfaVerifiedAt && now()->diffInHours($mfaVerifiedAt) < self::MFA_SESSION_HOURS) {
+            if ($mfaVerifiedAt && \Carbon\Carbon::parse($mfaVerifiedAt)->gt(now()->subHours(self::MFA_SESSION_HOURS))) {
                 // Restore to session if it came from DB
                 session(['mfa_verified_at' => $mfaVerifiedAt]);
                 return $next($request);
@@ -74,15 +74,16 @@ class CheckMfa
             return null;
         }
 
-        $elapsed = now()->diffInHours($mfaVerifiedAt);
-        $remaining = self::MFA_SESSION_HOURS - $elapsed;
+        $verified = \Carbon\Carbon::parse($mfaVerifiedAt);
+        $expiresAt = $verified->copy()->addHours(self::MFA_SESSION_HOURS);
 
-        if ($remaining <= 0) {
+        if (now()->gte($expiresAt)) {
             return null;
         }
 
-        $hours = floor($remaining);
-        $minutes = floor(($remaining - $hours) * 60);
+        $totalMinutes = (int) floor(now()->diffInMinutes($expiresAt, true));
+        $hours = intdiv($totalMinutes, 60);
+        $minutes = $totalMinutes % 60;
 
         if ($hours > 0) {
             return "{$hours}h {$minutes}m remaining";

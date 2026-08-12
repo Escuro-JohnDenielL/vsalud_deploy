@@ -148,7 +148,7 @@ class MfaController extends Controller
 
         // If already verified within the last 6 hours, go to home
         $mfaVerifiedAt = session('mfa_verified_at');
-        if ($mfaVerifiedAt && now()->diffInHours($mfaVerifiedAt) < 6) {
+        if ($mfaVerifiedAt && \Carbon\Carbon::parse($mfaVerifiedAt)->gt(now()->subHours(6))) {
             return redirect()->intended('/admin/home');
         }
 
@@ -172,7 +172,7 @@ class MfaController extends Controller
         }
 
         $mfaVerifiedAt = session('mfa_verified_at');
-        if ($mfaVerifiedAt && now()->diffInHours($mfaVerifiedAt) < 6) {
+        if ($mfaVerifiedAt && \Carbon\Carbon::parse($mfaVerifiedAt)->gt(now()->subHours(6))) {
             return redirect()->intended('/admin/home');
         }
 
