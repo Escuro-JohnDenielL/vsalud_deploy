@@ -91,6 +91,7 @@
             <div class="detail-section">
                 <div class="detail-section-title">Your Message</div>
                 <p style="font-size: 13px; color: var(--color-text-muted); margin-top: -8px;">Tip: use <strong>AI Draft Reply</strong> below to generate a personalized draft from the inquiry.</p>
+                <p style="font-size: 12px; color: var(--color-text-muted); font-style: italic; margin-top: -4px;">Disclaimer: AI drafts are generated from general Villa Salud info only — package prices and details inside the venue may not be fully accurate. Always review and edit before sending.</p>
                 <textarea id="replyMessage" placeholder="Type your reply..." rows="6"></textarea>
                 <p id="aiDraftStatus" class="ai-draft-status"></p>
             </div>
