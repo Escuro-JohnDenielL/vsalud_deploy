@@ -56,6 +56,18 @@
                                 <td>patron</td>
                                 <td>
                                     <div class="action-buttons">
+                                        <button class="admin-btn admin-btn-ghost admin-btn-sm view-inquiry-btn"
+                                            data-name="{{ $inquiry->patron->name ?? 'N/A' }}"
+                                            data-email="{{ $inquiry->patron->email ?? '-' }}"
+                                            data-contact="{{ $inquiry->patron->contact_number ?? '-' }}"
+                                            data-code="{{ $inquiry->tracking_code ?? '-' }}"
+                                            data-time="{{ $inquiry->time ?? '-' }}"
+                                            data-date="{{ $inquiry->date ?? '-' }}"
+                                            data-venue="{{ ($inquiry->venue === 'Others' ? $inquiry->other_venue : $inquiry->venue) ?? '-' }}"
+                                            data-event-type="{{ ($inquiry->event_type === 'Others' ? $inquiry->other_event_type : $inquiry->event_type) ?? '-' }}"
+                                            data-theme="{{ ($inquiry->theme_motif === 'Others' ? $inquiry->other_theme_motif : $inquiry->theme_motif) ?? '-' }}"
+                                            data-status="{{ $inquiry->status ?? 'Pending' }}"
+                                            data-message="{{ $inquiry->message ?? '' }}">View</button>
                                         <button class="admin-btn admin-btn-primary admin-btn-sm reply-btn"
                                             data-inquiry-id="{{ $inquiry->inquiry_id }}"
                                             data-email="{{ $inquiry->patron->email ?? '-' }}"
@@ -77,6 +89,66 @@
             </div>
             <div style="margin-top: 16px; padding: 16px 20px;">
                 {{ $inquiries->links() }}
+            </div>
+        </div>
+    </div>
+
+    {{-- View Inquiry Modal --}}
+    <div id="viewInquiryModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeViewInquiryModal">&times;</span>
+            <h2>Inquiry Details</h2>
+            <div class="inquiry-detail">
+                <div class="detail-section">
+                    <div class="detail-section-title">Patron</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Name</span>
+                        <span class="detail-value" id="view-name"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value" id="view-email"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Contact Number</span>
+                        <span class="detail-value" id="view-contact"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Tracking Code</span>
+                        <span class="detail-value" id="view-code"></span>
+                    </div>
+                    <div class="detail-row" style="border:none;">
+                        <span class="detail-label">Status</span>
+                        <span class="detail-value" id="view-status"></span>
+                    </div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-section-title">Event Details</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Date</span>
+                        <span class="detail-value" id="view-date"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Time</span>
+                        <span class="detail-value" id="view-time"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Venue</span>
+                        <span class="detail-value" id="view-venue"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Event Type</span>
+                        <span class="detail-value" id="view-event-type"></span>
+                    </div>
+                    <div class="detail-row" style="border:none;">
+                        <span class="detail-label">Theme and Motif</span>
+                        <span class="detail-value" id="view-theme"></span>
+                    </div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-section-title">Message</div>
+                    <div id="view-message" class="detail-message-block"></div>
+                </div>
             </div>
         </div>
     </div>

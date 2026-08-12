@@ -14,6 +14,51 @@ document.addEventListener("DOMContentLoaded", function () {
     const aiDraftLabel = document.getElementById("aiDraftLabel");
     const aiDraftStatus = document.getElementById("aiDraftStatus");
 
+    // View Inquiry modal
+    const viewInquiryModal = document.getElementById("viewInquiryModal");
+    const closeViewInquiryModal = document.getElementById("closeViewInquiryModal");
+
+    function escHtml(str) {
+        if (!str) return str;
+        const div = document.createElement("div");
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    function openViewInquiryModal(btn) {
+        document.getElementById("view-name").textContent = btn.dataset.name || "N/A";
+        const emailEl = document.getElementById("view-email");
+        const email = btn.dataset.email || "";
+        emailEl.innerHTML = '<a href="mailto:' + encodeURIComponent(email) + '">' + escHtml(email) + '</a>';
+        document.getElementById("view-contact").textContent = btn.dataset.contact || "-";
+        document.getElementById("view-code").textContent = btn.dataset.code || "-";
+        document.getElementById("view-date").textContent = btn.dataset.date || "-";
+        document.getElementById("view-time").textContent = btn.dataset.time || "-";
+        document.getElementById("view-venue").textContent = btn.dataset.venue || "-";
+        document.getElementById("view-event-type").textContent = btn.dataset.eventType || "-";
+        document.getElementById("view-theme").textContent = btn.dataset.theme || "-";
+        document.getElementById("view-status").textContent = btn.dataset.status || "Pending";
+        document.getElementById("view-message").textContent = btn.dataset.message || "No message provided.";
+        viewInquiryModal.style.display = "flex";
+        viewInquiryModal.classList.add("open");
+    }
+
+    function closeViewInquiryModalFn() {
+        viewInquiryModal.style.display = "none";
+        viewInquiryModal.classList.remove("open");
+    }
+
+    closeViewInquiryModal.addEventListener("click", closeViewInquiryModalFn);
+    window.addEventListener("click", (e) => {
+        if (e.target === viewInquiryModal) closeViewInquiryModalFn();
+    });
+
+    document.querySelectorAll(".view-inquiry-btn").forEach((button) => {
+        button.addEventListener("click", function () {
+            openViewInquiryModal(this);
+        });
+    });
+
     function openReplyModal() {
         replyMessage.value = "";
         aiDraftStatus.textContent = "";

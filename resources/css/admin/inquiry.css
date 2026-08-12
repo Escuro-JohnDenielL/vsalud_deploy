@@ -191,6 +191,44 @@ select:focus {
 
 /* .close-btn — now using shared system from app.css */
 
+/* === View Inquiry Modal === */
+#viewInquiryModal .modal-content {
+    max-width: 640px;
+    padding: 32px 36px;
+}
+
+#viewInquiryModal .modal-content h2 {
+    margin-bottom: 22px;
+}
+
+#viewInquiryModal .detail-section {
+    margin-bottom: 24px;
+}
+
+#viewInquiryModal .detail-section-title {
+    margin-bottom: 14px;
+}
+
+#viewInquiryModal .detail-row {
+    grid-template-columns: 180px 1fr;
+    gap: 8px 20px;
+    padding: 10px 0;
+}
+
+#viewInquiryModal .detail-label {
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+#viewInquiryModal .detail-value {
+    font-size: 14px;
+    word-break: break-word;
+}
+
+#viewInquiryModal .detail-message-block {
+    min-height: 60px;
+}
+
 /* AI-assisted reply draft status */
 .ai-draft-status {
     font-size: 13px;
