@@ -89,15 +89,8 @@
             <p style="font-size: 14px; color: var(--color-text-muted); margin: -8px 0 16px;">Send a response to the patron's inquiry.</p>
 
             <div class="detail-section">
-                <div class="detail-section-title">Response Template</div>
-                <label for="replyOptions">Choose a quick response:</label>
-                <select id="replyOptions" class="reply-select">
-                    <option value="" disabled selected>Select a suggestion</option>
-                </select>
-            </div>
-
-            <div class="detail-section">
                 <div class="detail-section-title">Your Message</div>
+                <p style="font-size: 13px; color: var(--color-text-muted); margin-top: -8px;">Tip: use <strong>AI Draft Reply</strong> below to generate a personalized draft from the inquiry.</p>
                 <textarea id="replyMessage" placeholder="Type your reply..." rows="6"></textarea>
                 <p id="aiDraftStatus" class="ai-draft-status"></p>
             </div>

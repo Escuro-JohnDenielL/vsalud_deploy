@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", function () {
     let inquiryId;
 
     const replyModal = document.getElementById("replyModal");
-    const replyOptions = document.getElementById("replyOptions");
     const replyMessage = document.getElementById("replyMessage");
     const sendReplyBtn = document.getElementById("sendReplyBtn");
     const cancelReplyBtn = document.getElementById("cancelReplyBtn");
@@ -15,54 +14,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const aiDraftLabel = document.getElementById("aiDraftLabel");
     const aiDraftStatus = document.getElementById("aiDraftStatus");
 
-    function openReplyModal(status) {
-        const suggestions = {
-            Pending: [
-                "Acknowledge receipt",
-                "Let them know you're reviewing their request",
-                "Mention expected response timeframe",
-                "Ask for any additional details needed",
-            ],
-            "In Progress": [
-                "Provide updates on planning progress",
-                "Share preliminary ideas or suggestions",
-                "Request clarification on specific aspects",
-                "Schedule follow-up meeting/call",
-            ],
-            Completed: [
-                "Confirm all arrangements are finalized",
-                "Provide final event details and timeline",
-                "Share contact information for day-of coordination",
-                "Include any last-minute instructions",
-            ],
-            Cancelled: [
-                "Acknowledge cancellation request",
-                "Confirm cancellation has been processed",
-                "Provide refund or rescheduling information",
-                "Invite them to rebook in the future",
-            ],
-        };
-
-        replyOptions.innerHTML = `<option value="" disabled selected>Select a suggestion</option>`;
-        if (suggestions[status]) {
-            suggestions[status].forEach((text) => {
-                const option = document.createElement("option");
-                option.value = text;
-                option.textContent = text;
-                replyOptions.appendChild(option);
-            });
-        }
-
+    function openReplyModal() {
         replyMessage.value = "";
         aiDraftStatus.textContent = "";
         aiDraftStatus.className = "ai-draft-status";
         replyModal.style.display = "flex";
         replyModal.classList.add('open');
     }
-
-    replyOptions.addEventListener("change", function () {
-        replyMessage.value = this.value;
-    });
 
     cancelReplyBtn.addEventListener("click", () => {
         replyModal.style.display = "none";
@@ -149,8 +107,7 @@ document.addEventListener("DOMContentLoaded", function () {
         button.addEventListener("click", function () {
             inquiryId = this.dataset.inquiryId;
             selectedEmail = this.dataset.email;
-            const status = this.dataset.status || "Pending";
-            openReplyModal(status);
+            openReplyModal();
         });
     });
 });
