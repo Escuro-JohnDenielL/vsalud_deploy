@@ -34,7 +34,11 @@ class AiReplyService
         $model = config('services.gemini.model', 'gemini-2.5-flash');
 
         try {
-            $response = Http::timeout(30)
+            // Gemini 3.x are reasoning models and can be slow on the free tier —
+            // a 30s timeout caused spurious "Could not reach the AI service"
+            // errors on Railway. Allow up to 90s for the full generation.
+            $response = Http::timeout(90)
+                ->connectTimeout(10)
                 ->withHeaders(['Content-Type' => 'application/json'])
                 ->post(
                     "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}",
@@ -83,6 +87,13 @@ class AiReplyService
             return trim($draft);
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
             Log::error('Gemini connection error: '.$e->getMessage());
+
+            // Guzzle maps a request timeout (cURL 28) to ConnectException, which
+            // Laravel wraps as ConnectionException — same class as a real network
+            // failure. Distinguish them so admins don't get a misleading message.
+            if (str_contains($e->getMessage(), 'timed out') || str_contains($e->getMessage(), 'cURL error 28')) {
+                throw new \RuntimeException('The AI service took too long to respond. Please try again in a moment.');
+            }
 
             throw new \RuntimeException('Could not reach the AI service. Please check your internet connection and try again.');
         }
