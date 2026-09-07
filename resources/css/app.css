@@ -851,3 +851,122 @@ textarea:focus,
 .modal-backdrop {
   display: none !important;
 }
+
+/* ============================================================
+   Mobile / responsive navigation (patron collapsible navbar)
+   ============================================================ */
+/* Hamburger button — hidden on desktop, only used once JS adds .nav-js */
+.nav-toggle {
+  display: none;
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 9px 10px;
+  margin: 0;
+  cursor: pointer;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  width: 44px;
+  height: 40px;
+  box-shadow: var(--shadow-sm);
+  z-index: 110;
+  line-height: 0;
+}
+
+.nav-toggle-bar {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--color-primary);
+  border-radius: 2px;
+  transition: transform var(--transition-base), opacity var(--transition-fast);
+}
+
+/* Collapse the patron nav into a hamburger menu on smaller viewports */
+@media (max-width: 1200px) {
+  body.nav-js .nav-collapsible {
+    flex-wrap: wrap;
+    min-height: var(--navbar-height);
+    height: auto;
+    padding: 10px 16px;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0;
+  }
+
+  body.nav-js .nav-collapsible .nav-toggle {
+    display: inline-flex;
+  }
+
+  body.nav-js .nav-collapsible .nav-links {
+    display: none;
+    order: 3;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    width: 100%;
+    padding: 10px 0 6px;
+    margin: 0;
+    height: auto;
+    min-height: 0;
+    max-height: calc(100vh - var(--navbar-height) - 8px);
+    overflow-y: auto;
+    position: static;
+    border-top: 1px solid var(--color-border-light);
+  }
+
+  body.nav-js .nav-collapsible.open .nav-links {
+    display: flex;
+  }
+
+  body.nav-js .nav-collapsible .nav-links li {
+    display: block;
+    width: 100%;
+  }
+
+  body.nav-js .nav-collapsible .nav-links a {
+    display: block;
+    width: 100%;
+    padding: 11px 12px;
+    font-size: 15px;
+    text-align: left;
+    white-space: normal;
+  }
+
+  body.nav-js .nav-collapsible .nav-links a.active {
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+  }
+
+  /* Animate hamburger into an X when open */
+  body.nav-js .nav-collapsible.open .nav-toggle .nav-toggle-bar:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  body.nav-js .nav-collapsible.open .nav-toggle .nav-toggle-bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  body.nav-js .nav-collapsible.open .nav-toggle .nav-toggle-bar:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+}
+
+/* ============================================================
+   Shared mobile content polish (patron pages)
+   ============================================================ */
+@media (max-width: 768px) {
+  .patron-content {
+    padding: 26px 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .patron-content {
+    padding: 20px 12px;
+  }
+}

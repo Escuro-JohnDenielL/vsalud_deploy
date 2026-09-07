@@ -233,3 +233,29 @@
     color: #0c5460;
     border: 1px solid #bee5eb;
 }
+
+/* === Mobile tweaks === */
+@media (max-width: 480px) {
+    .cancel-reservation-container {
+        margin: 20px 0;
+        padding: 20px;
+    }
+
+    .details-card {
+        padding: 16px 14px;
+    }
+
+    .details-table td:first-child {
+        width: auto;
+        min-width: 96px;
+    }
+
+    .details-table td {
+        padding: 8px 8px;
+        word-break: break-word;
+    }
+
+    .cancel-form-card {
+        padding: 18px;
+    }
+}

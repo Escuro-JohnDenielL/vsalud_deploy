@@ -28,8 +28,15 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     </a>
 
-    <nav class="navbar">
-        <ul class="navbar">
+    <nav class="navbar nav-collapsible" aria-label="Main navigation">
+        <button type="button" class="nav-toggle" id="patronNavToggle"
+                aria-label="Toggle navigation menu" aria-controls="patronNavLinks"
+                aria-expanded="false">
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+        </button>
+        <ul class="navbar nav-links" id="patronNavLinks">
             <li>
                 <a href="{{ route('patron.home') }}"
                     class="{{ request()->routeIs('patron.home') ? 'active' : '' }}">
@@ -78,7 +85,6 @@
                 </a>
             </li>
         </ul>
-
     </nav>
 
     {{-- Toast notification --}}

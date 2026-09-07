@@ -435,19 +435,7 @@
     }
 }
 
-/* ===== ADDED: Mobile navbar alignment left ===== */
-@media (max-width: 768px) {
-    .navbar {
-        justify-content: flex-start !important;
-        padding-left: 20px;
-    }
-
-    .navbar ul {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-}
+/* Navbar collapses to a hamburger menu — see resources/css/app.css */
 
 /* ===== Appended: Date Reminder Legend Styles ===== */
 .calendar-legend {

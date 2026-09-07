@@ -159,15 +159,6 @@ button:hover {
     height: 300px;
   }
 
-  .navbar {
-    flex-direction: column;
-    padding: 10px;
-  }
-
-  .navbar ul {
-    gap: 15px;
-  }
-
   h1, h2 {
     font-size: 20px;
   }

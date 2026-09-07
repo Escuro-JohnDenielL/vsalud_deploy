@@ -263,37 +263,8 @@ form input {
 }
 
 /* === Responsive Design === */
+/* Navbar collapses to a hamburger menu — see resources/css/app.css */
 @media (max-width: 768px) {
-    .navbar {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 10px 20px;
-    }
-
-    .navbar ul {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-
-    .navbar li {
-        display: block;
-        width: 100%;
-    }
-
-    .navbar a {
-        display: block;
-        font-size: 16px;
-        padding: 8px 0;
-        text-align: left;
-        width: 100%;
-    }
-
-    .navbar a.active {
-        color: #007b3d;
-        border-bottom: 2px solid #007b3d;
-    }
-
     .reservation-container {
         margin: 30px 20px;
         padding: 25px;
@@ -307,14 +278,6 @@ form input {
 }
 
 @media (max-width: 480px) {
-    .navbar ul {
-        gap: 10px;
-    }
-
-    .navbar a {
-        font-size: 15px;
-    }
-
     .reservation-container {
         padding: 20px;
     }
@@ -335,10 +298,6 @@ form input {
 }
 
 @media (max-width: 320px) {
-    .navbar a {
-        font-size: 14px;
-    }
-
     .banner {
         font-size: 13px;
         padding: 10px;
@@ -347,5 +306,27 @@ form input {
     .reservation-container {
         padding: 15px;
         margin: 20px 10px;
+    }
+}
+
+/* === Mobile tweaks for reservation details inside the modal === */
+@media (max-width: 480px) {
+    .modal-content {
+        padding: 1.2rem;
+        width: 95vw;
+    }
+
+    .detail-row {
+        grid-template-columns: 1fr;
+        gap: 2px 0;
+    }
+
+    .modal-detail-header .detail-name {
+        font-size: 17px;
+    }
+
+    .badge-modern {
+        padding: 3px 10px;
+        font-size: 11px;
     }
 }

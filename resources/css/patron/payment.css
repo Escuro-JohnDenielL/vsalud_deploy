@@ -303,38 +303,9 @@ input[type="file"]::file-selector-button:hover {
   font-size: 14px;
 }
 
-/* === Enhanced Responsive Navbar === */
+/* === Responsive === */
+/* Navbar collapses to a hamburger menu — see resources/css/app.css */
 @media (max-width: 768px) {
-  .navbar {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 10px 20px;
-  }
-
-  .navbar ul {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
-
-  .navbar li {
-    display: block;
-    width: 100%;
-  }
-
-  .navbar a {
-    display: block;
-    font-size: 16px;
-    padding: 8px 0;
-    text-align: left;
-    width: 100%;
-  }
-
-  .navbar a.active {
-    color: #007b3d;
-    border-bottom: 2px solid #007b3d;
-  }
-
   .payment-wrapper {
     margin: 20px auto;
     padding: 0 10px;
@@ -358,14 +329,6 @@ input[type="file"]::file-selector-button:hover {
 }
 
 @media (max-width: 480px) {
-  .navbar ul {
-    gap: 10px;
-  }
-
-  .navbar a {
-    font-size: 14px;
-  }
-
   .payment-container {
     padding: 20px 15px;
     margin: 10px;
