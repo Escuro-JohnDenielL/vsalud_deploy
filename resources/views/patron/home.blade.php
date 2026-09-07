@@ -28,6 +28,35 @@
             <p style="text-align: center;">No packages available at the moment. Please check back later.</p>
         @endif
     </div>
+
+    {{-- Data Privacy Act (RA 10173) notice -- auto-opens on every page load --}}
+    <div id="privacyModal" class="privacy-overlay" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
+        <div class="privacy-modal">
+            <button type="button" class="privacy-modal__close" id="privacyClose" aria-label="Close privacy notice">&times;</button>
+
+            <div class="privacy-modal__icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <path d="M9 12l2 2 4-4"/>
+                </svg>
+            </div>
+
+            <h2 id="privacyTitle">Data Privacy Notice</h2>
+            <p class="privacy-modal__subtitle">Republic Act No. 10173 &middot; Data Privacy Act of 2012</p>
+
+            <div class="privacy-modal__body">
+                <p>Welcome to <strong>Villa Salud Catering</strong>. We value your privacy and are committed to protecting your personal information in accordance with the <strong>Data Privacy Act of 2012 (Republic Act No. 10173)</strong> and its Implementing Rules and Regulations.</p>
+                <p><strong>What we collect and why:</strong> We collect the personal information you provide through this system &mdash; such as your name, contact number, email address, event and reservation details, and payment information &mdash; for the legitimate purpose of processing your inquiries, bookings, reservations, and other related services.</p>
+                <p><strong>How we protect your data:</strong> Your information is stored securely and is accessed only by authorized personnel. We do not sell or share your personal information with third parties without your consent, except when required or permitted by law.</p>
+                <p><strong>Your rights:</strong> Under the Data Privacy Act, you have the right to be informed, to access, to object, to correct, and to request the deletion of your personal data. For any privacy-related concern, you may contact our office or data protection officer.</p>
+                <p>By clicking <strong>&ldquo;I Agree&rdquo;</strong>, you confirm that you have read and understood this notice and you consent to the collection, use, storage, and processing of your personal information as described above.</p>
+            </div>
+
+            <div class="privacy-modal__actions">
+                <button type="button" class="privacy-btn" id="privacyAgree">I Agree</button>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')

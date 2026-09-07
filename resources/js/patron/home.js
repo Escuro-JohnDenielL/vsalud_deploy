@@ -29,3 +29,35 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+// === Data Privacy Act (RA 10173) notice ===
+// Shown on EVERY page load of the Patron homepage. There is intentionally no
+// session/localStorage tracking: the notice reappears each time the page is
+// loaded or reloaded, and only stays hidden until the next load.
+document.addEventListener("DOMContentLoaded", function () {
+    const privacyModal = document.getElementById("privacyModal");
+    if (!privacyModal) return;
+
+    const privacyClose = document.getElementById("privacyClose");
+    const privacyAgree = document.getElementById("privacyAgree");
+
+    const showPrivacyModal = function () {
+        privacyModal.style.display = "flex";
+        document.body.style.overflow = "hidden";
+    };
+
+    const hidePrivacyModal = function () {
+        privacyModal.style.display = "none";
+        document.body.style.overflow = "";
+    };
+
+    showPrivacyModal();
+
+    if (privacyClose) privacyClose.addEventListener("click", hidePrivacyModal);
+    if (privacyAgree) privacyAgree.addEventListener("click", hidePrivacyModal);
+
+    // Close when clicking the dimmed backdrop
+    privacyModal.addEventListener("click", function (event) {
+        if (event.target === privacyModal) hidePrivacyModal();
+    });
+});
