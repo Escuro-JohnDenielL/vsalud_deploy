@@ -146,8 +146,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const inclusionsList = document.getElementById("modalInclusions");
         inclusionsList.innerHTML = "";
-        if (data.inclusions && Array.isArray(data.inclusions)) {
-            data.inclusions.forEach(inclusion => {
+
+        const inclusions = Array.isArray(data.inclusions)
+            ? data.inclusions.filter(value => typeof value === "string" && value.trim() !== "")
+            : [];
+
+        if (inclusions.length > 0) {
+            inclusions.forEach(inclusion => {
                 const li = document.createElement("li");
                 li.textContent = inclusion;
                 inclusionsList.appendChild(li);
@@ -179,9 +184,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     <p class="package-price">${formatPrice(data.price)}</p>
                 </div>
                 <div class="buttons-row">
-                    <button class="btn btn-success btn-sm view-package">View Package</button>
-                    <button class="btn btn-warning btn-sm text-white edit-btn">Edit</button>
-                    <button class="btn btn-danger btn-sm delete-btn">Delete</button>
+                    <button type="button" class="admin-btn admin-btn-primary admin-btn-sm view-package">View Package</button>
+                    <button type="button" class="admin-btn admin-btn-ghost admin-btn-sm edit-btn">Edit</button>
+                    <button type="button" class="admin-btn admin-btn-danger admin-btn-sm delete-btn">Delete</button>
                 </div>
             </div>
         `;
@@ -205,7 +210,17 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("editPackageName").value = data.name;
             document.getElementById("editPackageDescription").value = data.description || "";
             document.getElementById("editPackagePrice").value = data.price;
-            
+
+            // Prefill the inclusions editor with this package's current inclusions
+            const inclusionsContainer = document.getElementById("editInclusionsContainer");
+            if (inclusionsContainer) {
+                inclusionsContainer.innerHTML = "";
+                const inclusions = Array.isArray(data.inclusions)
+                    ? data.inclusions.filter(value => typeof value === "string" && value.trim() !== "")
+                    : [];
+                inclusions.forEach(value => createInclusionRow(inclusionsContainer, value));
+            }
+
             const currentImage = document.getElementById("currentMainImage");
             if (currentImage) {
                 currentImage.src = data.image_path || "/images/default_package.jpg";
@@ -232,6 +247,8 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append("name", document.getElementById("newPackageName").value);
             formData.append("description", document.getElementById("newPackageDescription").value);
             formData.append("price", document.getElementById("newPackagePrice").value);
+
+            appendInclusions(formData, "#inclusionsContainer");
             
             const image = document.getElementById("newPackageImage");
             if (image && image.files[0]) {
@@ -283,6 +300,8 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append("name", document.getElementById("editPackageName").value);
             formData.append("description", document.getElementById("editPackageDescription").value);
             formData.append("price", document.getElementById("editPackagePrice").value);
+
+            appendInclusions(formData, "#editInclusionsContainer");
 
             const image = document.getElementById("editPackageImage");
             if (image && image.files[0]) {
@@ -361,27 +380,53 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }, true);
 
+    // Build one inclusion input row (shared by the Add and Edit modals)
+    function createInclusionRow(container, value = "") {
+        if (!container) return null;
+
+        const row = document.createElement("div");
+        row.className = "input-group mb-2";
+        row.innerHTML = `
+            <input type="text" name="inclusions[]" class="form-control" placeholder="Enter inclusion">
+            <button type="button" class="admin-btn admin-btn-danger admin-btn-sm remove-inclusion">Remove</button>
+        `;
+        row.querySelector('input[name="inclusions[]"]').value = value;
+        container.appendChild(row);
+
+        return row;
+    }
+
+    // Collect every inclusion input in a container so the values are actually submitted
+    // (empty values are filtered out server-side).
+    function appendInclusions(formData, containerSelector) {
+        const inputs = document.querySelectorAll(`${containerSelector} input[name="inclusions[]"]`);
+
+        if (inputs.length === 0) {
+            // Send a blank value so the server can tell "cleared" from "not touched"
+            formData.append("inclusions[]", "");
+            return;
+        }
+
+        inputs.forEach(input => formData.append("inclusions[]", input.value));
+    }
+
     // Handle dynamic inclusions for add package form
     const addInclusionBtn = document.getElementById('addInclusion');
     if (addInclusionBtn) {
         addInclusionBtn.addEventListener('click', function() {
-            const container = document.getElementById('inclusionsContainer');
-            const newInclusion = document.createElement('div');
-            newInclusion.className = 'input-group mb-2';
-            newInclusion.innerHTML = `
-                <input type="text" name="inclusions[]" class="form-control" placeholder="Enter inclusion">
-                <button type="button" class="btn btn-outline-danger remove-inclusion">Remove</button>
-            `;
-            container.appendChild(newInclusion);
-            
-            // Add event listener to remove button
-            newInclusion.querySelector('.remove-inclusion').addEventListener('click', function() {
-                newInclusion.remove();
-            });
+            createInclusionRow(document.getElementById('inclusionsContainer'));
         });
     }
 
-    // Handle remove inclusion for existing inputs
+    // Handle dynamic inclusions for edit package form
+    const editAddInclusionBtn = document.getElementById('editAddInclusion');
+    if (editAddInclusionBtn) {
+        editAddInclusionBtn.addEventListener('click', function() {
+            createInclusionRow(document.getElementById('editInclusionsContainer'));
+        });
+    }
+
+    // Handle remove inclusion for existing inputs (delegated)
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('remove-inclusion')) {
             e.target.closest('.input-group').remove();

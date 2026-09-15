@@ -223,6 +223,13 @@ body {
   box-shadow: var(--shadow-md);
 }
 
+/* Keep Bootstrap's small variant actually small — the .btn override above
+   would otherwise win the cascade and inflate every .btn-sm button. */
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
 .btn-success {
   background: var(--color-primary);
   border-color: var(--color-primary);
@@ -543,8 +550,9 @@ textarea:focus,
 .admin-btn,
 .admin-btn:active,
 .admin-btn:focus {
-  padding: 8px 14px;
-  border: none;
+  padding: 7px 13px;
+  /* transparent border keeps the ghost variant the same height as the solid ones */
+  border: 1px solid transparent;
   border-radius: var(--radius-sm);
   font-size: 13px;
   font-weight: 600;
@@ -595,7 +603,7 @@ textarea:focus,
 }
 
 .admin-btn-sm {
-  padding: 6px 12px;
+  padding: 5px 11px;
   font-size: 12px;
 }
 

@@ -38,7 +38,7 @@ class PackageController extends Controller
             'image_path' => "/storage/$imagePath",
             'image_2_path' => $image2Path ? "/storage/$image2Path" : null,
             'image_3_path' => $image3Path ? "/storage/$image3Path" : null,
-            'inclusions' => $request->inclusions ?? [],
+            'inclusions' => $this->cleanInclusions($request->input('inclusions', [])),
         ]);
 
         return response()->json($package, 201);
@@ -62,8 +62,13 @@ class PackageController extends Controller
             'inclusions.*' => 'string',
         ]);
 
-        $data = $request->only(['name', 'description', 'price', 'inclusions']);
-        $data['inclusions'] = $data['inclusions'] ?? [];
+        $data = $request->only(['name', 'description', 'price']);
+
+        // Only touch inclusions when the form actually submitted them, otherwise an
+        // edit that doesn't include the field would silently wipe the existing list.
+        if ($request->has('inclusions')) {
+            $data['inclusions'] = $this->cleanInclusions($request->input('inclusions', []));
+        }
 
         if ($request->hasFile('image')) {
             // Delete old image
@@ -119,5 +124,21 @@ class PackageController extends Controller
         $package->delete();
 
         return response()->json(['message' => 'Package deleted successfully']);
+    }
+
+    /**
+     * Normalise the submitted inclusions list: keep non-empty strings only,
+     * trimmed and re-indexed so it stores as a clean JSON array.
+     *
+     * @param  mixed  $inclusions
+     * @return array<int, string>
+     */
+    private function cleanInclusions($inclusions): array
+    {
+        return collect(is_array($inclusions) ? $inclusions : [])
+            ->filter(fn ($value) => is_string($value) && trim($value) !== '')
+            ->map(fn ($value) => trim($value))
+            ->values()
+            ->all();
     }
 }

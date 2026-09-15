@@ -20,6 +20,9 @@
                 :description="$package->description"
                 :price="$package->price"
                 :imagePath="$package->image_path"
+                :inclusions="$package->inclusions ?? []"
+                :image2Path="$package->image_2_path"
+                :image3Path="$package->image_3_path"
             />
         @endforeach
 
@@ -27,6 +30,29 @@
         @if($packages->isEmpty())
             <p style="text-align: center;">No packages available at the moment. Please check back later.</p>
         @endif
+    </div>
+
+    {{-- View Package Modal --}}
+    <div id="packageModal" class="pkg-modal" role="dialog" aria-modal="true" aria-labelledby="pkgModalTitle">
+        <div class="pkg-modal__dialog">
+            <button type="button" class="pkg-modal__close" id="pkgModalClose" aria-label="Close package details">&times;</button>
+
+            <div class="pkg-modal__media">
+                <img id="pkgModalMainImage" class="pkg-modal__main-image" src="" alt="Package image">
+                <div class="pkg-modal__thumbs" id="pkgModalThumbs"></div>
+            </div>
+
+            <div class="pkg-modal__info">
+                <h2 class="pkg-modal__title" id="pkgModalTitle"></h2>
+                <p class="pkg-modal__desc" id="pkgModalDesc"></p>
+                <p class="pkg-modal__price" id="pkgModalPrice"></p>
+
+                <div class="pkg-modal__inclusions">
+                    <h3>Package Inclusions</h3>
+                    <ul id="pkgModalInclusions"></ul>
+                </div>
+            </div>
+        </div>
     </div>
 
     {{-- Data Privacy Act (RA 10173) notice -- auto-opens on every page load --}}

@@ -21,9 +21,9 @@
             <h3>{{ $package->name }}</h3>
             <div class="package-details"></div>
             <div class="buttons-row">
-                <button class="admin-btn admin-btn-primary admin-btn-sm view-package">View Package</button>
-                <button class="admin-btn admin-btn-ghost admin-btn-sm edit-btn">Edit</button>
-                <button class="admin-btn admin-btn-danger admin-btn-sm delete-btn">Delete</button>
+                <button type="button" class="admin-btn admin-btn-primary admin-btn-sm view-package">View Package</button>
+                <button type="button" class="admin-btn admin-btn-ghost admin-btn-sm edit-btn">Edit</button>
+                <button type="button" class="admin-btn admin-btn-danger admin-btn-sm delete-btn">Delete</button>
             </div>
         </div>
     </div>
@@ -69,12 +69,7 @@
                         <h5 class="text-success" id="modalPrice">₱0.00</h5>
                         <div class="package-inclusions mt-3">
                             <h6>Package Inclusions:</h6>
-                            <ul id="modalInclusions">
-                                <li>Professional coordination</li>
-                                <li>Event setup and decoration</li>
-                                <li>Photography coverage</li>
-                                <li>Catering service</li>
-                            </ul>
+                            <ul id="modalInclusions"></ul>
                         </div>
                     </div>
                 </div>
@@ -104,6 +99,11 @@
                     <div class="mb-3">
                         <label class="form-label">Description</label>
                         <textarea id="editPackageDescription" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Package Inclusions</label>
+                        <div id="editInclusionsContainer"></div>
+                        <button type="button" id="editAddInclusion" class="admin-btn admin-btn-ghost admin-btn-sm">+ Add Inclusion</button>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Price</label>
@@ -167,10 +167,10 @@
                         <div id="inclusionsContainer">
                             <div class="input-group mb-2">
                                 <input type="text" name="inclusions[]" class="form-control" placeholder="Enter inclusion">
-                                <button type="button" class="btn btn-outline-danger remove-inclusion" style="display: none;">Remove</button>
+                                <button type="button" class="admin-btn admin-btn-danger admin-btn-sm remove-inclusion">Remove</button>
                             </div>
                         </div>
-                        <button type="button" id="addInclusion" class="btn btn-outline-success btn-sm">+ Add Inclusion</button>
+                        <button type="button" id="addInclusion" class="admin-btn admin-btn-ghost admin-btn-sm">+ Add Inclusion</button>
                     </div>
                 </div>
                 <div class="modal-footer">

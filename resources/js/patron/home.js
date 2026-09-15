@@ -1,32 +1,106 @@
+// === Package details modal ===
+// Each "View Package" button carries its package data as JSON (data-package),
+// so the modal can be filled without an extra request.
 document.addEventListener("DOMContentLoaded", function () {
     const modal = document.getElementById("packageModal");
-    const closeModal = document.querySelector(".close");
+    if (!modal) return;
 
-    // Safely attach listener - closeModal may not exist
-    if (closeModal) {
-        closeModal.addEventListener("click", () => {
-            if (modal) modal.style.display = "none";
-        });
-    }
+    const closeBtn = document.getElementById("pkgModalClose");
+    const titleEl = document.getElementById("pkgModalTitle");
+    const descEl = document.getElementById("pkgModalDesc");
+    const priceEl = document.getElementById("pkgModalPrice");
+    const mainImage = document.getElementById("pkgModalMainImage");
+    const thumbsEl = document.getElementById("pkgModalThumbs");
+    const inclusionsEl = document.getElementById("pkgModalInclusions");
+    const DEFAULT_IMAGE = "/images/default_package.jpg";
 
-    if (modal) {
-        window.addEventListener("click", (event) => {
-            if (event.target === modal) {
-                modal.style.display = "none";
-            }
-        });
-    }
+    const formatPrice = function (price) {
+        return `₱${Number(price || 0).toLocaleString("en-PH", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        })}`;
+    };
 
-    // Safely handle package view buttons - they may not exist on this page
-    document.querySelectorAll(".view-package").forEach(button => {
+    const openModal = function () {
+        modal.style.display = "flex";
+        document.body.style.overflow = "hidden";
+    };
+
+    const closeModal = function () {
+        modal.style.display = "none";
+        document.body.style.overflow = "";
+    };
+
+    document.querySelectorAll(".view-package").forEach(function (button) {
         button.addEventListener("click", function () {
-            const packageCard = this.closest(".package-card");
-            if (!packageCard) return;
-            const packageName = packageCard.dataset.package;
-            if (modal) {
-                modal.style.display = "flex";
+            let data = null;
+            try {
+                data = JSON.parse(this.dataset.package || "{}");
+            } catch (e) {
+                data = null;
             }
+            if (!data) return;
+
+            const images = Array.isArray(data.images) && data.images.length
+                ? data.images
+                : [DEFAULT_IMAGE];
+
+            titleEl.textContent = data.name || "Package";
+            descEl.textContent = data.description || "No description available.";
+            priceEl.textContent = formatPrice(data.price);
+
+            mainImage.onerror = function () {
+                this.onerror = null;
+                this.src = DEFAULT_IMAGE;
+            };
+            mainImage.src = images[0];
+            mainImage.alt = (data.name || "Package") + " image";
+
+            // Thumbnails (only shown when the package has more than one photo)
+            thumbsEl.innerHTML = "";
+            if (images.length > 1) {
+                images.forEach(function (src) {
+                    const thumb = document.createElement("img");
+                    thumb.alt = (data.name || "Package") + " photo";
+                    thumb.onerror = function () {
+                        this.remove();
+                    };
+                    thumb.src = src;
+                    thumb.addEventListener("click", function () {
+                        mainImage.src = src;
+                    });
+                    thumbsEl.appendChild(thumb);
+                });
+            }
+
+            inclusionsEl.innerHTML = "";
+            const inclusions = Array.isArray(data.inclusions) ? data.inclusions : [];
+            if (inclusions.length > 0) {
+                inclusions.forEach(function (item) {
+                    const li = document.createElement("li");
+                    li.textContent = item;
+                    inclusionsEl.appendChild(li);
+                });
+            } else {
+                const li = document.createElement("li");
+                li.textContent = "No inclusions specified.";
+                inclusionsEl.appendChild(li);
+            }
+
+            openModal();
         });
+    });
+
+    if (closeBtn) closeBtn.addEventListener("click", closeModal);
+
+    modal.addEventListener("click", function (event) {
+        if (event.target === modal) closeModal();
+    });
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && modal.style.display === "flex") {
+            closeModal();
+        }
     });
 });
 
