@@ -27,7 +27,10 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         })
         .then(res => {
-            if (!res.ok) throw new Error('Delete failed');
+            if (!res.ok) {
+                return readErrorMessage(res, "Failed to delete package. Please try again.")
+                    .then(msg => { throw new Error(msg); });
+            }
             return res.json();
         })
         .then(() => {
@@ -38,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .catch(err => {
             console.error("Delete failed:", err);
-            alert("Failed to delete package. Please try again.");
+            showToast(err.message);
         });
     });
 
@@ -105,6 +108,50 @@ document.addEventListener("DOMContentLoaded", function () {
     function showSuccessModal(message) {
         document.getElementById("successMessage").textContent = message;
         successModal.show();
+    }
+
+    // Reuse the shared admin toast (#toast, rendered by layouts/admin.blade.php)
+    // so failures match the notification pattern used on the other admin pages
+    // instead of a native browser alert().
+    let toastHideTimer = null;
+    function showToast(message, type = "error") {
+        const toast = document.getElementById("toast");
+        if (!toast) {
+            console.error(message);
+            return;
+        }
+
+        clearTimeout(toastHideTimer);
+        toast.textContent = message;
+        toast.className = `toast-notification toast-${type}`;
+        // Force a reflow so the entrance transition restarts on repeated toasts
+        void toast.offsetWidth;
+        toast.classList.add("show");
+
+        toastHideTimer = setTimeout(() => {
+            toast.classList.remove("show");
+            toast.textContent = "";
+            toast.className = "toast-notification";
+        }, 4500);
+    }
+
+    // Laravel replies to a 422 with { message, errors: { field: [msg] } }.
+    // Prefer the specific field error, then `message`, then the caller's text.
+    function pickErrorMessage(data, fallback) {
+        if (data && data.errors) {
+            const first = Object.values(data.errors)[0];
+            if (Array.isArray(first) && first.length) return first[0];
+            if (typeof first === "string") return first;
+        }
+        return (data && data.message) || fallback;
+    }
+
+    // Read a failed response without assuming it is JSON — a 419/500 may return
+    // an HTML error page, which would otherwise blow up on res.json().
+    function readErrorMessage(res, fallback) {
+        return res.json()
+            .then(data => pickErrorMessage(data, fallback))
+            .catch(() => fallback);
     }
 
     function updatePackageDetails() {
@@ -221,10 +268,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 inclusions.forEach(value => createInclusionRow(inclusionsContainer, value));
             }
 
-            const currentImage = document.getElementById("currentMainImage");
-            if (currentImage) {
-                currentImage.src = data.image_path || "/images/default_package.jpg";
-            }
+            // The edit modal is one shared form and a file input keeps the File it
+            // was last given. Without this reset, saving a second package would
+            // silently re-upload the previously selected photo onto it.
+            resetEditImageInputs();
+
+            applyImagePreview("currentMainImage", data.image_path);
+            applyImagePreview("currentImage2", data.image_2_path);
+            applyImagePreview("currentImage3", data.image_3_path);
 
             editPackageModal.show();
         });
@@ -252,9 +303,12 @@ document.addEventListener("DOMContentLoaded", function () {
             
             const image = document.getElementById("newPackageImage");
             if (image && image.files[0]) {
-                console.log(image.files[0]);
                 formData.append("image", image.files[0]);
             }
+
+            // Image 2 and 3 were collected by the modal but never submitted.
+            appendOptionalImage(formData, "newPackageImage2", "image2");
+            appendOptionalImage(formData, "newPackageImage3", "image3");
 
             fetch("/admin/packages", {
                 method: "POST",
@@ -266,9 +320,8 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .then(res => {
                 if (!res.ok) {
-                    return res.json().then(data => {
-                        throw new Error(data.message || 'Failed to create package');
-                    });
+                    return readErrorMessage(res, "Failed to create package. Please try again.")
+                        .then(msg => { throw new Error(msg); });
                 }
                 return res.json();
             })
@@ -282,7 +335,7 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(err => {
                 console.error("Add package error:", err);
-                alert("Failed to add package: " + err.message);
+                showToast(err.message);
             });
         });
     }
@@ -328,9 +381,8 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .then(res => {
                 if (!res.ok) {
-                    return res.json().then(data => {
-                        throw new Error(data.message || 'Failed to update package');
-                    });
+                    return readErrorMessage(res, "Failed to update package. Please try again.")
+                        .then(msg => { throw new Error(msg); });
                 }
                 return res.json();
             })
@@ -342,7 +394,7 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(err => {
                 console.error("Edit error:", err);
-                alert("Failed to update package: " + err.message);
+                showToast(err.message);
             });
         });
     }
@@ -379,6 +431,37 @@ document.addEventListener("DOMContentLoaded", function () {
             e.target.src = '/images/default_package.jpg';
         }
     }, true);
+
+    // Clear every file input in the shared edit modal.
+    function resetEditImageInputs() {
+        ["editPackageImage", "editPackageImage2", "editPackageImage3"].forEach(id => {
+            const input = document.getElementById(id);
+            if (input) input.value = "";
+        });
+    }
+
+    // Show the stored photo when the package has one, hide the placeholder when it does not.
+    function applyImagePreview(imgId, path) {
+        const img = document.getElementById(imgId);
+        if (!img) return;
+
+        if (path) {
+            img.src = path;
+            img.style.display = "";
+        } else {
+            img.removeAttribute("src");
+            img.style.display = "none";
+        }
+    }
+
+    // Only attach an optional image when the admin actually picked one, so an
+    // empty field means "keep the current photo" rather than "clear it".
+    function appendOptionalImage(formData, inputId, fieldName) {
+        const input = document.getElementById(inputId);
+        if (input && input.files && input.files[0]) {
+            formData.append(fieldName, input.files[0]);
+        }
+    }
 
     // Build one inclusion input row (shared by the Add and Edit modals)
     function createInclusionRow(container, value = "") {

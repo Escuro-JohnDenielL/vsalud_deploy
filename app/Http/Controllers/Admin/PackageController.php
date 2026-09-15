@@ -24,7 +24,10 @@ class PackageController extends Controller
             'image2' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'image3' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'inclusions' => 'nullable|array',
-            'inclusions.*' => 'string',
+            // Blank inclusion rows are submitted as "" and Laravel's
+            // ConvertEmptyStringsToNull middleware turns those into null,
+            // so the rule must allow null (cleanInclusions() strips them later).
+            'inclusions.*' => 'nullable|string|max:255',
         ]);
 
         $imagePath = $request->file('image')->store('packages', 'public');
@@ -59,7 +62,8 @@ class PackageController extends Controller
             'image2' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'image3' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'inclusions' => 'nullable|array',
-            'inclusions.*' => 'string',
+            // See store(): blank rows arrive as null, so allow null here too.
+            'inclusions.*' => 'nullable|string|max:255',
         ]);
 
         $data = $request->only(['name', 'description', 'price']);

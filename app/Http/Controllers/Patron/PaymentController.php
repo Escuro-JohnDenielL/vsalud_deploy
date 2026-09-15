@@ -77,13 +77,14 @@ class PaymentController extends Controller
         $trackingCode = 'VS-' . substr(time(), -6) . '-' . rand(1000, 9999);
 
         // Store the receipt on R2 so it persists across Railway restarts (the
-        // container filesystem is ephemeral). Fall back to the local public disk
-        // if the cloud upload fails, so the payment record is still created.
+        // container filesystem is ephemeral). If the cloud upload fails, fall
+        // back to the PRIVATE local disk — never the public one, so a receipt is
+        // never reachable at /storage/receipts/... without authentication.
         try {
             $receiptPath = $request->file('receipt')->store('receipts', 'r2');
         } catch (\Throwable $e) {
-            Log::warning('R2 receipt upload failed, falling back to local storage: ' . $e->getMessage());
-            $receiptPath = $request->file('receipt')->store('receipts', 'public');
+            Log::warning('R2 receipt upload failed, falling back to the private local disk: ' . $e->getMessage());
+            $receiptPath = $request->file('receipt')->store('receipts', 'local');
         }
 
         $payment = Payment::create([

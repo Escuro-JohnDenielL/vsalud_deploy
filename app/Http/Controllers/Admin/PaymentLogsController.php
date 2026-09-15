@@ -35,10 +35,11 @@ class PaymentLogsController extends Controller
             abort(404, 'Receipt file not found.');
         }
 
-        // New uploads live on R2 (persistent across Railway restarts); legacy
-        // uploads are on the local public disk. Check both so old rows still
-        // work, and so one disk failing never 500s the request.
-        foreach (['r2', 'public'] as $diskName) {
+        // New uploads live on R2 (persistent across Railway restarts); a failed
+        // cloud upload falls back to the private local disk; legacy uploads sit
+        // on the public disk. Check all three so old rows still work, and so one
+        // disk failing never 500s the request.
+        foreach (['r2', 'local', 'public'] as $diskName) {
             try {
                 /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
                 $disk = Storage::disk($diskName);

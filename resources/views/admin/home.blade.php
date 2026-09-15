@@ -114,6 +114,17 @@
                         <img id="currentMainImage" src="" alt="Current Image" class="img-fluid rounded mb-2" style="max-height: 150px;">
                         <input type="file" id="editPackageImage" class="form-control" accept="image/*">
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Image 2 (Optional)</label>
+                        <img id="currentImage2" src="" alt="Current Image 2" class="img-fluid rounded mb-2" style="max-height: 120px; display: none;">
+                        <input type="file" id="editPackageImage2" class="form-control" accept="image/*">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Image 3 (Optional)</label>
+                        <img id="currentImage3" src="" alt="Current Image 3" class="img-fluid rounded mb-2" style="max-height: 120px; display: none;">
+                        <input type="file" id="editPackageImage3" class="form-control" accept="image/*">
+                    </div>
+                    <p class="text-muted mb-0"><small>Leave a photo field empty to keep the package's current photo. Only the slots where you pick a new file are replaced.</small></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="admin-btn admin-btn-ghost" data-bs-dismiss="modal">Cancel</button>
