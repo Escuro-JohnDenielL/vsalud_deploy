@@ -14,6 +14,15 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->trustProxies(at: '*');
+
+        // Use the application's CSRF middleware (Laravel 11/12 puts
+        // ValidateCsrfToken in the "web" group by default) so that a logout
+        // submitted with a stale/expired token is handled gracefully instead of
+        // showing a "419 Page Expired" page. See App\Http\Middleware\VerifyCsrfToken.
+        $middleware->web(replace: [
+            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class => \App\Http\Middleware\VerifyCsrfToken::class,
+        ]);
+
         $middleware->alias([
             'role.admin'      => CheckAdminRole::class,
             'page.permission' => CheckPagePermission::class,
