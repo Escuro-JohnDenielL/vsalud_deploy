@@ -11,20 +11,67 @@ use Illuminate\Support\Facades\Auth;
 class IncidentLogController extends Controller
 {
     /**
+     * Rows shown per page.
+     */
+    private const PER_PAGE = 15;
+
+    /**
      * Display a paginated list of incidents.
      */
     public function index()
     {
-        $incidents = IncidentLog::orderBy('detected_at', 'desc')->paginate(15);
+        $incidents = $this->orderedQuery()->paginate(self::PER_PAGE);
 
-        $stats = [
-            'open'    => IncidentLog::whereIn('status', ['open', 'investigating'])->count(),
-            'resolved' => IncidentLog::whereIn('status', ['resolved', 'closed'])->count(),
-            'critical' => IncidentLog::where('severity', 'critical')->where('status', '!=', 'closed')->count(),
-            'total'   => IncidentLog::count(),
-        ];
+        $stats = $this->stats();
 
         return view('admin.incident-logs', compact('incidents', 'stats'));
+    }
+
+    /**
+     * Newest first. `id` breaks ties so that two incidents sharing the same
+     * `detected_at` (the form's default is minute-precision) still show the most
+     * recently logged one on top.
+     */
+    private function orderedQuery()
+    {
+        return IncidentLog::orderByDesc('detected_at')->orderByDesc('id');
+    }
+
+    /**
+     * Summary counters shown in the stat cards.
+     */
+    private function stats(): array
+    {
+        return [
+            'open'     => IncidentLog::whereIn('status', ['open', 'investigating'])->count(),
+            'resolved' => IncidentLog::whereIn('status', ['resolved', 'closed'])->count(),
+            'critical' => IncidentLog::where('severity', 'critical')->where('status', '!=', 'closed')->count(),
+            'total'    => IncidentLog::count(),
+        ];
+    }
+
+    /**
+     * Fresh stats + table rows + pagination links.
+     *
+     * Returned with every write so the client can redraw the table in place
+     * instead of reloading the whole page just to see the change it made.
+     */
+    private function tablePayload(int $page = 1): array
+    {
+        $incidents = $this->orderedQuery()->paginate(self::PER_PAGE, ['*'], 'page', max(1, $page));
+
+        // Deleting the last row of the last page would otherwise leave the client
+        // showing an empty table — fall back to the new last page.
+        if ($incidents->isEmpty() && $incidents->currentPage() > 1) {
+            $incidents = $this->orderedQuery()->paginate(self::PER_PAGE, ['*'], 'page', $incidents->lastPage());
+        }
+
+        return [
+            'stats'      => $this->stats(),
+            'rows'       => view('admin.partials.incident-rows', ['incidents' => $incidents])->render(),
+            'pagination' => $incidents->links()->toHtml(),
+            'page'       => $incidents->currentPage(),
+        ];
     }
 
     /**
@@ -57,9 +104,12 @@ class IncidentLogController extends Controller
         ]);
 
         return response()->json([
-            'success' => true,
-            'message' => 'Incident logged successfully.',
+            'success'  => true,
+            'message'  => 'Incident logged successfully.',
             'incident' => $incident,
+            'focus_id' => $incident->id,
+            // Always return page 1: the incident just logged sorts to the top of it.
+            'payload'  => $this->tablePayload(1),
         ]);
     }
 
@@ -88,7 +138,7 @@ class IncidentLogController extends Controller
         $incident->status = $validated['status'];
 
         if ($validated['status'] === 'resolved' || $validated['status'] === 'closed') {
-            if ($validated['resolved_at']) {
+            if (!empty($validated['resolved_at'])) {
                 $incident->resolved_at = $validated['resolved_at'];
             } elseif (!$incident->resolved_at) {
                 $incident->resolved_at = now();
@@ -108,17 +158,21 @@ class IncidentLogController extends Controller
             'description'   => "{$admin->f_name} {$admin->l_name} updated incident #{$incident->id} to status: {$incident->status}",
         ]);
 
+        $page = (int) $request->query('page', 1);
+
         return response()->json([
             'success'  => true,
             'message'  => 'Incident updated successfully.',
             'incident' => $incident->fresh(),
+            'focus_id' => $incident->id,
+            'payload'  => $this->tablePayload($page),
         ]);
     }
 
     /**
      * Delete an incident log entry.
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $incident = IncidentLog::findOrFail($id);
 
@@ -134,6 +188,7 @@ class IncidentLogController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Incident deleted successfully.',
+            'payload' => $this->tablePayload((int) $request->query('page', 1)),
         ]);
     }
 }

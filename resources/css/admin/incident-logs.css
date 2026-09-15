@@ -199,42 +199,26 @@
     border-radius: 3px;
 }
 
-/* Toast */
-.toast-notification {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    padding: 14px 24px;
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    font-weight: 500;
-    z-index: 9999;
-    box-shadow: var(--shadow-lg);
-    opacity: 0;
-    visibility: hidden;
-    transform: none;
-    transition: opacity 0.3s ease;
+/* NOTE: the toast (#toast / .toast-notification) is styled globally in
+   resources/css/index.css. Do NOT re-declare its positioning here: this file
+   is loaded after app.css, so a partial override (bottom/right only, without
+   resetting top/left) made the toast stretch from top:20px to bottom:24px and
+   from left:50% to right:24px — a giant overlay across the right half of the
+   screen. Anything extra the toast needs belongs in index.css. */
+
+/* Highlight for the row created/updated in place by incident-logs.js */
+.incident-table tbody tr.row-flash {
+    animation: incidentRowFlash 2.4s ease-out 1;
 }
 
-.toast-notification.show {
-    opacity: 1;
-    visibility: visible;
-    transform: none;
+@keyframes incidentRowFlash {
+    0%, 35% { background: #fef3c7; }
+    100% { background: transparent; }
 }
 
-.toast-notification.toast-success {
-    background: #e8f5e9;
-    color: #2e7d32;
-    border: 1px solid #c8e6c9;
-}
-
-.toast-notification.toast-error {
-    background: #fce4ec;
-    color: #c62828;
-    border: 1px solid #f8bbd0;
-}
-
-@keyframes toastIn {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) {
+    .incident-table tbody tr.row-flash {
+        animation: none;
+        background: #fef3c7;
+    }
 }

@@ -40,6 +40,69 @@
         });
     });
 
+    // --- In-place table refresh ---
+    // Log/update/delete responses carry fresh stats + rows + pagination, so the
+    // page never has to reload just to reveal the change the user just made.
+    function parseResponse(r) {
+        return r.json().then(data => {
+            if (!r.ok) {
+                const validationError = data?.errors ? Object.values(data.errors)[0]?.[0] : null;
+                throw new Error(validationError || data?.message || 'Request failed.');
+            }
+            return data;
+        });
+    }
+
+    function currentPage() {
+        const page = new URLSearchParams(window.location.search).get('page');
+        return page ? (parseInt(page, 10) || 1) : 1;
+    }
+
+    // Keep ?page= in step with the page the payload actually returned (logging
+    // always lands on page 1; a delete can pull the user back to an earlier one).
+    function syncPage(page) {
+        if (!page || page === currentPage() || !window.history.replaceState) return;
+        const url = new URL(window.location.href);
+        if (page === 1) {
+            url.searchParams.delete('page');
+        } else {
+            url.searchParams.set('page', page);
+        }
+        window.history.replaceState(null, '', url.pathname + url.search);
+    }
+
+    function applyPayload(payload, focusId) {
+        if (!payload) return;
+
+        const tbody = document.getElementById('incidentRowsBody');
+        if (tbody && typeof payload.rows === 'string') {
+            tbody.innerHTML = payload.rows;
+        }
+
+        const pagination = document.getElementById('incidentPagination');
+        if (pagination && typeof payload.pagination === 'string') {
+            pagination.innerHTML = payload.pagination;
+        }
+
+        if (payload.stats) {
+            Object.keys(payload.stats).forEach(key => {
+                const el = document.querySelector('[data-stat="' + key + '"]');
+                if (el) el.textContent = payload.stats[key];
+            });
+        }
+
+        syncPage(payload.page);
+
+        if (focusId && tbody) {
+            const row = tbody.querySelector('tr[data-id="' + focusId + '"]');
+            if (row) {
+                row.classList.add('row-flash');
+                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(() => row.classList.remove('row-flash'), 2600);
+            }
+        }
+    }
+
     // --- Log Incident ---
     document.getElementById('logIncidentBtn')?.addEventListener('click', function() {
         document.getElementById('logIncidentForm').reset();
@@ -61,101 +124,106 @@
             },
             body: JSON.stringify(data),
         })
-        .then(r => r.json())
+        .then(parseResponse)
         .then(res => {
-            if (res.success) {
-                showToast(res.message, 'success');
-                closeModal('logIncidentModal');
-                setTimeout(() => location.reload(), 800);
-            } else {
-                showToast(res.message || 'Failed to log incident.', 'error');
-            }
+            showToast(res.message, 'success');
+            closeModal('logIncidentModal');
+            // The new incident sorts to the top of page 1 — show it right there.
+            applyPayload(res.payload, res.focus_id);
         })
-        .catch(() => showToast('An error occurred.', 'error'));
+        .catch(err => showToast(err.message || 'Failed to log incident.', 'error'));
+    });
+
+    // --- Row actions (delegated) ---
+    // Rows are re-rendered in place after every change, so listeners live on the
+    // table body instead of on individual buttons.
+    document.getElementById('incidentRowsBody')?.addEventListener('click', function(e) {
+        const viewBtn = e.target.closest('.view-incident-btn');
+        if (viewBtn) { openIncidentDetail(viewBtn.dataset.id); return; }
+
+        const resolveBtn = e.target.closest('.resolve-incident-btn');
+        if (resolveBtn) { openResolveModal(resolveBtn.dataset.id); return; }
+
+        const deleteBtn = e.target.closest('.delete-incident-btn');
+        if (deleteBtn) { openDeleteModal(deleteBtn.dataset.id, deleteBtn.dataset.title); return; }
     });
 
     // --- View Incident ---
-    document.querySelectorAll('.view-incident-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const id = this.dataset.id;
-            const body = document.getElementById('incidentDetailBody');
-            body.innerHTML = '<p class="text-center text-muted">Loading...</p>';
-            openModal('viewIncidentModal');
+    function openIncidentDetail(id) {
+        const body = document.getElementById('incidentDetailBody');
+        body.innerHTML = '<p class="text-center text-muted">Loading...</p>';
+        openModal('viewIncidentModal');
 
-            fetch(window.incidentLogRoutes.show + '/' + id, {
-                headers: { 'Accept': 'application/json' }
-            })
-            .then(r => r.json())
-            .then(incident => {
-                const severityClass = {
-                    critical: 'danger',
-                    high: 'warning',
-                    medium: 'info',
-                    low: 'success'
-                }[incident.severity] || 'info';
+        fetch(window.incidentLogRoutes.show + '/' + id, {
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(r => r.json())
+        .then(incident => {
+            const severityClass = {
+                critical: 'danger',
+                high: 'warning',
+                medium: 'info',
+                low: 'success'
+            }[incident.severity] || 'info';
 
-                const statusClass = {
-                    open: 'danger',
-                    investigating: 'warning',
-                    resolved: 'success',
-                    closed: 'info'
-                }[incident.status] || 'info';
+            const statusClass = {
+                open: 'danger',
+                investigating: 'warning',
+                resolved: 'success',
+                closed: 'info'
+            }[incident.status] || 'info';
 
-                body.innerHTML = `
-                    <div class="detail-section">
-                        <div class="detail-section-title">Overview</div>
-                        <div class="detail-section-card">
-                            <div class="detail-row">
-                                <span class="detail-label">Title</span>
-                                <span class="detail-value"><strong>${escapeHtml(incident.title)}</strong></span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Severity</span>
-                                <span class="detail-value"><span class="badge-modern ${severityClass}">${ucfirst(incident.severity)}</span></span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Status</span>
-                                <span class="detail-value"><span class="badge-modern ${statusClass}">${ucfirst(incident.status)}</span></span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Detected</span>
-                                <span class="detail-value">${formatDate(incident.detected_at)}</span>
-                            </div>
-                            ${incident.resolved_at ? `<div class="detail-row"><span class="detail-label">Resolved</span><span class="detail-value">${formatDate(incident.resolved_at)}</span></div>` : ''}
-                            <div class="detail-row" style="border:none;">
-                                <span class="detail-label">Reported By</span>
-                                <span class="detail-value">${escapeHtml(incident.reported_by || '—')}</span>
-                            </div>
+            body.innerHTML = `
+                <div class="detail-section">
+                    <div class="detail-section-title">Overview</div>
+                    <div class="detail-section-card">
+                        <div class="detail-row">
+                            <span class="detail-label">Title</span>
+                            <span class="detail-value"><strong>${escapeHtml(incident.title)}</strong></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Severity</span>
+                            <span class="detail-value"><span class="badge-modern ${severityClass}">${ucfirst(incident.severity)}</span></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Status</span>
+                            <span class="detail-value"><span class="badge-modern ${statusClass}">${ucfirst(incident.status)}</span></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Detected</span>
+                            <span class="detail-value">${formatDate(incident.detected_at)}</span>
+                        </div>
+                        ${incident.resolved_at ? `<div class="detail-row"><span class="detail-label">Resolved</span><span class="detail-value">${formatDate(incident.resolved_at)}</span></div>` : ''}
+                        <div class="detail-row" style="border:none;">
+                            <span class="detail-label">Reported By</span>
+                            <span class="detail-value">${escapeHtml(incident.reported_by || '—')}</span>
                         </div>
                     </div>
-                    <div class="detail-section">
-                        <div class="detail-section-title">Description</div>
-                        <div class="detail-description-block">${escapeHtml(incident.description)}</div>
-                    </div>
-                    ${incident.resolution ? `
-                    <div class="detail-section">
-                        <div class="detail-section-title">Resolution</div>
-                        <div class="detail-description-block">${escapeHtml(incident.resolution)}</div>
-                    </div>
-                    ` : ''}
-                `;
-            })
-            .catch(() => {
-                body.innerHTML = '<p class="text-center text-danger">Failed to load incident details.</p>';
-            });
+                </div>
+                <div class="detail-section">
+                    <div class="detail-section-title">Description</div>
+                    <div class="detail-description-block">${escapeHtml(incident.description)}</div>
+                </div>
+                ${incident.resolution ? `
+                <div class="detail-section">
+                    <div class="detail-section-title">Resolution</div>
+                    <div class="detail-description-block">${escapeHtml(incident.resolution)}</div>
+                </div>
+                ` : ''}
+            `;
+        })
+        .catch(() => {
+            body.innerHTML = '<p class="text-center text-danger">Failed to load incident details.</p>';
         });
-    });
+    }
 
     // --- Resolve / Update Incident ---
-    document.querySelectorAll('.resolve-incident-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const id = this.dataset.id;
-            document.getElementById('resolveIncidentId').value = id;
-            document.getElementById('resolveIncidentForm').reset();
-            document.getElementById('resolveResolvedAt').value = new Date().toISOString().slice(0, 16);
-            openModal('resolveIncidentModal');
-        });
-    });
+    function openResolveModal(id) {
+        document.getElementById('resolveIncidentId').value = id;
+        document.getElementById('resolveIncidentForm').reset();
+        document.getElementById('resolveResolvedAt').value = new Date().toISOString().slice(0, 16);
+        openModal('resolveIncidentModal');
+    }
 
     // Toggle resolved_at field visibility based on status
     document.getElementById('resolveStatus')?.addEventListener('change', function() {
@@ -182,7 +250,7 @@
             delete data.resolved_at;
         }
 
-        fetch(window.incidentLogRoutes.update + '/' + id, {
+        fetch(window.incidentLogRoutes.update + '/' + id + '?page=' + currentPage(), {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
@@ -191,52 +259,43 @@
             },
             body: JSON.stringify(data),
         })
-        .then(r => r.json())
+        .then(parseResponse)
         .then(res => {
-            if (res.success) {
-                showToast(res.message, 'success');
-                closeModal('resolveIncidentModal');
-                setTimeout(() => location.reload(), 800);
-            } else {
-                showToast(res.message || 'Failed to update incident.', 'error');
-            }
+            showToast(res.message, 'success');
+            closeModal('resolveIncidentModal');
+            applyPayload(res.payload, res.focus_id);
         })
-        .catch(() => showToast('An error occurred.', 'error'));
+        .catch(err => showToast(err.message || 'Failed to update incident.', 'error'));
     });
 
     // --- Delete Incident ---
     let deleteIncidentId = null;
-    document.querySelectorAll('.delete-incident-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            deleteIncidentId = this.dataset.id;
-            const title = this.dataset.title;
-            document.getElementById('confirmDeleteMessage').textContent =
-                `Are you sure you want to delete "${escapeHtml(title)}"? This action cannot be undone.`;
-            openModal('confirmDeleteModal');
-        });
-    });
+    function openDeleteModal(id, title) {
+        deleteIncidentId = id;
+        // textContent escapes on its own, so the title must NOT be pre-escaped here
+        document.getElementById('confirmDeleteMessage').textContent =
+            `Are you sure you want to delete "${title || 'this incident'}"? This action cannot be undone.`;
+        openModal('confirmDeleteModal');
+    }
 
     document.getElementById('confirmDeleteYes')?.addEventListener('click', function() {
         if (!deleteIncidentId) return;
 
-        fetch(window.incidentLogRoutes.destroy + '/' + deleteIncidentId, {
+        fetch(window.incidentLogRoutes.destroy + '/' + deleteIncidentId + '?page=' + currentPage(), {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
                 'Accept': 'application/json',
             },
         })
-        .then(r => r.json())
+        .then(parseResponse)
         .then(res => {
-            if (res.success) {
-                showToast(res.message, 'success');
-                closeModal('confirmDeleteModal');
-                setTimeout(() => location.reload(), 800);
-            } else {
-                showToast(res.message || 'Failed to delete incident.', 'error');
-            }
+            showToast(res.message, 'success');
+            closeModal('confirmDeleteModal');
+            applyPayload(res.payload);
+            deleteIncidentId = null;
         })
-        .catch(() => showToast('An error occurred.', 'error'));
+        .catch(err => showToast(err.message || 'Failed to delete incident.', 'error'));
     });
 
     // --- Utilities ---

@@ -13,22 +13,22 @@
             <p>Record, track, and manage security incidents and system issues.</p>
         </div>
 
-        {{-- Stats --}}
+        {{-- Stats (values are refreshed in place by incident-logs.js after each change) --}}
         <div class="incident-stats-row">
             <div class="incident-stat-card open">
-                <strong>{{ $stats['open'] }}</strong>
+                <strong data-stat="open">{{ $stats['open'] }}</strong>
                 <span>Open / Investigating</span>
             </div>
             <div class="incident-stat-card resolved">
-                <strong>{{ $stats['resolved'] }}</strong>
+                <strong data-stat="resolved">{{ $stats['resolved'] }}</strong>
                 <span>Resolved / Closed</span>
             </div>
             <div class="incident-stat-card critical">
-                <strong>{{ $stats['critical'] }}</strong>
+                <strong data-stat="critical">{{ $stats['critical'] }}</strong>
                 <span>Critical (Unresolved)</span>
             </div>
             <div class="incident-stat-card total">
-                <strong>{{ $stats['total'] }}</strong>
+                <strong data-stat="total">{{ $stats['total'] }}</strong>
                 <span>Total Incidents</span>
             </div>
         </div>
@@ -58,65 +58,12 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @forelse($incidents as $incident)
-                            <tr>
-                                <td>#{{ $incident->id }}</td>
-                                <td class="incident-title">{{ \Illuminate\Support\Str::limit($incident->title, 60) }}</td>
-                                <td>
-                                    @php
-                                        $severityClass = match($incident->severity) {
-                                            'critical' => 'danger',
-                                            'high'     => 'warning',
-                                            'medium'   => 'info',
-                                            'low'      => 'success',
-                                            default    => 'info',
-                                        };
-                                    @endphp
-                                    <span class="badge-modern {{ $severityClass }}">
-                                        {{ ucfirst($incident->severity) }}
-                                    </span>
-                                </td>
-                                <td>
-                                    @php
-                                        $statusClass = match($incident->status) {
-                                            'open'           => 'danger',
-                                            'investigating'  => 'warning',
-                                            'resolved'       => 'success',
-                                            'closed'         => 'info',
-                                            default          => 'info',
-                                        };
-                                    @endphp
-                                    <span class="badge-modern {{ $statusClass }}">
-                                        {{ ucfirst($incident->status) }}
-                                    </span>
-                                </td>
-                                <td>{{ $incident->detected_at->format('M d, Y g:i A') }}</td>
-                                <td>{{ $incident->resolved_at ? $incident->resolved_at->format('M d, Y g:i A') : '—' }}</td>
-                                <td>{{ $incident->reported_by ?? '—' }}</td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="admin-btn admin-btn-primary admin-btn-sm view-incident-btn"
-                                            data-id="{{ $incident->id }}">View</button>
-                                        @if(!in_array($incident->status, ['resolved', 'closed']))
-                                            <button class="admin-btn admin-btn-ghost admin-btn-sm resolve-incident-btn"
-                                                data-id="{{ $incident->id }}">Resolve</button>
-                                        @endif
-                                        <button class="admin-btn admin-btn-danger admin-btn-sm delete-incident-btn"
-                                            data-id="{{ $incident->id }}"
-                                            data-title="{{ $incident->title }}">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center">No incidents logged yet.</td>
-                            </tr>
-                        @endforelse
+                    <tbody id="incidentRowsBody">
+                        @include('admin.partials.incident-rows', ['incidents' => $incidents])
                     </tbody>
                 </table>
             </div>
-            <div style="margin-top: 16px;">
+            <div style="margin-top: 16px;" id="incidentPagination">
                 {{ $incidents->links() }}
             </div>
         </div>
