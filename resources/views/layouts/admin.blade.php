@@ -199,6 +199,16 @@
                 </a>
             </li>
             @endif
+
+            {{-- Audit Logs (standalone, read-only trail of everything done in admin) --}}
+            @if($canAccess('audit-logs'))
+            <li>
+                <a href="{{ route('admin.audit-logs') }}" class="{{ request()->is('admin/audit-logs') ? 'active' : '' }}">
+                    <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1z"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+                    Audit Logs
+                </a>
+            </li>
+            @endif
         </ul>
     </nav>
 

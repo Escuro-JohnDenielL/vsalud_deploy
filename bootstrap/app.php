@@ -23,6 +23,12 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class => \App\Http\Middleware\VerifyCsrfToken::class,
         ]);
 
+        // Audit trail: records every state-changing admin request that does not
+        // already log a richer entry of its own. See App\Http\Middleware\LogAdminActivity.
+        $middleware->web(append: [
+            \App\Http\Middleware\LogAdminActivity::class,
+        ]);
+
         $middleware->alias([
             'role.admin'      => CheckAdminRole::class,
             'page.permission' => CheckPagePermission::class,

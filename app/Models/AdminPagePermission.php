@@ -32,6 +32,7 @@ class AdminPagePermission extends Model
             'cancellations' => 'Cancellation Requests',
             'waitlist'      => 'Waitlist',
             'incident-logs' => 'Incident Logs',
+            'audit-logs'    => 'Audit Logs',
             'reports'       => 'Reports',
             'feedback'      => 'Feedback',
         ];
@@ -45,8 +46,8 @@ class AdminPagePermission extends Model
         return [
             'full-access' => [
                 'label' => 'Full Access',
-                'description' => 'All pages (packages, reservations, inquiries, logs, cancellations, waitlist, payment logs, incident logs, reports, feedback)',
-                'pages' => ['packages', 'reservations', 'inquiries', 'reserve-logs', 'payment-logs', 'cancellations', 'waitlist', 'incident-logs', 'reports', 'feedback'],
+                'description' => 'All pages (packages, reservations, inquiries, logs, cancellations, waitlist, payment logs, incident logs, audit logs, reports, feedback)',
+                'pages' => ['packages', 'reservations', 'inquiries', 'reserve-logs', 'payment-logs', 'cancellations', 'waitlist', 'incident-logs', 'audit-logs', 'reports', 'feedback'],
             ],
             'view-only' => [
                 'label' => 'View Only',

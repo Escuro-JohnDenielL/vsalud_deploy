@@ -2,8 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\ActivityLog;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckPagePermission
@@ -34,6 +36,10 @@ class CheckPagePermission
         'admin.activities.all'   => 'reports',
         // Waitlist
         'admin.waitlist'         => 'waitlist',
+        // Audit trail (every action of every admin)
+        'admin.audit-logs'        => 'audit-logs',
+        'admin.audit-logs.export' => 'audit-logs',
+        'admin.audit-logs.show'   => 'audit-logs',
     ];
 
     public function handle(Request $request, Closure $next): Response
@@ -74,6 +80,8 @@ class CheckPagePermission
             ->exists();
 
         if (!$hasPermission) {
+            $this->logDeniedAccess($request, $admin, $pageSlug);
+
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
@@ -86,5 +94,38 @@ class CheckPagePermission
         }
 
         return $next($request);
+    }
+
+    /**
+     * Being refused a page is security-relevant, so it is written to the audit
+     * trail even though the page itself was never reached. Also stops
+     * LogAdminActivity from recording the redirect as a successful action.
+     */
+    private function logDeniedAccess(Request $request, $admin, string $pageSlug): void
+    {
+        try {
+            $routeName = $request->route()?->getName();
+
+            ActivityLog::create([
+                'admin_id' => $admin->admin_id,
+                'activity_type' => 'Access Denied',
+                'category' => 'security',
+                'route_name' => $routeName ? Str::limit($routeName, 150, '') : null,
+                'http_method' => $request->method(),
+                'subject' => Str::limit('Page: ' . $pageSlug, 191, ''),
+                'description' => sprintf(
+                    'Admin %s %s was denied access to the "%s" page (%s /%s)',
+                    $admin->f_name,
+                    $admin->l_name,
+                    $pageSlug,
+                    $request->method(),
+                    $request->path()
+                ),
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+        } catch (\Throwable $e) {
+            report($e);
+        }
     }
 }

@@ -13,6 +13,7 @@ use App\Http\Controllers\CancellationController;
 // Admin Controller Related
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\AdminHomeController;
+use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\InquiryController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\AvailabilityController;
@@ -199,6 +200,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
     Route::get('/incident-logs/{id}', [\App\Http\Controllers\Admin\IncidentLogController::class, 'show'])->name('incident-logs.show');
     Route::post('/incident-logs/{id}', [\App\Http\Controllers\Admin\IncidentLogController::class, 'update'])->name('incident-logs.update');
     Route::delete('/incident-logs/{id}', [\App\Http\Controllers\Admin\IncidentLogController::class, 'destroy'])->name('incident-logs.destroy');
+
+    // Audit Logs (admin) — read-only trail of every admin action.
+    // Page access is granted through the 'audit-logs' page permission.
+    Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs');
+    Route::get('/audit-logs/export', [AuditLogController::class, 'export'])->name('audit-logs.export');
+    Route::get('/audit-logs/{log}', [AuditLogController::class, 'show'])->name('audit-logs.show');
 });
 
 // Logout Route (accessible to authenticated users)
