@@ -23,15 +23,40 @@ class AiReplyService
      */
     public static function generateDraft(array $inquiry): string
     {
+        return self::generate(self::systemPrompt(), self::buildPrompt($inquiry), 'reply draft');
+    }
+
+    /**
+     * Generate a concise internal "Event Brief" for a reservation so the admin and
+     * the coordinator team can prep for an event at a glance (who, what, when,
+     * where, plus any special requests captured by the booking form).
+     *
+     * @param  array  $context  Reservation + booking-form context (client_name, client_email,
+     *                          client_contact, tracking_code, event_type, venue, theme_motif,
+     *                          date, time, status, message, form_data)
+     * @return string
+     *
+     * @throws \RuntimeException when the API key is missing or the request fails
+     */
+    public static function generateEventBrief(array $context): string
+    {
+        return self::generate(self::eventBriefSystemPrompt(), self::buildEventBriefPrompt($context), 'event brief');
+    }
+
+    /**
+     * Core Gemini request shared by every AI helper (reply drafts, event briefs, ...).
+     */
+    protected static function generate(string $systemPrompt, string $userPrompt, string $label = 'draft'): string
+    {
         $apiKey = config('services.gemini.api_key');
 
         if (empty($apiKey) || str_starts_with($apiKey, 'your_')) {
             throw new \RuntimeException(
-                'GEMINI_API_KEY is not configured. Add it to the Railway variables (or your local .env) to use AI drafts.'
+                'GEMINI_API_KEY is not configured. Add it to the Railway variables (or your local .env) to use AI features.'
             );
         }
 
-        $model = config('services.gemini.model', 'gemini-2.5-flash');
+        $model = config('services.gemini.model', 'gemini-3.5-flash');
 
         try {
             // Gemini 3.x are reasoning models and can be slow on the free tier —
@@ -43,9 +68,9 @@ class AiReplyService
                 ->post(
                     "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}",
                     [
-                        'system_instruction' => ['parts' => [['text' => self::systemPrompt()]]],
+                        'system_instruction' => ['parts' => [['text' => $systemPrompt]]],
                         'contents' => [
-                            ['role' => 'user', 'parts' => [['text' => self::buildPrompt($inquiry)]]],
+                            ['role' => 'user', 'parts' => [['text' => $userPrompt]]],
                         ],
                         'generationConfig' => [
                             // Gemini 3.x are reasoning models: they spend tokens on internal
@@ -61,9 +86,9 @@ class AiReplyService
 
             if (! $response->successful() || empty($body['candidates'][0]['content']['parts'])) {
                 $error = $body['error']['message'] ?? $response->body();
-                Log::error('Gemini draft generation failed', ['error' => $error, 'status' => $response->status()]);
+                Log::error("Gemini {$label} generation failed", ['error' => $error, 'status' => $response->status()]);
 
-                throw new \RuntimeException('AI draft generation failed: '.$error);
+                throw new \RuntimeException('AI '.$label.' generation failed: '.$error);
             }
 
             // The model may split its answer across multiple parts — join them all.
@@ -76,7 +101,7 @@ class AiReplyService
 
             // Log actual token usage so free-tier consumption can be monitored.
             $usage = $body['usageMetadata'] ?? [];
-            Log::info('Gemini draft generated', [
+            Log::info("Gemini {$label} generated", [
                 'model' => $model,
                 'prompt_tokens' => $usage['promptTokenCount'] ?? 0,
                 'output_tokens' => $usage['candidatesTokenCount'] ?? 0,
@@ -152,5 +177,79 @@ PROMPT;
         return "Write the reply email for the following customer inquiry.\n\n"
             .implode("\n", $details)
             ."\n\nUse only the business facts provided. Be polite, warm, and helpful.";
+    }
+
+    /**
+     * System instruction for the internal "Event Brief" — grounded in the same
+     * Villa Salud business facts but tuned for an at-a-glance staff handoff.
+     */
+    protected static function eventBriefSystemPrompt(): string
+    {
+        return <<<'PROMPT'
+You are the events-coordinator assistant of Villa Salud Catering Services, a Filipino catering and events venue business. You produce concise internal handoff briefs so the admin and the accredited coordinator team can prep for an event at a glance.
+
+Business facts you must know:
+- Two event venues: Villa I (up to 200 pax) and Villa II (up to 300 pax). Villa II has built-in crystal chandeliers and a mirror carpet; guests who book it get a free upgrade to ghost chairs.
+- Private swimming pool for rent, good for up to 50 pax.
+- Accredited coordinator team: "The Events by Design (TED)", owned by Ms. Rhose and Sir. Cris.
+- Venue-only rentals are allowed EXCEPT during the whole month of December.
+- Office is open daily except holidays, 9:00 AM to 6:00 PM.
+
+Rules:
+- Write ONE compact, plain-text Event Brief of 5 to 8 short lines (roughly 70 to 120 words total). No markdown, no bullet symbols, no headers, no subject line.
+- Organize each line as "Label: value" (for example "Event:", "Client:", "Date & time:", "Venue:", "Headcount:", "Theme/motif:", "Special requests:", "Notes:").
+- Start with the event type and the client's family/group name so staff instantly know what it is.
+- Pull headcount, food/AV/decor needs, and special requests ONLY from the booking-form data provided.
+- Explicitly flag anything staff must prepare or confirm (coordinator needed, early setup, pool rental, late end time, December booking, free ghost-chair upgrade, etc.).
+- Never invent prices, packages, headcounts, requests, or contact details. If a detail is missing write "Not specified" — do not guess.
+- Keep it internal and neutral. This is NOT a message to the client.
+PROMPT;
+    }
+
+    /**
+     * Builds the user prompt from the actual reservation + booking-form context.
+     */
+    protected static function buildEventBriefPrompt(array $context): string
+    {
+        $details = [];
+
+        foreach ([
+            'Client name'    => $context['client_name'] ?? null,
+            'Client email'   => $context['client_email'] ?? null,
+            'Client contact' => $context['client_contact'] ?? null,
+            'Tracking code'  => $context['tracking_code'] ?? null,
+            'Event type'     => $context['event_type'] ?? null,
+            'Venue'          => $context['venue'] ?? null,
+            'Event date'     => $context['date'] ?? null,
+            'Event time'     => $context['time'] ?? null,
+            'Theme / motif'  => $context['theme_motif'] ?? null,
+            'Status'         => $context['status'] ?? null,
+            'Client message' => $context['message'] ?? null,
+        ] as $label => $value) {
+            if (! empty($value)) {
+                $details[] = "{$label}: {$value}";
+            }
+        }
+
+        // Include the dynamic booking-form answers (if any).
+        $formData = $context['form_data'] ?? [];
+        if (is_string($formData)) {
+            $formData = json_decode($formData, true) ?: [];
+        }
+
+        if (is_array($formData)) {
+            foreach ($formData as $key => $value) {
+                if (is_array($value)) {
+                    $value = implode(', ', $value);
+                }
+                if ($value !== null && $value !== '') {
+                    $details[] = ucfirst(str_replace('_', ' ', (string) $key)).': '.$value;
+                }
+            }
+        }
+
+        return "Write the internal Event Brief for the following reservation.\n\n"
+            .implode("\n", $details)
+            ."\n\nUse only the reservation and booking-form details provided.";
     }
 }

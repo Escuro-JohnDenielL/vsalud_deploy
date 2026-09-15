@@ -176,7 +176,68 @@ function viewReservation(id) {
                     <span class="detail-value"><div class="detail-message-block">${escHtml(data.message || "N/A")}</div></span>
                 </div>
             </div>
+
+            <!-- AI Event Brief (Google Gemini) -->
+            <div class="detail-section ai-brief-section">
+                <div class="detail-section-title">AI Event Brief</div>
+                <p class="ai-brief-hint">Get an at-a-glance handoff summary for the venue and coordinator team.</p>
+                <button id="aiBriefBtn" class="admin-btn admin-btn-ghost" type="button">
+                    <span id="aiBriefLabel">✨ AI Event Brief</span>
+                </button>
+                <p id="aiBriefStatus" class="ai-brief-status"></p>
+                <div id="aiBriefOutput" class="ai-brief-output" style="display:none;"></div>
+            </div>
         `;
+
+            // Wire up the AI Event Brief button (re-created each time the modal opens).
+            const aiBriefBtn = document.getElementById("aiBriefBtn");
+            const aiBriefLabel = document.getElementById("aiBriefLabel");
+            const aiBriefStatus = document.getElementById("aiBriefStatus");
+            const aiBriefOutput = document.getElementById("aiBriefOutput");
+
+            if (aiBriefBtn) {
+                aiBriefBtn.addEventListener("click", async () => {
+                    aiBriefBtn.disabled = true;
+                    aiBriefLabel.textContent = "Generating brief...";
+                    aiBriefStatus.textContent = "";
+                    aiBriefStatus.className = "ai-brief-status";
+                    aiBriefOutput.style.display = "none";
+
+                    const csrfToken = document
+                        .querySelector('meta[name="csrf-token"]')
+                        ?.getAttribute("content");
+
+                    try {
+                        const res = await fetch(`/admin/reservations/${id}/ai-brief`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Accept: "application/json",
+                                ...(csrfToken && { "X-CSRF-TOKEN": csrfToken }),
+                            },
+                        });
+
+                        const data = await res.json();
+
+                        if (data.success) {
+                            aiBriefOutput.innerHTML = `<div class="ai-brief-text">${escHtml(data.brief)}</div>`;
+                            aiBriefOutput.style.display = "block";
+                            aiBriefStatus.textContent = "Brief generated — review before sharing with the team.";
+                            aiBriefStatus.className = "ai-brief-status ai-brief-success";
+                        } else {
+                            aiBriefStatus.textContent = data.message || "Could not generate the brief.";
+                            aiBriefStatus.className = "ai-brief-status ai-brief-error";
+                        }
+                    } catch (err) {
+                        console.error("Error:", err);
+                        aiBriefStatus.textContent = "Failed to reach the AI service.";
+                        aiBriefStatus.className = "ai-brief-status ai-brief-error";
+                    } finally {
+                        aiBriefBtn.disabled = false;
+                        aiBriefLabel.textContent = "✨ AI Event Brief";
+                    }
+                });
+            }
         })
         .catch((err) => {
             console.error("Error fetching reservation:", err);

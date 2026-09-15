@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Reservation;
 use Illuminate\Support\Facades\Log;
+use App\Services\AiReplyService;
 
 class ReservationController extends Controller
 {
@@ -105,6 +106,66 @@ class ReservationController extends Controller
                 'error' => true,
                 'message' => 'Unable to delete reservation'
             ], 500);
+        }
+    }
+
+    /**
+     * Generate an AI-assisted "Event Brief" for a reservation (Google Gemini).
+     *
+     * Summarizes the booking + dynamic booking-form answers into a short internal
+     * handoff brief the admin / coordinator team can read at a glance. Mirrors the
+     * inquiry "AI Draft Reply" flow (same service, throttled like draft-reply).
+     */
+    public function aiBrief(Request $request, $id)
+    {
+        try {
+            $reservation = Reservation::with(['patron', 'inquiry'])->find($id);
+
+            if (! $reservation) {
+                return response()->json(['success' => false, 'message' => 'Reservation not found.'], 404);
+            }
+
+            $inquiry = $reservation->inquiry;
+
+            // Resolve "Others" values from the linked inquiry's *_other columns.
+            $venue = $reservation->venue;
+            $eventType = $reservation->event_type;
+            $theme = $reservation->theme_motif;
+
+            if ($inquiry) {
+                if (($venue ?? '') === 'Others') {
+                    $venue = $inquiry->other_venue ?? $venue;
+                }
+                if (($eventType ?? '') === 'Others') {
+                    $eventType = $inquiry->other_event_type ?? $eventType;
+                }
+                if (($theme ?? '') === 'Others') {
+                    $theme = $inquiry->other_theme_motif ?? $theme;
+                }
+            }
+
+            $context = [
+                'client_name'    => $reservation->patron->name ?? 'Not specified',
+                'client_email'   => $reservation->patron->email ?? '',
+                'client_contact' => $reservation->patron->contact_number ?? '',
+                'tracking_code'  => $inquiry->tracking_code ?? null,
+                'event_type'     => $eventType ?? '',
+                'venue'          => $venue ?? '',
+                'theme_motif'    => $theme ?? '',
+                'date'           => $reservation->date ? \Illuminate\Support\Carbon::parse($reservation->date)->format('F j, Y') : '',
+                'time'           => $reservation->time ?? '',
+                'status'         => $reservation->status ?? '',
+                'message'        => $reservation->message ?? '',
+                'form_data'      => $reservation->form_data ?? [],
+            ];
+
+            $brief = AiReplyService::generateEventBrief($context);
+
+            return response()->json(['success' => true, 'brief' => $brief]);
+        } catch (\Throwable $e) {
+            Log::error('AI event brief failed: '.$e->getMessage());
+
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 }

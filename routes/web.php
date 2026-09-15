@@ -164,6 +164,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
     // Payment status management
     Route::patch('/payments/{payment}/status', [\App\Http\Controllers\Admin\PaymentStatusController::class, 'update'])->name('payments.status');
 
+    // AI-assisted Event Brief for a reservation (Google Gemini) — max 10 requests per minute
+    Route::post('/reservations/{id}/ai-brief', [AdminReservationController::class, 'aiBrief'])
+        ->name('reservations.ai-brief')
+        ->middleware('throttle:10,1');
+
     // Payment settings (admin-editable)
     Route::get('/payment-settings', [\App\Http\Controllers\Admin\PaymentSettingsController::class, 'index'])->name('payment-settings');
     Route::post('/payment-settings', [\App\Http\Controllers\Admin\PaymentSettingsController::class, 'update'])->name('payment-settings.update');
