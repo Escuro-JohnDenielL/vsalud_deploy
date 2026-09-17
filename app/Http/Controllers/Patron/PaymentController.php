@@ -76,15 +76,34 @@ class PaymentController extends Controller
 
         $trackingCode = 'VS-' . substr(time(), -6) . '-' . rand(1000, 9999);
 
-        // Store the receipt on R2 so it persists across Railway restarts (the
-        // container filesystem is ephemeral). If the cloud upload fails, fall
-        // back to the PRIVATE local disk — never the public one, so a receipt is
-        // never reachable at /storage/receipts/... without authentication.
-        try {
-            $receiptPath = $request->file('receipt')->store('receipts', 'r2');
-        } catch (\Throwable $e) {
-            Log::warning('R2 receipt upload failed, falling back to the private local disk: ' . $e->getMessage());
-            $receiptPath = $request->file('receipt')->store('receipts', 'local');
+        // Store the receipt on the Railway volume, which is mounted at
+        // /var/www/storage/app/public — the root of the "public" disk — so
+        // uploads survive redeploys. R2 (older cloud path) and the private
+        // local disk remain as fallbacks for environments without a volume.
+        //
+        // NOTE: every disk here is configured with 'throw' => false, so a
+        // failed write RETURNS false instead of throwing — check the result
+        // and move to the next disk instead of trusting try/catch alone.
+        $receiptPath = null;
+        foreach (['public', 'r2', 'local'] as $diskName) {
+            try {
+                $stored = $request->file('receipt')->store('receipts', $diskName);
+            } catch (\Throwable $e) {
+                Log::warning("Receipt upload failed on disk [{$diskName}]: " . $e->getMessage());
+                continue;
+            }
+
+            if (is_string($stored) && $stored !== '') {
+                $receiptPath = $stored;
+                break;
+            }
+        }
+
+        if (! $receiptPath) {
+            return response()->json([
+                'success' => false,
+                'message' => 'We could not save your receipt. Please try again.',
+            ], 500);
         }
 
         $payment = Payment::create([

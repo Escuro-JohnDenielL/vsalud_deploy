@@ -31,3 +31,4 @@ THESIS_*.md
 
 # Local sensitive/private folder
 /hide
+BUG_REPORT_TRACKER.csv

@@ -23,9 +23,10 @@ class PaymentLogsController extends Controller
     /**
      * Stream a payment receipt (image or PDF) directly from the storage disk.
      *
-     * Reads through the Storage facade instead of the public/storage symlink, so
-     * it works on Railway where the symlink is not created at deploy time and
-     * the filesystem is ephemeral. Receipts are tied to a Payment row in the DB.
+     * Reads through the Storage facade instead of serving the /storage URL, so
+     * the receipt always stays behind admin auth. The primary disk is "public",
+     * backed by the Railway volume mounted at /var/www/storage/app/public.
+     * Receipts are tied to a Payment row in the DB.
      */
     public function showReceipt(Payment $payment)
     {
@@ -35,11 +36,11 @@ class PaymentLogsController extends Controller
             abort(404, 'Receipt file not found.');
         }
 
-        // New uploads live on R2 (persistent across Railway restarts); a failed
-        // cloud upload falls back to the private local disk; legacy uploads sit
-        // on the public disk. Check all three so old rows still work, and so one
-        // disk failing never 500s the request.
-        foreach (['r2', 'local', 'public'] as $diskName) {
+        // New uploads live on the "public" disk (the Railway volume mounted at
+        // /var/www/storage/app/public), so check it first. R2 (older cloud
+        // uploads) and the private local disk remain as fallbacks so past rows
+        // still resolve, and one disk failing never 500s the request.
+        foreach (['public', 'r2', 'local'] as $diskName) {
             try {
                 /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
                 $disk = Storage::disk($diskName);
