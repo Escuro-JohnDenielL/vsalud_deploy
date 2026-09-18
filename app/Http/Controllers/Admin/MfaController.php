@@ -58,7 +58,9 @@ class MfaController extends Controller
             $devOtpCode = $this->mfaService->currentOtpCode();
         }
 
-        return view('admin.mfa-setup', compact('admin', 'totpSecret', 'totpUri', 'devOtpCode'));
+        $resendAvailableIn = $this->mfaService->otpResendAvailableIn();
+
+        return view('admin.mfa-setup', compact('admin', 'totpSecret', 'totpUri', 'devOtpCode', 'resendAvailableIn'));
     }
 
     /**
@@ -181,7 +183,9 @@ class MfaController extends Controller
             }
         }
 
-        return view('admin.mfa-challenge', compact('admin', 'devOtpCode'));
+        $resendAvailableIn = $this->mfaService->otpResendAvailableIn();
+
+        return view('admin.mfa-challenge', compact('admin', 'devOtpCode', 'resendAvailableIn'));
     }
 
     /**
@@ -302,10 +306,24 @@ class MfaController extends Controller
             return response()->json(['success' => false, 'message' => 'Invalid request.'], 422);
         }
 
+        // Enforce the resend cooldown so a new email can only be requested once per window.
+        $wait = $this->mfaService->otpResendAvailableIn();
+        if ($wait > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'A code was recently sent. You can request a new one in ' . gmdate('i:s', $wait) . '.',
+                'retry_after' => $wait,
+            ], 429);
+        }
+
         try {
             $this->mfaService->generateAndSendOtp($admin);
 
-            $response = ['success' => true, 'message' => 'A new verification code has been sent to your email.'];
+            $response = [
+                'success' => true,
+                'message' => 'A new verification code has been sent to your email.',
+                'cooldown_seconds' => MfaService::OTP_RESEND_COOLDOWN_MINUTES * 60,
+            ];
 
             // Dev workaround: include the code so it can be shown on-screen.
             if ($this->mfaService->showCodeOnPage()) {
@@ -334,10 +352,24 @@ class MfaController extends Controller
             return response()->json(['success' => false, 'message' => 'MFA already enabled.'], 422);
         }
 
+        // Enforce the resend cooldown so a new email can only be requested once per window.
+        $wait = $this->mfaService->otpResendAvailableIn();
+        if ($wait > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'A code was recently sent. You can request a new one in ' . gmdate('i:s', $wait) . '.',
+                'retry_after' => $wait,
+            ], 429);
+        }
+
         try {
             $this->mfaService->generateAndSendOtp($admin);
 
-            $response = ['success' => true, 'message' => 'A verification code has been sent to your email.'];
+            $response = [
+                'success' => true,
+                'message' => 'A verification code has been sent to your email.',
+                'cooldown_seconds' => MfaService::OTP_RESEND_COOLDOWN_MINUTES * 60,
+            ];
 
             // Dev workaround: include the code so it can be shown on-screen.
             if ($this->mfaService->showCodeOnPage()) {

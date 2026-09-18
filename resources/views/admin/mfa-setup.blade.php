@@ -216,10 +216,43 @@
 
     <script>
         let otpSent = false;
+        let resendTimer = null;
 
-        // Auto-send OTP on page load
+        // Keep the send button locked while the cooldown is running.
+        function startResendCountdown(seconds, lead = 'A code was already sent.') {
+            const btn = document.getElementById('send-email-otp-btn');
+            const status = document.getElementById('email-otp-status');
+            let remaining = Math.max(0, parseInt(seconds, 10) || 0);
+            clearInterval(resendTimer);
+
+            const render = () => {
+                if (remaining <= 0) {
+                    clearInterval(resendTimer);
+                    btn.disabled = false;
+                    btn.textContent = 'Resend Code';
+                    status.textContent = 'You can now request a new code.';
+                    return;
+                }
+
+                const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+                const s = String(remaining % 60).padStart(2, '0');
+                btn.disabled = true;
+                btn.textContent = 'Resend Code';
+                status.textContent = `${lead} You can request a new one in ${m}:${s}.`;
+                remaining--;
+            };
+
+            render();
+            resendTimer = setInterval(render, 1000);
+        }
+
+        // Auto-send OTP on page load (unless the resend cooldown is still active)
         document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(sendEmailOtp, 500);
+            if ({{ $resendAvailableIn }} > 0) {
+                startResendCountdown({{ $resendAvailableIn }});
+            } else {
+                setTimeout(sendEmailOtp, 500);
+            }
         });
 
         function sendEmailOtp() {
@@ -240,9 +273,7 @@
             .then(data => {
                 if (data.success) {
                     otpSent = true;
-                    status.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0d7a3e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polyline points="20 6 9 17 4 12"/></svg> Verification code sent! Please check your email.';
-                    btn.textContent = 'Resend Code';
-                    btn.disabled = false;
+                    startResendCountdown(data.cooldown_seconds || 600, 'Verification code sent! Please check your email.');
 
                     // Dev workaround: show/update the code on-screen if provided.
                     if (data.code) {
@@ -253,6 +284,9 @@
                             devValue.textContent = data.code;
                         }
                     }
+                } else if (data.retry_after) {
+                    // Resend cooldown — keep the button locked with a live countdown.
+                    startResendCountdown(data.retry_after);
                 } else {
                     status.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> ' + (data.message || 'Failed to send code.');
                     btn.textContent = 'Try Again';

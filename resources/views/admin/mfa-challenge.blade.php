@@ -240,6 +240,36 @@
 
     <script>
         @if ($admin->mfa_method === 'email')
+        let resendTimer = null;
+
+        // Keep the resend button locked while the cooldown is running.
+        function startResendCountdown(seconds, lead = 'A code was already sent.') {
+            const btn = document.getElementById('send-code-btn');
+            const status = document.getElementById('send-status');
+            let remaining = Math.max(0, parseInt(seconds, 10) || 0);
+            clearInterval(resendTimer);
+
+            const render = () => {
+                if (remaining <= 0) {
+                    clearInterval(resendTimer);
+                    btn.disabled = false;
+                    btn.textContent = 'Resend Code';
+                    status.textContent = 'You can now request a new code.';
+                    return;
+                }
+
+                const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+                const s = String(remaining % 60).padStart(2, '0');
+                btn.disabled = true;
+                btn.textContent = 'Resend Code';
+                status.textContent = `${lead} You can request a new one in ${m}:${s}.`;
+                remaining--;
+            };
+
+            render();
+            resendTimer = setInterval(render, 1000);
+        }
+
         function sendCode() {
             const btn = document.getElementById('send-code-btn');
             const status = document.getElementById('send-status');
@@ -258,10 +288,8 @@
             .then(r => r.json())
             .then(data => {
                 if (data.success) {
-                    status.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0d7a3e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polyline points="20 6 9 17 4 12"/></svg> Code sent! Please check your email.';
-                    btn.textContent = 'Resend Code';
-                    btn.disabled = false;
                     verifyBtn.style.display = 'block';
+                    startResendCountdown(data.cooldown_seconds || 600, 'Code sent! Please check your email.');
 
                     // Dev workaround: show/update the code on-screen if provided.
                     if (data.code) {
@@ -272,6 +300,9 @@
                             devValue.textContent = data.code;
                         }
                     }
+                } else if (data.retry_after) {
+                    // Resend cooldown — keep the button locked with a live countdown.
+                    startResendCountdown(data.retry_after);
                 } else {
                     status.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> ' + (data.message || 'Failed to send code.');
                     btn.textContent = 'Try Again';
@@ -297,9 +328,17 @@
             }
         });
 
-        // Dev workaround: reveal the verify button immediately since the code is shown on-screen.
-        @if (!empty($devOtpCode))
+        // Reveal the verify button: authenticator users always have a code ready;
+        // email users once a code has been sent.
+        @if ($admin->mfa_method === 'authenticator')
         document.getElementById('verify-btn').style.display = 'block';
+        @elseif (!empty($devOtpCode) || $resendAvailableIn > 0)
+        document.getElementById('verify-btn').style.display = 'block';
+        @endif
+
+        // If a code was recently sent, keep the resend button locked with a live countdown.
+        @if ($admin->mfa_method === 'email' && $resendAvailableIn > 0)
+        startResendCountdown({{ $resendAvailableIn }});
         @endif
     </script>
 </body>

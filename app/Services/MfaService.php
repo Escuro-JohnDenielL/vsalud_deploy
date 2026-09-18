@@ -22,6 +22,11 @@ class MfaService
     const OTP_EXPIRY_MINUTES = 10;
 
     /**
+     * How long before another code can be requested (in minutes).
+     */
+    const OTP_RESEND_COOLDOWN_MINUTES = 10;
+
+    /**
      * Generate a 6-digit OTP code and store it in the admin's session.
      * Returns the generated code.
      *
@@ -47,6 +52,9 @@ class MfaService
                     'expiry_minutes' => self::OTP_EXPIRY_MINUTES,
                 ]));
                 Log::info('MFA OTP sent to admin: ' . $admin->email);
+
+                // Start the resend cooldown now that a code has actually been emailed.
+                session(['mfa_otp_last_sent_at' => now()->timestamp]);
             } catch (\Exception $e) {
                 Log::error('Failed to send MFA OTP email: ' . $e->getMessage());
                 throw $e;
@@ -58,11 +66,14 @@ class MfaService
 
     /**
      * DEVELOPMENT-ONLY workaround: whether the OTP code should be shown on-screen.
-     * Controlled by config('app.mfa_show_code_dev') (e.g. MFA_SHOW_CODE_DEV=true).
+     * Controlled by config('app.mfa_show_code_dev') (e.g. MFA_SHOW_CODE_DEV=true);
+     * it can only return true when the app is also in debug mode.
      */
     public function showCodeOnPage(): bool
     {
-        return (bool) config('app.mfa_show_code_dev');
+        // Requires BOTH the flag and debug mode, so codes can never be
+        // shown on-screen in production even if the flag is left on.
+        return (bool) config('app.mfa_show_code_dev') && (bool) config('app.debug');
     }
 
     /**
@@ -127,7 +138,23 @@ class MfaService
      */
     public function clearOtpSession(): void
     {
-        session()->forget(['mfa_otp_code', 'mfa_otp_expires_at']);
+        session()->forget(['mfa_otp_code', 'mfa_otp_expires_at', 'mfa_otp_last_sent_at']);
+    }
+
+    /**
+     * Seconds remaining before a new OTP email may be requested (0 = allowed now).
+     */
+    public function otpResendAvailableIn(): int
+    {
+        $lastSentAt = session('mfa_otp_last_sent_at');
+
+        if (!$lastSentAt) {
+            return 0;
+        }
+
+        $availableAt = (int) $lastSentAt + (self::OTP_RESEND_COOLDOWN_MINUTES * 60);
+
+        return max(0, $availableAt - now()->timestamp);
     }
 
     /**
