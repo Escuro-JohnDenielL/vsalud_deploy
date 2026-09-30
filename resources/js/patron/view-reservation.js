@@ -9,6 +9,29 @@ function escHtml(str) {
 }
 
 /**
+ * Reservation status (inquiry.status enum) to badge class. The enum values
+ * are Pending / In Progress / Completed / Cancelled.
+ */
+const RESERVATION_STATUS_CLASSES = {
+    pending: "badge-warning",
+    "in progress": "badge-info",
+    completed: "badge-success",
+    cancelled: "badge-danger",
+    canceled: "badge-danger",
+};
+
+/**
+ * Payment status label map. The single place the display-only labels for the
+ * payments.status enum live. The DB enum is not changed.
+ */
+const PAYMENT_STATUS = {
+    pending: { label: "Awaiting Verification", badgeClass: "badge-warning" },
+    approved: { label: "Payment Confirmed", badgeClass: "badge-success" },
+    rejected: { label: "Payment Rejected", badgeClass: "badge-danger" },
+    refunded: { label: "Refunded", badgeClass: "badge-muted" },
+};
+
+/**
  * Build a nice SVG icon by name
  */
 function iconSvg(name) {
@@ -59,8 +82,9 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
 
         const code = document.getElementById("reservation_code").value.trim();
+        const email = document.getElementById("email").value.trim();
 
-        if (!code) return alert("Please enter your reservation code.");
+        if (!code || !email) return alert("Please enter both your reservation code and email address.");
 
         const csrf = document.querySelector('input[name="_token"]').value;
 
@@ -71,8 +95,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     "Content-Type": "application/json",
                     "X-CSRF-TOKEN": csrf,
                 },
-                body: JSON.stringify({ reservation_code: code }),
+                body: JSON.stringify({ reservation_code: code, email: email }),
             });
+
+            // Rate limited by throttle:20,1 on the lookup route. The throttle
+            // response is not JSON, so check the status before parsing.
+            if (response.status === 429) {
+                return alert("Too many attempts. Please wait a minute and try again.");
+            }
 
             const data = await response.json();
 
@@ -83,15 +113,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const r = data.reservation;
 
-            // Determine status badge class
-            const statusRaw = (r.Status || "Pending").toLowerCase();
-            let badgeClass = "badge-info";
-            if (statusRaw === "active" || statusRaw === "confirmed") badgeClass = "badge-success";
-            else if (statusRaw === "completed") badgeClass = "badge-info";
-            else if (statusRaw === "canceled" || statusRaw === "cancelled") badgeClass = "badge-danger";
+            // Determine status badge class. The reservation status enum stores
+            // Pending / In Progress / Completed / Cancelled.
+            const statusRaw = String(r.Status || "Pending").trim().toLowerCase();
+            const badgeClass = RESERVATION_STATUS_CLASSES[statusRaw] || "badge-muted";
 
-            // Build organized sections — known keys first, then extras
-            const knownKeys = ["Name", "Email", "Contact", "Date", "Time", "Venue", "Event Type", "Theme & Motif", "Status"];
+            // Payment status badge (second badge). No payment or a null status
+            // renders nothing; an unrecognized status falls back to its escaped
+            // raw value.
+            let paymentBadgeHtml = "";
+            const paymentRaw = r["Payment Status"];
+            if (paymentRaw !== null && paymentRaw !== undefined && String(paymentRaw).trim() !== "") {
+                const paymentKey = String(paymentRaw).trim().toLowerCase();
+                const payment = PAYMENT_STATUS[paymentKey];
+                const paymentLabel = payment ? payment.label : String(paymentRaw);
+                const paymentBadgeClass = payment ? payment.badgeClass : "badge-muted";
+                paymentBadgeHtml = `<span class="badge-modern ${paymentBadgeClass}">${escHtml(paymentLabel)}</span>`;
+            }
+
+            // Build organized sections: known keys first, then extras
+            const knownKeys = ["Name", "Email", "Contact", "Date", "Time", "Venue", "Event Type", "Theme & Motif", "Status", "Payment Status"];
             const extras = Object.keys(r).filter(k => !knownKeys.includes(k));
 
             // Status badge header
@@ -99,6 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="modal-detail-header">
                     <h3 class="detail-name">${escHtml(r.Name || "Reservation Details")}</h3>
                     <span class="badge-modern ${badgeClass}">${escHtml(r.Status || "Pending")}</span>
+                    ${paymentBadgeHtml}
                 </div>
             `;
 

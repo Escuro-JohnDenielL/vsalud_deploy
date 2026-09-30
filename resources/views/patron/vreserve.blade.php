@@ -9,10 +9,14 @@
 @section('content')
     <div class="reservation-container">
         <h2>Reservation Form</h2>
-        <p>To view your reservation form, please enter your Reservation Code that we sent to your provided email, then click
-            "View Details."</p>
+        <p>To view your reservation form, please enter the Reservation Code that we sent to your provided email, together
+            with the email address itself, then click "View Details."</p>
         <form id="reservationForm">
             @csrf
+            <div class="form-group">
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" name="email" required />
+            </div>
             <div class="form-group">
                 <label for="reservation_code">Reservation Code:</label>
                 <input type="text" id="reservation_code" name="reservation_code" required />

@@ -222,15 +222,40 @@ class ReservationController extends Controller
 
     public function fetchReservation(Request $request)
     {
-        $code = $request->input('reservation_code');
+        $rawCode = $request->input('reservation_code');
+        $rawEmail = $request->input('email');
+
+        // Only strings are accepted. Anything else (arrays, objects) falls
+        // through to the same generic response instead of raising an error
+        // that would reveal a difference between the two lookups.
+        $code = is_string($rawCode) ? trim($rawCode) : '';
+        $email = is_string($rawEmail) ? trim($rawEmail) : '';
+
+        // One generic payload is returned for every failure (blank input,
+        // unknown code, wrong email) so the endpoint cannot be used to probe
+        // which tracking codes exist.
+        $notFound = ['success' => false, 'message' => 'Reservation not found.'];
+
+        if ($code === '' || $email === '') {
+            return response()->json($notFound);
+        }
 
         $inquiry = Inquiry::with('patron')->where('tracking_code', $code)->first();
 
-        if (!$inquiry) {
-            return response()->json(['success' => false, 'message' => 'Reservation not found.']);
+        if (!$inquiry || !$inquiry->patron) {
+            return response()->json($notFound);
+        }
+
+        // Same ownership check as Patron\PaymentController::store.
+        if (strtolower(trim((string) $inquiry->patron->email)) !== strtolower($email)) {
+            return response()->json($notFound);
         }
 
         Log::info($inquiry);
+
+        // Latest payment wins. Null when there is no payment at all, which
+        // makes the UI render no payment badge.
+        $latestPayment = $inquiry->payments()->orderByDesc('payment_id')->first();
 
         $reservation = [
             'Name' => $inquiry->patron->name ?? 'N/A',
@@ -242,6 +267,7 @@ class ReservationController extends Controller
             'Event Type' => $inquiry->event_type === 'Others' ? $inquiry->other_event_type : $inquiry->event_type,
             'Theme & Motif' => $inquiry->theme_motif === 'Others' ? $inquiry->other_theme_motif : $inquiry->theme_motif,
             'Status' => $inquiry->status ?? 'Pending',
+            'Payment Status' => $latestPayment?->status,
         ];
 
         // Merge dynamic form data if available

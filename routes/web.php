@@ -211,7 +211,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
 // Logout Route (accessible to authenticated users)
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
-Route::post('/fetch-reservation', [ReservationController::class, 'fetchReservation'])->name('fetch.reservation');
+Route::post('/fetch-reservation', [ReservationController::class, 'fetchReservation'])->middleware('throttle:20,1')->name('fetch.reservation');
 
 Route::post('/submit-payment', [PaymentController::class, 'store'])->name('payment.store');
 
