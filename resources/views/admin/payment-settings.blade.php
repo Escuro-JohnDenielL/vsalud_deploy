@@ -13,7 +13,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('admin.payment-settings.update') }}" style="background:#fff;border-radius:16px;border:1px solid #e5e7eb;box-shadow:0 1px 3px rgba(0,0,0,0.05);padding:28px;">
+    <form method="POST" enctype="multipart/form-data" action="{{ route('admin.payment-settings.update') }}" style="background:#fff;border-radius:16px;border:1px solid #e5e7eb;box-shadow:0 1px 3px rgba(0,0,0,0.05);padding:28px;">
         @csrf
 
         <h3 style="color:#2d2d2d;margin:0 0 16px;padding-bottom:10px;border-bottom:1px solid #eef2ed;">GCash</h3>
@@ -29,12 +29,18 @@
         </div>
 
         <div style="margin-bottom:16px;">
-            <label style="display:block;font-weight:600;margin-bottom:4px;color:#2d2d2d;font-size:13px;">QR Code Image Path</label>
-            <input type="text" name="gcash_qr_path" value="{{ old('gcash_qr_path', $settings['gcash_qr_path']->value ?? 'images/gcash.jpg') }}" style="width:100%;border:1px solid #e5e7eb;border-radius:10px;padding:9px 12px;font-size:14px;">
-            <p style="color:#6b7280;font-size:12px;margin:4px 0 0;">Relative to the <code>public/</code> directory. Upload new QR via your web host's file manager.</p>
+            <label for="gcash_qr" style="display:block;font-weight:600;margin-bottom:4px;color:#2d2d2d;font-size:13px;">GCash QR Image (JPG, PNG, or WebP, max 2 MB)</label>
+            <input type="file" id="gcash_qr" name="gcash_qr" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" style="width:100%;border:1px solid #e5e7eb;border-radius:10px;padding:9px 12px;font-size:14px;">
+            @error('gcash_qr') <p style="color:#b91c1c;font-size:12px;margin:4px 0 0;">{{ $message }}</p> @enderror
+            @if (!empty($settings['gcash_qr_path']->value) && (str_starts_with($settings['gcash_qr_path']->value, 'gcash-qr/') ? \Illuminate\Support\Facades\Storage::disk('public')->exists($settings['gcash_qr_path']->value) : true))
+                <div style="margin-top:12px;">
+                    <p style="color:#6b7280;font-size:12px;margin:0 0 6px;">Current GCash QR image:</p>
+                    <img src="{{ str_starts_with($settings['gcash_qr_path']->value, 'gcash-qr/') ? route('patron.gcash-qr') : asset($settings['gcash_qr_path']->value) }}" alt="Current GCash QR payment code" style="max-width:240px;max-height:240px;object-fit:contain;border:1px solid #e5e7eb;border-radius:8px;padding:6px;">
+                </div>
+            @endif
         </div>
 
-        <h3 style="color:#2d2d2d;margin:24px 0 16px;padding-bottom:10px;border-bottom:1px solid #eef2ed;">Bank Transfer (BPI)</h3>
+        <h3 style="color:#2d2d2d;margin:24px 0 16px;padding-bottom:10px;border-bottom:1px solid #eef2ed;">Bank Transfer (QRPH)</h3>
 
         <div style="margin-bottom:16px;">
             <label style="display:block;font-weight:600;margin-bottom:4px;color:#2d2d2d;font-size:13px;">Bank Name</label>
@@ -47,8 +53,15 @@
         </div>
 
         <div style="margin-bottom:16px;">
-            <label style="display:block;font-weight:600;margin-bottom:4px;color:#2d2d2d;font-size:13px;">Account Number</label>
-            <input type="text" name="bank_account_number" value="{{ old('bank_account_number', $settings['bank_account_number']->value ?? '8230001538') }}" style="width:100%;border:1px solid #e5e7eb;border-radius:10px;padding:9px 12px;font-size:14px;">
+            <label for="bank_qr" style="display:block;font-weight:600;margin-bottom:4px;color:#2d2d2d;font-size:13px;">Bank QR Image (JPG, PNG, or WebP, max 2 MB)</label>
+            <input type="file" id="bank_qr" name="bank_qr" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" style="width:100%;border:1px solid #e5e7eb;border-radius:10px;padding:9px 12px;font-size:14px;">
+            @error('bank_qr') <p style="color:#b91c1c;font-size:12px;margin:4px 0 0;">{{ $message }}</p> @enderror
+            @if (!empty($settings['bank_qr_path']->value) && \Illuminate\Support\Facades\Storage::disk('public')->exists($settings['bank_qr_path']->value))
+                <div style="margin-top:12px;">
+                    <p style="color:#6b7280;font-size:12px;margin:0 0 6px;">Current bank QR image:</p>
+                    <img src="{{ route('patron.bank-qr') }}" alt="Current Bank Transfer QRPH code" style="max-width:240px;max-height:240px;object-fit:contain;border:1px solid #e5e7eb;border-radius:8px;padding:6px;">
+                </div>
+            @endif
         </div>
 
         <h3 style="color:#2d2d2d;margin:24px 0 16px;padding-bottom:10px;border-bottom:1px solid #eef2ed;">Cash Payment</h3>

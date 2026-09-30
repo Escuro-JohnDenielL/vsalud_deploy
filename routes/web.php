@@ -47,6 +47,8 @@ Route::name('patron.')->group(function () {
 
     // Payment (proof of receipt upload)
     Route::get('/payment', [PaymentController::class, 'index'])->name('payment');
+    Route::get('/payment/bank-qr', [PaymentController::class, 'bankQr'])->name('bank-qr');
+    Route::get('/payment/gcash-qr', [PaymentController::class, 'gcashQr'])->name('gcash-qr');
     // Route::post('/payment', [PaymentController::class, 'store'])->name('payment.store');
 
     // Placeholder views for other patron pages

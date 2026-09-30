@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use App\Models\PaymentSetting;
 use App\Models\Inquiry;
 use App\Models\Reservation;
 use App\Models\Payment;
@@ -15,6 +16,40 @@ class PaymentController extends Controller
     public function index()
     {
         return view('patron.payment');
+    }
+
+    public function bankQr()
+    {
+        return $this->streamQr('bank_qr_path', 'bank-qr');
+    }
+
+    public function gcashQr()
+    {
+        return $this->streamQr('gcash_qr_path', 'gcash-qr');
+    }
+
+    private function streamQr(string $settingKey, string $directory)
+    {
+        $path = PaymentSetting::get($settingKey);
+        if (! is_string($path) || ! preg_match('#^' . preg_quote($directory, '#') . '/[^/]+$#', $path)) {
+            abort(404);
+        }
+
+        $disk = Storage::disk('public');
+        if (! $disk->exists($path)) {
+            abort(404);
+        }
+
+        $mimeType = $disk->mimeType($path);
+        if (! in_array($mimeType, ['image/jpeg', 'image/png', 'image/webp'], true)) {
+            abort(404);
+        }
+
+        return $disk->response($path, null, [
+            'Content-Type' => $mimeType,
+            'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
     }
 
     // public function store(Request $request)

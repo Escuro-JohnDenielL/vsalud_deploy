@@ -46,7 +46,7 @@
                     <select id="paymentMethod">
                         <option value="cash">Cash (Onsite)</option>
                         <option value="gcash">GCash</option>
-                        <option value="bank">Bank Transfer (BPI)</option>
+                        <option value="bank">Bank Transfer (QRPH)</option>
                     </select>
                 </div>
 
@@ -69,21 +69,36 @@
                         <li>Include your tracking code in the note.</li>
                         <li>Upload a screenshot of your payment below.</li>
                     </ul>
-                    <div class="qr-code-container">
-                        <img src="{{ asset(payment_setting('gcash_qr_path', 'images/gcash.jpg')) }}" alt="GCash QR Code">
-                    </div>
+                    @php($gcashQrPath = payment_setting('gcash_qr_path', 'images/gcash.jpg'))
+                    @if (is_string($gcashQrPath) && str_starts_with($gcashQrPath, 'gcash-qr/') && \Illuminate\Support\Facades\Storage::disk('public')->exists($gcashQrPath))
+                        <div class="qr-code-container">
+                            <img src="{{ route('patron.gcash-qr') }}" alt="GCash QR payment code">
+                        </div>
+                    @elseif (is_string($gcashQrPath) && $gcashQrPath !== '')
+                        <div class="qr-code-container">
+                            <img src="{{ asset($gcashQrPath) }}" alt="GCash QR payment code">
+                        </div>
+                    @else
+                        <p class="bank-note">GCash QR is not available right now. Please use Bank Transfer or Cash.</p>
+                    @endif
                 </div>
 
                 <div id="bankInstructions" class="payment-method" style="display: none;">
-                    <h3>Bank Transfer (BPI Only)</h3>
-                    <div class="bank-note">Note: BDO is currently unavailable. Please use BPI.</div>
+                    <h3>Bank Transfer (QRPH)</h3>
                     <ul class="steps">
                         <li>Bank: <strong>{{ payment_setting('bank_name', 'BPI Savings Bank') }}</strong></li>
                         <li>Account Name: <strong>{{ payment_setting('bank_account_name', 'Ernesto Rafael Jr. and/or Elizabeth Rafael') }}</strong></li>
-                        <li>Account Number: <strong>{{ payment_setting('bank_account_number', '8230001538') }}</strong></li>
-                        <li>Include your tracking code in the deposit note.</li>
-                        <li>Upload a photo of your deposit slip below.</li>
+                        <li>Scan the QRPH code below and include your tracking code in the payment note.</li>
+                        <li>Upload your payment receipt below.</li>
                     </ul>
+                    @php($bankQrPath = payment_setting('bank_qr_path'))
+                    @if (is_string($bankQrPath) && $bankQrPath !== '' && \Illuminate\Support\Facades\Storage::disk('public')->exists($bankQrPath))
+                        <div class="qr-code-container">
+                            <img src="{{ route('patron.bank-qr') }}" alt="Bank Transfer QRPH payment code">
+                        </div>
+                    @else
+                        <p class="bank-note">Bank transfer QR is not available right now. Please use GCash.</p>
+                    @endif
                 </div>
 
                 <div id="cashInstructions" class="payment-method" style="display: none;">
