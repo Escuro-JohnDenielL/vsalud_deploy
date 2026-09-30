@@ -125,8 +125,6 @@
         </div>
     </div>
 
-    {{-- Success/Error Message Toast --}}
-    <div id="toast" class="toast" style="display:none;"></div>
 @endsection
 
 @push('scripts')

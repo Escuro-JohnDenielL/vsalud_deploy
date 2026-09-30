@@ -5,16 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById(modalId).classList.remove('open');
     };
 
-    function showToast(message, type) {
-        const toast = document.getElementById("toast");
-        toast.textContent = message;
-        toast.className = `toast toast-${type}`;
-        toast.style.display = "block";
-        setTimeout(() => {
-            toast.style.display = "none";
-        }, 5000);
-    }
-
     // Open approve modal
     document.querySelectorAll(".btn-approve[data-request-id]").forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -61,13 +51,17 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
 
             if (data.success) {
-                showToast(data.message, "success");
+                if (data.mail_sent === false) {
+                    window.showAdminToast('Status saved, but the email to the patron failed to send.', 'warning');
+                } else {
+                    window.showAdminToast(data.message, 'success');
+                }
                 setTimeout(() => location.reload(), 1500);
             } else {
-                showToast(data.message, "error");
+                window.showAdminToast(data.message, 'error');
             }
         } catch (err) {
-            showToast("An error occurred.", "error");
+            window.showAdminToast('An error occurred.', 'error');
             console.error(err);
         }
     });
@@ -92,13 +86,17 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
 
             if (data.success) {
-                showToast(data.message, "success");
+                if (data.mail_sent === false) {
+                    window.showAdminToast('Status saved, but the email to the patron failed to send.', 'warning');
+                } else {
+                    window.showAdminToast(data.message, 'success');
+                }
                 setTimeout(() => location.reload(), 1500);
             } else {
-                showToast(data.message, "error");
+                window.showAdminToast(data.message, 'error');
             }
         } catch (err) {
-            showToast("An error occurred.", "error");
+            window.showAdminToast('An error occurred.', 'error');
             console.error(err);
         }
     });

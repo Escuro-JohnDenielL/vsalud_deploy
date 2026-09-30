@@ -369,6 +369,21 @@
 {{-- Toast notification --}}
 <div id="toast" class="toast-notification"></div>
 <script>
+// Shared admin toast. Built on the layout pattern so every admin page shows
+// the same success/warning styling defined in resources/css/index.css.
+window.showAdminToast = function (message, type) {
+    var t = document.getElementById('toast');
+    if (!t) return;
+    type = type || 'success';
+    t.textContent = message;
+    t.className = 'toast-notification toast-' + type + ' show';
+    clearTimeout(window.__adminToastTimer);
+    window.__adminToastTimer = setTimeout(function () {
+        t.classList.remove('show');
+        t.textContent = '';
+        t.className = 'toast-notification';
+    }, 4500);
+};
 (function() {
     var t = document.getElementById('toast');
     if (!t) return;

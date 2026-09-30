@@ -16,14 +16,16 @@ class WaitlistService
      * Called when a slot frees up (e.g., cancellation approved).
      *
      * @param string $date The date (Y-m-d) that now has a free slot.
-     * @return bool Whether anyone was notified.
+     * @return array{notified: bool, mail_sent: bool} Whether someone was
+     *         notified, and whether the notification email was actually sent.
+     *         mail_sent stays true when nobody was waiting (no send attempted).
      */
-    public function notifyNextForDate(string $date): bool
+    public function notifyNextForDate(string $date): array
     {
         $next = Waitlist::nextWaitingForDate($date);
 
         if (!$next) {
-            return false; // No one waiting
+            return ['notified' => false, 'mail_sent' => true]; // No one waiting
         }
 
         $next->status = 'notified';
@@ -38,10 +40,10 @@ class WaitlistService
             ]));
 
             Log::info("Waitlist: Notified {$next->patron_email} for date {$date}");
-            return true;
+            return ['notified' => true, 'mail_sent' => true];
         } catch (\Exception $e) {
             Log::error("Waitlist: Failed to notify {$next->patron_email} for date {$date}: " . $e->getMessage());
-            return false;
+            return ['notified' => true, 'mail_sent' => false];
         }
     }
 

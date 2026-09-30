@@ -201,16 +201,23 @@ class ReservationController extends Controller
         $inquiry = Inquiry::with('patron')->findOrFail($request->inquiry_id);
         Log::info($inquiry);
 
+        $mailSent = true;
+
         try {
             Mail::to($validated['email'])->send(new ReservationSubmitted(null, [
                 'name'      => $inquiry->patron->name,
                 'message'   => $validated['message'],
             ]));
-
-            return response()->json(['success' => true, 'message' => 'Reply sent successfully.']);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Failed to send reply: ' . $e->getMessage()]);
+            Log::error('Failed to send reply email: ' . $e->getMessage());
+            $mailSent = false;
         }
+
+        return response()->json([
+            'success'   => true,
+            'mail_sent' => $mailSent,
+            'message'   => $mailSent ? 'Reply sent successfully.' : 'Reply could not be emailed to the patron.',
+        ]);
     }
 
     public function fetchReservation(Request $request)

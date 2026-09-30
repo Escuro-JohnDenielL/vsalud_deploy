@@ -51,6 +51,8 @@ class CancellationController extends Controller
         $reservation = $cancelRequest->reservation;
         $inquiry = $reservation ? Inquiry::find($reservation->inquiry_id) : null;
 
+        $mailSent = true;
+
         try {
             // Update cancellation request
             $cancelRequest->status = 'approved';
@@ -74,9 +76,14 @@ class CancellationController extends Controller
             if ($reservation && $reservation->date) {
                 try {
                     $waitlistService = app(WaitlistService::class);
-                    $waitlistService->notifyNextForDate($reservation->date);
+                    $waitlistResult = $waitlistService->notifyNextForDate($reservation->date);
+
+                    if (($waitlistResult['mail_sent'] ?? true) === false) {
+                        $mailSent = false;
+                    }
                 } catch (\Exception $e) {
                     Log::error('Failed to process waitlist after cancellation: ' . $e->getMessage());
+                    $mailSent = false;
                 }
             }
 
@@ -106,10 +113,16 @@ class CancellationController extends Controller
                 $emailData['name'] = $reservation->patron->name;
             }
 
-            Mail::to($cancelRequest->patron_email)->send(new CancellationApproved($emailData));
+            try {
+                Mail::to($cancelRequest->patron_email)->send(new CancellationApproved($emailData));
+            } catch (\Exception $mailError) {
+                Log::error('Failed to send cancellation approved email: ' . $mailError->getMessage());
+                $mailSent = false;
+            }
 
             return response()->json([
                 'success' => true,
+                'mail_sent' => $mailSent,
                 'message' => 'Cancellation request approved. Reservation has been cancelled.',
             ]);
         } catch (\Exception $e) {
@@ -144,6 +157,8 @@ class CancellationController extends Controller
         $reservation = $cancelRequest->reservation;
         $inquiry = $reservation ? Inquiry::find($reservation->inquiry_id) : null;
 
+        $mailSent = true;
+
         try {
             // Update cancellation request
             $cancelRequest->status = 'denied';
@@ -176,10 +191,16 @@ class CancellationController extends Controller
                 $emailData['name'] = $reservation->patron->name;
             }
 
-            Mail::to($cancelRequest->patron_email)->send(new CancellationDenied($emailData));
+            try {
+                Mail::to($cancelRequest->patron_email)->send(new CancellationDenied($emailData));
+            } catch (\Exception $mailError) {
+                Log::error('Failed to send cancellation denied email: ' . $mailError->getMessage());
+                $mailSent = false;
+            }
 
             return response()->json([
                 'success' => true,
+                'mail_sent' => $mailSent,
                 'message' => 'Cancellation request denied.',
             ]);
         } catch (\Exception $e) {

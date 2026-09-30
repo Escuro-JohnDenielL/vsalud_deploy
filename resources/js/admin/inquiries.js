@@ -96,13 +96,19 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then((res) => res.json())
             .then((data) => {
-                alert(data.message || "Reply sent successfully.");
+                if (data.success && data.mail_sent === false) {
+                    window.showAdminToast('Reply could not be emailed to the patron.', 'warning');
+                } else if (data.success) {
+                    window.showAdminToast(data.message || 'Reply sent successfully.', 'success');
+                } else {
+                    window.showAdminToast(data.message || 'Failed to send reply.', 'error');
+                }
                 replyModal.style.display = "none";
                 replyModal.classList.remove('open');
             })
             .catch((err) => {
                 console.error("Error:", err);
-                alert("Failed to send reply.");
+                window.showAdminToast('Failed to send reply.', 'error');
             });
     });
 
@@ -229,9 +235,14 @@ function saveStatusToDatabase(selectElement, newStatus) {
         })
         .then((data) => {
             if (data.success) {
-                console.log("Status updated successfully.");
+                if (data.mail_sent === false) {
+                    window.showAdminToast('Status saved, but the email to the patron failed to send.', 'warning');
+                } else {
+                    console.log("Status updated successfully.");
+                }
             } else {
                 console.error("Failed to update status:", data.message);
+                window.showAdminToast(data.message || 'Failed to update status.', 'error');
             }
         })
         .catch((error) => {

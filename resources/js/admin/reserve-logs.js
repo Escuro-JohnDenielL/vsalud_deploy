@@ -43,7 +43,7 @@ function handleStatusChange(selectElement) {
     const reservationId = selectElement.dataset.id;
     const newStatus = selectElement.value;
 
-    showNotification(`Status changed to ${newStatus}`, "success");
+    window.showAdminToast(`Status changed to ${newStatus}`, "success");
 
     // Optional: Send status update to backend
     updateReservationStatus(reservationId, newStatus);
@@ -336,59 +336,19 @@ function executeDelete(id) {
                     throw new Error(data.message);
                 }
 
-                showNotification(`Reservation #${id} deleted`, "success");
+                window.showAdminToast(`Reservation #${id} deleted`, "success");
                 // Optionally reload the page or remove row from DOM
                 setTimeout(() => window.location.reload(), 1000);
             })
             .catch((err) => {
                 console.error("Error deleting reservation:", err);
-                showNotification(`Failed to delete: ${err.message}`, "error");
+                window.showAdminToast(`Failed to delete: ${err.message}`, "error");
             });
 }
 
 // RECEIPT VIEW (stub)
 function viewReceipt(file) {
-    showNotification(`Opening receipt: ${file}`, "info");
-}
-
-// NOTIFICATION SYSTEM
-function showNotification(message, type = "info") {
-    const notification = document.createElement("div");
-    notification.className = `notification notification-${type}`;
-    notification.textContent = message;
-
-    if (!document.getElementById("notificationStyles")) {
-        addNotificationStyles();
-    }
-
-    document.body.appendChild(notification);
-
-    setTimeout(() => notification.remove(), 3000);
-}
-
-function addNotificationStyles() {
-    const styles = `
-    <style id="notificationStyles">
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 5px;
-            color: white;
-            font-weight: 500;
-            z-index: 1001;
-            animation: slideIn 0.3s ease;
-        }
-        .notification-success { background: #28a745; }
-        .notification-error { background: #dc3545; }
-        .notification-info { background: #17a2b8; }
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-    </style>`;
-    document.head.insertAdjacentHTML("beforeend", styles);
+    window.showAdminToast(`Opening receipt: ${file}`, "success");
 }
 
 // Update reservation status via AJAX (same pattern as inquiries)
@@ -418,12 +378,12 @@ function updateReservationStatus(id, status) {
                 console.log("Reservation status updated successfully.");
             } else {
                 console.error("Failed to update status:", data.message);
-                showNotification(data.message || "Failed to update status", "error");
+                window.showAdminToast(data.message || "Failed to update status", "error");
             }
         })
         .catch((error) => {
             console.error("Error updating reservation status:", error.message);
-            showNotification("Failed to update reservation status", "error");
+            window.showAdminToast("Failed to update reservation status", "error");
         });
 }
 
@@ -453,13 +413,13 @@ document.addEventListener("change", function (e) {
             .then((res) => res.json())
             .then((data) => {
                 if (data.success) {
-                    showNotification(data.message, "success");
+                    window.showAdminToast(data.message, "success");
                 } else {
-                    showNotification(data.message || "Failed to update status", "error");
+                    window.showAdminToast(data.message || "Failed to update status", "error");
                 }
             })
             .catch(() => {
-                showNotification("Failed to update payment status", "error");
+                window.showAdminToast("Failed to update payment status", "error");
             });
     }
 });

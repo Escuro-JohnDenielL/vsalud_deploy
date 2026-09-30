@@ -75,23 +75,14 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    showToast('Payment status updated successfully.', 'success');
+                    window.showAdminToast('Payment status updated successfully.', 'success');
                 } else {
-                    showToast(data.message || 'Failed to update status.', 'error');
+                    window.showAdminToast(data.message || 'Failed to update status.', 'error');
                 }
             })
             .catch(() => {
-                showToast('Network error. Please try again.', 'error');
+                window.showAdminToast('Network error. Please try again.', 'error');
             });
         });
     });
-
-    function showToast(message, type) {
-        const toast = document.getElementById('toast');
-        if (!toast) return;
-        toast.textContent = message;
-        toast.className = 'toast toast-' + type;
-        toast.style.display = 'block';
-        setTimeout(() => { toast.style.display = 'none'; }, 4000);
-    }
 });

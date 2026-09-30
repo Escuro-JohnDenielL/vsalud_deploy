@@ -49,6 +49,8 @@ class InquiryController extends Controller
         $inquiry->status = $newStatus;
         $inquiry->save();
 
+        $mailSent = true;
+
         // ✅ If marked as Completed, convert to reservation
         if ($newStatus === 'Completed') {
             $existing = \App\Models\Reservation::where('inquiry_id', $inquiry->inquiry_id)->first();
@@ -87,8 +89,13 @@ class InquiryController extends Controller
                             'message'           => $inquiry->message ?? '',
                         ];
 
-                        Mail::to($inquiry->patron->email)->send(new ReservationConfirmed($emailData));
-                        Log::info('Confirmation email sent to ' . $inquiry->patron->email . ' for inquiry #' . $inquiry->inquiry_id);
+                        try {
+                            Mail::to($inquiry->patron->email)->send(new ReservationConfirmed($emailData));
+                            Log::info('Confirmation email sent to ' . $inquiry->patron->email . ' for inquiry #' . $inquiry->inquiry_id);
+                        } catch (\Exception $mailError) {
+                            Log::error('Failed to send confirmation email for inquiry #' . $inquiry->inquiry_id . ': ' . $mailError->getMessage());
+                            $mailSent = false;
+                        }
                     }
                 } catch (\Exception $e) {
                     // ❌ Log the exception with full message
@@ -102,7 +109,7 @@ class InquiryController extends Controller
         }
 
 
-        return response()->json(['success' => true]);
+        return response()->json(['success' => true, 'mail_sent' => $mailSent]);
     }
 
     /**

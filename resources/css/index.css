@@ -194,6 +194,10 @@
   background-color: var(--color-danger);
 }
 
+.toast-warning {
+  background-color: #d97706;
+}
+
 /* === Responsive Design (landing page) === */
 @media (max-width: 900px) {
   .hero {

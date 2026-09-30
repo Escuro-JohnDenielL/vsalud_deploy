@@ -124,37 +124,3 @@
     color: #888;
     padding: 40px 20px;
 }
-
-/* Toast notification */
-.toast {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    padding: 15px 25px;
-    border-radius: 8px;
-    color: white;
-    font-size: 15px;
-    font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    z-index: 2000;
-    animation: slideIn 0.3s ease;
-}
-
-.toast-success {
-    background-color: var(--color-primary);
-}
-
-.toast-error {
-    background-color: var(--color-danger);
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
