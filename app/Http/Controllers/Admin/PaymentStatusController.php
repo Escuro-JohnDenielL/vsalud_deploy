@@ -7,7 +7,9 @@ use App\Mail\PaymentApproved;
 use App\Mail\PaymentRefunded;
 use App\Mail\PaymentRejected;
 use App\Models\Payment;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -21,14 +23,54 @@ class PaymentStatusController extends Controller
         ]);
 
         $newStatus = $validated['status'];
-        $previousStatus = $payment->status;
         $mailSent = true;
 
         try {
-            // Save first so the status and note are persisted even if the email fails.
-            $payment->status = $newStatus;
-            $payment->admin_note = $validated['admin_note'] ?? $payment->admin_note;
-            $payment->save();
+            $result = DB::transaction(function () use ($payment, $newStatus, $validated) {
+                $lockedPayment = Payment::whereKey($payment->getKey())->lockForUpdate()->firstOrFail();
+                $previousStatus = $lockedPayment->status;
+
+                if ($newStatus === 'approved' && $previousStatus !== 'approved'
+                    && $lockedPayment->inquiry_id && $lockedPayment->amount !== null) {
+                    $reservation = Reservation::where('inquiry_id', $lockedPayment->inquiry_id)
+                        ->lockForUpdate()
+                        ->first();
+
+                    if ($reservation && $reservation->total_amount !== null) {
+                        $paid = Payment::where('inquiry_id', $lockedPayment->inquiry_id)
+                            ->where('status', 'approved')
+                            ->whereNotNull('amount')
+                            ->selectRaw('CAST(COALESCE(SUM(amount), 0) AS CHAR) AS approved_total')
+                            ->value('approved_total');
+                        $paid = bcadd((string) $paid, '0', 2);
+                        $nextPaid = bcadd($paid, (string) $lockedPayment->amount, 2);
+
+                        if (bccomp($nextPaid, (string) $reservation->total_amount, 2) > 0) {
+                            return ['blocked' => true];
+                        }
+                    }
+                }
+
+                $lockedPayment->status = $newStatus;
+                $lockedPayment->admin_note = $validated['admin_note'] ?? $lockedPayment->admin_note;
+                $lockedPayment->save();
+
+                return [
+                    'blocked' => false,
+                    'payment' => $lockedPayment,
+                    'previous_status' => $previousStatus,
+                ];
+            });
+
+            if ($result['blocked']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Approving this payment would exceed the reservation total.',
+                ], 422);
+            }
+
+            $payment = $result['payment'];
+            $previousStatus = $result['previous_status'];
 
             // Only notify the patron on a real change to a notifiable status.
             $notifiable = ['approved', 'rejected', 'refunded'];

@@ -20,6 +20,11 @@ class Payment extends Model
         'email',
         'status',
         'admin_note',
+        'amount',
+    ];
+
+    protected $casts = [
+        'amount' => 'decimal:2',
     ];
 
     public function inquiry()

@@ -24,6 +24,9 @@
                             <th>Tracking Code</th>
                             <th>Reservation Code</th>
                             <th>Email</th>
+                            <th>Amount</th>
+                            <th>Paid So Far</th>
+                            <th>Remaining</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -37,6 +40,9 @@
                                 <td>{{ $payment_log->tracking_code ?? '-' }}</td>
                                 <td>{{ $payment_log->reservation_code ?? '-' }}</td>
                                 <td>{{ $payment_log->email ?? '-' }}</td>
+                                <td>{{ $payment_log->amount_display }}</td>
+                                <td>{{ $payment_log->paid_display }}</td>
+                                <td>{{ $payment_log->remaining_display }}</td>
                                 <td>
                                     <select class="payment-status-dropdown" data-payment-id="{{ $payment_log->payment_id }}">
                                         <option value="pending" {{ $payment_log->status === 'pending' ? 'selected' : '' }}>Pending</option>
@@ -53,7 +59,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center">No payment records found.</td>
+                                <td colspan="11" class="text-center">No payment records found.</td>
                             </tr>
                         @endforelse
                     </tbody>

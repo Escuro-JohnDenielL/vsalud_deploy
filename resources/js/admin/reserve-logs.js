@@ -13,6 +13,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Setup for pagination and dropdown events
 function setupEventListeners() {
+    document.querySelectorAll(".status-dropdown").forEach((select) => {
+        select.dataset.previousStatus = select.value;
+    });
+    document.querySelectorAll(".payment-status-dropdown").forEach((select) => {
+        select.dataset.previousStatus = select.value;
+    });
+
     document.addEventListener("change", function (e) {
         if (e.target.classList.contains("status-dropdown")) {
             handleStatusChange(e.target);
@@ -42,11 +49,8 @@ function setupEventListeners() {
 function handleStatusChange(selectElement) {
     const reservationId = selectElement.dataset.id;
     const newStatus = selectElement.value;
-
     window.showAdminToast(`Status changed to ${newStatus}`, "success");
-
-    // Optional: Send status update to backend
-    updateReservationStatus(reservationId, newStatus);
+    updateReservationStatus(reservationId, newStatus, selectElement);
 }
 
 // VIEW BUTTON HANDLER
@@ -177,6 +181,23 @@ function viewReservation(id) {
                 </div>
             </div>
 
+            <div class="detail-section">
+                <div class="detail-section-title">Payment Total</div>
+                <div class="detail-row">
+                    <span class="detail-label">Approved paid</span>
+                    <span class="detail-value">${data.paid_amount === null ? "Not tracked" : `₱${escHtml(data.paid_amount)}`}</span>
+                </div>
+                <form id="reservationTotalForm" data-reservation-id="${Number(data.id)}">
+                    <label class="detail-label" for="reservationTotalAmount">Reservation total</label>
+                    <div class="detail-row">
+                        <input id="reservationTotalAmount" name="total_amount" type="text" inputmode="decimal" required
+                            value="${escHtml(data.total_amount || "")}" aria-label="Reservation total amount">
+                        <button class="admin-btn admin-btn-primary admin-btn-sm" type="submit">Save total</button>
+                    </div>
+                    <p id="reservationTotalMessage" role="status"></p>
+                </form>
+            </div>
+
             <!-- AI Event Brief (Google Gemini) -->
             <div class="detail-section ai-brief-section">
                 <div class="detail-section-title">AI Event Brief</div>
@@ -194,6 +215,37 @@ function viewReservation(id) {
             const aiBriefLabel = document.getElementById("aiBriefLabel");
             const aiBriefStatus = document.getElementById("aiBriefStatus");
             const aiBriefOutput = document.getElementById("aiBriefOutput");
+
+            const reservationTotalForm = document.getElementById("reservationTotalForm");
+            reservationTotalForm?.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const formData = new FormData(reservationTotalForm);
+                const message = document.getElementById("reservationTotalMessage");
+                const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
+
+                try {
+                    const response = await fetch(`/admin/reservations/${Number(data.id)}/total`, {
+                        method: "PATCH",
+                        headers: {
+                            Accept: "application/json",
+                            "Content-Type": "application/json",
+                            ...(csrf && { "X-CSRF-TOKEN": csrf }),
+                        },
+                        body: JSON.stringify({ total_amount: formData.get("total_amount") }),
+                    });
+                    const result = await response.json();
+                    if (!response.ok || !result.success) {
+                        throw new Error(result.message || "Could not save reservation total.");
+                    }
+
+                    data.total_amount = result.total_amount;
+                    message.textContent = result.message;
+                    window.showAdminToast(result.message, "success");
+                } catch (error) {
+                    message.textContent = error.message;
+                    window.showAdminToast(error.message, "error");
+                }
+            });
 
             if (aiBriefBtn) {
                 aiBriefBtn.addEventListener("click", async () => {
@@ -352,7 +404,7 @@ function viewReceipt(file) {
 }
 
 // Update reservation status via AJAX (same pattern as inquiries)
-function updateReservationStatus(id, status) {
+function updateReservationStatus(id, status, selectElement) {
     const csrfToken = document
         .querySelector('meta[name="csrf-token"]')
         ?.getAttribute("content");
@@ -375,13 +427,16 @@ function updateReservationStatus(id, status) {
         })
         .then((data) => {
             if (data.success) {
+                if (selectElement) selectElement.dataset.previousStatus = status;
                 console.log("Reservation status updated successfully.");
             } else {
+                if (selectElement) selectElement.value = selectElement.dataset.previousStatus;
                 console.error("Failed to update status:", data.message);
                 window.showAdminToast(data.message || "Failed to update status", "error");
             }
         })
         .catch((error) => {
+            if (selectElement) selectElement.value = selectElement.dataset.previousStatus;
             console.error("Error updating reservation status:", error.message);
             window.showAdminToast("Failed to update reservation status", "error");
         });
@@ -395,6 +450,8 @@ function deleteReservationFromServer(id) {
 // PAYMENT STATUS CHANGE HANDLER
 document.addEventListener("change", function (e) {
     if (e.target.classList.contains("payment-status-dropdown")) {
+        const select = e.target;
+        const previousStatus = select.dataset.previousStatus || select.value;
         const paymentId = e.target.dataset.paymentId;
         const newStatus = e.target.value;
         const csrfToken = document
@@ -410,19 +467,22 @@ document.addEventListener("change", function (e) {
             },
             body: JSON.stringify({ status: newStatus }),
         })
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.success) {
-                    if (data.mail_sent === false) {
-                        window.showAdminToast("Status saved, but the email to the patron failed to send.", "warning");
-                    } else {
-                        window.showAdminToast(data.message, "success");
-                    }
+            .then(async (res) => ({ response: res, data: await res.json() }))
+            .then(({ response, data }) => {
+                if (!response.ok || !data.success) {
+                    select.value = previousStatus;
+                    window.showAdminToast(data.message || "Failed to update payment status", "error");
+                    return;
+                }
+                select.dataset.previousStatus = newStatus;
+                if (data.mail_sent === false) {
+                    window.showAdminToast("Status saved, but the email to the patron failed to send.", "warning");
                 } else {
-                    window.showAdminToast(data.message || "Failed to update status", "error");
+                    window.showAdminToast(data.message, "success");
                 }
             })
             .catch(() => {
+                select.value = previousStatus;
                 window.showAdminToast("Failed to update payment status", "error");
             });
     }

@@ -84,9 +84,9 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify({ status: newStatus, admin_note: adminNote })
         })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
+        .then(async res => ({ response: res, data: await res.json() }))
+        .then(({ response, data }) => {
+            if (response.ok && data.success) {
                 if (select) select.dataset.previousStatus = newStatus;
                 if (data.mail_sent === false) {
                     window.showAdminToast('Status saved, but the email to the patron failed to send.', 'warning');

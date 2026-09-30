@@ -19,6 +19,7 @@ class Reservation extends Model
         'theme_motif',
         'message',
         'status',
+        'total_amount',
         'form_data',
         'event_reminder_sent_at',
         'payment_reminder_sent_at',
@@ -26,6 +27,7 @@ class Reservation extends Model
 
     protected $casts = [
         'form_data' => 'array',
+        'total_amount' => 'decimal:2',
     ];
 
     public function patron()

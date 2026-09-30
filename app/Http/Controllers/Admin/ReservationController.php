@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Reservation;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use App\Services\AiReplyService;
 
 class ReservationController extends Controller
@@ -43,6 +44,10 @@ class ReservationController extends Controller
                 'theme_motif' => $reservation->theme_motif ?? 'N/A',
                 'message' => $reservation->message ?? 'N/A',
                 'status' => $reservation->status ?? 'pending',
+                'total_amount' => $reservation->total_amount,
+                'paid_amount' => $reservation->total_amount === null
+                    ? null
+                    : $this->approvedPaidAmount($reservation->inquiry_id),
                 'patron' => [
                     'name' => $reservation->patron->name ?? 'N/A',
                     'email' => $reservation->patron->email ?? 'N/A'
@@ -58,6 +63,56 @@ class ReservationController extends Controller
                 'message' => 'Unable to fetch reservation details'
             ], 500);
         }
+    }
+
+    public function updateTotal(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'total_amount' => ['required', 'string', 'regex:/^\\d{1,8}(?:\\.\\d{1,2})?$/'],
+        ]);
+
+        $total = bcadd($validated['total_amount'], '0', 2);
+        if (bccomp($total, '0.00', 2) <= 0) {
+            return response()->json(['success' => false, 'message' => 'Reservation total must be positive.'], 422);
+        }
+
+        $result = DB::transaction(function () use ($id, $total) {
+            $reservation = Reservation::whereKey($id)->lockForUpdate()->firstOrFail();
+            $paid = $this->approvedPaidAmount($reservation->inquiry_id);
+
+            if (bccomp($total, $paid, 2) < 0) {
+                return ['blocked' => true];
+            }
+
+            $reservation->total_amount = $total;
+            $reservation->save();
+
+            return ['blocked' => false];
+        });
+
+        if ($result['blocked']) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Reservation total cannot be less than approved payments.',
+            ], 422);
+        }
+
+        return response()->json([
+            'success' => true,
+            'total_amount' => $total,
+            'message' => 'Reservation total saved.',
+        ]);
+    }
+
+    private function approvedPaidAmount($inquiryId): string
+    {
+        $paid = \App\Models\Payment::where('inquiry_id', $inquiryId)
+            ->where('status', 'approved')
+            ->whereNotNull('amount')
+            ->selectRaw('CAST(COALESCE(SUM(amount), 0) AS CHAR) AS approved_total')
+            ->value('approved_total');
+
+        return bcadd((string) $paid, '0', 2);
     }
 
     public function updateStatus(Request $request, $id)
