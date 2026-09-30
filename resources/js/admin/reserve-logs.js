@@ -413,7 +413,11 @@ document.addEventListener("change", function (e) {
             .then((res) => res.json())
             .then((data) => {
                 if (data.success) {
-                    window.showAdminToast(data.message, "success");
+                    if (data.mail_sent === false) {
+                        window.showAdminToast("Status saved, but the email to the patron failed to send.", "warning");
+                    } else {
+                        window.showAdminToast(data.message, "success");
+                    }
                 } else {
                     window.showAdminToast(data.message || "Failed to update status", "error");
                 }

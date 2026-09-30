@@ -19,6 +19,7 @@ class Payment extends Model
         'receipt_path',
         'email',
         'status',
+        'admin_note',
     ];
 
     public function inquiry()

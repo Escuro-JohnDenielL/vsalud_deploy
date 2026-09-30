@@ -79,5 +79,22 @@
         </div>
     </div>
 
+    <!-- Payment Status Confirmation Modal -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeStatusModal">&times;</span>
+            <h2 id="statusModalTitle">Confirm Status Change</h2>
+            <p id="statusModalMessage" style="margin-top: 8px; color: var(--color-text-muted);"></p>
+            <div id="statusModalNoteWrapper" style="display:none; margin-top: 14px;">
+                <label for="statusModalNote" style="display:block; margin-bottom:6px; font-weight:500;">Reason (optional, included in the email):</label>
+                <textarea id="statusModalNote" rows="3" style="width:100%;" placeholder="Explain why the payment was rejected..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="admin-btn admin-btn-ghost" id="cancelStatusModal">Cancel</button>
+                <button type="button" class="admin-btn admin-btn-primary" id="confirmStatusModal">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     @vite('resources/js/admin/payment-logs.js')
 @endsection
