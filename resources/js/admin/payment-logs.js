@@ -2,6 +2,95 @@
 
 document.addEventListener('DOMContentLoaded', function () {
 
+    // The wide page is centered with a transform, which creates a stacking context.
+    // Keep fixed dialogs at the document root so their backdrop covers the navbar too.
+    document.querySelectorAll('.modal').forEach(modal => {
+        document.body.appendChild(modal);
+    });
+
+    const paymentInfoModal = document.getElementById('paymentInfoModal');
+    const paymentInfoOpen = document.getElementById('paymentInfoOpen');
+    const paymentInfoClose = paymentInfoModal?.querySelector('.js-modal-close');
+    let activePaymentInfoTrigger = null;
+
+    paymentInfoOpen?.addEventListener('click', function () {
+        paymentInfoModal.classList.add('open');
+        paymentInfoModal.setAttribute('aria-hidden', 'false');
+        paymentInfoClose?.focus();
+    });
+
+    const closePaymentInfo = () => {
+        if (!paymentInfoModal) return;
+        paymentInfoModal.classList.remove('open');
+        paymentInfoModal.setAttribute('aria-hidden', 'true');
+        paymentInfoOpen?.focus();
+    };
+
+    paymentInfoClose?.addEventListener('click', closePaymentInfo);
+    paymentInfoModal?.addEventListener('click', function (event) {
+        if (event.target === paymentInfoModal) closePaymentInfo();
+    });
+
+    document.querySelectorAll('[data-payment-info-target]').forEach(button => {
+        button.addEventListener('click', function () {
+            const modal = document.getElementById(this.dataset.paymentInfoTarget);
+            if (!modal) return;
+            activePaymentInfoTrigger = this;
+            modal.classList.add('open');
+            modal.setAttribute('aria-hidden', 'false');
+            modal.querySelector('.js-payment-modal-close')?.focus();
+        });
+    });
+
+    document.querySelectorAll('.payment-details-modal').forEach(modal => {
+        const close = () => {
+            modal.classList.remove('open');
+            modal.setAttribute('aria-hidden', 'true');
+            activePaymentInfoTrigger?.focus();
+            activePaymentInfoTrigger = null;
+        };
+
+        modal.querySelector('.js-payment-modal-close')?.addEventListener('click', close);
+        modal.addEventListener('click', function (event) {
+            if (event.target === modal) close();
+        });
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && paymentInfoModal?.classList.contains('open')) {
+            closePaymentInfo();
+        }
+        if (event.key === 'Escape') {
+            document.querySelector('.payment-details-modal.open .js-payment-modal-close')?.click();
+        }
+    });
+
+    document.querySelectorAll('.payment-group-toggle, .payment-group-details-toggle').forEach(button => {
+        button.addEventListener('click', function () {
+            const groupId = this.getAttribute('aria-controls');
+            const rows = Array.from(document.querySelectorAll('.payment-child-container'))
+                .filter(row => row.dataset.parentGroup === groupId);
+            const willExpand = this.getAttribute('aria-expanded') !== 'true';
+
+            rows.forEach(row => {
+                row.hidden = !willExpand;
+            });
+            document.querySelectorAll(`[aria-controls="${groupId}"]`).forEach(toggle => {
+                toggle.setAttribute('aria-expanded', String(willExpand));
+            });
+
+            const indicator = this.querySelector('.payment-group-indicator');
+            if (indicator) indicator.textContent = willExpand ? '-' : '+';
+
+            const detailsToggle = document.querySelector(`.payment-group-details-toggle[aria-controls="${groupId}"]`);
+            if (detailsToggle) {
+                detailsToggle.textContent = willExpand
+                    ? 'Hide payment details'
+                    : `View ${detailsToggle.dataset.paymentCount} payments`;
+            }
+        });
+    });
+
     // ── Receipt Modal (image or PDF) ──
     const receiptModal = document.getElementById('receiptModal');
     const closeReceiptBtn = document.getElementById('closeReceiptModal');
