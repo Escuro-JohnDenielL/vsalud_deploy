@@ -37,7 +37,7 @@
                 <p class="landing-eyebrow">Welcome to</p>
                 <h1>Villa Salud<br><em>Catering</em></h1>
                 <p class="landing-hero__subtitle">Booking and Reservation</p>
-                <div class="landing-ornament" aria-hidden="true"><span></span>✦<span></span></div>
+                <div class="landing-ornament" aria-hidden="true"><span></span><span></span></div>
             </div>
 
             <div class="portal-card container">
@@ -49,9 +49,9 @@
                 <div class="portal-card__divider" aria-hidden="true"></div>
                 <div class="portal-card__actions">
                     <a class="portal-action portal-action--patron" href="{{ route('patron.home') }}">
-                        <span class="portal-action__icon" aria-hidden="true">♡</span>
+                        <span class="portal-action__icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span>
                         <span class="portal-action__copy"><strong>Patrons</strong><small>Book your event</small></span>
-                        <span class="portal-action__arrow" aria-hidden="true">→</span>
+                        <span class="portal-action__arrow" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
                     </a>
                 </div>
             </div>
@@ -71,7 +71,7 @@
                             <h2>Creating moments <em>worth celebrating.</em></h2>
                             <p>Villa Salud is an events venue in Taguig for weddings, birthdays, christenings, and other celebrations.</p>
                             <p>Our digital booking system makes event reservations easier and more convenient for our customers.</p>
-                            <a class="landing-outline-link" href="#home">↑ &nbsp;Back to Home</a>
+                            <a class="landing-outline-link" href="#home">Back to Home</a>
                         </div>
                     </div>
                 </div>
@@ -90,13 +90,13 @@
                     <div class="col-md-4"><div class="contact-detail"><strong>Email</strong><p class="text-break">villasaludcateringservices@gmail.com</p></div></div>
                     <div class="col-md-4"><div class="contact-detail"><strong>Location</strong><p>Taguig, Philippines</p></div></div>
                 </div>
-                <a class="landing-outline-link landing-outline-link--light" href="#home">↑ &nbsp;Back to Home</a>
+                <a class="landing-outline-link landing-outline-link--light" href="#home">Back to Home</a>
             </div>
         </section>
     </main>
     <footer class="landing-footer">
         <span>VILLA SALUD</span>
-        <p>© {{ date('Y') }} Villa Salud Catering. All rights reserved.</p>
+        <p>&copy; {{ date('Y') }} Villa Salud Catering. All rights reserved.</p>
         <a class="landing-admin-link" href="{{ route('admin.login') }}">Admin</a>
     </footer>
 </body>
