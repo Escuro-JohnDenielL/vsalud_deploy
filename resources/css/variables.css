@@ -1,4 +1,133 @@
 :root {
+  /* Villa Salud landing-page-derived tokens. Emerald #009b77 is for accents,
+     large text, and large-element borders only, not for small text or
+     white-text buttons. */
+  --vs-color-white: #ffffff;
+  --vs-color-beige: #f5f2df;
+  --vs-color-pale-green: #e8f5ec;
+  --vs-color-dark-green: #006b53;
+  --vs-color-deep-green: #004c3a;
+  --vs-color-emerald: #009b77;
+  --vs-color-text: #004c3a;
+  --vs-color-text-secondary: #4b5d55;
+  --vs-color-surface: #ffffff;
+  --vs-color-surface-beige: #f5f2df;
+  --vs-color-surface-pale-green: #e8f5ec;
+  --vs-color-control-border: #006b53;
+
+  /* Muted semantic state contrast ratios (text/background; border/background):
+     success 8.52:1; 3.93:1 | warning 7.68:1; 3.93:1
+     info 9.53:1; 4.08:1 | danger 7.84:1; 4.36:1
+     neutral 7.19:1; 3.79:1. */
+  --vs-status-success-text: #174c39;
+  --vs-status-success-bg: #e7f1e8;
+  --vs-status-success-border: #4f8067;
+  --vs-status-warning-text: #634800;
+  --vs-status-warning-bg: #fff2d1;
+  --vs-status-warning-border: #98731d;
+  --vs-status-info-text: #123d67;
+  --vs-status-info-bg: #e4eff8;
+  --vs-status-info-border: #47779f;
+  --vs-status-danger-text: #743232;
+  --vs-status-danger-bg: #f6e8e6;
+  --vs-status-danger-border: #a15852;
+  --vs-status-neutral-text: #46514c;
+  --vs-status-neutral-bg: #edf0ed;
+  --vs-status-neutral-border: #707c75;
+
+  /* Button text/background ratios: primary default/hover/active 6.51:1,
+     8.11:1, 10.02:1; secondary default/hover/active 6.51:1, 5.79:1,
+     8.90:1; danger default/hover/active 9.35:1, 10.86:1, 13.76:1.
+     Disabled text/background and border/background: primary 8.90:1/3.26:1,
+     secondary 7.34:1/3.24:1, danger 6.86:1/3.61:1. Disabled buttons
+     use distinct low-emphasis fills, dashed borders, and not-allowed cursors;
+     danger-disabled uses neutral colors rather than danger-badge colors.
+     Filled-button borders match their fill; edge contrast is against the
+     adjacent page surface. */
+  --vs-button-primary-text: #ffffff;
+  --vs-button-primary-bg: #006b53;
+  --vs-button-primary-border: #006b53;
+  --vs-button-primary-hover-text: #ffffff;
+  --vs-button-primary-hover-bg: #005b48;
+  --vs-button-primary-hover-border: #005b48;
+  --vs-button-primary-active-text: #ffffff;
+  --vs-button-primary-active-bg: #004c3a;
+  --vs-button-primary-active-border: #004c3a;
+  --vs-button-primary-disabled-text: #004c3a;
+  --vs-button-primary-disabled-bg: #f5f2df;
+  --vs-button-primary-disabled-border: #7a8981;
+  --vs-button-primary-disabled-border-style: dashed;
+  --vs-button-primary-disabled-cursor: not-allowed;
+
+  --vs-button-secondary-text: #006b53;
+  --vs-button-secondary-bg: #ffffff;
+  --vs-button-secondary-border: #006b53;
+  --vs-button-secondary-hover-text: #006b53;
+  --vs-button-secondary-hover-bg: #e8f5ec;
+  --vs-button-secondary-hover-border: #006b53;
+  --vs-button-secondary-active-text: #004c3a;
+  --vs-button-secondary-active-bg: #f5f2df;
+  --vs-button-secondary-active-border: #004c3a;
+  --vs-button-secondary-disabled-text: #46514c;
+  --vs-button-secondary-disabled-bg: #f0f2ef;
+  --vs-button-secondary-disabled-border: #7c8981;
+  --vs-button-secondary-disabled-border-style: dashed;
+  --vs-button-secondary-disabled-cursor: not-allowed;
+
+  --vs-button-danger-text: #ffffff;
+  --vs-button-danger-bg: #743232;
+  --vs-button-danger-border: #743232;
+  --vs-button-danger-hover-text: #ffffff;
+  --vs-button-danger-hover-bg: #652b2b;
+  --vs-button-danger-hover-border: #652b2b;
+  --vs-button-danger-active-text: #ffffff;
+  --vs-button-danger-active-bg: #4b2020;
+  --vs-button-danger-active-border: #4b2020;
+  --vs-button-danger-disabled-text: #46514c;
+  --vs-button-danger-disabled-bg: #e7ebe7;
+  --vs-button-danger-disabled-border: #707c75;
+  --vs-button-danger-disabled-border-style: dashed;
+  --vs-button-danger-disabled-cursor: not-allowed;
+
+  /* Focus indicators: dark green on light surfaces and beige on dark ones. */
+  --vs-focus-on-light: #006b53;
+  --vs-focus-on-dark: #f5f2df;
+  --vs-focus-width: 2px;
+  --vs-focus-offset: 2px;
+
+  /* Typography and minimum reading sizes. */
+  --vs-font-ui: "Inter", Arial, sans-serif;
+  --vs-font-display: "Playfair Display", Georgia, serif;
+  --vs-text-body-min: 14px;
+  --vs-text-control-min: 14px;
+  --vs-text-secondary-min: 12px;
+  --vs-weight-regular: 400;
+  --vs-weight-medium: 500;
+  --vs-weight-semibold: 600;
+  --vs-weight-bold: 700;
+  --vs-leading-tight: 1.25;
+  --vs-leading-normal: 1.5;
+  --vs-leading-relaxed: 1.65;
+
+  /* Spacing, shape, shadow, and motion. */
+  --vs-space-1: 4px;
+  --vs-space-2: 8px;
+  --vs-space-3: 12px;
+  --vs-space-4: 16px;
+  --vs-space-5: 20px;
+  --vs-space-6: 24px;
+  --vs-space-8: 32px;
+  --vs-space-10: 40px;
+  --vs-space-12: 48px;
+  --vs-space-16: 64px;
+  --vs-radius-control: 10px;
+  --vs-radius-card: 17px;
+  --vs-radius-pill: 9999px;
+  --vs-shadow-card: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --vs-duration-fast: 150ms;
+  --vs-duration-base: 200ms;
+  --vs-duration-slow: 300ms;
+
   /* === Brand Colors === */
   --color-primary: #0d7a3e;
   --color-primary-hover: #0a5e2f;
