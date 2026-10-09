@@ -37,9 +37,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: #fff;
   border-bottom: 1px solid var(--color-border);
   padding: 0 24px;
   height: var(--navbar-height);
@@ -72,13 +70,13 @@ body {
 
 .navbar a:hover {
   color: var(--color-primary);
-  background: var(--color-primary-light);
+  background: #e8f5ec;
   transform: translateY(-1px);
 }
 
 .navbar a.active {
   color: var(--color-primary);
-  background: var(--color-primary-light);
+  background: #e8f5ec;
   font-weight: 600;
 }
 
@@ -141,12 +139,12 @@ body {
 }
 
 .nav-dropdown-menu a:hover {
-  background: var(--color-primary-light);
+  background: #e8f5ec;
   color: var(--color-primary);
 }
 
 .nav-dropdown-menu a.active {
-  background: var(--color-primary-light);
+  background: #e8f5ec;
   color: var(--color-primary);
   font-weight: 600;
 }
@@ -154,7 +152,7 @@ body {
 /* Highlight the dropdown toggle when any child is active */
 .nav-dropdown.active > .nav-dropdown-toggle {
   color: var(--color-primary);
-  background: var(--color-primary-light);
+  background: #e8f5ec;
   font-weight: 600;
 }
 
@@ -946,7 +944,7 @@ textarea:focus,
   }
 
   body.nav-js .nav-collapsible .nav-links a.active {
-    background: var(--color-primary-light);
+    background: #e8f5ec;
     color: var(--color-primary);
   }
 
