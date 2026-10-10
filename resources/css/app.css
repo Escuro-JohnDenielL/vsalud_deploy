@@ -1262,3 +1262,400 @@ textarea:focus,
     transition-duration: 0.01ms;
   }
 }
+
+/* === Reusable Villa Salud component styles === */
+.vs-btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: var(--vs-space-2);
+  padding: var(--vs-space-2) var(--vs-space-4);
+  border: 1px solid var(--vs-button-secondary-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-button-secondary-bg);
+  color: var(--vs-button-secondary-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-semibold);
+  line-height: var(--vs-leading-tight);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--vs-duration-fast), background-color var(--vs-duration-fast), border-color var(--vs-duration-fast), box-shadow var(--vs-duration-fast);
+}
+
+.vs-btn--sm {
+  min-height: 40px;
+  padding: var(--vs-space-2) var(--vs-space-3);
+  font-size: var(--vs-text-body-min);
+}
+
+.vs-btn--md {
+  min-height: 40px;
+  padding: var(--vs-space-2) var(--vs-space-4);
+}
+
+.vs-btn--lg {
+  min-height: 48px;
+  padding: var(--vs-space-3) var(--vs-space-6);
+  font-size: 16px;
+}
+
+.vs-btn--primary {
+  border-color: var(--vs-button-primary-border);
+  background: var(--vs-button-primary-bg);
+  color: var(--vs-button-primary-text);
+}
+
+.vs-btn--secondary {
+  border-color: var(--vs-button-secondary-border);
+  background: var(--vs-button-secondary-bg);
+  color: var(--vs-button-secondary-text);
+}
+
+.vs-btn--danger {
+  border-color: var(--vs-button-danger-border);
+  background: var(--vs-button-danger-bg);
+  color: var(--vs-button-danger-text);
+}
+
+.vs-btn--primary:not(:disabled):not([aria-disabled="true"]):hover {
+  border-color: var(--vs-button-primary-hover-border);
+  background: var(--vs-button-primary-hover-bg);
+  color: var(--vs-button-primary-hover-text);
+}
+
+.vs-btn--secondary:not(:disabled):not([aria-disabled="true"]):hover {
+  border-color: var(--vs-button-secondary-hover-border);
+  background: var(--vs-button-secondary-hover-bg);
+  color: var(--vs-button-secondary-hover-text);
+}
+
+.vs-btn--danger:not(:disabled):not([aria-disabled="true"]):hover {
+  border-color: var(--vs-button-danger-hover-border);
+  background: var(--vs-button-danger-hover-bg);
+  color: var(--vs-button-danger-hover-text);
+}
+
+.vs-btn--primary:not(:disabled):not([aria-disabled="true"]):active {
+  border-color: var(--vs-button-primary-active-border);
+  background: var(--vs-button-primary-active-bg);
+  color: var(--vs-button-primary-active-text);
+}
+
+.vs-btn--secondary:not(:disabled):not([aria-disabled="true"]):active {
+  border-color: var(--vs-button-secondary-active-border);
+  background: var(--vs-button-secondary-active-bg);
+  color: var(--vs-button-secondary-active-text);
+}
+
+.vs-btn--danger:not(:disabled):not([aria-disabled="true"]):active {
+  border-color: var(--vs-button-danger-active-border);
+  background: var(--vs-button-danger-active-bg);
+  color: var(--vs-button-danger-active-text);
+}
+
+.vs-btn:focus-visible,
+.vs-form-control:focus-visible,
+.vs-table-wrap:focus-visible,
+.vs-modal__close:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.vs-btn:disabled,
+.vs-btn[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+.vs-btn--primary:disabled,
+.vs-btn--primary[aria-disabled="true"] {
+  border: 1px dashed var(--vs-button-primary-disabled-border);
+  background: var(--vs-button-primary-disabled-bg);
+  color: var(--vs-button-primary-disabled-text);
+}
+
+.vs-btn--secondary:disabled,
+.vs-btn--secondary[aria-disabled="true"] {
+  border: 1px dashed var(--vs-button-secondary-disabled-border);
+  background: var(--vs-button-secondary-disabled-bg);
+  color: var(--vs-button-secondary-disabled-text);
+}
+
+.vs-btn--danger:disabled,
+.vs-btn--danger[aria-disabled="true"] {
+  border: 1px dashed var(--vs-button-danger-disabled-border);
+  background: var(--vs-button-danger-disabled-bg);
+  color: var(--vs-button-danger-disabled-text);
+}
+
+.vs-card {
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
+  box-shadow: var(--vs-shadow-card);
+}
+
+.vs-card--beige {
+  background: var(--vs-color-surface-beige);
+}
+
+.vs-card--pale-green {
+  background: var(--vs-color-surface-pale-green);
+}
+
+.vs-badge {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  padding: var(--vs-space-1) var(--vs-space-2);
+  border: 1px solid var(--vs-status-neutral-border);
+  border-radius: var(--vs-radius-pill);
+  background: var(--vs-status-neutral-bg);
+  color: var(--vs-status-neutral-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-secondary-min);
+  font-weight: var(--vs-weight-semibold);
+  line-height: var(--vs-leading-tight);
+}
+
+.vs-badge--success {
+  border-color: var(--vs-status-success-border);
+  background: var(--vs-status-success-bg);
+  color: var(--vs-status-success-text);
+}
+
+.vs-badge--warning {
+  border-color: var(--vs-status-warning-border);
+  background: var(--vs-status-warning-bg);
+  color: var(--vs-status-warning-text);
+}
+
+.vs-badge--info {
+  border-color: var(--vs-status-info-border);
+  background: var(--vs-status-info-bg);
+  color: var(--vs-status-info-text);
+}
+
+.vs-badge--danger {
+  border-color: var(--vs-status-danger-border);
+  background: var(--vs-status-danger-bg);
+  color: var(--vs-status-danger-text);
+}
+
+.vs-badge--neutral {
+  border-color: var(--vs-status-neutral-border);
+  background: var(--vs-status-neutral-bg);
+  color: var(--vs-status-neutral-text);
+}
+
+.vs-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.vs-table {
+  width: 100%;
+  min-width: 38rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--vs-color-surface);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-normal);
+}
+
+.vs-table th,
+.vs-table td {
+  padding: var(--vs-space-3);
+  border-bottom: 1px solid var(--vs-color-control-border);
+  text-align: start;
+  vertical-align: middle;
+}
+
+.vs-table th {
+  background: var(--vs-color-surface-beige);
+  color: var(--vs-color-text);
+  font-weight: var(--vs-weight-semibold);
+}
+
+.vs-table__row {
+  background: var(--vs-color-surface);
+}
+
+.vs-table__row:hover,
+.vs-table__row:hover .vs-table__actions {
+  background: var(--vs-color-surface-pale-green);
+}
+
+.vs-table__actions {
+  position: sticky;
+  inset-inline-end: 0;
+  z-index: 50;
+  width: 12rem;
+  min-width: 8rem;
+  max-width: 12rem;
+  border-inline-start: 1px solid var(--vs-color-control-border);
+  background: var(--vs-color-surface);
+  box-shadow: -4px 0 8px rgba(0, 76, 58, 0.08);
+}
+
+.vs-table__action-list {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--vs-space-2);
+}
+
+.vs-table__actions .vs-btn {
+  width: 100%;
+  white-space: normal;
+}
+
+.vs-field {
+  display: grid;
+  gap: var(--vs-space-2);
+}
+
+.vs-field__label {
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-semibold);
+  line-height: var(--vs-leading-normal);
+}
+
+.vs-form-control {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 40px;
+  padding: var(--vs-space-2) var(--vs-space-3);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-normal);
+  transition: border-color var(--vs-duration-fast), box-shadow var(--vs-duration-fast), background-color var(--vs-duration-fast);
+}
+
+.vs-form-control:disabled {
+  border-color: var(--vs-button-secondary-disabled-border);
+  background: var(--vs-button-secondary-disabled-bg);
+  color: var(--vs-button-secondary-disabled-text);
+  cursor: not-allowed;
+}
+
+.vs-field--error .vs-form-control {
+  border-color: var(--vs-status-danger-border);
+}
+
+.vs-field__error {
+  color: var(--vs-status-danger-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-secondary-min);
+  line-height: var(--vs-leading-normal);
+}
+
+.vs-modal {
+  position: fixed;
+  z-index: 1055;
+  inset: 0;
+  overflow-y: auto;
+  padding: var(--vs-space-6);
+}
+
+.vs-modal__scrim {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.vs-modal__dialog {
+  width: min(100%, 42rem);
+  max-height: calc(100vh - var(--vs-space-12));
+  margin: min(10vh, var(--vs-space-10)) auto;
+  overflow-y: auto;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
+  box-shadow: var(--vs-shadow-card);
+}
+
+.vs-modal__header,
+.vs-modal__body,
+.vs-modal__footer {
+  padding: var(--vs-space-4);
+}
+
+.vs-modal__header,
+.vs-modal__footer {
+  border-bottom: 1px solid var(--vs-color-control-border);
+}
+
+.vs-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--vs-space-2);
+  border-top: 1px solid var(--vs-color-control-border);
+  border-bottom: 0;
+}
+
+.vs-modal__close {
+  min-width: 40px;
+  min-height: 40px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface);
+  color: var(--vs-color-text);
+  cursor: pointer;
+  transition: background-color var(--vs-duration-fast), color var(--vs-duration-fast);
+}
+
+.vs-modal__close:hover {
+  background: var(--vs-color-surface-pale-green);
+}
+
+@media (max-width: 600px) {
+  .vs-btn {
+    min-height: 44px;
+  }
+
+  .vs-table__actions {
+    position: static;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    border-inline-start: 0;
+    box-shadow: none;
+  }
+
+  .vs-form-control {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  .vs-modal {
+    padding: var(--vs-space-3);
+  }
+
+  .vs-modal__dialog {
+    max-height: calc(100vh - var(--vs-space-6));
+    margin: var(--vs-space-3) auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-btn,
+  .vs-form-control,
+  .vs-modal__close {
+    transition-duration: 0.01ms;
+  }
+}
