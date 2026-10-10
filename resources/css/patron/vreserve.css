@@ -84,7 +84,6 @@
     max-height: calc(100vh - var(--vs-space-12));
     padding: var(--vs-space-4);
     overflow-y: auto;
-    animation: none;
 }
 
 .vs-reservation-page .vs-modal[style*="display: block"] .vs-modal__dialog {

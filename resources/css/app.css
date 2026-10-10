@@ -708,7 +708,6 @@ textarea:focus,
   width: 90%;
   box-shadow: var(--shadow-xl);
   position: relative;
-  animation: modalFadeIn 0.2s ease-out;
 }
 
 .modal-content.modal-sm {
@@ -763,9 +762,46 @@ textarea:focus,
   margin-top: 14px;
 }
 
-@keyframes modalFadeIn {
-  from { opacity: 0; transform: translateY(-16px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes vs-modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.vs-layout--admin .modal:not(.fade),
+.vs-layout--patron .modal:not(.fade),
+.vs-layout--patron .pkg-modal,
+.vs-layout--patron .privacy-overlay {
+  animation: vs-modal-fade-in var(--vs-duration-base) ease-out both;
+}
+
+.vs-layout--admin .modal.fade,
+.vs-layout--patron .modal.fade {
+  transition: opacity var(--vs-duration-base) ease-out;
+}
+
+.vs-layout--admin .modal.fade .modal-dialog,
+.vs-layout--patron .modal.fade .modal-dialog {
+  transform: none;
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-layout--admin .modal:not(.fade),
+  .vs-layout--patron .modal:not(.fade),
+  .vs-layout--patron .pkg-modal,
+  .vs-layout--patron .privacy-overlay {
+    animation: none;
+  }
+
+  .vs-layout--admin .modal.fade,
+  .vs-layout--patron .modal.fade {
+    transition: none;
+  }
+
+  .vs-layout--admin .modal.fade .modal-dialog,
+  .vs-layout--patron .modal.fade .modal-dialog {
+    transition: none;
+  }
 }
 
 /* === Bootstrap Modal Overrides — match shared modal system === */

@@ -162,18 +162,6 @@
   grid-template-columns: 1fr 1fr;
   gap: 26px;
   text-align: left;
-  animation: pkgFadeIn 0.25s ease;
-}
-
-@keyframes pkgFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(14px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
 }
 
 .pkg-modal__close {
@@ -419,18 +407,6 @@
   box-shadow: var(--shadow-xl);
   padding: 36px 36px 30px;
   text-align: center;
-  animation: privacyFadeIn 0.25s ease;
-}
-
-@keyframes privacyFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(14px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
 }
 
 .privacy-modal__close {
