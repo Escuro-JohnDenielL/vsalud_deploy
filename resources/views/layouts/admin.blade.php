@@ -367,7 +367,7 @@
 </script>
 
 {{-- Toast notification --}}
-<div id="toast" class="toast-notification"></div>
+<div id="toast" class="toast-notification" role="status" aria-live="polite"></div>
 <script>
 // Shared admin toast. Built on the layout pattern so every admin page shows
 // the same success/warning styling defined in resources/css/index.css.

@@ -88,7 +88,7 @@
     </nav>
 
     {{-- Toast notification --}}
-    <div id="toast" class="toast-notification"></div>
+    <div id="toast" class="toast-notification" role="status" aria-live="polite"></div>
     <script>
     (function() {
         var t = document.getElementById('toast');
