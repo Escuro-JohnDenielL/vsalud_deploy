@@ -7,7 +7,7 @@
 @endpush
 
 @section('content')
-    <div class="container payment-logs-page">
+    <div class="container payment-logs-page vs-admin-payment-logs">
         <div class="page-header">
             <h1>Payment Logs</h1>
             <p>View and manage payment records submitted by patrons.</p>
@@ -33,8 +33,8 @@
                 </button>
             </div>
 
-            <div class="table-wrapper">
-                <table class="payment-table">
+            <div class="table-wrapper vs-table-wrap" role="region" tabindex="0" aria-label="Payment logs table">
+                <table class="payment-table vs-table">
                     <colgroup>
                         <col class="payment-col-reservation">
                         <col class="payment-col-email">
@@ -75,7 +75,16 @@
                                     <td>₱{{ $group['total_display'] }}</td>
                                     <td>₱{{ $group['paid_display'] }}</td>
                                     <td>₱{{ $group['remaining_display'] }}</td>
-                                    <td>{{ $group['confirmation_label'] }}</td>
+                                    <td>
+                                        @php
+                                            $confirmationVariant = match ($group['confirmation_label']) {
+                                                'Fully paid' => 'success',
+                                                'Downpayment received' => 'info',
+                                                default => 'neutral',
+                                            };
+                                        @endphp
+                                        <span class="vs-badge vs-badge--{{ $confirmationVariant }}">{{ $group['confirmation_label'] }}</span>
+                                    </td>
                                     <td>{{ $group['pending_count'] }}</td>
                                     <td>
                                         <button type="button" class="payment-group-details-toggle"
@@ -87,7 +96,7 @@
                                 </tr>
                                 <tr class="payment-child-container" data-parent-group="{{ $group['dom_id'] }}" hidden>
                                     <td colspan="8">
-                                        <table class="payment-child-table">
+                                        <table class="payment-child-table vs-table">
                                             <thead>
                                                 <tr>
                                                     <th>Payment Type</th>
@@ -106,7 +115,7 @@
                                                         <td>{{ $payment_log->tracking_code ?? '-' }}</td>
                                                         <td>{{ $payment_log->amount_display }}</td>
                                                         <td>
-                                                            <select class="payment-status-dropdown" data-payment-id="{{ $payment_log->payment_id }}">
+                                                            <select class="payment-status-dropdown vs-form-control" data-payment-id="{{ $payment_log->payment_id }}">
                                                                 <option value="pending" {{ $payment_log->status === 'pending' ? 'selected' : '' }}>Pending</option>
                                                                 <option value="approved" {{ $payment_log->status === 'approved' ? 'selected' : '' }}>Approved</option>
                                                                 <option value="rejected" {{ $payment_log->status === 'rejected' ? 'selected' : '' }}>Rejected</option>
@@ -134,7 +143,7 @@
                                                 <span>{{ $payment_log->email ?? 'No email recorded' }}</span>
                                             </div>
                                             <div class="standalone-payment-actions">
-                                                <select class="payment-status-dropdown" data-payment-id="{{ $payment_log->payment_id }}" aria-label="Payment status for {{ $payment_log->full_name }}">
+                                                <select class="payment-status-dropdown vs-form-control" data-payment-id="{{ $payment_log->payment_id }}" aria-label="Payment status for {{ $payment_log->full_name }}">
                                                     <option value="pending" {{ $payment_log->status === 'pending' ? 'selected' : '' }}>Pending</option>
                                                     <option value="approved" {{ $payment_log->status === 'approved' ? 'selected' : '' }}>Approved</option>
                                                     <option value="rejected" {{ $payment_log->status === 'rejected' ? 'selected' : '' }}>Rejected</option>
@@ -165,7 +174,7 @@
             @foreach($payment_groups as $group)
                 @if($group['kind'] === 'standalone')
                     @php($payment_log = $group['payment'])
-                    <div class="modal payment-details-modal" id="paymentDetails{{ $payment_log->payment_id }}" aria-hidden="true">
+                    <div class="modal payment-details-modal vs-admin-payment-logs__modal" id="paymentDetails{{ $payment_log->payment_id }}" aria-hidden="true">
                         <div class="modal-content modal-lg payment-info-modal" role="dialog" aria-modal="true" aria-labelledby="paymentDetailsTitle{{ $payment_log->payment_id }}">
                             <button type="button" class="close-btn js-payment-modal-close" aria-label="Close payment information">&times;</button>
                             <h2 id="paymentDetailsTitle{{ $payment_log->payment_id }}">Payment details</h2>
@@ -195,7 +204,7 @@
         </div>
     </div>
 
-    <div id="paymentInfoModal" class="modal" aria-hidden="true">
+    <div id="paymentInfoModal" class="modal vs-admin-payment-logs__modal vs-admin-payment-logs__info-modal" aria-hidden="true">
         <div class="modal-content modal-lg payment-info-modal" role="dialog" aria-modal="true" aria-labelledby="paymentInfoTitle">
             <button type="button" class="close-btn js-modal-close" aria-label="Close payment information">&times;</button>
             <h2 id="paymentInfoTitle">Understanding payment totals</h2>
@@ -225,26 +234,26 @@
         </div>
     </div>
 
-    <div id="receiptModal" class="modal">
+    <div id="receiptModal" class="modal vs-admin-payment-logs__modal vs-admin-payment-logs__receipt-modal">
         <div class="modal-content">
             <span class="close-btn" id="closeReceiptModal">&times;</span>
             <h2>Payment Receipt</h2>
-            <div style="text-align:center;">
-                <img id="receiptImage1" src="" alt="Receipt Image" class="receipt-image" style="display:none;">
-                <iframe id="receiptFrame1" src="" style="width:100%;height:480px;border:none;border-radius:8px;display:none;" title="Receipt PDF"></iframe>
-                <p id="receiptMissing" class="text-muted" style="display:none;">No receipt available.</p>
+            <div class="vs-admin-payment-logs__receipt-content">
+                <img id="receiptImage1" src="" alt="Receipt Image" class="receipt-image" hidden>
+                <iframe id="receiptFrame1" src="" class="vs-admin-payment-logs__receipt-frame" title="Receipt PDF" hidden></iframe>
+                <p id="receiptMissing" class="text-muted" hidden>No receipt available.</p>
             </div>
         </div>
     </div>
 
-    <div id="statusModal" class="modal">
+    <div id="statusModal" class="modal vs-admin-payment-logs__modal vs-admin-payment-logs__status-modal">
         <div class="modal-content">
             <span class="close-btn" id="closeStatusModal">&times;</span>
             <h2 id="statusModalTitle">Confirm Status Change</h2>
-            <p id="statusModalMessage" style="margin-top: 8px; color: var(--color-text-muted);"></p>
-            <div id="statusModalNoteWrapper" style="display:none; margin-top: 14px;">
-                <label for="statusModalNote" style="display:block; margin-bottom:6px; font-weight:500;">Reason (optional, included in the email):</label>
-                <textarea id="statusModalNote" rows="3" style="width:100%;" placeholder="Explain why the payment was rejected..."></textarea>
+            <p id="statusModalMessage" class="vs-admin-payment-logs__status-message"></p>
+            <div id="statusModalNoteWrapper" class="vs-admin-payment-logs__status-note" hidden>
+                <label for="statusModalNote" class="vs-admin-payment-logs__status-note-label">Reason (optional, included in the email):</label>
+                <textarea id="statusModalNote" class="vs-admin-payment-logs__status-note-input" rows="3" placeholder="Explain why the payment was rejected..."></textarea>
             </div>
             <div class="modal-footer">
                 <button type="button" class="admin-btn admin-btn-ghost" id="cancelStatusModal">Cancel</button>

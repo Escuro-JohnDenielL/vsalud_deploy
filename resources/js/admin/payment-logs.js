@@ -105,38 +105,36 @@ document.addEventListener('DOMContentLoaded', function () {
     const receiptMissing = document.getElementById('receiptMissing');
 
     function openReceipt(url) {
-        if (receiptImage) { receiptImage.style.display = 'none'; receiptImage.src = ''; }
-        if (receiptFrame) { receiptFrame.style.display = 'none'; receiptFrame.src = ''; }
-        if (receiptMissing) receiptMissing.style.display = 'none';
+        if (receiptImage) { receiptImage.hidden = true; receiptImage.src = ''; }
+        if (receiptFrame) { receiptFrame.hidden = true; receiptFrame.src = ''; }
+        if (receiptMissing) receiptMissing.hidden = true;
 
         if (url && /\.pdf($|\?)/i.test(url)) {
-            if (receiptFrame) { receiptFrame.src = url; receiptFrame.style.display = 'block'; }
+            if (receiptFrame) { receiptFrame.src = url; receiptFrame.hidden = false; }
         } else if (url && receiptImage) {
             // If the image fails to load (e.g. the file was lost from
             // ephemeral storage on Railway), show a clear message instead
             // of a blank image.
             receiptImage.onerror = function () {
-                receiptImage.style.display = 'none';
-                if (receiptMissing) receiptMissing.style.display = 'block';
+                receiptImage.hidden = true;
+                if (receiptMissing) receiptMissing.hidden = false;
             };
             receiptImage.src = url;
-            receiptImage.style.display = 'block';
+            receiptImage.hidden = false;
         } else if (receiptMissing) {
-            receiptMissing.style.display = 'block';
+            receiptMissing.hidden = false;
         }
 
         window.vsModalPrepareOpen(receiptModal);
-        receiptModal.style.display = 'flex';
         receiptModal.classList.add('open');
     }
 
     function closeReceipt() {
         window.vsModalCloseAfterFade(receiptModal, () => {
-            receiptModal.style.display = 'none';
             receiptModal.classList.remove('open');
             if (receiptImage) { receiptImage.onerror = null; receiptImage.src = ''; }
             if (receiptFrame) receiptFrame.src = '';
-            if (receiptMissing) receiptMissing.style.display = 'none';
+            if (receiptMissing) receiptMissing.hidden = true;
         });
     }
 
@@ -210,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (statusModalNoteWrapper) {
             // The note field only appears for rejected.
-            statusModalNoteWrapper.style.display = newStatus === 'rejected' ? 'block' : 'none';
+            statusModalNoteWrapper.hidden = newStatus !== 'rejected';
         }
         if (statusModalNote) {
             statusModalNote.value = '';
@@ -221,7 +219,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (statusModal) {
             window.vsModalPrepareOpen(statusModal);
-            statusModal.style.display = 'flex';
             statusModal.classList.add('open');
         }
     }
@@ -230,7 +227,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function closeStatusModal(revert) {
         if (statusModal) {
             window.vsModalCloseAfterFade(statusModal, () => {
-                statusModal.style.display = 'none';
                 statusModal.classList.remove('open');
                 if (revert && pendingSelect) {
                     pendingSelect.value = pendingSelect.dataset.previousStatus;
