@@ -321,7 +321,9 @@
             if (e.key === 'Escape') {
                 closeAll();
                 document.querySelectorAll('.modal.open').forEach(function(m) {
-                    m.classList.remove('open');
+                    window.vsModalCloseAfterFade(m, function() {
+                        m.classList.remove('open');
+                    });
                 });
             }
         });
@@ -335,6 +337,7 @@
         if (link && reportModal) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
+                window.vsModalPrepareOpen(reportModal);
                 reportModal.classList.add('open');
             });
         }
@@ -344,12 +347,18 @@
             var closeBtn = e.target.closest('.js-modal-close');
             var modal = e.target.closest('.modal');
             if (closeBtn && modal) {
-                modal.classList.remove('open');
+                if (modal.classList.contains('fade')) return;
+                window.vsModalCloseAfterFade(modal, function() {
+                    modal.classList.remove('open');
+                });
                 return;
             }
             // Click on backdrop (the modal itself, not its content)
             if (e.target.classList.contains('modal')) {
-                e.target.classList.remove('open');
+                if (e.target.classList.contains('fade')) return;
+                window.vsModalCloseAfterFade(e.target, function() {
+                    e.target.classList.remove('open');
+                });
             }
         });
     }

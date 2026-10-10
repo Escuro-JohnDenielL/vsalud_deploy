@@ -1,33 +1,43 @@
 document.addEventListener("DOMContentLoaded", () => {
     // Make closeModal globally accessible for inline onclick usage
     window.closeModal = function (modalId) {
-        document.getElementById(modalId).style.display = "none";
-        document.getElementById(modalId).classList.remove('open');
+        const modal = document.getElementById(modalId);
+        if (!modal) return;
+        window.vsModalCloseAfterFade(modal, () => {
+            modal.style.display = "none";
+            modal.classList.remove('open');
+        });
     };
 
     // Open approve modal
     document.querySelectorAll(".btn-approve[data-request-id]").forEach((btn) => {
         btn.addEventListener("click", () => {
+            const modal = document.getElementById("approveModal");
             document.getElementById("approveRequestId").value = btn.dataset.requestId;
-            document.getElementById("approveModal").style.display = "flex";
-            document.getElementById("approveModal").classList.add('open');
+            window.vsModalPrepareOpen(modal);
+            modal.style.display = "flex";
+            modal.classList.add('open');
         });
     });
 
     // Open deny modal
     document.querySelectorAll(".btn-deny[data-request-id]").forEach((btn) => {
         btn.addEventListener("click", () => {
+            const modal = document.getElementById("denyModal");
             document.getElementById("denyRequestId").value = btn.dataset.requestId;
-            document.getElementById("denyModal").style.display = "flex";
-            document.getElementById("denyModal").classList.add('open');
+            window.vsModalPrepareOpen(modal);
+            modal.style.display = "flex";
+            modal.classList.add('open');
         });
     });
 
     // Close modals when clicking outside
     window.addEventListener("click", (e) => {
         if (e.target.classList.contains("modal")) {
-            e.target.style.display = "none";
-            e.target.classList.remove('open');
+            window.vsModalCloseAfterFade(e.target, () => {
+                e.target.style.display = "none";
+                e.target.classList.remove('open');
+            });
         }
     });
 
@@ -105,8 +115,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".close-btn, .admin-btn-ghost").forEach((btn) => {
         btn.addEventListener("click", () => {
             document.querySelectorAll(".modal").forEach((m) => {
-                m.style.display = "none";
-                m.classList.remove("open");
+                window.vsModalCloseAfterFade(m, () => {
+                    m.style.display = "none";
+                    m.classList.remove("open");
+                });
             });
         });
     });

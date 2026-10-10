@@ -366,11 +366,14 @@
             optsGroup.style.display = 'none';
         }
 
-        document.getElementById('editFieldModal').classList.add('active');
+        const modal = document.getElementById('editFieldModal');
+        window.vsModalPrepareOpen(modal);
+        modal.classList.add('active');
     }
 
     function closeEditModal() {
-        document.getElementById('editFieldModal').classList.remove('active');
+        const modal = document.getElementById('editFieldModal');
+        window.vsModalCloseAfterFade(modal, () => modal.classList.remove('active'));
     }
 
     document.getElementById('editFieldForm').addEventListener('submit', function(e) {

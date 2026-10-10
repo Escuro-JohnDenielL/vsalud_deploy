@@ -22,13 +22,16 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     const openModal = function () {
+        window.vsModalPrepareOpen(modal);
         modal.style.display = "flex";
         document.body.style.overflow = "hidden";
     };
 
     const closeModal = function () {
-        modal.style.display = "none";
-        document.body.style.overflow = "";
+        window.vsModalCloseAfterFade(modal, () => {
+            modal.style.display = "none";
+            document.body.style.overflow = "";
+        });
     };
 
     document.querySelectorAll(".view-package").forEach(function (button) {
@@ -138,16 +141,19 @@ document.addEventListener("DOMContentLoaded", function () {
     if (navType !== "reload" && acknowledged) return;
 
     const showPrivacyModal = function () {
+        window.vsModalPrepareOpen(privacyModal);
         privacyModal.style.display = "flex";
         document.body.style.overflow = "hidden";
     };
 
     const hidePrivacyModal = function () {
-        privacyModal.style.display = "none";
-        document.body.style.overflow = "";
         try {
             sessionStorage.setItem(ACK_KEY, "1");
         } catch (e) { /* ignore */ }
+        window.vsModalCloseAfterFade(privacyModal, () => {
+            privacyModal.style.display = "none";
+            document.body.style.overflow = "";
+        });
     };
 
     showPrivacyModal();

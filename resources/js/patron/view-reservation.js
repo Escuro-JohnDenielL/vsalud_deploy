@@ -202,6 +202,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ${messageHtml}
             `;
 
+            window.vsModalPrepareOpen(modal);
             modal.style.display = "block";
         } catch (err) {
             alert("An error occurred while fetching the reservation.");
@@ -210,10 +211,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     closeBtn.addEventListener("click", () => {
-        modal.style.display = "none";
+        window.vsModalCloseAfterFade(modal, () => {
+            modal.style.display = "none";
+        });
     });
 
     window.addEventListener("click", (e) => {
-        if (e.target === modal) modal.style.display = "none";
+        if (e.target === modal) {
+            window.vsModalCloseAfterFade(modal, () => {
+                modal.style.display = "none";
+            });
+        }
     });
 });

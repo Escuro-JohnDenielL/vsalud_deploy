@@ -342,6 +342,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (editUsername && adminUsername)
                 editUsername.value = adminUsername.textContent;
 
+            window.vsModalPrepareOpen(editModal);
             editModal.style.display = "flex";
             editModal.classList.add('open');
             addToHistory(
@@ -358,6 +359,7 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault();
             // Reset to step 1
             resetPasswordModal();
+            window.vsModalPrepareOpen(passwordModal);
             passwordModal.style.display = "flex";
             passwordModal.classList.add('open');
             addToHistory(
@@ -401,13 +403,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Close Modal Functions - Only add listeners if elements exist
+    function closeProfileModal(modal, afterClose) {
+        if (!modal) return;
+        window.vsModalCloseAfterFade(modal, () => {
+            modal.style.display = "none";
+            modal.classList.remove('open');
+            afterClose?.();
+        });
+    }
+
     function closeProfileModals() {
         const modals = [editModal, passwordModal, successModal, confirmModal];
         modals.forEach(m => {
-            if (m) {
-                m.style.display = "none";
-                m.classList.remove('open');
-            }
+            closeProfileModal(m);
         });
     }
 
@@ -421,8 +429,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (cancelEdit && editModal) {
         cancelEdit.addEventListener("click", function () {
-            editModal.style.display = "none";
-            editModal.classList.remove('open');
+            closeProfileModal(editModal);
             addToHistory(
                 "system",
                 "Profile edit cancelled",
@@ -433,8 +440,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (cancelPassword && passwordModal) {
         cancelPassword.addEventListener("click", function () {
-            passwordModal.style.display = "none";
-            passwordModal.classList.remove('open');
+            closeProfileModal(passwordModal);
             addToHistory(
                 "security",
                 "Password change cancelled",
@@ -445,24 +451,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (successOkBtn && successModal) {
         successOkBtn.addEventListener("click", function () {
-            successModal.style.display = "none";
-            successModal.classList.remove('open');
+            closeProfileModal(successModal);
         });
     }
 
     if (confirmCancel && confirmModal) {
         confirmCancel.addEventListener("click", function () {
-            confirmModal.style.display = "none";
-            confirmModal.classList.remove('open');
-            confirmCallback = null;
+            closeProfileModal(confirmModal, () => { confirmCallback = null; });
         });
     }
 
     if (confirmNo && confirmModal) {
         confirmNo.addEventListener("click", function () {
-            confirmModal.style.display = "none";
-            confirmModal.classList.remove('open');
-            confirmCallback = null;
+            closeProfileModal(confirmModal, () => { confirmCallback = null; });
         });
     }
 
@@ -471,30 +472,23 @@ document.addEventListener("DOMContentLoaded", function () {
             if (confirmCallback) {
                 confirmCallback();
             }
-            confirmModal.style.display = "none";
-            confirmModal.classList.remove('open');
-            confirmCallback = null;
+            closeProfileModal(confirmModal, () => { confirmCallback = null; });
         });
     }
 
     // Close modal when clicking outside
     window.addEventListener("click", function (event) {
         if (editModal && event.target === editModal) {
-            editModal.style.display = "none";
-            editModal.classList.remove('open');
+            closeProfileModal(editModal);
         }
         if (passwordModal && event.target === passwordModal) {
-            passwordModal.style.display = "none";
-            passwordModal.classList.remove('open');
+            closeProfileModal(passwordModal);
         }
         if (successModal && event.target === successModal) {
-            successModal.style.display = "none";
-            successModal.classList.remove('open');
+            closeProfileModal(successModal);
         }
         if (confirmModal && event.target === confirmModal) {
-            confirmModal.style.display = "none";
-            confirmModal.classList.remove('open');
-            confirmCallback = null;
+            closeProfileModal(confirmModal, () => { confirmCallback = null; });
         }
 
         // PROFILE PICTURE: commented out for now — re-enable later
@@ -526,8 +520,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Close modal
             if (editModal) {
-                editModal.style.display = "none";
-                editModal.classList.remove('open');
+                closeProfileModal(editModal);
             }
 
             // Track specific changes
@@ -736,10 +729,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     btn.disabled = false;
 
                     if (data.success) {
-                        passwordModal.style.display = "none";
-                        passwordModal.classList.remove('open');
-                        resetPasswordModal();
-                        showSuccessModal(data.message);
+                        closeProfileModal(passwordModal, () => {
+                            resetPasswordModal();
+                            showSuccessModal(data.message);
+                        });
                         addToHistory("security", "Password changed successfully", "Admin account password updated");
                     } else {
                         if (data.errors) {
@@ -886,6 +879,7 @@ document.addEventListener("DOMContentLoaded", function () {
             successMessageText.textContent = message;
         }
         if (successModal) {
+            window.vsModalPrepareOpen(successModal);
             successModal.style.display = "block";
         }
     }
@@ -904,6 +898,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (confirmMessage) confirmMessage.textContent = message;
 
         confirmCallback = callback;
+        window.vsModalPrepareOpen(confirmModal);
         confirmModal.style.display = "block";
     }
 

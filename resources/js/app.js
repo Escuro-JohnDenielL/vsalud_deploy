@@ -1,5 +1,41 @@
 import './bootstrap';
 
+const vsModalCloseTimers = new WeakMap();
+
+window.vsModalPrepareOpen = function (modal) {
+    if (!modal) return;
+    const closeTimer = vsModalCloseTimers.get(modal);
+    if (closeTimer) window.clearTimeout(closeTimer);
+    vsModalCloseTimers.delete(modal);
+    modal.classList.remove('vs-modal--closing');
+};
+
+window.vsModalCloseAfterFade = function (modal, finishClose) {
+    if (!modal || typeof finishClose !== 'function') return;
+    if (modal.classList.contains('vs-modal--closing')) return;
+
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+        finishClose();
+        return;
+    }
+
+    const durationValue = getComputedStyle(document.documentElement)
+        .getPropertyValue('--vs-duration-base')
+        .trim();
+    const duration = Number.parseFloat(durationValue) || 200;
+    const durationMs = durationValue.endsWith('ms') ? duration : duration * 1000;
+
+    modal.classList.add('vs-modal--closing');
+    const closeTimer = window.setTimeout(() => {
+        if (vsModalCloseTimers.get(modal) !== closeTimer) return;
+        modal.classList.remove('vs-modal--closing');
+        vsModalCloseTimers.delete(modal);
+        finishClose();
+    }, durationMs);
+    vsModalCloseTimers.set(modal, closeTimer);
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     // Flag that JS is available so the responsive CSS can collapse the navbar
     // into a hamburger menu (graceful fallback to stacked links without JS).

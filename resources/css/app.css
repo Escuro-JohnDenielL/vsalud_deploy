@@ -1702,6 +1702,7 @@ textarea:focus,
 }
 
 .vs-layout--admin .modal.vs-modal--closing,
+.vs-layout--admin .modal-overlay-fb.vs-modal--closing,
 .vs-layout--patron .modal.vs-modal--closing,
 .vs-layout--patron .pkg-modal.vs-modal--closing,
 .vs-layout--patron .privacy-overlay.vs-modal--closing {
@@ -1710,6 +1711,7 @@ textarea:focus,
 
 @media (prefers-reduced-motion: reduce) {
   .vs-layout--admin .modal.vs-modal--closing,
+  .vs-layout--admin .modal-overlay-fb.vs-modal--closing,
   .vs-layout--patron .modal.vs-modal--closing,
   .vs-layout--patron .pkg-modal.vs-modal--closing,
   .vs-layout--patron .privacy-overlay.vs-modal--closing {

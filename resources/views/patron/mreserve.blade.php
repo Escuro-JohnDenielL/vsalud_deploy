@@ -187,7 +187,7 @@
             <span class="close-modal" id="closeWaitlistSuccessModal">&times;</span>
             <h3 style="color: #27ae60;">✅ You're on the Waitlist!</h3>
             <p style="font-size: 16px; margin: 16px 0;">We'll email you if a slot opens up for this date. You'll have 24 hours to claim it.</p>
-            <button onclick="document.getElementById('waitlistSuccessModal').style.display='none'" style="background: #27ae60; color: white; border: none; padding: 10px 24px; border-radius: 5px; font-size: 14px; cursor: pointer; font-weight: 600;">
+            <button onclick="window.vsModalCloseAfterFade(document.getElementById('waitlistSuccessModal'), () => { document.getElementById('waitlistSuccessModal').style.display = 'none'; })" style="background: #27ae60; color: white; border: none; padding: 10px 24px; border-radius: 5px; font-size: 14px; cursor: pointer; font-weight: 600;">
                 Got it!
             </button>
         </div>

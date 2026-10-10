@@ -104,6 +104,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const prevMonthBtn = document.getElementById("prevMonth");
     const nextMonthBtn = document.getElementById("nextMonth");
     const modal = document.getElementById("statusModal");
+    function closeStatusModal() {
+        if (modal) {
+            window.vsModalCloseAfterFade(modal, () => {
+                modal.style.display = "none";
+            });
+        }
+    }
     const saveStatusBtn = document.getElementById("saveStatus");
     const closeModalBtn = document.getElementById("closeModal");
     const statusSelect = document.getElementById("statusSelect");
@@ -173,6 +180,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     statusSelect.value = dateStatuses[dateKey] || "";
                 }
                 if (modal) {
+                    window.vsModalPrepareOpen(modal);
                     modal.style.display = "flex";
                 }
             });
@@ -235,7 +243,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
 
                 if (modal) {
-                    modal.style.display = "none";
+                    closeStatusModal();
                 }
             }
         });
@@ -258,7 +266,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 deleteStatusFromBackend(selectedDate);
 
                 if (modal) {
-                    modal.style.display = "none";
+                    closeStatusModal();
                 }
             }
         });
@@ -267,7 +275,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (closeModalBtn) {
         closeModalBtn.addEventListener("click", function () {
             if (modal) {
-                modal.style.display = "none";
+                closeStatusModal();
             }
         });
     }
@@ -276,7 +284,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (modal) {
         modal.addEventListener("click", function (e) {
             if (e.target === modal) {
-                modal.style.display = "none";
+                closeStatusModal();
             }
         });
     }
@@ -480,7 +488,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener("keydown", function (e) {
         if (modal && modal.style.display === "flex") {
             if (e.key === "Escape") {
-                modal.style.display = "none";
+                closeStatusModal();
             }
         }
     });
@@ -506,6 +514,7 @@ document.addEventListener("DOMContentLoaded", function () {
             dateStatuses[selected] === "Closed"
         ) {
             // alert("This date is not available. Please choose another.");
+            window.vsModalPrepareOpen(dateUnavailableModal);
             dateUnavailableModal.style.display = "flex";
             dateUnavailableModal.classList.add('open');
             dateInput.value = "";
@@ -513,14 +522,18 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     closeUnavailableModal?.addEventListener("click", () => {
-        dateUnavailableModal.style.display = "none";
-        dateUnavailableModal.classList.remove('open');
+        window.vsModalCloseAfterFade(dateUnavailableModal, () => {
+            dateUnavailableModal.style.display = "none";
+            dateUnavailableModal.classList.remove('open');
+        });
     });
 
     window.addEventListener("click", function (event) {
         if (event.target === dateUnavailableModal) {
-            dateUnavailableModal.style.display = "none";
-            dateUnavailableModal.classList.remove('open');
+            window.vsModalCloseAfterFade(dateUnavailableModal, () => {
+                dateUnavailableModal.style.display = "none";
+                dateUnavailableModal.classList.remove('open');
+            });
         }
     });
 });

@@ -123,6 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (shouldShowAgreement) {
             setTimeout(() => {
+                window.vsModalPrepareOpen(agreementModal);
                 agreementModal.style.display = "flex";
                 agreementModal.classList.add("show");
                 form?.classList.add("form-disabled");
@@ -172,13 +173,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     .then((data) => {
                         if (data.success) {
                             window.guestAgreementAccepted = true;
-                            agreementModal.classList.remove("show");
-                            setTimeout(
-                                () => (agreementModal.style.display = "none"),
-                                300
-                            );
-                            form?.classList.remove("form-disabled");
-                            document.body.style.overflow = "auto";
+                            window.vsModalCloseAfterFade(agreementModal, () => {
+                                agreementModal.style.display = "none";
+                                agreementModal.classList.remove("show");
+                                form?.classList.remove("form-disabled");
+                                document.body.style.overflow = "auto";
+                            });
                         }
                     })
                     .catch((error) => {
@@ -324,6 +324,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("waitlistMessage").style.display = "none";
             }
 
+            window.vsModalPrepareOpen(dateUnavailableModal);
             dateUnavailableModal.style.display = "block";
             dateInput.value = "";
         }
@@ -371,8 +372,12 @@ document.addEventListener("DOMContentLoaded", function () {
             .then((data) => {
                 this.disabled = false;
                 if (data.success) {
-                    dateUnavailableModal.style.display = "none";
-                    document.getElementById("waitlistSuccessModal").style.display = "block";
+                    const waitlistSuccessModal = document.getElementById("waitlistSuccessModal");
+                    window.vsModalCloseAfterFade(dateUnavailableModal, () => {
+                        dateUnavailableModal.style.display = "none";
+                        window.vsModalPrepareOpen(waitlistSuccessModal);
+                        waitlistSuccessModal.style.display = "block";
+                    });
                 } else {
                     msgEl.textContent = data.message || "Failed to join waitlist. Please try again.";
                     msgEl.style.color = "#e74c3c";
@@ -389,19 +394,29 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     closeUnavailableModal?.addEventListener("click", () => {
-        dateUnavailableModal.style.display = "none";
+        window.vsModalCloseAfterFade(dateUnavailableModal, () => {
+            dateUnavailableModal.style.display = "none";
+        });
     });
 
     document.getElementById("closeWaitlistSuccessModal")?.addEventListener("click", () => {
-        document.getElementById("waitlistSuccessModal").style.display = "none";
+        const waitlistSuccessModal = document.getElementById("waitlistSuccessModal");
+        window.vsModalCloseAfterFade(waitlistSuccessModal, () => {
+            waitlistSuccessModal.style.display = "none";
+        });
     });
 
     window.addEventListener("click", function (event) {
         if (event.target === dateUnavailableModal) {
-            dateUnavailableModal.style.display = "none";
+            window.vsModalCloseAfterFade(dateUnavailableModal, () => {
+                dateUnavailableModal.style.display = "none";
+            });
         }
-        if (event.target === document.getElementById("waitlistSuccessModal")) {
-            document.getElementById("waitlistSuccessModal").style.display = "none";
+        const waitlistSuccessModal = document.getElementById("waitlistSuccessModal");
+        if (event.target === waitlistSuccessModal) {
+            window.vsModalCloseAfterFade(waitlistSuccessModal, () => {
+                waitlistSuccessModal.style.display = "none";
+            });
         }
     });
 });

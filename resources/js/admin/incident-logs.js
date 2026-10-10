@@ -23,19 +23,22 @@
     // --- Modal helpers ---
     window.closeModal = function(id) {
         const modal = document.getElementById(id);
-        if (modal) modal.classList.remove('open');
+        if (modal) window.vsModalCloseAfterFade(modal, () => modal.classList.remove('open'));
     };
 
     function openModal(id) {
         const modal = document.getElementById(id);
-        if (modal) modal.classList.add('open');
+        if (modal) {
+            window.vsModalPrepareOpen(modal);
+            modal.classList.add('open');
+        }
     }
 
     // Close modal on backdrop click
     document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('click', function(e) {
             if (e.target === this) {
-                this.classList.remove('open');
+                window.vsModalCloseAfterFade(this, () => this.classList.remove('open'));
             }
         });
     });

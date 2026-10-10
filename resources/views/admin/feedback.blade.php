@@ -129,13 +129,18 @@
                 emailEl.innerHTML = '<a href="mailto:' + encodeURIComponent(email) + '">' + escHtml(email) + '</a>';
                 document.getElementById('detail-date').textContent = this.dataset.date;
                 document.getElementById('detail-message').textContent = this.dataset.message;
+                window.vsModalPrepareOpen(modal);
                 modal.style.display = 'flex';
                 modal.classList.add('open');
             });
         });
 
-        closeBtn.addEventListener('click', () => { modal.style.display = 'none'; modal.classList.remove('open'); });
-        window.addEventListener('click', (e) => { if (e.target === modal) { modal.style.display = 'none'; modal.classList.remove('open'); } });
+        const closeFeedbackModal = () => window.vsModalCloseAfterFade(modal, () => {
+            modal.style.display = 'none';
+            modal.classList.remove('open');
+        });
+        closeBtn.addEventListener('click', closeFeedbackModal);
+        window.addEventListener('click', (e) => { if (e.target === modal) closeFeedbackModal(); });
 
         // Confirm delete modal logic
         const confirmModal = document.getElementById('confirmDeleteModal');
@@ -146,12 +151,16 @@
 
         window.confirmDeleteFeedback = function(id) {
             pendingFormId = 'delete-feedback-form-' + id;
+            window.vsModalPrepareOpen(confirmModal);
             confirmModal.style.display = 'flex';
         };
 
-        function closeConfirmModal() {
-            confirmModal.style.display = 'none';
-            pendingFormId = null;
+        function closeConfirmModal(afterClose) {
+            window.vsModalCloseAfterFade(confirmModal, () => {
+                confirmModal.style.display = 'none';
+                pendingFormId = null;
+                afterClose?.();
+            });
         }
 
         closeConfirm.addEventListener('click', closeConfirmModal);
@@ -159,10 +168,8 @@
         window.addEventListener('click', (e) => { if (e.target === confirmModal) closeConfirmModal(); });
 
         confirmYes.addEventListener('click', function() {
-            if (pendingFormId) {
-                document.getElementById(pendingFormId).submit();
-            }
-            closeConfirmModal();
+            const form = pendingFormId ? document.getElementById(pendingFormId) : null;
+            closeConfirmModal(() => form?.submit());
         });
     });
 </script>

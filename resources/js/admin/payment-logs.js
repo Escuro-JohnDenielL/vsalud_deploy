@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let activePaymentInfoTrigger = null;
 
     paymentInfoOpen?.addEventListener('click', function () {
+        window.vsModalPrepareOpen(paymentInfoModal);
         paymentInfoModal.classList.add('open');
         paymentInfoModal.setAttribute('aria-hidden', 'false');
         paymentInfoClose?.focus();
@@ -21,9 +22,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const closePaymentInfo = () => {
         if (!paymentInfoModal) return;
-        paymentInfoModal.classList.remove('open');
         paymentInfoModal.setAttribute('aria-hidden', 'true');
-        paymentInfoOpen?.focus();
+        window.vsModalCloseAfterFade(paymentInfoModal, () => {
+            paymentInfoModal.classList.remove('open');
+            paymentInfoOpen?.focus();
+        });
     };
 
     paymentInfoClose?.addEventListener('click', closePaymentInfo);
@@ -36,6 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const modal = document.getElementById(this.dataset.paymentInfoTarget);
             if (!modal) return;
             activePaymentInfoTrigger = this;
+            window.vsModalPrepareOpen(modal);
             modal.classList.add('open');
             modal.setAttribute('aria-hidden', 'false');
             modal.querySelector('.js-payment-modal-close')?.focus();
@@ -44,10 +48,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('.payment-details-modal').forEach(modal => {
         const close = () => {
-            modal.classList.remove('open');
             modal.setAttribute('aria-hidden', 'true');
-            activePaymentInfoTrigger?.focus();
-            activePaymentInfoTrigger = null;
+            window.vsModalCloseAfterFade(modal, () => {
+                modal.classList.remove('open');
+                activePaymentInfoTrigger?.focus();
+                activePaymentInfoTrigger = null;
+            });
         };
 
         modal.querySelector('.js-payment-modal-close')?.addEventListener('click', close);
@@ -119,16 +125,19 @@ document.addEventListener('DOMContentLoaded', function () {
             receiptMissing.style.display = 'block';
         }
 
+        window.vsModalPrepareOpen(receiptModal);
         receiptModal.style.display = 'flex';
         receiptModal.classList.add('open');
     }
 
     function closeReceipt() {
-        receiptModal.style.display = 'none';
-        receiptModal.classList.remove('open');
-        if (receiptImage) { receiptImage.onerror = null; receiptImage.src = ''; }
-        if (receiptFrame) receiptFrame.src = '';
-        if (receiptMissing) receiptMissing.style.display = 'none';
+        window.vsModalCloseAfterFade(receiptModal, () => {
+            receiptModal.style.display = 'none';
+            receiptModal.classList.remove('open');
+            if (receiptImage) { receiptImage.onerror = null; receiptImage.src = ''; }
+            if (receiptFrame) receiptFrame.src = '';
+            if (receiptMissing) receiptMissing.style.display = 'none';
+        });
     }
 
     document.querySelectorAll('.receipt-link1').forEach(link => {
@@ -211,6 +220,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (statusModal) {
+            window.vsModalPrepareOpen(statusModal);
             statusModal.style.display = 'flex';
             statusModal.classList.add('open');
         }
@@ -219,8 +229,18 @@ document.addEventListener('DOMContentLoaded', function () {
     // Cancel or X restores the dropdown to the value it had before the change.
     function closeStatusModal(revert) {
         if (statusModal) {
-            statusModal.style.display = 'none';
-            statusModal.classList.remove('open');
+            window.vsModalCloseAfterFade(statusModal, () => {
+                statusModal.style.display = 'none';
+                statusModal.classList.remove('open');
+                if (revert && pendingSelect) {
+                    pendingSelect.value = pendingSelect.dataset.previousStatus;
+                }
+                pendingSelect = null;
+                pendingPaymentId = null;
+                pendingStatus = null;
+                if (statusModalNote) statusModalNote.value = '';
+            });
+            return;
         }
         if (revert && pendingSelect) {
             pendingSelect.value = pendingSelect.dataset.previousStatus;

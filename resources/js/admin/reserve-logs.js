@@ -58,6 +58,7 @@ function viewReservation(id) {
     const modal = document.getElementById("viewModal");
     const body = document.getElementById("modalBody");
 
+    window.vsModalPrepareOpen(modal);
     modal.style.display = "flex";
     modal.classList.add('open');
     body.innerHTML = `Loading reservation #${id}...`;
@@ -301,12 +302,16 @@ function closeModal() {
     const viewModal = document.getElementById("viewModal");
     const viewModalPayment = document.getElementById("viewModalPayment");
     if (viewModal) {
-        viewModal.style.display = "none";
-        viewModal.classList.remove('open');
+        window.vsModalCloseAfterFade(viewModal, () => {
+            viewModal.style.display = "none";
+            viewModal.classList.remove('open');
+        });
     }
     if (viewModalPayment) {
-        viewModalPayment.style.display = "none";
-        viewModalPayment.classList.remove('open');
+        window.vsModalCloseAfterFade(viewModalPayment, () => {
+            viewModalPayment.style.display = "none";
+            viewModalPayment.classList.remove('open');
+        });
     }
 }
 
@@ -316,6 +321,7 @@ let pendingDeleteId = null;
 function deleteReservation(id) {
     const modal = document.getElementById('confirmDeleteReservationModal');
     document.getElementById('confirmDeleteReservationMessage').textContent = `Are you sure you want to delete reservation #${id}?`;
+    window.vsModalPrepareOpen(modal);
     modal.style.display = 'flex';
     modal.classList.add('open');
     pendingDeleteId = id;
@@ -329,8 +335,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function closeModal() {
         if (modal) {
-            modal.style.display = 'none';
-            modal.classList.remove('open');
+            window.vsModalCloseAfterFade(modal, () => {
+                modal.style.display = 'none';
+                modal.classList.remove('open');
+                pendingDeleteId = null;
+            });
+            return;
         }
         pendingDeleteId = null;
     }

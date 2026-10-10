@@ -15,17 +15,22 @@
     // --- Modal helpers (mirrors resources/js/admin/incident-logs.js) ---
     window.closeModal = window.closeModal || function (id) {
         const modal = document.getElementById(id);
-        if (modal) modal.classList.remove('open');
+        if (modal) window.vsModalCloseAfterFade(modal, () => modal.classList.remove('open'));
     };
 
     function openModal(id) {
         const modal = document.getElementById(id);
-        if (modal) modal.classList.add('open');
+        if (modal) {
+            window.vsModalPrepareOpen(modal);
+            modal.classList.add('open');
+        }
     }
 
     document.querySelectorAll('.modal').forEach((modal) => {
         modal.addEventListener('click', function (e) {
-            if (e.target === this) this.classList.remove('open');
+            if (e.target === this) {
+                window.vsModalCloseAfterFade(this, () => this.classList.remove('open'));
+            }
         });
     });
 
