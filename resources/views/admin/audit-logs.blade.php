@@ -7,7 +7,7 @@
 @endpush
 
 @section('content')
-    <div class="container">
+    <div class="container vs-admin-audit-logs">
         <div class="page-header">
             <h1>Audit Logs</h1>
             <p>Every action taken inside the admin panel. Entries are append-only and cannot be edited or deleted.</p>
@@ -107,8 +107,8 @@
 
         {{-- Trail --}}
         <div class="table-container">
-            <div class="table-wrapper">
-                <table class="audit-table">
+            <div class="table-wrapper vs-table-wrap" role="region" tabindex="0" aria-label="Audit log table">
+                <table class="audit-table vs-table">
                     <thead>
                         <tr>
                             <th>When</th>
@@ -135,7 +135,7 @@
     </div>
 
     {{-- Entry detail modal (filled by resources/js/admin/audit-logs.js) --}}
-    <div id="auditDetailModal" class="modal">
+    <div id="auditDetailModal" class="modal vs-admin-audit-logs__detail-modal">
         <div class="modal-content modal-lg">
             <span class="close-btn" onclick="closeModal('auditDetailModal')">&times;</span>
             <h2>Audit Entry</h2>
@@ -154,7 +154,7 @@
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Audit type</span>
-                        <span class="detail-value"><span id="auditDetailCategory" class="audit-cat audit-cat-system">—</span></span>
+                        <span class="detail-value"><span id="auditDetailCategory" class="vs-badge vs-badge--neutral audit-cat audit-cat-system">—</span></span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Activity</span>

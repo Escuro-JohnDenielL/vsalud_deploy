@@ -113,6 +113,8 @@ function viewReservation(id) {
                 <span class="badge-modern ${badgeClass}">${statusLabel}</span>
             </div>
 
+            <div class="vs-admin-reservation-logs__detail-grid">
+
             <!-- Contact -->
             <div class="detail-section">
                 <div class="detail-section-title">Contact</div>
@@ -204,10 +206,11 @@ function viewReservation(id) {
                 <div class="detail-section-title">AI Event Brief</div>
                 <p class="ai-brief-hint">Get an at-a-glance handoff summary for the venue and coordinator team.</p>
                 <button id="aiBriefBtn" class="admin-btn admin-btn-ghost" type="button">
-                    <span id="aiBriefLabel">✨ AI Event Brief</span>
+                    <span id="aiBriefLabel">AI Event Brief</span>
                 </button>
                 <p id="aiBriefStatus" class="ai-brief-status"></p>
-                <div id="aiBriefOutput" class="ai-brief-output" style="display:none;"></div>
+                <div id="aiBriefOutput" class="ai-brief-output" hidden></div>
+            </div>
             </div>
         `;
 
@@ -254,7 +257,7 @@ function viewReservation(id) {
                     aiBriefLabel.textContent = "Generating brief...";
                     aiBriefStatus.textContent = "";
                     aiBriefStatus.className = "ai-brief-status";
-                    aiBriefOutput.style.display = "none";
+                    aiBriefOutput.hidden = true;
 
                     const csrfToken = document
                         .querySelector('meta[name="csrf-token"]')
@@ -274,7 +277,7 @@ function viewReservation(id) {
 
                         if (data.success) {
                             aiBriefOutput.innerHTML = `<div class="ai-brief-text">${escHtml(data.brief)}</div>`;
-                            aiBriefOutput.style.display = "block";
+                            aiBriefOutput.hidden = false;
                             aiBriefStatus.textContent = "Brief generated — review before sharing with the team.";
                             aiBriefStatus.className = "ai-brief-status ai-brief-success";
                         } else {
@@ -287,14 +290,14 @@ function viewReservation(id) {
                         aiBriefStatus.className = "ai-brief-status ai-brief-error";
                     } finally {
                         aiBriefBtn.disabled = false;
-                        aiBriefLabel.textContent = "✨ AI Event Brief";
+                        aiBriefLabel.textContent = "AI Event Brief";
                     }
                 });
             }
         })
         .catch((err) => {
             console.error("Error fetching reservation:", err);
-            body.innerHTML = `<p style="color:red;">Failed to load: ${err.message}</p>`;
+            body.innerHTML = `<p class="vs-admin-reservation-logs__load-error">Failed to load: ${err.message}</p>`;
         });
 }
 

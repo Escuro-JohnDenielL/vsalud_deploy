@@ -7,15 +7,15 @@
 @endpush
 
 @section('content')
-    <div class="container">
+    <div class="container vs-admin-reservation-logs">
         <div class="page-header">
             <h1>Reservation Logs</h1>
             <p>Manage and track all reservation requests</p>
         </div>
 
         <div class="table-container">
-            <div class="table-wrapper">
-                <table class="reservation-table">
+            <div class="table-wrapper vs-table-wrap" role="region" tabindex="0" aria-label="Reservation logs table">
+                <table class="reservation-table vs-table">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -34,7 +34,7 @@
                     </thead>
                     <tbody class="paginated-table" id="reservationTableBody">
                         @forelse($reservations as $reservation)
-                            <tr>
+                            <tr class="vs-table__row">
                                 <td>{{ $reservation->patron->name ?? 'N/A' }}</td>
                                 <td>{{ $reservation->patron->email ?? '-' }}</td>
                                 <td><strong>{{ $reservation->inquiry->tracking_code ?? 'RSV-' . str_pad($reservation->reserve_id, 6, '0', STR_PAD_LEFT) }}</strong></td>
@@ -77,7 +77,7 @@
             </div>
 
             <!-- View Modal -->
-            <div id="viewModal" class="modal">
+            <div id="viewModal" class="modal vs-admin-reservation-logs__view-modal">
                 <div class="modal-content">
                     <span class="close-btn" onclick="closeModal()">&times;</span>
                     <h2>Reservation Details</h2>
@@ -88,7 +88,7 @@
             </div>
 
 
-            <div style="margin-top: 16px; padding: 16px 20px;">
+            <div class="vs-admin-reservation-logs__pagination">
                 {{ $reservations->links() }}
             </div>
 
@@ -97,11 +97,11 @@
     </div>
 
     {{-- Confirm Delete Modal --}}
-    <div id="confirmDeleteReservationModal" class="modal">
+    <div id="confirmDeleteReservationModal" class="modal vs-admin-reservation-logs__confirm-modal">
         <div class="modal-content modal-sm">
             <span class="close-btn" id="closeConfirmDeleteModal">&times;</span>
             <h3>Confirm Delete</h3>
-            <p id="confirmDeleteReservationMessage" style="font-size: 15px; margin: 12px 0;">Are you sure you want to delete this reservation?</p>
+            <p id="confirmDeleteReservationMessage" class="vs-admin-reservation-logs__confirm-message">Are you sure you want to delete this reservation?</p>
             <div class="modal-footer">
                 <button id="confirmDeleteReservationNo" class="admin-btn admin-btn-ghost">Cancel</button>
                 <button id="confirmDeleteReservationYes" class="admin-btn admin-btn-danger">Delete</button>

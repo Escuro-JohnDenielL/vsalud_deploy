@@ -9,7 +9,14 @@
     @param \Illuminate\Contracts\Pagination\LengthAwarePaginator $logs
 --}}
 @forelse($logs as $log)
-    <tr>
+    @php
+        $auditBadgeVariant = match ($log->category_key) {
+            'security' => 'danger',
+            'auth' => 'info',
+            default => 'neutral',
+        };
+    @endphp
+    <tr class="vs-table__row">
         <td class="audit-when">
             <span class="audit-date">{{ $log->created_at?->format('M d, Y') ?? '—' }}</span>
             <span class="audit-clock">{{ $log->created_at?->format('g:i:s A') ?? '' }}</span>
@@ -21,14 +28,14 @@
             </div>
         </td>
         <td>
-            <span class="audit-cat audit-cat-{{ $log->category_key }}">{{ $log->category_label }}</span>
+            <span class="vs-badge vs-badge--{{ $auditBadgeVariant }} audit-cat audit-cat-{{ $log->category_key }}">{{ $log->category_label }}</span>
         </td>
         <td class="audit-activity">{{ $log->event_label }}</td>
         <td class="audit-details" title="{{ $log->description }}">
             {{ \Illuminate\Support\Str::limit($log->description, 110) ?: '—' }}
         </td>
         <td class="audit-ip">{{ $log->ip_address ?? '—' }}</td>
-        <td>
+        <td class="vs-table__actions">
             <button type="button"
                 class="admin-btn admin-btn-primary admin-btn-sm audit-view-btn"
                 data-id="{{ $log->log_id }}">View</button>

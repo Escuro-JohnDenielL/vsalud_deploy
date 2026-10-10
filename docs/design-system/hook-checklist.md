@@ -4,15 +4,15 @@ This baseline was scanned from `resources/js` and `resources/views` in the fresh
 
 ## Baseline count
 
-The current scan found **2,213 distinct entries**. An entry is one unique combination of hook kind, normalized hook value, and source file; it is **not every occurrence**. Repeated occurrences of the same hook in the same file count once, and the reported line is the first occurrence. The same hook in another file counts as another entry. The pre-batch scan on this branch found 2,207 entries.
+The current scan found **2,236 distinct entries**. An entry is one unique combination of hook kind, normalized hook value, and source file; it is **not every occurrence**. Repeated occurrences of the same hook in the same file count once, and the reported line is the first occurrence. The same hook in another file counts as another entry. The previous checklist recorded 2,213 entries; rerunning its exact scanner against the committed pre-Batch 6b `HEAD` returned 2,217, so 2,217 is the reproducible baseline for this batch.
 
 This scanner covers Blade markup, JavaScript selectors and states, data attributes, and inline display/color states. Earlier 593/598 counts came from a narrower scanner and should not be compared as if they counted the same categories.
 
 | Entry kind | Count |
 |---|---:|
-| Class attributes | 912 |
+| Class attributes | 936 |
 | `classList` states | 66 |
-| `className` states | 30 |
+| `className` states | 32 |
 | Data attributes | 50 |
 | Data attribute accessors | 3 |
 | `dataset` accessors | 33 |
@@ -20,14 +20,18 @@ This scanner covers Blade markup, JavaScript selectors and states, data attribut
 | Generated selectors | 3 |
 | IDs in markup | 387 |
 | `getElementById` hooks | 361 |
-| Direct inline states in JS | 65 |
-| Inline style state attributes | 175 |
+| Direct inline states in JS | 64 |
+| Inline style state attributes | 173 |
 | Selector hooks | 82 |
-| **Total** | **2,213** |
+| **Total** | **2,236** |
 
 ## Batch 6a hook review
 
 No functional ID, selector, data-attribute, or existing class hooks were removed. Eleven visual inline-state entries were intentionally replaced by scoped CSS classes: nine direct calendar color/clear assignments and two Blade inline styles. The new classes are `vs-admin-dashboard`, `vs-admin-dashboard__banner`, `vs-admin-dashboard__packages-grid`, `vs-admin-dashboard__edit-image`, `vs-admin-dashboard__edit-image--optional`, `vs-admin-reservation`, `vs-admin-reservation__layout`, `vs-admin-reservation__notice`, `vs-admin-reservation__legend-box`, `vs-admin-reservation__legend-box--success`, `vs-admin-reservation__legend-box--warning`, `vs-admin-reservation__legend-box--danger`, `vs-admin-reservation__legend-box--neutral`, `vs-calendar-day--success`, `vs-calendar-day--warning`, `vs-calendar-day--danger`, and `vs-calendar-day--neutral`.
+
+## Batch 6b Commit 1 hook review
+
+The exact scanner returned **2,236 entries**, up from a reproducible pre-batch scan of 2,217. It found **zero removed functional hooks**: IDs, selectors, data attributes, and existing classes remain available. Two generated audit category expressions changed to include shared badge classes, and three inline visual states in reservation logs were replaced with the scoped load-error/hidden styling. Added classes are `vs-admin-audit-logs`, `vs-admin-audit-logs__detail-modal`, `vs-admin-reservation-logs`, `vs-admin-reservation-logs__confirm-message`, `vs-admin-reservation-logs__confirm-modal`, `vs-admin-reservation-logs__detail-grid`, `vs-admin-reservation-logs__load-error`, `vs-admin-reservation-logs__pagination`, `vs-admin-reservation-logs__view-modal`, `vs-badge`, `vs-badge--danger`, `vs-badge--info`, `vs-badge--neutral`, `vs-table`, `vs-table__actions`, `vs-table__row`, and `vs-table-wrap`.
 
 ## Exact scan command
 

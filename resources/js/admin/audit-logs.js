@@ -79,7 +79,9 @@
 
         if (fields.category) {
             fields.category.textContent = entry.category_label || DASH;
-            fields.category.className = `audit-cat audit-cat-${entry.category_key || 'system'}`;
+            const category = entry.category_key || 'system';
+            const badgeVariant = category === 'security' ? 'danger' : category === 'auth' ? 'info' : 'neutral';
+            fields.category.className = `vs-badge vs-badge--${badgeVariant} audit-cat audit-cat-${category}`;
         }
 
         setText(fields.activity, entry.event_label);

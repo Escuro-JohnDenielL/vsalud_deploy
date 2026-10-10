@@ -1,300 +1,225 @@
-/* ------------------------------------------------------------------
-   Audit Logs page (resources/views/admin/audit-logs.blade.php)
-
-   Layout only — colours come from the shared tokens in app.css.
-   Note: `.toast-notification` is NOT declared here on purpose; it lives in
-   resources/css/index.css, and a partial override in a page stylesheet wins
-   for the properties it redefines (that bug once stretched the toast across
-   half the viewport). See repo notes.
------------------------------------------------------------------- */
-
-.container {
+.vs-admin-audit-logs {
     max-width: 1400px;
     margin: 0 auto;
     padding: 28px 32px;
+    color: var(--vs-color-text);
+    font-family: var(--vs-font-ui);
 }
 
-.page-header {
+.vs-admin-audit-logs .page-header {
     margin-bottom: 24px;
     text-align: center;
 }
 
-.page-header h1 {
-    color: var(--color-primary);
+.vs-admin-audit-logs .page-header h1 {
+    color: var(--vs-color-deep-green);
+    font-family: var(--vs-font-display);
     font-size: 28px;
     font-weight: 600;
     margin: 0 0 6px;
 }
 
-.page-header p {
-    color: var(--color-text-muted);
+.vs-admin-audit-logs .page-header p {
+    color: var(--vs-color-text-secondary);
     font-size: 14px;
     margin: 0 auto;
     max-width: 760px;
 }
 
-/* Stats row */
-.audit-stats-row {
+.vs-admin-audit-logs .audit-stats-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 14px;
     margin-bottom: 22px;
 }
 
-.audit-stat-card {
-    background: #f9fafb;
+.vs-admin-audit-logs .audit-stat-card {
+    background: var(--vs-color-surface-beige);
+    border: 1px solid var(--vs-color-control-border);
     border-radius: 14px;
     padding: 18px;
-    border: 1px solid var(--color-border);
     text-align: center;
 }
 
-.audit-stat-card strong {
+.vs-admin-audit-logs .audit-stat-card strong {
     display: block;
     font-size: 28px;
-    color: var(--color-primary);
+    color: var(--vs-color-deep-green);
 }
 
-.audit-stat-card span {
-    color: var(--color-text-muted);
-    font-size: 13px;
+.vs-admin-audit-logs .audit-stat-card span {
+    color: var(--vs-color-text-secondary);
+    font-size: 14px;
 }
 
-.audit-stat-card.total { border-top: 3px solid var(--color-primary); }
-.audit-stat-card.today { border-top: 3px solid var(--color-success); }
-.audit-stat-card.security { border-top: 3px solid var(--color-danger); }
-.audit-stat-card.admins { border-top: 3px solid #6b7280; }
+.vs-admin-audit-logs .audit-stat-card.total { border-top: 3px solid var(--vs-color-dark-green); }
+.vs-admin-audit-logs .audit-stat-card.today { border-top: 3px solid var(--vs-color-emerald); }
+.vs-admin-audit-logs .audit-stat-card.security { border-top: 3px solid var(--vs-status-danger-border); }
+.vs-admin-audit-logs .audit-stat-card.admins { border-top: 3px solid var(--vs-status-neutral-border); }
 
-/* Filters */
-.audit-filters {
+.vs-admin-audit-logs .audit-filters {
     display: grid;
     grid-template-columns: minmax(200px, 2fr) repeat(2, minmax(150px, 1fr)) repeat(2, minmax(130px, 0.7fr)) auto;
     gap: 14px;
     align-items: end;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
+    background: var(--vs-color-surface);
+    border: 1px solid var(--vs-color-control-border);
+    border-radius: 16px;
+    box-shadow: var(--vs-shadow-card);
     padding: 18px 20px;
     margin-bottom: 18px;
 }
 
-.audit-filter-field {
+.vs-admin-audit-logs .audit-filter-field {
     display: flex;
     flex-direction: column;
     gap: 4px;
     min-width: 0;
 }
 
-.audit-filter-field label {
+.vs-admin-audit-logs .audit-filter-field label {
     font-size: 12px;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--color-text-muted);
+    color: var(--vs-color-text-secondary);
 }
 
-.audit-filter-field input,
-.audit-filter-field select {
+.vs-admin-audit-logs .audit-filter-field input,
+.vs-admin-audit-logs .audit-filter-field select {
     width: 100%;
+    min-height: 42px;
     padding: 9px 12px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    background: var(--color-surface);
-    color: var(--color-text);
+    border: 1px solid var(--vs-color-control-border);
+    border-radius: 8px;
+    background: var(--vs-color-surface);
+    color: var(--vs-color-text);
     font-size: 14px;
-    font-family: inherit;
+    font-family: var(--vs-font-ui);
 }
 
-.audit-filter-field input:focus,
-.audit-filter-field select:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px var(--color-primary-light);
+.vs-admin-audit-logs .audit-filter-field input:focus-visible,
+.vs-admin-audit-logs .audit-filter-field select:focus-visible,
+.vs-admin-audit-logs .vs-table-wrap:focus-visible {
+    outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+    outline-offset: var(--vs-focus-offset);
 }
 
-.audit-filter-actions {
+.vs-admin-audit-logs .audit-filter-actions {
     display: flex;
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
 }
 
-/* Result summary */
-.audit-meta {
+.vs-admin-audit-logs .audit-filter-actions .admin-btn {
+    min-height: 42px;
+    font-size: 14px;
+}
+
+.vs-admin-audit-logs .audit-meta {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
     margin-bottom: 12px;
-    font-size: 13px;
-    color: var(--color-text-muted);
+    font-size: 14px;
+    color: var(--vs-color-text-secondary);
 }
 
-.audit-meta-count {
+.vs-admin-audit-logs .audit-meta-count {
     font-weight: 600;
-    color: var(--color-text);
+    color: var(--vs-color-text);
 }
 
-.audit-filter-chip {
-    background: var(--color-primary-light);
-    color: var(--color-primary);
+.vs-admin-audit-logs .audit-filter-chip {
+    background: var(--vs-color-surface-pale-green);
+    color: var(--vs-color-deep-green);
+    border: 1px solid var(--vs-color-control-border);
     border-radius: 999px;
-    padding: 3px 12px;
+    padding: 4px 12px;
     font-size: 12px;
     font-weight: 600;
 }
 
-/* Table */
-.table-container {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
+.vs-admin-audit-logs .table-container {
+    background: var(--vs-color-surface);
+    border: 1px solid var(--vs-color-control-border);
+    border-radius: 16px;
+    box-shadow: var(--vs-shadow-card);
     overflow: hidden;
 }
 
-.table-wrapper {
-    overflow-x: auto;
-}
+.vs-admin-audit-logs .audit-when { white-space: nowrap; }
+.vs-admin-audit-logs .audit-date { display: block; font-weight: 600; }
+.vs-admin-audit-logs .audit-clock { display: block; font-size: 12px; color: var(--vs-color-text-secondary); }
 
-.audit-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-}
-
-.audit-table th {
-    background: var(--color-primary);
-    color: white;
-    padding: 12px 16px;
-    text-align: left;
-    font-weight: 600;
-    font-size: 13px;
-    white-space: nowrap;
-}
-
-.audit-table td {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--color-border);
-    vertical-align: middle;
-    color: var(--color-text);
-}
-
-.audit-table tbody tr:hover {
-    background: var(--color-primary-50);
-}
-
-.audit-when {
-    white-space: nowrap;
-}
-
-.audit-date {
-    display: block;
-    font-weight: 600;
-}
-
-.audit-clock {
-    display: block;
-    font-size: 12px;
-    color: var(--color-text-muted);
-}
-
-/* Admin cell */
-.audit-admin {
+.vs-admin-audit-logs .audit-admin {
     display: flex;
     align-items: center;
     gap: 8px;
     white-space: nowrap;
 }
 
-.audit-avatar {
+.vs-admin-audit-logs .audit-avatar {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: var(--color-primary);
-    color: white;
-    font-size: 11px;
+    background: var(--vs-color-dark-green);
+    color: var(--vs-color-white);
+    font-size: 12px;
     font-weight: 700;
     flex: 0 0 auto;
 }
 
-.audit-admin-name {
-    font-weight: 500;
+.vs-admin-audit-logs .audit-admin-name { font-weight: 500; }
+.vs-admin-audit-logs .audit-cat { font-size: 12px; }
+.vs-admin-audit-logs .audit-activity { font-weight: 600; white-space: nowrap; }
+.vs-admin-audit-logs .audit-details { max-width: 380px; color: var(--vs-color-text-secondary); }
+.vs-admin-audit-logs .audit-ip { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; white-space: nowrap; }
+
+.vs-admin-audit-logs .audit-view-btn {
+    min-height: 40px;
+    font-size: 14px;
 }
 
-/* Audit type badge */
-.audit-cat {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.audit-cat-auth { background: #e0f2fe; color: #075985; }
-.audit-cat-security { background: #fee2e2; color: #991b1b; }
-.audit-cat-data { background: #dcfce7; color: #166534; }
-.audit-cat-config { background: #fef3c7; color: #92400e; }
-.audit-cat-system { background: #e5e7eb; color: #374151; }
-
-.audit-activity {
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.audit-details {
-    max-width: 380px;
-    color: var(--color-text-muted);
-}
-
-.audit-ip {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    font-size: 13px;
-    white-space: nowrap;
-}
-
-.audit-empty {
+.vs-admin-audit-logs .audit-empty {
     text-align: center;
     padding: 48px 16px;
-    color: var(--color-text-muted);
+    color: var(--vs-color-text-secondary);
 }
 
-.audit-empty strong {
+.vs-admin-audit-logs .audit-empty strong {
     display: block;
-    color: var(--color-text);
+    color: var(--vs-color-text);
     font-size: 15px;
     margin-bottom: 4px;
 }
 
-.audit-pagination {
+.vs-admin-audit-logs .audit-pagination {
     padding: 16px;
-    border-top: 1px solid var(--color-border);
+    border-top: 1px solid var(--vs-color-pale-green);
 }
 
-/* Detail modal */
-.audit-modal-subtitle {
-    font-size: 13px;
-    color: var(--color-text-muted);
+.vs-admin-audit-logs__detail-modal .audit-modal-subtitle {
+    font-size: 14px;
+    color: var(--vs-color-text-secondary);
     margin: -8px 0 18px;
 }
 
-.audit-detail-card {
-    background: var(--color-bg);
-    border: 1px solid var(--color-border-light);
-    border-radius: var(--radius-sm);
+.vs-admin-audit-logs__detail-modal { z-index: 1055; }
+
+.vs-admin-audit-logs__detail-modal .audit-detail-card {
+    background: var(--vs-color-surface-beige);
+    border: 1px solid var(--vs-color-control-border);
+    border-radius: 8px;
     padding: 6px 16px;
 }
 
-.detail-section {
-    margin-bottom: 20px;
-}
+.vs-admin-audit-logs__detail-modal .detail-section { margin-bottom: 20px; }
 
-.detail-section-title {
+.vs-admin-audit-logs__detail-modal .detail-section-title {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -302,18 +227,18 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--color-text-muted);
+    color: var(--vs-color-text-secondary);
     margin-bottom: 12px;
 }
 
-.detail-section-title::after {
+.vs-admin-audit-logs__detail-modal .detail-section-title::after {
     content: "";
     flex: 1;
     height: 1px;
-    background: var(--color-border);
+    background: var(--vs-color-pale-green);
 }
 
-.detail-row {
+.vs-admin-audit-logs__detail-modal .detail-row {
     display: grid;
     grid-template-columns: 120px 1fr;
     gap: 8px 16px;
@@ -321,52 +246,46 @@
     align-items: baseline;
 }
 
-.detail-row + .detail-row {
-    border-top: 1px solid var(--color-border-light);
-}
+.vs-admin-audit-logs__detail-modal .detail-row + .detail-row { border-top: 1px solid var(--vs-color-pale-green); }
+.vs-admin-audit-logs__detail-modal .detail-label { font-size: 14px; color: var(--vs-color-text-secondary); font-weight: 500; }
+.vs-admin-audit-logs__detail-modal .detail-value { font-size: 14px; color: var(--vs-color-text); overflow-wrap: anywhere; }
 
-.detail-label {
-    font-size: 13px;
-    color: var(--color-text-muted);
-    font-weight: 500;
-}
-
-.detail-value {
-    font-size: 14px;
-    color: var(--color-text);
-    overflow-wrap: anywhere;
-}
-
-.audit-description-block {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
+.vs-admin-audit-logs__detail-modal .audit-description-block {
+    background: var(--vs-color-surface);
+    border: 1px solid var(--vs-color-control-border);
+    border-radius: 8px;
     padding: 14px 16px;
     white-space: pre-wrap;
     line-height: 1.7;
     font-size: 14px;
     max-height: 220px;
     overflow-y: auto;
-    color: var(--color-text);
+    color: var(--vs-color-text);
 }
 
-.audit-user-agent {
+.vs-admin-audit-logs__detail-modal .audit-user-agent {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 12px;
-    color: var(--color-text-muted);
-}
-
-.audit-description-block::-webkit-scrollbar {
-    width: 6px;
-}
-
-.audit-description-block::-webkit-scrollbar-thumb {
-    background: var(--color-border);
-    border-radius: 3px;
+    color: var(--vs-color-text-secondary);
 }
 
 @media (max-width: 1100px) {
-    .audit-filters {
+    .vs-admin-audit-logs .audit-filters {
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .vs-admin-audit-logs { padding: 16px; }
+    .vs-admin-audit-logs .audit-filters { grid-template-columns: 1fr 1fr; }
+    .vs-admin-audit-logs .audit-filter-search,
+    .vs-admin-audit-logs .audit-filter-actions { grid-column: 1 / -1; }
+    .vs-admin-audit-logs .audit-filter-actions .admin-btn { flex: 1 1 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vs-admin-audit-logs__detail-modal .modal-content {
+        animation: none;
+        transition: none;
     }
 }

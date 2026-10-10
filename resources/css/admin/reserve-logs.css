@@ -1,212 +1,216 @@
-.container {
+.vs-admin-reservation-logs {
     max-width: 1400px;
     margin: 0 auto;
     padding: 28px 32px;
+    color: var(--vs-color-text);
+    font-family: var(--vs-font-ui);
 }
 
-.page-header {
+.vs-admin-reservation-logs .page-header {
     margin-bottom: 24px;
     text-align: center;
 }
 
-.page-header h1 {
-    color: var(--color-primary);
+.vs-admin-reservation-logs .page-header h1 {
+    color: var(--vs-color-deep-green);
+    font-family: var(--vs-font-display);
     font-size: 28px;
     font-weight: 600;
     margin: 0 0 6px;
-    text-align: center;
 }
 
-.page-header p {
-    color: var(--color-text-muted);
+.vs-admin-reservation-logs .page-header p {
+    color: var(--vs-color-text-secondary);
     font-size: 14px;
     margin: 0;
 }
 
-.table-container {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
+.vs-admin-reservation-logs .table-container {
+    background: var(--vs-color-surface);
+    border: 1px solid var(--vs-color-control-border);
+    border-radius: 16px;
+    box-shadow: var(--vs-shadow-card);
     overflow: hidden;
 }
 
-.table-wrapper {
-    overflow-x: auto;
-}
-
-.reservation-table {
-    width: 100%;
-    border-collapse: collapse;
+.vs-admin-reservation-logs .status-dropdown {
+    min-height: 40px;
+    padding: 7px 10px;
+    border: 1px solid var(--vs-color-control-border);
+    border-radius: 8px;
     font-size: 14px;
-}
-
-.reservation-table th {
-    background: var(--color-primary);
-    color: white;
-    padding: 12px 16px;
-    text-align: left;
-    font-weight: 600;
-    font-size: 13px;
-    white-space: nowrap;
-}
-
-.reservation-table td {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--color-border);
-    vertical-align: middle;
-    color: var(--color-text);
-}
-
-.reservation-table tbody tr:hover {
-    background: var(--color-primary-50);
-}
-
-.status-dropdown {
-    padding: 6px 10px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    background: white;
+    background: var(--vs-color-white);
+    color: var(--vs-color-text);
     cursor: pointer;
-    transition: border-color var(--transition-fast);
-    font-family: var(--font-body);
+    font-family: var(--vs-font-ui);
 }
 
-.status-dropdown:hover {
-    border-color: var(--color-primary);
+.vs-admin-reservation-logs .status-dropdown:focus-visible,
+.vs-admin-reservation-logs .vs-table-wrap:focus-visible {
+    outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+    outline-offset: var(--vs-focus-offset);
 }
 
-.status-dropdown:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px rgba(13, 122, 62, 0.1);
+.vs-admin-reservation-logs .status-dropdown:has(option[value="active"]:checked) {
+    background: var(--vs-status-success-bg);
+    border-color: var(--vs-status-success-border);
+    color: var(--vs-status-success-text);
 }
 
-.status-dropdown option[value="active"] {
-    color: var(--color-primary);
+.vs-admin-reservation-logs .status-dropdown:has(option[value="cancelled"]:checked) {
+    background: var(--vs-status-danger-bg);
+    border-color: var(--vs-status-danger-border);
+    color: var(--vs-status-danger-text);
 }
 
-.status-dropdown option[value="canceled"] {
-    color: var(--color-danger);
+.vs-admin-reservation-logs .status-dropdown:has(option[value="completed"]:checked) {
+    background: var(--vs-status-neutral-bg);
+    border-color: var(--vs-status-neutral-border);
+    color: var(--vs-status-neutral-text);
 }
 
-.status-dropdown option[value="completed"] {
-    color: var(--color-text-muted);
-}
-
-.receipt-link {
-    color: var(--color-primary);
+.vs-admin-reservation-logs .receipt-link {
+    color: var(--vs-color-dark-green);
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
 }
 
-.receipt-link:hover {
+.vs-admin-reservation-logs .receipt-link:hover {
     text-decoration: underline;
 }
 
-.action-buttons {
+.vs-admin-reservation-logs .action-buttons {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
 }
 
-.action-buttons button {
-    padding: 6px 12px;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-size: 12px;
-    cursor: pointer;
-    transition: all var(--transition-base);
-    font-weight: 500;
-    box-shadow: var(--shadow-sm);
+.vs-admin-reservation-logs .action-buttons button {
+    min-height: 40px;
     min-width: 70px;
-    text-align: center;
+    font-size: 14px;
 }
 
-/* .btn-view, .btn-delete — now using .admin-btn-primary / .admin-btn-danger from app.css */
-
-/* Pagination — uses default Bootstrap styles (same as View Inquiries) */
-
-/* .custom-modal — now using shared modal system from app.css */
-
-/* Slightly wider modal for grouped reservation details */
-#viewModal .modal-content {
-  max-width: 560px;
+.vs-admin-reservation-logs__pagination {
+    margin-top: 16px;
+    padding: 16px 20px;
 }
 
-.receipt-image {
+.vs-admin-reservation-logs__view-modal .modal-content {
+    width: min(94vw, 1120px);
+    max-width: 1120px;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    padding: 28px 32px;
+}
+
+.vs-admin-reservation-logs__detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 8px 28px;
+}
+
+.vs-admin-reservation-logs__detail-grid > .ai-brief-section {
+    grid-column: 1 / -1;
+}
+
+.vs-admin-reservation-logs__view-modal,
+.vs-admin-reservation-logs__confirm-modal {
+    z-index: 1055;
+}
+
+.vs-admin-reservation-logs__confirm-modal .modal-content {
+    width: min(90%, 440px);
+}
+
+.vs-admin-reservation-logs__confirm-message {
+    margin: 12px 0;
+    font-size: 15px;
+    color: var(--vs-color-text-secondary);
+}
+
+.vs-admin-reservation-logs .receipt-image {
     max-width: 100%;
     height: auto;
     border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--vs-shadow-card);
 }
 
-/* Animations — now using modalFadeIn from app.css */
-
-/* Responsive Design */
-@media (max-width: 1200px) {
-    .container {
-        padding: 15px;
-    }
+.vs-admin-reservation-logs .ai-brief-hint,
+.vs-admin-reservation-logs .ai-brief-status {
+    font-size: 14px;
+    line-height: 1.5;
 }
 
-@media (max-width: 768px) {
-    .reservation-table {
-        font-size: 12px;
-    }
-
-    .reservation-table th,
-    .reservation-table td {
-        padding: 8px 6px;
-    }
-
-    .action-buttons {
-        flex-direction: column;
-    }
-
-    .action-buttons button {
-        width: 100%;
-        margin-bottom: 2px;
-    }
-}
-
-/* .modal, .modal-content, .close-btn — now using shared system from app.css */
-
-/* === AI Event Brief (Google Gemini) === */
-.ai-brief-hint {
-    font-size: 13px;
-    color: var(--color-text-muted);
+.vs-admin-reservation-logs .ai-brief-hint {
+    color: var(--vs-color-text-secondary);
     margin: -8px 0 10px;
 }
 
-.ai-brief-status {
-    font-size: 13px;
+.vs-admin-reservation-logs .ai-brief-status {
     margin-top: 8px;
-    min-height: 18px;
-    line-height: 1.4;
+    min-height: 21px;
 }
 
-.ai-brief-success {
-    color: #047857;
+.vs-admin-reservation-logs .ai-brief-success {
+    color: var(--vs-status-success-text);
 }
 
-.ai-brief-error {
-    color: #b91c1c;
+.vs-admin-reservation-logs .ai-brief-error,
+.vs-admin-reservation-logs__load-error {
+    color: var(--vs-status-danger-text);
 }
 
-.ai-brief-output {
-    margin-top: 12px;
+.vs-admin-reservation-logs [hidden] {
+    display: none;
 }
 
-.ai-brief-text {
-    background: var(--color-surface);
-    border: 1px solid var(--color-primary-light);
-    border-left: 3px solid var(--color-primary);
-    border-radius: var(--radius-sm);
+.vs-admin-reservation-logs .ai-brief-text {
+    background: var(--vs-color-surface-pale-green);
+    border: 1px solid var(--vs-color-control-border);
+    border-left: 3px solid var(--vs-color-dark-green);
+    border-radius: 8px;
     padding: 14px 16px;
     white-space: pre-wrap;
     line-height: 1.7;
     font-size: 14px;
-    color: var(--color-text);
+    color: var(--vs-color-text);
+}
+
+@media (max-width: 1200px) {
+    .vs-admin-reservation-logs {
+        padding: 20px 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .vs-admin-reservation-logs {
+        padding: 16px;
+    }
+
+    .vs-admin-reservation-logs .action-buttons {
+        flex-direction: column;
+    }
+
+    .vs-admin-reservation-logs__view-modal .modal-content {
+        width: calc(100vw - 24px);
+        max-height: calc(100vh - 24px);
+        padding: 22px 20px;
+    }
+
+    .vs-admin-reservation-logs__detail-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .vs-admin-reservation-logs__detail-grid > .ai-brief-section {
+        grid-column: auto;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vs-admin-reservation-logs .modal-content {
+        animation: none;
+        transition: none;
+    }
 }
