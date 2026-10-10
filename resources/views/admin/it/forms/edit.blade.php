@@ -96,8 +96,8 @@
                 {{ $form->is_published ? 'Published' : 'Unpublished changes' }}
             </span>
         </div>
-        <div style="text-align:right;">
-            <a href="{{ route('admin.forms.index') }}" style="color:#6b7280;font-size:14px;">&larr; Back to Forms</a>
+         <div class="it-align-right">
+             <a href="{{ route('admin.forms.index') }}" class="it-muted-link">&larr; Back to Forms</a>
         </div>
     </div>
 
@@ -119,8 +119,8 @@
                             <div class="field-meta">
                                 {{ $field->name }} &middot; {{ $field->field_type }}
                                 @if($field->required) <span class="req">*required</span> @endif
-                                @if(!$field->is_active) <span style="color:#dc3545;">&middot; hidden</span> @endif
-                                @if($field->is_fixed) <span style="color:#9ca3af;">&middot; fixed</span> @endif
+                                 @if(!$field->is_active) <span class="it-danger-text">&middot; hidden</span> @endif
+                                 @if($field->is_fixed) <span class="it-muted-text">&middot; fixed</span> @endif
                             </div>
                         </div>
                         <div class="field-actions">
@@ -190,7 +190,7 @@
                         <button type="button" class="add-opt-btn" onclick="addOptionRow('newOptionsEditor')">+ Add option</button>
                     </div>
                 </div>
-                <button type="submit" class="admin-btn admin-btn-primary" style="width:100%;">+ Add Field</button>
+                 <button type="submit" class="admin-btn admin-btn-primary it-full-button">+ Add Field</button>
             </form>
         </div>
     </div>
@@ -484,16 +484,16 @@
 @php
 function fieldIcon($type) {
     return match($type) {
-        'text' => '🅰️',
-        'textarea' => '📝',
-        'email' => '📧',
-        'tel' => '📞',
-        'select' => '📋',
-        'checkbox' => '✅',
-        'radio' => '⚪',
-        'date' => '📅',
-        'time' => '🕐',
-        default => '📄',
+        'text' => 'Text',
+        'textarea' => 'Notes',
+        'email' => 'Email',
+        'tel' => 'Phone',
+        'select' => 'Select',
+        'checkbox' => 'Checkbox',
+        'radio' => 'Option',
+        'date' => 'Date',
+        'time' => 'Time',
+        default => 'Field',
     };
 }
 @endphp

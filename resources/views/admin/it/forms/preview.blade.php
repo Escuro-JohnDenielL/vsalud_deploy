@@ -67,14 +67,14 @@
                 @elseif(in_array($field->field_type, ['radio']))
                     @if($field->options)
                         @foreach($field->options as $opt)
-                            <label style="display:block;font-weight:400;margin:4px 0;">
+                            <label class="it-preview-label">
                                 <input type="radio" name="preview_{{ $field->name }}" value="{{ $opt['value'] }}" disabled>
                                 {{ $opt['label'] }}
                             </label>
                         @endforeach
                     @endif
                     @if($field->has_other_option)
-                        <label style="display:block;font-weight:400;margin:4px 0;">
+                        <label class="it-preview-label">
                             <input type="radio" name="preview_{{ $field->name }}" value="Others" disabled>
                             Others
                         </label>
@@ -84,13 +84,13 @@
                 @elseif(in_array($field->field_type, ['checkbox']))
                     @if($field->options)
                         @foreach($field->options as $opt)
-                            <label style="display:block;font-weight:400;margin:4px 0;">
+                            <label class="it-preview-label">
                                 <input type="checkbox" value="{{ $opt['value'] }}" disabled>
                                 {{ $opt['label'] }}
                             </label>
                         @endforeach
                     @else
-                        <label style="display:block;font-weight:400;margin:4px 0;">
+                        <label class="it-preview-label">
                             <input type="checkbox" name="preview_{{ $field->name }}" value="1" disabled>
                             {{ $field->label }}
                         </label>
@@ -102,7 +102,7 @@
                 @endif
             </div>
         @empty
-            <p style="color:#587064;text-align:center;padding:40px 0;">No active fields in this form.</p>
+            <p class="it-empty-preview">No active fields in this form.</p>
         @endforelse
     </div>
 

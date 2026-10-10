@@ -146,7 +146,7 @@
         }
     </style>
 </head>
-<body>
+<body class="vs-layout--admin-auth">
     <div class="mfa-container">
         <div class="mfa-header">
             <h1>
@@ -174,10 +174,10 @@
 
         <!-- Development workaround: show OTP on-screen during testing -->
         <div class="dev-code" id="setup-dev-code" style="{{ !empty($devOtpCode) ? 'display:block' : 'display:none' }};margin-bottom:16px;">
-            <strong style="display:block;margin-bottom:4px;">⚠️ Development Mode — Testing Workaround</strong>
-            <div style="font-size:13px;color:#92400e;margin-bottom:4px;">Here's your verification code (since email isn't reachable during testing):</div>
-            <div id="setup-dev-code-value" style="font-size:30px;font-weight:800;letter-spacing:8px;color:#b45309;">{{ $devOtpCode ?? '------' }}</div>
-            <div style="font-size:12px;color:#b45309;margin-top:4px;">Shown only while the app is in development. Remove before production.</div>
+            <strong class="auth-dev-title">Development Mode — Testing Workaround</strong>
+            <div class="vs-inline-dev-copy">Here's your verification code (since email isn't reachable during testing):</div>
+            <div id="setup-dev-code-value" class="vs-inline-auth-code">{{ $devOtpCode ?? '------' }}</div>
+            <div class="vs-inline-dev-note">Shown only while the app is in development. Remove before production.</div>
         </div>
 
         <!-- Setup Form -->
@@ -186,7 +186,7 @@
                 <span style="display:block;margin-bottom:8px;color:#0d7a3e;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                 </span>
-                <p style="font-size:14px;color:#4b5563;">
+                <p class="vs-inline-auth-copy">
                     A verification code will be sent to <strong>{{ $admin->email }}</strong>.
                 </p>
             </div>
@@ -204,7 +204,7 @@
                     <div class="timer-text" id="email-otp-status">Click the link above to receive your code.</div>
                 </div>
 
-                <p style="font-size:13px;color:#6b7280;margin:0 0 20px 0;text-align:center;">
+                <p class="auth-instruction-copy">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     After verification, your session stays verified for <strong>6 hours</strong> before requiring a new code.
                 </p>

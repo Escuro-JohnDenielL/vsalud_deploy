@@ -162,7 +162,7 @@
         .logout-link:hover { color: #6b7280; text-decoration: underline; }
     </style>
 </head>
-<body>
+<body class="vs-layout--admin-auth">
     <div class="challenge-container">
         <span class="lock-icon" style="color:#0d7a3e;">
             <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -184,10 +184,10 @@
 
         @if (!empty($devOtpCode))
         <div class="dev-code" id="dev-code-box">
-            <strong style="display:block;margin-bottom:4px;">⚠️ Development Mode — Testing Workaround</strong>
-            <div style="font-size:13px;color:#92400e;margin-bottom:4px;">Since email isn't reachable during testing, here's your code:</div>
-            <div id="dev-code-value" style="font-size:34px;font-weight:800;letter-spacing:8px;color:#b45309;">{{ $devOtpCode }}</div>
-            <div style="font-size:12px;color:#b45309;margin-top:4px;">Shown only while the app is in development. Remove before production.</div>
+            <strong class="auth-dev-title">Development Mode — Testing Workaround</strong>
+            <div class="vs-inline-dev-copy">Since email isn't reachable during testing, here's your code:</div>
+            <div id="dev-code-value" class="vs-inline-auth-code vs-inline-auth-code--large">{{ $devOtpCode }}</div>
+            <div class="vs-inline-dev-note">Shown only while the app is in development. Remove before production.</div>
         </div>
         @endif
 
@@ -212,17 +212,17 @@
                        placeholder="000000" autocomplete="one-time-code" required autofocus>
             </div>
 
-            <p style="font-size:13px;color:#6b7280;margin-bottom:20px;text-align:center;">
+            <p class="auth-instruction-copy auth-instruction-copy--spaced">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 After verification, you won't need to re-verify for <strong>6 hours</strong>.
             </p>
 
-            <button type="submit" class="btn btn-primary" id="verify-btn" style="display:none;">Verify &amp; Login</button>
+            <button type="submit" class="btn btn-primary" id="verify-btn" hidden>Verify &amp; Login</button>
         </form>
 
         @if ($admin->mfa_method === 'email')
         <div class="resend-section">
-            <button class="btn btn-outline" id="send-code-btn" onclick="sendCode()" style="margin-bottom:12px;">
+            <button class="btn btn-outline auth-send-code-button" id="send-code-btn" onclick="sendCode()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                 Send Verification Code
             </button>

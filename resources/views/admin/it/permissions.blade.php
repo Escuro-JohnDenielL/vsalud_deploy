@@ -88,7 +88,7 @@
             @endforeach
         </div>
 
-        <p style="font-size:13px;color:var(--color-text-muted);margin-top:16px;">
+         <p class="it-help-text">
             <strong>Always accessible:</strong> Admin Profile, Logout
             @if(auth('admin')->user()?->role === 'super_admin')
                 &middot; IT Management
@@ -185,13 +185,13 @@
 @php
 function pageIcon($slug) {
     return match($slug) {
-        'packages' => '📦',
-        'reservations' => '📋',
-        'inquiries' => '✉️',
-        'reserve-logs' => '📊',
-        'reports' => '📈',
-        'feedback' => '💬',
-        default => '📄',
+        'packages' => 'Packages',
+        'reservations' => 'Reservations',
+        'inquiries' => 'Inquiries',
+        'reserve-logs' => 'Reservation logs',
+        'reports' => 'Reports',
+        'feedback' => 'Feedback',
+        default => 'Page',
     };
 }
 @endphp

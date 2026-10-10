@@ -23,7 +23,7 @@
     <p class="fb-subtitle">Manage dynamic form structures. Changes only affect published forms.</p>
 
     @if (session('success'))
-        <div class="alert alert-success" style="padding:12px 16px;border-radius:12px;margin-bottom:20px;background:var(--color-primary-light);border:1px solid var(--color-border);color:var(--color-primary);">{{ session('success') }}</div>
+         <div class="alert alert-success it-success-alert">{{ session('success') }}</div>
     @endif
 
     @forelse ($forms as $form)
@@ -43,8 +43,8 @@
         </div>
     @endforelse
 
-    <div style="margin-top: 12px;">
-        <a href="{{ route('admin.home') }}" style="color:var(--color-text-muted);font-size:14px;">&larr; Back to Dashboard</a>
+     <div class="it-modal-actions">
+         <a href="{{ route('admin.home') }}" class="it-muted-link">&larr; Back to Dashboard</a>
     </div>
 </div>
 @endsection

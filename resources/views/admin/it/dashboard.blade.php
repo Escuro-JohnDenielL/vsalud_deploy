@@ -131,7 +131,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="muted" style="padding: 20px; text-align: center;">No admin accounts found.</td></tr>
+                        <tr><td colspan="7" class="muted it-empty-cell">No admin accounts found.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -140,7 +140,7 @@
         <div class="pagination-info">
             Showing {{ $admins->firstItem() ?? 0 }} – {{ $admins->lastItem() ?? 0 }} of {{ $admins->total() }} admins
         </div>
-        <div style="margin-top: 12px;">
+        <div class="it-modal-actions">
             {{ $admins->links() }}
         </div>
     </div>
@@ -158,10 +158,10 @@
                 @csrf
                 <div class="modal-body">
                     @if (session('error'))
-                        <div class="alert alert-error" style="margin-bottom: 16px;">{{ session('error') }}</div>
+                        <div class="alert alert-error it-alert">{{ session('error') }}</div>
                     @endif
                     @if ($errors->any())
-                        <div class="alert alert-error" style="margin-bottom: 16px;">{{ $errors->first() }}</div>
+                        <div class="alert alert-error it-alert">{{ $errors->first() }}</div>
                     @endif
                     <div class="field">
                         <label>First Name</label>

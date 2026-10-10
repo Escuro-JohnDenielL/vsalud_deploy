@@ -80,7 +80,7 @@
                 <input type="password" name="password_confirmation">
             </div>
 
-            <div style="margin: 6px 0 0; font-size: 13px; color: var(--color-text-muted);">
+             <div class="it-help-text">
                 Role: <span class="role-badge">{{ $admin->role === 'super_admin' ? 'Super Admin' : 'Admin' }}</span>
                 &middot; Status: {{ $admin->trashed() ? 'Deactivated' : 'Active' }}
             </div>
