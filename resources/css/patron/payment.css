@@ -180,7 +180,7 @@ input.error, select.error {
 }
 
 .steps li::before {
-  content: "•";
+  content: "";
   color: #007b3d;
   font-weight: bold;
   position: absolute;

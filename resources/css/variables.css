@@ -35,6 +35,12 @@
   --vs-status-neutral-bg: #edf0ed;
   --vs-status-neutral-border: #707c75;
 
+  /* Password-strength text/bar colors use the existing semantic pairings. */
+  --vs-strength-weak: #743232;
+  --vs-strength-fair: #634800;
+  --vs-strength-good: #123d67;
+  --vs-strength-strong: #174c39;
+
   /* Button text/background ratios: primary default/hover/active 6.51:1,
      8.11:1, 10.02:1; secondary default/hover/active 6.51:1, 5.79:1,
      8.90:1; danger default/hover/active 9.35:1, 10.86:1, 13.76:1.

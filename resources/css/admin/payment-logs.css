@@ -127,8 +127,17 @@
 .vs-admin-payment-logs .payment-col-email { width: 18%; }
 .vs-admin-payment-logs .payment-col-money { width: 9%; }
 .vs-admin-payment-logs .payment-col-confirmation { width: 13%; }
-.vs-admin-payment-logs .payment-col-pending { width: 7%; }
+.vs-admin-payment-logs .payment-col-pending { width: 9%; }
 .vs-admin-payment-logs .payment-col-details { width: 16%; }
+
+.vs-admin-payment-logs .reservation-group-row > td {
+    background: var(--vs-color-surface);
+    color: var(--vs-color-text);
+}
+
+.vs-admin-payment-logs .reservation-group-row:hover > td {
+    background: var(--vs-color-surface-pale-green);
+}
 
 .vs-admin-payment-logs .payment-table td {
     overflow-wrap: anywhere;
@@ -152,6 +161,33 @@
     font: inherit;
     text-align: left;
     cursor: pointer;
+}
+
+.vs-layout--admin .payment-logs-page.vs-admin-payment-logs button.payment-group-toggle:not(.admin-btn),
+.vs-layout--admin .payment-logs-page.vs-admin-payment-logs button.payment-group-toggle:not(.admin-btn):hover {
+    min-height: 0;
+    padding: 8px 10px;
+    border: 1px solid var(--vs-color-control-border);
+    border-radius: var(--vs-radius-control);
+    background: var(--vs-color-surface-beige);
+    background-color: var(--vs-color-surface-beige);
+    background-image: none;
+    color: var(--vs-color-deep-green);
+    box-shadow: none;
+    transform: none;
+}
+
+.vs-layout--admin .payment-logs-page.vs-admin-payment-logs button.payment-group-toggle:not(.admin-btn):hover {
+    border-color: var(--vs-color-dark-green);
+    background: var(--vs-color-pale-green);
+    background-color: var(--vs-color-pale-green);
+}
+
+.vs-layout--admin .payment-logs-page.vs-admin-payment-logs button.payment-group-toggle .payment-group-identity,
+.vs-layout--admin .payment-logs-page.vs-admin-payment-logs button.payment-group-toggle .payment-group-identity strong,
+.vs-layout--admin .payment-logs-page.vs-admin-payment-logs button.payment-group-toggle .payment-group-identity small {
+    background: transparent;
+    color: var(--vs-color-deep-green);
 }
 
 .vs-admin-payment-logs .payment-group-toggle:hover .payment-group-identity strong {
@@ -195,18 +231,35 @@
     cursor: pointer;
 }
 
+.vs-layout--admin .payment-logs-page.vs-admin-payment-logs button.payment-group-details-toggle,
+.vs-layout--admin .payment-logs-page.vs-admin-payment-logs button.payment-group-details-toggle:hover {
+    min-height: 0;
+    border-color: var(--vs-color-control-border);
+    background: var(--vs-color-white);
+    background-color: var(--vs-color-white);
+    background-image: none;
+    color: var(--vs-color-deep-green);
+    box-shadow: none;
+    transform: none;
+}
+
 .vs-admin-payment-logs .payment-group-details-toggle:hover {
     border-color: var(--vs-color-dark-green);
 }
 
 .vs-admin-payment-logs .payment-child-container > td {
     padding: 14px 20px;
-    background: var(--vs-color-surface-pale-green);
+    border-top: 1px solid var(--vs-color-control-border);
+    border-bottom: 1px solid var(--vs-color-control-border);
+    background: var(--vs-color-surface-beige);
 }
 
 .vs-admin-payment-logs .payment-child-table {
     width: 100%;
-    min-width: 760px;
+    min-width: 820px;
+    border: 1px solid var(--vs-color-control-border);
+    border-radius: var(--vs-radius-control);
+    background: var(--vs-color-surface);
     table-layout: fixed;
     font-size: var(--vs-text-body-min);
 }
@@ -215,11 +268,23 @@
 .vs-admin-payment-logs .payment-child-table th:nth-child(2) { width: 15%; }
 .vs-admin-payment-logs .payment-child-table th:nth-child(3) { width: 22%; }
 .vs-admin-payment-logs .payment-child-table th:nth-child(4) { width: 14%; }
-.vs-admin-payment-logs .payment-child-table th:nth-child(5) { width: 20%; }
-.vs-admin-payment-logs .payment-child-table th:nth-child(6) { width: 16%; }
+.vs-admin-payment-logs .payment-child-table th:nth-child(5) { width: 22%; }
+.vs-admin-payment-logs .payment-child-table th:nth-child(6) { width: 14%; }
+
+.vs-admin-payment-logs .payment-child-table td {
+    background: var(--vs-color-surface);
+}
+
+.vs-admin-payment-logs .payment-child-table tbody tr:hover td {
+    background: var(--vs-color-surface-pale-green);
+}
 
 .vs-admin-payment-logs .standalone-payment-row > td {
     padding: 14px 20px;
+    background: var(--vs-color-surface);
+}
+
+.vs-admin-payment-logs .standalone-payment-row:hover > td {
     background: var(--vs-color-surface-pale-green);
 }
 
@@ -258,6 +323,8 @@
 }
 
 .vs-admin-payment-logs .payment-status-dropdown {
+    width: 100%;
+    min-width: 140px;
     min-height: 38px;
     padding: 6px 10px;
     border: 1px solid var(--vs-color-control-border);

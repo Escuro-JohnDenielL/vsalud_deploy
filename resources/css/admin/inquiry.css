@@ -54,6 +54,33 @@
 .vs-table.inquiry-table td:nth-child(5),
 .vs-table.inquiry-table td:nth-child(6)  { white-space: nowrap; }
 
+/* Match the reservation-log table frame and page geometry. */
+.vs-admin-inquiry {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 28px 32px;
+    color: var(--vs-color-text);
+    font-family: var(--vs-font-ui);
+}
+
+.vs-admin-inquiry .table-container,
+.vs-admin-inquiry .vs-inquiry-table-container {
+    overflow: hidden;
+    border: 1px solid var(--vs-color-control-border);
+    border-radius: 16px;
+    background: var(--vs-color-surface);
+    box-shadow: var(--vs-shadow-card);
+}
+
+.vs-admin-inquiry .table-wrapper {
+    overflow: visible;
+}
+
+.vs-admin-inquiry .vs-table-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
 /* === Status Dropdown === */
 .vs-status-select {
     box-sizing: border-box;

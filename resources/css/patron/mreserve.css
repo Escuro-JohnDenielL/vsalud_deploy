@@ -24,7 +24,7 @@
 
 .reservation-container h2 {
     margin-bottom: 30px;
-    color: var(--color-primary);
+    color: var(--vs-color-dark-green);
     font-size: 22px;
 }
 
@@ -50,7 +50,7 @@
     width: 75%;
     padding: 8px 10px;
     font-size: 14px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--vs-color-control-border);
     border-radius: 5px;
     transition: border-color 0.3s, box-shadow 0.3s;
     box-sizing: border-box;
@@ -59,8 +59,8 @@
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-    border-color: #007b3d;
-    box-shadow: 0 0 5px rgba(0, 123, 61, 0.25);
+    border-color: var(--vs-color-dark-green);
+    box-shadow: 0 0 0 3px rgba(0, 107, 83, 0.12);
     outline: none;
 }
 
@@ -72,7 +72,7 @@
 .form-group button {
     width: 75%;
     padding: 10px;
-    background: #007b3d;
+    background: var(--vs-button-primary-bg);
     color: white;
     border: none;
     border-radius: var(--radius-sm);

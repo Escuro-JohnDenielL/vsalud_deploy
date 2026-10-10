@@ -20,8 +20,8 @@
 
 .guidelines-content h2 {
   font-size: 24px;
-  color: #007b3d;
-  border-bottom: 2px solid #007b3d;
+  color: var(--vs-color-dark-green);
+  border-bottom: 2px solid var(--vs-color-dark-green);
   padding-bottom: 8px;
   margin-bottom: 15px;
 }

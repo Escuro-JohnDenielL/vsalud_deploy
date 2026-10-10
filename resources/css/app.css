@@ -867,7 +867,7 @@ textarea:focus,
 }
 
 .modal.show .modal-header .btn-close::before {
-  content: "×";
+  content: "";
   font-size: 24px;
 }
 
@@ -1062,6 +1062,8 @@ body.vs-layout--admin .vs-admin-dashboard__edit-modal.modal.show > .modal-dialog
 
 .vs-layout--admin .vs-admin-nav > .navbar {
   height: var(--navbar-height);
+  background: transparent;
+  border-bottom: 0;
 }
 
 .vs-layout--patron .vs-patron-nav {
@@ -1745,3 +1747,451 @@ body.vs-layout--admin .vs-admin-dashboard__edit-modal.modal.show > .modal-dialog
     animation: none;
   }
 }
+
+/* === Scoped baseline for legacy page elements === */
+.vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close),
+.vs-layout--admin .btn,
+.vs-layout--patron button:not(.close-btn):not(.btn-close),
+.vs-layout--patron .btn,
+.vs-layout--admin-auth button:not(.close-btn):not(.btn-close),
+.vs-layout--admin-auth .btn {
+  min-height: 40px;
+  border: 1px solid var(--vs-button-primary-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-button-primary-bg);
+  color: var(--vs-button-primary-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-control-min);
+  font-weight: var(--vs-weight-semibold);
+  line-height: var(--vs-leading-normal);
+  transition: background-color var(--vs-duration-fast), border-color var(--vs-duration-fast), box-shadow var(--vs-duration-fast), color var(--vs-duration-fast);
+}
+
+.vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close):hover,
+.vs-layout--admin .btn:hover,
+.vs-layout--patron button:not(.close-btn):not(.btn-close):not(.btn-submit):hover,
+.vs-layout--patron .btn:hover,
+.vs-layout--admin-auth button:not(.close-btn):not(.btn-close):hover,
+.vs-layout--admin-auth .btn:hover {
+  border-color: var(--vs-button-primary-hover-border);
+  background: var(--vs-button-primary-hover-bg);
+  color: var(--vs-button-primary-hover-text);
+}
+
+.vs-layout--admin input,
+.vs-layout--admin select,
+.vs-layout--admin textarea,
+.vs-layout--patron input,
+.vs-layout--patron select,
+.vs-layout--patron textarea,
+.vs-layout--admin-auth input,
+.vs-layout--admin-auth select,
+.vs-layout--admin-auth textarea {
+  box-sizing: border-box;
+  min-height: 40px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-control-min);
+  line-height: var(--vs-leading-normal);
+}
+
+.vs-layout--admin label,
+.vs-layout--patron label,
+.vs-layout--admin-auth label {
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-semibold);
+}
+
+.vs-layout--admin table,
+.vs-layout--patron table,
+.vs-layout--admin-auth table {
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+}
+
+.vs-layout--admin th,
+.vs-layout--admin td,
+.vs-layout--patron th,
+.vs-layout--patron td,
+.vs-layout--admin-auth th,
+.vs-layout--admin-auth td {
+  border-bottom: 1px solid var(--vs-color-control-border);
+  color: var(--vs-color-text);
+}
+
+.vs-layout--admin th,
+.vs-layout--patron th,
+.vs-layout--admin-auth th {
+  background: var(--vs-color-surface-beige);
+  font-weight: var(--vs-weight-semibold);
+}
+
+.vs-layout--admin .badge,
+.vs-layout--patron .badge,
+.vs-layout--admin-auth .badge {
+  border: 1px solid var(--vs-status-neutral-border);
+  border-radius: var(--vs-radius-pill);
+  background: var(--vs-status-neutral-bg);
+  color: var(--vs-status-neutral-text);
+  font-family: var(--vs-font-ui);
+  font-weight: var(--vs-weight-semibold);
+}
+
+.vs-layout--admin .card,
+.vs-layout--patron .card,
+.vs-layout--admin-auth .card,
+.vs-layout--admin .modal-content,
+.vs-layout--patron .modal-content,
+.vs-layout--admin-auth .modal-content {
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
+  box-shadow: var(--vs-shadow-card);
+}
+
+.vs-layout--admin a,
+.vs-layout--patron a,
+.vs-layout--admin-auth a {
+  color: var(--vs-color-dark-green);
+}
+
+.vs-layout--admin :is(h1, h2, h3, h4),
+.vs-layout--patron :is(h1, h2, h3, h4),
+.vs-layout--admin-auth :is(h1, h2, h3, h4) {
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-display);
+}
+
+.vs-layout--admin :is(button, .btn, input, select, textarea, a):focus-visible,
+.vs-layout--patron :is(button, .btn, input, select, textarea, a):focus-visible,
+.vs-layout--admin-auth :is(button, .btn, input, select, textarea, a):focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.vs-state--valid,
+.vs-strength--strong {
+  color: var(--vs-status-success-text);
+}
+
+.vs-state--error,
+.vs-strength--weak {
+  color: var(--vs-status-danger-text);
+}
+
+.vs-state--neutral {
+  color: var(--vs-status-neutral-text);
+}
+
+.vs-strength--fair {
+  color: var(--vs-status-warning-text);
+}
+
+.vs-strength--good {
+  color: var(--vs-status-info-text);
+}
+
+.vs-strength-bar.vs-strength--weak { background-color: var(--vs-status-danger-border); }
+.vs-strength-bar.vs-strength--fair { background-color: var(--vs-status-warning-border); }
+.vs-strength-bar.vs-strength--good { background-color: var(--vs-status-info-border); }
+.vs-strength-bar.vs-strength--strong { background-color: var(--vs-status-success-border); }
+
+.vs-inline-muted { color: var(--vs-color-text-secondary); }
+.vs-inline-danger { color: var(--vs-status-danger-text); }
+.vs-inline-success { color: var(--vs-status-success-text); }
+.vs-inline-note { color: var(--vs-color-text-secondary); font-size: var(--vs-text-body-min); line-height: var(--vs-leading-relaxed); }
+.vs-inline-centered { text-align: center; }
+.vs-inline-icon { margin-right: 4px; vertical-align: middle; }
+.vs-inline-card { border: 1px solid var(--vs-color-control-border); border-radius: var(--vs-radius-card); background: var(--vs-color-surface); box-shadow: var(--vs-shadow-card); }
+.vs-inline-auth-copy { color: var(--vs-color-text-secondary); font-size: var(--vs-text-body-min); }
+.vs-inline-auth-code { color: var(--vs-status-warning-text); font-size: 30px; font-weight: var(--vs-weight-bold); letter-spacing: 8px; }
+.vs-inline-auth-code--large { font-size: 34px; }
+.vs-inline-dev-copy { margin-bottom: 4px; color: var(--vs-status-warning-text); font-size: 13px; }
+.vs-inline-dev-note { margin-top: 4px; color: var(--vs-status-warning-text); font-size: 12px; }
+.vs-inline-strength-track { height: 6px; overflow: hidden; border-radius: 4px; background: var(--vs-color-border); }
+.vs-inline-strength-bar { height: 100%; border-radius: 4px; transition: all var(--vs-duration-base) ease; }
+.vs-inline-requirements { margin-top: 6px; font-size: 12px; line-height: 2; }
+.vs-inline-field-note { color: var(--vs-color-text-secondary); font-size: 12px; }
+.vs-inline-waitlist-button { border: 0; border-radius: var(--vs-radius-control); background: var(--vs-status-warning-border); color: var(--vs-color-white); font-size: var(--vs-text-control-min); font-weight: var(--vs-weight-semibold); }
+.vs-inline-success-button { border: 0; border-radius: var(--vs-radius-control); background: var(--vs-status-success-border); color: var(--vs-color-white); font-size: var(--vs-text-control-min); font-weight: var(--vs-weight-semibold); }
+.vs-inline-modal-copy { font-size: 16px; line-height: var(--vs-leading-normal); }
+
+/* Preserve semantic actions after the legacy-element baseline. */
+.vs-layout--admin .admin-btn {
+  min-height: 0;
+  font-family: var(--vs-font-ui);
+}
+.vs-layout--admin .admin-btn-primary,
+.vs-layout--admin .admin-btn-primary:hover {
+  border-color: var(--vs-button-primary-bg);
+  background: var(--vs-button-primary-bg);
+  color: var(--vs-button-primary-text);
+}
+.vs-layout--admin .admin-btn-primary:hover { background: var(--vs-button-primary-hover-bg); border-color: var(--vs-button-primary-hover-border); }
+.vs-layout--admin .admin-btn-danger,
+.vs-layout--admin .admin-btn-danger:hover {
+  border-color: var(--vs-button-danger-bg);
+  background: var(--vs-button-danger-bg);
+  color: var(--vs-button-danger-text);
+}
+.vs-layout--admin .admin-btn-danger:hover { background: var(--vs-button-danger-hover-bg); border-color: var(--vs-button-danger-hover-border); }
+.vs-layout--admin .admin-btn-ghost,
+.vs-layout--admin .admin-btn-ghost:hover {
+  border-color: var(--vs-button-secondary-border);
+  background: var(--vs-button-secondary-bg);
+  color: var(--vs-button-secondary-text);
+  box-shadow: none;
+}
+.vs-layout--admin .admin-btn-ghost:hover { background: var(--vs-button-secondary-hover-bg); }
+.vs-layout--admin .close-btn,
+.vs-layout--admin .btn-close,
+.vs-layout--patron .close-btn,
+.vs-layout--patron .btn-close {
+  min-height: 0;
+  border: 0;
+  background: transparent;
+  color: var(--vs-color-text-secondary);
+  box-shadow: none;
+}
+.vs-layout--admin .close-btn:hover,
+.vs-layout--admin .btn-close:hover,
+.vs-layout--patron .close-btn:hover,
+.vs-layout--patron .btn-close:hover {
+  border: 0;
+  background: transparent;
+  color: var(--vs-color-deep-green);
+  box-shadow: none;
+  transform: none;
+}
+.vs-layout--admin .payment-group-toggle,
+.vs-layout--admin .payment-group-toggle:hover,
+.vs-layout--admin .payment-group-details-toggle,
+.vs-layout--admin .payment-group-details-toggle:hover {
+  transform: none;
+  box-shadow: none;
+}
+.vs-layout--admin .payment-group-toggle,
+.vs-layout--admin .payment-group-toggle:hover {
+  border-color: transparent;
+  background: transparent;
+  color: var(--vs-color-text);
+}
+.vs-layout--admin .payment-group-details-toggle,
+.vs-layout--admin .payment-group-details-toggle:hover {
+  border-color: var(--vs-color-control-border);
+  background: var(--vs-color-white);
+  color: var(--vs-color-deep-green);
+}
+.vs-layout--admin-auth .resend-link,
+.vs-layout--admin-auth .resend-link:hover {
+  min-height: 0;
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--vs-color-dark-green);
+  box-shadow: none;
+  font-size: var(--vs-text-body-min);
+  text-decoration: underline;
+  transform: none;
+}
+.vs-layout--admin-auth .resend-link:hover { color: var(--vs-color-deep-green); }
+.vs-layout--admin .vs-admin-dashboard .buttons-row .admin-btn-primary { background: var(--vs-button-primary-bg); }
+.vs-layout--admin .vs-admin-dashboard .buttons-row .admin-btn-ghost { background: var(--vs-button-secondary-bg); color: var(--vs-button-secondary-text); }
+.vs-layout--admin .vs-admin-dashboard .buttons-row .admin-btn-danger { background: var(--vs-button-danger-bg); color: var(--vs-button-danger-text); }
+.vs-layout--admin .vs-table__row:hover,
+.vs-layout--admin .vs-table__row:hover .vs-table__actions {
+  background: var(--vs-color-surface-pale-green);
+  color: var(--vs-color-text);
+}
+.vs-layout--admin .payment-child-container:hover > td,
+.vs-layout--admin .standalone-payment-row:hover > td {
+  background: var(--vs-color-surface-pale-green);
+  color: var(--vs-color-text);
+}
+
+.vs-layout--admin .admin-logout-button { width: 100%; padding: 8px 20px; border: 0; border-radius: 0; background: transparent; color: var(--vs-status-danger-text); text-align: start; }
+.vs-layout--admin .report-issue-intro { margin: -8px 0 20px; }
+.vs-layout--admin .detail-row--borderless { border: 0; }
+.vs-layout--admin .report-issue-list { margin: 0; padding-inline-start: 20px; color: var(--vs-color-text); font-size: var(--vs-text-body-min); line-height: 1.7; }
+.vs-layout--admin .report-issue-copy { margin: 0; color: var(--vs-color-text); font-size: var(--vs-text-body-min); line-height: 1.6; }
+.vs-layout--admin .profile-access-card { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 20px; padding: 16px 20px; border: 1px solid var(--vs-color-border); border-radius: var(--vs-radius-control); background: #f9fafb; }
+.vs-layout--admin .profile-access-icon { flex-shrink: 0; font-size: 16px; font-weight: var(--vs-weight-semibold); }
+.vs-layout--admin .profile-access-title { display: block; margin-bottom: 4px; color: var(--vs-color-text); font-size: 15px; }
+.vs-layout--admin .profile-access-copy { margin: 0; color: var(--vs-color-text-secondary); font-size: var(--vs-text-body-min); line-height: 1.5; }
+.vs-layout--admin .profile-admin-name { overflow-wrap: anywhere; color: var(--vs-color-dark-green); font-size: 20px; font-weight: var(--vs-weight-semibold); line-height: 1.35; word-break: break-word; }
+.vs-layout--admin .profile-info-card { box-sizing: border-box; align-self: flex-start; width: 350px; padding: 20px; border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-md); }
+.vs-layout--admin .password-strength-container--spaced { margin-top: 8px; }
+.vs-layout--patron .waitlist-option { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--vs-color-border); }
+.vs-layout--patron .waitlist-option-copy { margin-bottom: 12px; color: var(--vs-color-text-secondary); }
+.vs-layout--patron .payment-back-button { background: var(--vs-status-neutral-border); border-color: var(--vs-status-neutral-border); }
+.vs-layout--admin-auth .auth-dev-title { display: block; margin-bottom: 4px; }
+.vs-layout--admin-auth .auth-instruction-copy { margin: 0 0 20px; color: var(--vs-color-text-secondary); font-size: 13px; text-align: center; }
+.vs-layout--admin-auth .auth-instruction-copy--spaced { margin-bottom: 20px; }
+.vs-layout--admin-auth .auth-send-code-button { margin-bottom: 12px; }
+.vs-layout--admin .it-empty-cell { padding: 20px; text-align: center; }
+.vs-layout--admin .it-modal-actions { margin-top: 12px; }
+.vs-layout--admin .it-alert { margin-bottom: 16px; }
+.vs-layout--admin .it-help-text { margin: 6px 0 0; color: var(--vs-color-text-secondary); font-size: 13px; }
+.vs-layout--admin .it-align-right { text-align: right; }
+.vs-layout--admin .it-muted-link { color: var(--vs-color-text-secondary); font-size: var(--vs-text-body-min); }
+.vs-layout--admin .it-danger-text { color: var(--vs-status-danger-text); }
+.vs-layout--admin .it-muted-text { color: var(--vs-color-text-secondary); }
+.vs-layout--admin .it-full-button { width: 100%; }
+.vs-layout--admin .it-success-alert { margin-bottom: 20px; padding: 12px 16px; border: 1px solid var(--vs-color-border); border-radius: var(--vs-radius-control); background: var(--vs-color-surface-pale-green); color: var(--vs-status-success-text); }
+.vs-layout--admin .it-preview-label { display: block; margin: 4px 0; font-weight: var(--vs-weight-regular); }
+.vs-layout--admin .it-empty-preview { padding: 40px 0; color: var(--vs-status-success-text); text-align: center; }
+
+/* Legacy admin pages brought onto the shared surface and semantic palette. */
+.vs-layout--admin .vs-admin-cancellations,
+.vs-layout--admin .vs-admin-incident-logs,
+.vs-layout--admin .vs-admin-waitlist {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--vs-space-8) var(--vs-space-6);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+}
+.vs-layout--admin .vs-admin-cancellations .page-header,
+.vs-layout--admin .vs-admin-incident-logs .page-header,
+.vs-layout--admin .vs-admin-waitlist .page-header {
+  margin-bottom: var(--vs-space-6);
+  text-align: center;
+}
+.vs-layout--admin .vs-admin-cancellations .page-header h1,
+.vs-layout--admin .vs-admin-incident-logs .page-header h1,
+.vs-layout--admin .vs-admin-waitlist .page-header h1 {
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-display);
+  font-size: 28px;
+}
+.vs-layout--admin .vs-admin-cancellations .page-header p,
+.vs-layout--admin .vs-admin-incident-logs .page-header p,
+.vs-layout--admin .vs-admin-waitlist .page-header p {
+  color: var(--vs-color-text-secondary);
+}
+.vs-layout--admin .vs-admin-cancellations .table-container,
+.vs-layout--admin .vs-admin-incident-logs .table-container,
+.vs-layout--admin .vs-admin-waitlist .table-container {
+  overflow: hidden;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
+  box-shadow: var(--vs-shadow-card);
+}
+.vs-layout--admin .vs-admin-cancellations .table-wrapper,
+.vs-layout--admin .vs-admin-incident-logs .table-wrapper {
+  overflow-x: auto;
+}
+.vs-layout--admin .vs-admin-cancellations table,
+.vs-layout--admin .vs-admin-incident-logs table,
+.vs-layout--admin .vs-admin-waitlist table {
+  width: 100%;
+  min-width: 720px;
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+}
+.vs-layout--admin .vs-admin-cancellations th,
+.vs-layout--admin .vs-admin-incident-logs th,
+.vs-layout--admin .vs-admin-waitlist th {
+  background: var(--vs-color-surface-beige);
+  color: var(--vs-color-text);
+}
+.vs-layout--admin .vs-admin-cancellations td,
+.vs-layout--admin .vs-admin-incident-logs td,
+.vs-layout--admin .vs-admin-waitlist td {
+  color: var(--vs-color-text);
+}
+.vs-layout--admin .vs-admin-cancellations tbody tr:hover,
+.vs-layout--admin .vs-admin-incident-logs tbody tr:hover,
+.vs-layout--admin .vs-admin-waitlist tbody tr:hover {
+  background: var(--vs-color-surface-pale-green);
+}
+.vs-layout--admin .vs-admin-waitlist .stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vs-space-4);
+  margin-bottom: var(--vs-space-6);
+}
+.vs-layout--admin .vs-admin-waitlist .stat-card {
+  flex: 1 1 140px;
+  min-width: 120px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
+  box-shadow: var(--vs-shadow-card);
+}
+.vs-layout--admin .vs-admin-waitlist .stat-card .number { color: var(--vs-color-dark-green); }
+.vs-layout--admin .vs-admin-waitlist .stat-card .label { color: var(--vs-color-text-secondary); }
+.vs-layout--admin .vs-admin-waitlist .date-header { background: var(--vs-color-surface-beige); color: var(--vs-color-text); }
+.vs-layout--admin .vs-admin-waitlist .waitlist-table th { background: var(--vs-color-surface-beige); color: var(--vs-color-text); }
+.vs-layout--admin .vs-admin-waitlist .badge-modern { border-radius: var(--vs-radius-pill); }
+
+.vs-layout--admin .vs-admin-report .dashboard-header h1,
+.vs-layout--admin .vs-admin-report .dashboard-header h2,
+.vs-layout--admin .vs-admin-report .dashboard-header h3 {
+  color: var(--vs-color-white);
+}
+.vs-layout--admin .vs-admin-report .dashboard-header {
+  background: var(--vs-color-dark-green);
+  color: var(--vs-color-white);
+  border: 1px solid var(--vs-color-dark-green);
+}
+.vs-layout--admin .vs-admin-report .refresh-btn {
+  border-color: rgba(245, 242, 223, 0.7);
+  background: rgba(245, 242, 223, 0.16);
+  color: var(--vs-color-white);
+}
+.vs-layout--admin .vs-admin-report .metric-card,
+.vs-layout--admin .vs-admin-report .chart-panel,
+.vs-layout--admin .vs-admin-report .activity-panel {
+  border-color: var(--vs-color-control-border);
+  background: var(--vs-color-surface);
+  color: var(--vs-color-text);
+}
+.vs-layout--admin .vs-admin-report .metric-card h1,
+.vs-layout--admin .vs-admin-report .metric-card h2,
+.vs-layout--admin .vs-admin-report .metric-card h3,
+.vs-layout--admin .vs-admin-report .chart-panel h1,
+.vs-layout--admin .vs-admin-report .chart-panel h2,
+.vs-layout--admin .vs-admin-report .chart-panel h3 { color: var(--vs-color-deep-green); }
+
+.vs-layout--admin .vs-admin-inquiry {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--vs-space-8) var(--vs-space-6);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+}
+.vs-layout--admin .vs-admin-inquiry .page-header {
+  margin-bottom: var(--vs-space-6);
+  text-align: center;
+}
+.vs-layout--admin .vs-admin-inquiry .page-header h1 {
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-display);
+  font-size: 28px;
+  font-weight: var(--vs-weight-semibold);
+}
+.vs-layout--admin .vs-admin-inquiry .page-header p { color: var(--vs-color-text-secondary); }
+.vs-layout--admin .vs-admin-incident-logs .incident-stat-card {
+  border: 1px solid var(--vs-color-control-border);
+  border-top-width: 3px;
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
+  box-shadow: var(--vs-shadow-card);
+}
+.vs-layout--admin .vs-admin-incident-logs .incident-stat-card strong { color: var(--vs-color-deep-green); }
+.vs-layout--admin .vs-admin-incident-logs .incident-stat-card span { color: var(--vs-color-text-secondary); }
+.vs-layout--admin .vs-admin-incident-logs .incident-stat-card.open { border-top-color: var(--vs-status-warning-border); }
+.vs-layout--admin .vs-admin-incident-logs .incident-stat-card.resolved { border-top-color: var(--vs-status-success-border); }
+.vs-layout--admin .vs-admin-incident-logs .incident-stat-card.critical { border-top-color: var(--vs-status-danger-border); }
+.vs-layout--admin .vs-admin-incident-logs .incident-stat-card.total { border-top-color: var(--vs-color-dark-green); }
