@@ -3,17 +3,18 @@
 @section('title', 'Admin Dashboard')
 
 @section('content')
+<div class="vs-admin-dashboard">
 
 {{-- Promotional Banner --}}
-<section class="banner-container">
+<section class="banner-container vs-admin-dashboard__banner">
     <div class="banner text-center text-white fw-bold py-4">
-        ✨ Big events, bigger savings! Grab our special deals for weddings, birthdays, and more! ✨
+        Big events, bigger savings! Grab our special deals for weddings, birthdays, and more!
     </div>
 </section>
 
 
 {{-- Package Cards --}}
-<section class="packages-grid" id="packagesContainer">
+<section class="packages-grid vs-admin-dashboard__packages-grid" id="packagesContainer">
     @forelse($packages as $package)
     <div class="package-card" data-package="{{ $package->name }}" data-id="{{ $package->id }}">
         <img src="{{ asset(ltrim($package->image_path ?? 'images/default_package.jpg', '/')) }}" alt="{{ $package->name }}">
@@ -82,7 +83,7 @@
 </div>
 
 {{-- Edit Package Modal --}}
-<div class="modal fade" id="editPackageModal" tabindex="-1" aria-labelledby="editPackageModalLabel" aria-hidden="true">
+<div class="modal fade vs-admin-dashboard__edit-modal" id="editPackageModal" tabindex="-1" aria-labelledby="editPackageModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -92,39 +93,43 @@
             <form id="editPackageForm">
                 <div class="modal-body">
                     <input type="hidden" id="editPackageId">
-                    <div class="mb-3">
-                        <label class="form-label">Package Name</label>
-                        <input type="text" id="editPackageName" class="form-control" required>
+                    <div class="vs-admin-dashboard__edit-details">
+                        <div class="mb-3">
+                            <label class="form-label">Package Name</label>
+                            <input type="text" id="editPackageName" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea id="editPackageDescription" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Package Inclusions</label>
+                            <div id="editInclusionsContainer"></div>
+                            <button type="button" id="editAddInclusion" class="admin-btn admin-btn-ghost admin-btn-sm">+ Add Inclusion</button>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Price</label>
+                            <input type="number" id="editPackagePrice" class="form-control" step="0.01" required>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea id="editPackageDescription" class="form-control" rows="3"></textarea>
+                    <div class="vs-admin-dashboard__edit-media">
+                        <div class="mb-3">
+                            <label class="form-label">Current Main Image</label>
+                            <img id="currentMainImage" src="" alt="Current Image" class="img-fluid rounded mb-2 vs-admin-dashboard__edit-image">
+                            <input type="file" id="editPackageImage" class="form-control" accept="image/*">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Image 2 (Optional)</label>
+                            <img id="currentImage2" src="" alt="Current Image 2" class="img-fluid rounded mb-2 vs-admin-dashboard__edit-image vs-admin-dashboard__edit-image--optional">
+                            <input type="file" id="editPackageImage2" class="form-control" accept="image/*">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Image 3 (Optional)</label>
+                            <img id="currentImage3" src="" alt="Current Image 3" class="img-fluid rounded mb-2 vs-admin-dashboard__edit-image vs-admin-dashboard__edit-image--optional">
+                            <input type="file" id="editPackageImage3" class="form-control" accept="image/*">
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Package Inclusions</label>
-                        <div id="editInclusionsContainer"></div>
-                        <button type="button" id="editAddInclusion" class="admin-btn admin-btn-ghost admin-btn-sm">+ Add Inclusion</button>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Price</label>
-                        <input type="number" id="editPackagePrice" class="form-control" step="0.01" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Current Main Image</label>
-                        <img id="currentMainImage" src="" alt="Current Image" class="img-fluid rounded mb-2" style="max-height: 150px;">
-                        <input type="file" id="editPackageImage" class="form-control" accept="image/*">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Image 2 (Optional)</label>
-                        <img id="currentImage2" src="" alt="Current Image 2" class="img-fluid rounded mb-2" style="max-height: 120px; display: none;">
-                        <input type="file" id="editPackageImage2" class="form-control" accept="image/*">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Image 3 (Optional)</label>
-                        <img id="currentImage3" src="" alt="Current Image 3" class="img-fluid rounded mb-2" style="max-height: 120px; display: none;">
-                        <input type="file" id="editPackageImage3" class="form-control" accept="image/*">
-                    </div>
-                    <p class="text-muted mb-0"><small>Leave a photo field empty to keep the package's current photo. Only the slots where you pick a new file are replaced.</small></p>
+                    <p class="text-muted mb-0 vs-admin-dashboard__edit-note"><small>Leave a photo field empty to keep the package's current photo. Only the slots where you pick a new file are replaced.</small></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="admin-btn admin-btn-ghost" data-bs-dismiss="modal">Cancel</button>
@@ -233,6 +238,7 @@
     </div>
 </div>
 
+</div>
 @endsection
 
 @push('scripts')

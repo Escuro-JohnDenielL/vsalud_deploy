@@ -7,7 +7,8 @@
 @endpush
 
 @section('content')
-    <div class="container">
+    <div class="vs-admin-reservation">
+    <div class="container vs-admin-reservation__layout">
         <div class="reservation-container">
             <h2>Let's bring your vision to life—just fill out the form.</h2>
             @php
@@ -26,7 +27,7 @@
                 />
                 <input type="hidden" name="created_by_type" value="admin">
             @else
-                <p style="color:#dc3545;">The reservation form is currently unavailable. Please contact the administrator.</p>
+                <p class="vs-admin-reservation__notice" role="status">The reservation form is currently unavailable. Please contact the administrator.</p>
             @endif
         </div>
 
@@ -40,19 +41,16 @@
 
             <div class="calendar-legend">
                 <div class="legend-item">
-                    <div class="legend-box legend-green"></div> Available (1–2 left)
+                    <div class="legend-box legend-green vs-admin-reservation__legend-box vs-admin-reservation__legend-box--success"></div> Available (1–2 left)
                 </div>
                 <div class="legend-item">
-                    <div class="legend-box legend-yellow"></div> Half Full (2/4)
+                    <div class="legend-box legend-yellow legend-orange vs-admin-reservation__legend-box vs-admin-reservation__legend-box--warning"></div> Half Full (2/4) to Nearly Full (3/4)
                 </div>
                 <div class="legend-item">
-                    <div class="legend-box legend-orange"></div> Nearly Full (3/4)
+                    <div class="legend-box legend-red vs-admin-reservation__legend-box vs-admin-reservation__legend-box--danger"></div> Full (4/4)
                 </div>
                 <div class="legend-item">
-                    <div class="legend-box legend-red"></div> Full (4/4)
-                </div>
-                <div class="legend-item">
-                    <div class="legend-box legend-gray"></div> Closed
+                    <div class="legend-box legend-gray vs-admin-reservation__legend-box vs-admin-reservation__legend-box--neutral"></div> Closed
                 </div>
             </div>
         </div>
@@ -84,6 +82,7 @@
             <h3>Date Not Available</h3>
             <p>Sorry, the selected date is already full or closed. Please choose another available date.</p>
         </div>
+    </div>
     </div>
 @endsection
 

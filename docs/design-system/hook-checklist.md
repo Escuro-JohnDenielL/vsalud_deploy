@@ -4,16 +4,14 @@ This baseline was scanned from `resources/js` and `resources/views` in the fresh
 
 ## Baseline count
 
-The scan found **2,178 distinct entries**. An entry is one unique combination of hook kind, normalized hook value, and source file; it is **not every occurrence**. Repeated occurrences of the same hook in the same file count once, and the reported line is the first occurrence. The same hook in another file counts as another entry.
+The current scan found **2,213 distinct entries**. An entry is one unique combination of hook kind, normalized hook value, and source file; it is **not every occurrence**. Repeated occurrences of the same hook in the same file count once, and the reported line is the first occurrence. The same hook in another file counts as another entry. The pre-batch scan on this branch found 2,207 entries.
 
-For a concise, deduplicated view across files and hook kinds, the baseline has **404 unique IDs**, **556 unique literal class names**, and **55 unique data-attribute names**. There are also **44 distinct generated-class expressions**; these are listed separately because their runtime values are not literal class names.
-
-The earlier checklist recorded **593 entries** because its scanner inspected JavaScript plus inline Blade `<script>` bodies only. Re-running that same earlier scanner against the later `railway` source returns **598**: five additional hooks came with subsequent landing-page changes to `resources/js/index.js` and `resources/views/index.blade.php`. This checklist's broader scan also includes Blade markup IDs/classes/data attributes and inline style states, and separates hook kinds such as markup classes, class-state operations, and direct display/color values. Those expanded categories account for the increase from 598 to 2,178; it is a coverage/counting-scope difference, not 1,580 new occurrences of the same selectors.
+This scanner covers Blade markup, JavaScript selectors and states, data attributes, and inline display/color states. Earlier 593/598 counts came from a narrower scanner and should not be compared as if they counted the same categories.
 
 | Entry kind | Count |
 |---|---:|
-| Class attributes | 865 |
-| `classList` states | 54 |
+| Class attributes | 912 |
+| `classList` states | 66 |
 | `className` states | 30 |
 | Data attributes | 50 |
 | Data attribute accessors | 3 |
@@ -22,10 +20,14 @@ The earlier checklist recorded **593 entries** because its scanner inspected Jav
 | Generated selectors | 3 |
 | IDs in markup | 387 |
 | `getElementById` hooks | 361 |
-| Direct inline states in JS | 84 |
-| Inline style state attributes | 180 |
+| Direct inline states in JS | 65 |
+| Inline style state attributes | 175 |
 | Selector hooks | 82 |
-| **Total** | **2,178** |
+| **Total** | **2,213** |
+
+## Batch 6a hook review
+
+No functional ID, selector, data-attribute, or existing class hooks were removed. Eleven visual inline-state entries were intentionally replaced by scoped CSS classes: nine direct calendar color/clear assignments and two Blade inline styles. The new classes are `vs-admin-dashboard`, `vs-admin-dashboard__banner`, `vs-admin-dashboard__packages-grid`, `vs-admin-dashboard__edit-image`, `vs-admin-dashboard__edit-image--optional`, `vs-admin-reservation`, `vs-admin-reservation__layout`, `vs-admin-reservation__notice`, `vs-admin-reservation__legend-box`, `vs-admin-reservation__legend-box--success`, `vs-admin-reservation__legend-box--warning`, `vs-admin-reservation__legend-box--danger`, `vs-admin-reservation__legend-box--neutral`, `vs-calendar-day--success`, `vs-calendar-day--warning`, `vs-calendar-day--danger`, and `vs-calendar-day--neutral`.
 
 ## Exact scan command
 

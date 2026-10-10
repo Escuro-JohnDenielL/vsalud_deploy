@@ -191,31 +191,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function applyStatusStyle(cell, status) {
         cell.classList.remove("Available", "Half", "Nearly", "Full", "Closed");
-        cell.style.background = "";
-        cell.style.color = "";
-
-        switch (status) {
-            case "Available":
-                cell.style.background = "green";
-                cell.style.color = "white";
-                break;
-            case "Half":
-                cell.style.background = "gold";
-                cell.style.color = "black";
-                break;
-            case "Nearly":
-                cell.style.background = "orange";
-                cell.style.color = "white";
-                break;
-            case "Full":
-                cell.style.background = "red";
-                cell.style.color = "white";
-                break;
-            case "Closed":
-                cell.style.background = "gray";
-                cell.style.color = "white";
-                break;
-        }
+        cell.classList.remove("vs-calendar-day--success", "vs-calendar-day--warning", "vs-calendar-day--danger", "vs-calendar-day--neutral");
+        const statusClasses = {
+            Available: "vs-calendar-day--success",
+            Half: "vs-calendar-day--warning",
+            Nearly: "vs-calendar-day--warning",
+            Full: "vs-calendar-day--danger",
+            Unavailable: "vs-calendar-day--danger",
+            Closed: "vs-calendar-day--neutral",
+        };
+        if (statusClasses[status]) cell.classList.add(statusClasses[status]);
+        cell.title = status;
     }
 
     // Modal event handlers

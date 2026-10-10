@@ -1,266 +1,373 @@
-/* === Banner Container === */
-.banner-container {
-  display: flex;
-  justify-content: center;
-  padding: 20px 0;
+.vs-admin-dashboard {
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
 }
 
-/* === Add Package Button Container === */
-.add-package-container {
+.vs-admin-dashboard .banner-container {
   display: flex;
   justify-content: center;
-  padding: 20px 0;
+  padding: var(--vs-space-5) 0;
 }
 
-/* === Packages Grid Layout === */
-.packages-grid {
-  display: flex !important;
-  flex-direction: row !important;
+.vs-admin-dashboard .banner {
+  width: 100%;
+  padding: var(--vs-space-5) var(--vs-space-6);
+  border: 1px solid var(--vs-color-dark-green);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-dark-green);
+  color: var(--vs-color-white);
+  font-family: var(--vs-font-ui);
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  line-height: var(--vs-leading-normal);
+}
+
+.vs-admin-dashboard .add-package-container {
+  display: flex;
   justify-content: center;
+  padding: var(--vs-space-4) 0;
+}
+
+.vs-admin-dashboard .packages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
   align-items: stretch;
-  overflow-x: auto;
-  gap: 28px;
-  padding: 20px 40px;
-  flex-wrap: nowrap !important;
+  gap: var(--vs-space-5);
+  padding: var(--vs-space-4) 0;
 }
 
-/* === Package Cards === */
-.package-card {
-  background: var(--color-surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-  transition: all var(--transition-base);
-  border: 1px solid var(--color-border);
-  min-width: 280px;
-  max-width: 320px;
-  /* Flex column so the price + buttons can be anchored to the bottom and
-     stay level across cards with different description lengths. */
+.vs-admin-dashboard .package-card {
   display: flex;
+  min-width: 0;
+  max-width: 420px;
   flex-direction: column;
+  overflow: hidden;
+  margin-inline: auto;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
+  box-shadow: var(--vs-shadow-card);
+  transition: box-shadow var(--vs-duration-base), transform var(--vs-duration-base);
 }
 
-.package-card:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-xl);
+.vs-admin-dashboard .package-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 76, 58, 0.16);
 }
 
-.package-card img {
+.vs-admin-dashboard .package-card img {
   width: 100%;
   height: 220px;
-  object-fit: cover;
   flex-shrink: 0;
-  transition: transform var(--transition-slow);
+  object-fit: cover;
 }
 
-.package-card:hover img {
-  transform: scale(1.03);
-}
-
-.package-content {
-  padding: 18px 16px;
+.vs-admin-dashboard .package-content {
   display: flex;
-  flex-direction: column;
   flex: 1;
+  flex-direction: column;
+  padding: var(--vs-space-4);
 }
 
-.package-card h3 {
-  font-size: 20px;
-  margin: 0 0 15px 0;
-  color: var(--color-text);
-  font-weight: 600;
-  text-align: center;
-  font-family: var(--font-heading);
-}
-
-/* === Package Details === */
-.package-details {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  margin-bottom: 15px;
+.vs-admin-dashboard .package-card h3 {
+  margin: 0 0 var(--vs-space-3);
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-ui);
+  font-size: 1.25rem;
+  font-weight: var(--vs-weight-semibold);
+  line-height: var(--vs-leading-tight);
   text-align: center;
 }
 
-.package-description {
-  font-size: 14px;
-  color: var(--color-text-muted);
-  margin: 8px 0;
-  font-style: italic;
-  line-height: 1.4;
-  /* Reserve 3 lines and clip anything longer so every card's text block
-     is the same height */
-  min-height: 4.2em;
+.vs-admin-dashboard .package-details {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  margin-bottom: var(--vs-space-3);
+  text-align: center;
+}
+
+.vs-admin-dashboard .package-description {
   display: -webkit-box;
+  overflow: hidden;
+  min-height: 4.5em;
+  margin: var(--vs-space-2) 0;
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-body-min);
+  font-style: italic;
+  line-height: var(--vs-leading-normal);
+  -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
-.package-price {
-  font-size: 18px;
-  font-weight: bold;
-  color: var(--color-primary);
-  /* auto pushes the price down so it sits directly above the buttons */
+.vs-admin-dashboard .package-price {
   margin: auto 0 0;
+  color: var(--vs-color-deep-green);
+  font-size: 1.125rem;
+  font-weight: var(--vs-weight-bold);
 }
 
-/* === Buttons Row === */
-.buttons-row {
+.vs-admin-dashboard .buttons-row {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  align-items: stretch;
   justify-content: space-between;
-  gap: 8px;
-  margin-top: 15px;
-  flex-wrap: nowrap;
+  gap: var(--vs-space-2);
+  margin-top: var(--vs-space-4);
 }
 
-/* Buttons keep their natural size so the row never wraps or squashes
-   (uses the shared .admin-btn classes from app.css) */
-.buttons-row .admin-btn {
-  flex: 0 0 auto;
-  white-space: nowrap;
-  text-align: center;
-  padding: 8px 13px;
-  font-size: 13px;
+.vs-admin-dashboard .buttons-row .admin-btn {
+  min-width: 0;
+  min-height: 40px;
+  flex: 1 1 auto;
+  padding: var(--vs-space-2) var(--vs-space-3);
+  font-size: var(--vs-text-body-min);
+  white-space: normal;
 }
 
-/* === Modal Enhancements === */
-.modal-content {
-  border-radius: var(--radius-lg);
-  border: none;
-  box-shadow: var(--shadow-xl);
+.vs-admin-dashboard .modal-content,
+.vs-admin-dashboard__edit-modal .modal-content {
+  overflow: hidden;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
+  box-shadow: var(--vs-shadow-card);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
 }
 
-.modal-header {
-  background: var(--color-bg);
-  border-bottom: 1px solid var(--color-border);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+.vs-admin-dashboard .modal-header,
+.vs-admin-dashboard__edit-modal .modal-header {
+  border-bottom: 1px solid var(--vs-color-control-border);
+  background: var(--vs-color-surface-beige);
 }
 
-.modal-title {
-  font-weight: 600;
-  color: var(--color-text);
-  font-family: var(--font-heading);
+.vs-admin-dashboard .modal-title,
+.vs-admin-dashboard__edit-modal .modal-title {
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-ui);
+  font-weight: var(--vs-weight-semibold);
 }
 
-.thumbnail-img {
+.vs-admin-dashboard .modal-body,
+.vs-admin-dashboard .modal-content label,
+.vs-admin-dashboard__edit-modal .modal-body,
+.vs-admin-dashboard__edit-modal .modal-content label {
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-normal);
+}
+
+.vs-admin-dashboard .modal-content .text-muted,
+.vs-admin-dashboard__edit-modal .modal-content .text-muted {
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-secondary-min);
+}
+
+.vs-admin-dashboard .form-control,
+.vs-admin-dashboard__edit-modal .form-control {
+  min-height: 40px;
+  border-color: var(--vs-color-control-border);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+}
+
+.vs-admin-dashboard .form-control:focus-visible,
+.vs-admin-dashboard .admin-btn:focus-visible,
+.vs-admin-dashboard .btn-close:focus-visible,
+.vs-admin-dashboard .thumbnail-img:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+  box-shadow: none;
+}
+
+.vs-admin-dashboard .vs-admin-dashboard__edit-image,
+.vs-admin-dashboard__edit-modal .vs-admin-dashboard__edit-image {
+  display: block;
+  max-width: 100%;
+  max-height: 150px;
+  object-fit: contain;
+}
+
+.vs-admin-dashboard .vs-admin-dashboard__edit-image--optional,
+.vs-admin-dashboard__edit-modal .vs-admin-dashboard__edit-image--optional {
+  max-height: 120px;
+}
+
+.vs-admin-dashboard__edit-modal #editPackageForm .modal-body {
+  display: grid;
+  max-height: calc(100vh - 180px);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: start;
+  gap: var(--vs-space-3) var(--vs-space-5);
+  overflow-y: auto;
+}
+
+.vs-admin-dashboard__edit-details {
+  display: grid;
+  min-width: 0;
+  gap: var(--vs-space-3);
+  grid-column: 1;
+}
+
+.vs-admin-dashboard__edit-details > .mb-3 {
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.vs-admin-dashboard__edit-media {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--vs-space-3);
+  grid-column: 2;
+}
+
+.vs-admin-dashboard__edit-media > .mb-3 {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 84px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--vs-space-2) var(--vs-space-3);
+  margin-bottom: 0;
+}
+
+.vs-admin-dashboard__edit-media > .mb-3 > .form-label {
+  grid-column: 1 / -1;
+  margin-bottom: 0;
+}
+
+.vs-admin-dashboard__edit-media .vs-admin-dashboard__edit-image {
+  width: 84px;
+  height: 84px;
+  margin: 0;
+  object-fit: contain;
+}
+
+.vs-admin-dashboard__edit-media .form-control[type="file"] {
+  grid-column: 2;
+  min-width: 0;
+  padding: var(--vs-space-2);
+  font-size: var(--vs-text-secondary-min);
+}
+
+.vs-admin-dashboard__edit-modal #editPackageForm .modal-body > .vs-admin-dashboard__edit-note {
+  grid-column: 1 / -1;
+}
+
+.vs-admin-dashboard .thumbnail-img {
   cursor: pointer;
-  transition: transform var(--transition-base);
   border: 2px solid transparent;
+  border-radius: var(--vs-radius-control);
+  transition: border-color var(--vs-duration-fast), transform var(--vs-duration-fast);
 }
 
-.thumbnail-img:hover {
-  transform: scale(1.05);
-  border-color: var(--color-primary);
+.vs-admin-dashboard .thumbnail-img:hover {
+  transform: scale(1.03);
+  border-color: var(--vs-color-control-border);
 }
 
-.package-inclusions ul {
-  list-style-type: none;
+.vs-admin-dashboard .package-inclusions ul {
   padding-left: 0;
+  list-style: none;
 }
 
-.package-inclusions li {
-  padding: 5px 0;
+.vs-admin-dashboard .package-inclusions li {
   position: relative;
-  padding-left: 20px;
+  padding: var(--vs-space-2) 0 var(--vs-space-2) var(--vs-space-5);
+  color: var(--vs-color-text);
+  font-size: var(--vs-text-body-min);
 }
 
-.package-inclusions li::before {
-  content: "✓";
-  color: var(--color-primary);
-  font-weight: bold;
+.vs-admin-dashboard .package-inclusions li::before {
   position: absolute;
   left: 0;
+  color: var(--vs-color-dark-green);
+  content: "✓";
+  font-weight: var(--vs-weight-bold);
 }
 
-/* === Success Modal Styling === */
-.fa-check-circle {
-  animation: bounceIn 0.6s ease-out;
+.vs-admin-dashboard .fa-check-circle {
+  color: var(--vs-status-success-text);
+  animation: vs-admin-dashboard-bounce-in 0.6s ease-out;
 }
 
-@keyframes bounceIn {
-  0% { transform: scale(0.3); opacity: 0; }
-  50% { transform: scale(1.05); }
-  70% { transform: scale(0.9); }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-/* === Responsive Design === */
-@media (max-width: 768px) {
-  body {
-    zoom: 95%;
-  }
-  
-  .packages-grid {
-    grid-template-columns: 1fr;
-    padding: 20px 20px;
-    gap: 20px;
-  }
-
-  .package-card {
-    max-width: 100%;
-  }
-
-  .buttons-row {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .buttons-row .admin-btn {
-    width: 100%;
-  }
-
-  .banner {
-    width: 95%;
-    font-size: 14px;
-  }
-
-  .add-package-btn {
-    padding: 12px 24px;
-    font-size: 15px;
-  }
-}
-
-@media (max-width: 480px) {
-  .package-content {
-    padding: 15px;
-  }
-
-  .package-card h3 {
-    font-size: 18px;
-  }
-
-  .buttons-row .admin-btn {
-    font-size: 12.5px;
-    padding: 9px 10px;
-  }
-}
-
-/* === Loading Animation === */
-.loading {
-  opacity: 0.6;
+.vs-admin-dashboard .loading {
+  position: relative;
+  opacity: 0.7;
   pointer-events: none;
 }
 
-.loading::after {
-  content: "";
+.vs-admin-dashboard .loading::after {
   position: absolute;
   top: 50%;
   left: 50%;
   width: 20px;
   height: 20px;
   margin: -10px 0 0 -10px;
-  border: 2px solid #f3f3f3;
-  border-top: 2px solid var(--color-primary);
+  border: 2px solid var(--vs-color-surface-pale-green);
+  border-top-color: var(--vs-color-dark-green);
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: vs-admin-dashboard-spin 1s linear infinite;
+  content: "";
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+@keyframes vs-admin-dashboard-bounce-in {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
-/* Modal-backdrop handled by shared modal system in app.css */
+@keyframes vs-admin-dashboard-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .vs-admin-dashboard__edit-modal #editPackageForm .modal-body {
+    max-height: calc(100vh - 180px);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .vs-admin-dashboard__edit-details,
+  .vs-admin-dashboard__edit-media,
+  .vs-admin-dashboard__edit-modal #editPackageForm .modal-body > .vs-admin-dashboard__edit-note {
+    grid-column: 1;
+  }
+
+  .vs-admin-dashboard__edit-media {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .vs-admin-dashboard .package-card {
+    width: min(100%, 440px);
+  }
+
+  .vs-admin-dashboard .buttons-row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .vs-admin-dashboard .buttons-row .admin-btn {
+    width: 100%;
+  }
+
+  .vs-admin-dashboard .banner {
+    padding: var(--vs-space-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-admin-dashboard .package-card,
+  .vs-admin-dashboard .thumbnail-img {
+    transition: none;
+  }
+
+  .vs-admin-dashboard .package-card:hover,
+  .vs-admin-dashboard .thumbnail-img:hover {
+    transform: none;
+  }
+
+  .vs-admin-dashboard .fa-check-circle,
+  .vs-admin-dashboard .loading::after {
+    animation: none;
+  }
+}

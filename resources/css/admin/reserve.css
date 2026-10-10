@@ -1,287 +1,349 @@
-/* === Layout Container === */
-.container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 50px;
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 30px;
-    background: #fff;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    transition: box-shadow var(--transition-base);
+.vs-admin-reservation {
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
 }
 
-.container:hover {
-    box-shadow: var(--shadow-lg);
+.vs-admin-reservation .vs-admin-reservation__layout {
+  display: flex;
+  max-width: 1200px;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--vs-space-8);
+  margin: var(--vs-space-8) auto;
+  padding: var(--vs-space-6);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
+  box-shadow: var(--vs-shadow-card);
 }
 
-/* === Reservation Form === */
-.reservation-container {
-    width: 50%;
+.vs-admin-reservation .reservation-container {
+  min-width: 0;
+  width: min(100%, 600px);
+  flex: 1 1 600px;
 }
 
-.reservation-container h2 {
-    margin-bottom: 30px;
-    color: var(--color-primary);
-    font-size: 22px;
+.vs-admin-reservation .reservation-container h2 {
+  margin: 0 0 var(--vs-space-5);
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-ui);
+  font-size: 1.375rem;
+  line-height: var(--vs-leading-tight);
 }
 
-/* === Form Styling === */
-.form-group {
-    margin-bottom: 16px;
+.vs-admin-reservation .form-group {
+  margin-bottom: var(--vs-space-4);
 }
 
-.form-group label {
-    font-weight: 600;
-    display: block;
-    margin-bottom: 5px;
-    color: #333;
+.vs-admin-reservation .form-group label {
+  display: block;
+  margin-bottom: var(--vs-space-1);
+  color: var(--vs-color-text);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-semibold);
 }
 
-.form-group span {
-    color: red;
+.vs-admin-reservation .form-group span {
+  color: var(--vs-status-danger-text);
 }
 
-.form-group input,
-.form-group select,
-.form-group textarea {
-    width: 75%;
-    padding: 8px 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    box-sizing: border-box;
+.vs-admin-reservation .form-group input,
+.vs-admin-reservation .form-group select,
+.vs-admin-reservation .form-group textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 40px;
+  padding: var(--vs-space-2) var(--vs-space-3);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-control-min);
+  line-height: var(--vs-leading-normal);
 }
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 5px rgba(13, 122, 62, 0.25);
-    outline: none;
+.vs-admin-reservation .form-group textarea {
+  min-height: 100px;
+  resize: vertical;
 }
 
-.form-group textarea {
-    height: 100px;
-    resize: vertical;
+.vs-admin-reservation .form-group input:focus-visible,
+.vs-admin-reservation .form-group select:focus-visible,
+.vs-admin-reservation .form-group textarea:focus-visible,
+.vs-admin-reservation .form-group button:focus-visible,
+.vs-admin-reservation .calendar-header button:focus-visible,
+.vs-admin-reservation .modal button:focus-visible,
+.vs-admin-reservation .modal select:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+  box-shadow: none;
 }
 
-.form-group button {
-    width: 75%;
-    padding: 10px;
-    background: var(--color-primary);
-    color: white;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: var(--font-body);
-    transition: all var(--transition-base);
+.vs-admin-reservation .form-group button {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--vs-button-primary-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-button-primary-bg);
+  color: var(--vs-button-primary-text);
+  cursor: pointer;
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-control-min);
+  font-weight: var(--vs-weight-semibold);
+  transition: background-color var(--vs-duration-fast), box-shadow var(--vs-duration-fast);
 }
 
-.form-group button:hover {
-    background: var(--color-primary-hover);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+.vs-admin-reservation .form-group button:hover {
+  background: var(--vs-button-primary-hover-bg);
 }
 
-/* === Calendar === */
-.calendar-container {
-    width: 350px;
-    padding: 20px;
-    background: #fefefe;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-md);
-    transition: box-shadow var(--transition-base);
+.vs-admin-reservation .calendar-container {
+  width: min(100%, 370px);
+  flex: 0 0 350px;
+  padding: var(--vs-space-4);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface-beige);
+  box-shadow: var(--vs-shadow-card);
 }
 
-.calendar-container:hover {
-    box-shadow: var(--shadow-lg);
+.vs-admin-reservation .calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--vs-space-2);
+  margin-bottom: var(--vs-space-3);
+  color: var(--vs-color-deep-green);
+  font-size: 1.125rem;
+  font-weight: var(--vs-weight-semibold);
 }
 
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: bold;
-    font-size: 18px;
-    margin-bottom: 10px;
+.vs-admin-reservation .calendar-header button {
+  min-width: 40px;
+  min-height: 40px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface);
+  color: var(--vs-color-deep-green);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color var(--vs-duration-fast), color var(--vs-duration-fast);
 }
 
-.calendar-header button {
-    background: #e0e0e0;
-    border: none;
-    padding: 6px 12px;
-    cursor: pointer;
-    font-size: 16px;
-    border-radius: 6px;
-    transition: background 0.2s;
+.vs-admin-reservation .calendar-header button:hover {
+  background: var(--vs-color-pale-green);
 }
 
-.calendar-header button:hover {
-    background: #c5c5c5;
+.vs-admin-reservation #calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--vs-space-1);
+  padding-top: var(--vs-space-2);
 }
 
-#calendar {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-    padding-top: 10px;
+.vs-admin-reservation .calendar-day {
+  display: flex;
+  min-width: 0;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  padding: var(--vs-space-1);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface);
+  color: var(--vs-color-text);
+  cursor: pointer;
+  font-size: var(--vs-text-body-min);
+  text-align: center;
+  transition: background-color var(--vs-duration-fast), border-color var(--vs-duration-fast), color var(--vs-duration-fast);
 }
 
-.calendar-day {
-    padding: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    text-align: center;
-    min-height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.vs-admin-reservation .calendar-day:hover:not(.day-header):not(.empty):not(.vs-calendar-day--success):not(.vs-calendar-day--warning):not(.vs-calendar-day--danger):not(.vs-calendar-day--neutral) {
+  background: var(--vs-color-surface-pale-green);
 }
 
-.calendar-day:hover:not(.day-header):not(.empty) {
-    background-color: #f0f0f0;
+.vs-admin-reservation .calendar-day.day-header {
+  background: var(--vs-color-surface-beige);
+  color: var(--vs-color-deep-green);
+  cursor: default;
+  font-weight: var(--vs-weight-semibold);
 }
 
-.day-header {
-    font-weight: bold;
-    background: #f2f2f2 !important;
-    cursor: default;
+.vs-admin-reservation .calendar-day.empty {
+  border-color: transparent;
+  background: transparent;
+  cursor: default;
 }
 
-.empty {
-    background: none !important;
-    border: none !important;
-    cursor: default;
+.vs-admin-reservation .calendar-day.vs-calendar-day--success {
+  border-color: var(--vs-status-success-border);
+  background: var(--vs-status-success-bg);
+  color: var(--vs-status-success-text);
 }
 
-/* Calendar Status Colors */
-.status-green {
-    background: #28a745 !important;
-    color: white !important;
+.vs-admin-reservation .calendar-day.vs-calendar-day--warning {
+  border-color: var(--vs-status-warning-border);
+  background: var(--vs-status-warning-bg);
+  color: var(--vs-status-warning-text);
 }
 
-.status-yellow {
-    background: #ffc107 !important;
-    color: black !important;
+.vs-admin-reservation .calendar-day.vs-calendar-day--danger {
+  border-color: var(--vs-status-danger-border);
+  background: var(--vs-status-danger-bg);
+  color: var(--vs-status-danger-text);
 }
 
-.status-orange {
-    background: orange !important;
-    color: black !important;
+.vs-admin-reservation .calendar-day.vs-calendar-day--neutral {
+  border-color: var(--vs-status-neutral-border);
+  background: var(--vs-status-neutral-bg);
+  color: var(--vs-status-neutral-text);
 }
 
-.status-red {
-    background: #dc3545 !important;
-    color: white !important;
+.vs-admin-reservation .calendar-legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vs-space-2);
+  margin-top: var(--vs-space-4);
+  color: var(--vs-color-text);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-normal);
 }
 
-.status-gray {
-    background: gray !important;
-    color: white !important;
+.vs-admin-reservation .legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--vs-space-2);
 }
 
-/* === Legend === */
-.calendar-legend {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
-    font-size: 14px;
+.vs-admin-reservation .legend-box {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
 }
 
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+.vs-admin-reservation .vs-admin-reservation__legend-box--success {
+  border-color: var(--vs-status-success-border);
+  background: var(--vs-status-success-bg);
 }
 
-.legend-box {
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
+.vs-admin-reservation .vs-admin-reservation__legend-box--warning {
+  border-color: var(--vs-status-warning-border);
+  background: var(--vs-status-warning-bg);
 }
 
-.legend-green {
-    background: #28a745;
-}
-.legend-yellow {
-    background: #ffc107;
-}
-.legend-orange {
-    background: orange;
-}
-.legend-red {
-    background: #dc3545;
-}
-.legend-gray {
-    background: gray;
+.vs-admin-reservation .vs-admin-reservation__legend-box--danger {
+  border-color: var(--vs-status-danger-border);
+  background: var(--vs-status-danger-bg);
 }
 
-/* === Modal === */
-/* .modal — using shared system from app.css */
-
-.modal-content h3 {
-    margin: 0 0 15px 0;
-    font-size: 18px;
-    color: var(--color-text);
+.vs-admin-reservation .vs-admin-reservation__legend-box--neutral {
+  border-color: var(--vs-status-neutral-border);
+  background: var(--vs-status-neutral-bg);
 }
 
-.modal-content select {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 15px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    font-family: var(--font-body);
+.vs-admin-reservation .vs-admin-reservation__notice {
+  padding: var(--vs-space-3);
+  border: 1px solid var(--vs-status-danger-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-status-danger-bg);
+  color: var(--vs-status-danger-text);
+  font-size: var(--vs-text-body-min);
 }
 
-/* .modal-buttons — using shared .modal-footer from app.css */
+.vs-admin-reservation .modal-content {
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
+  box-shadow: var(--vs-shadow-card);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+}
 
-/* .modal, .modal-content, .close-btn — now using shared system from app.css 
-   (was .modal1 / .modal-content1 / .close-modal1) */
+.vs-admin-reservation .modal-content h3 {
+  margin: 0 0 var(--vs-space-3);
+  color: var(--vs-color-deep-green);
+  font-size: 1.125rem;
+}
 
-/* === Responsive === */
+.vs-admin-reservation .modal-content select {
+  width: 100%;
+  min-height: 40px;
+  margin-bottom: var(--vs-space-3);
+  padding: var(--vs-space-2) var(--vs-space-3);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-control-min);
+}
+
+.vs-admin-reservation .modal-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--vs-space-2);
+  border-top: 1px solid var(--vs-color-control-border);
+}
+
+.vs-admin-reservation .close-btn {
+  display: inline-flex;
+  min-width: 40px;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface);
+  color: var(--vs-color-deep-green);
+  cursor: pointer;
+}
+
 @media (max-width: 900px) {
-    .container {
-        flex-direction: column;
-        padding: 20px;
-        gap: 30px;
-    }
+  .vs-admin-reservation .vs-admin-reservation__layout {
+    flex-direction: column;
+    gap: var(--vs-space-6);
+    padding: var(--vs-space-4);
+  }
 
-    .reservation-container,
-    .calendar-container {
-        width: 100%;
-    }
+  .vs-admin-reservation .reservation-container,
+  .vs-admin-reservation .calendar-container {
+    width: 100%;
+    flex-basis: auto;
+  }
 
-    .form-group input,
-    .form-group select,
-    .form-group textarea,
-    .form-group button {
-        width: 100%;
-    }
+  .vs-admin-reservation .calendar-container {
+    max-width: 440px;
+    margin-inline: auto;
+  }
+}
 
-    .calendar-container {
-        width: 100%;
-        max-width: 400px;
-        margin: 0 auto;
-    }
+@media (max-width: 480px) {
+  .vs-admin-reservation .vs-admin-reservation__layout {
+    margin: var(--vs-space-3) auto;
+    padding: var(--vs-space-3);
+  }
 
-    .modal-footer {
-        flex-direction: column;
-    }
+  .vs-admin-reservation .calendar-container {
+    padding: var(--vs-space-3);
+  }
 
-    .modal-footer button {
-        width: 100%;
-    }
+  .vs-admin-reservation .modal-footer {
+    flex-direction: column;
+  }
+
+  .vs-admin-reservation .modal-footer button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-admin-reservation .calendar-day,
+  .vs-admin-reservation .calendar-header button,
+  .vs-admin-reservation .form-group button {
+    transition: none;
+  }
 }

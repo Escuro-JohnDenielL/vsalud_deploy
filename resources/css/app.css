@@ -894,6 +894,33 @@ textarea:focus,
   max-width: 420px;
 }
 
+/* Keep the package editor wide and centered over the full admin viewport. */
+body.vs-layout--admin .vs-admin-dashboard__edit-modal.modal.show {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--vs-space-4);
+}
+
+body.vs-layout--admin .vs-admin-dashboard__edit-modal.modal.show > .modal-dialog {
+  width: min(1000px, calc(100vw - var(--vs-space-8)));
+  max-width: none;
+  margin: 0;
+}
+
+body.vs-layout--admin .vs-admin-dashboard__edit-modal.modal.show > .modal-dialog > .modal-content {
+  width: 100%;
+  max-width: none;
+}
+
+@media (max-width: 768px) {
+  body.vs-layout--admin .vs-admin-dashboard__edit-modal.modal.show > .modal-dialog {
+    width: calc(100vw - var(--vs-space-6));
+  }
+}
+
 /* Fix Bootstrap modal backdrop being visible despite our backdrop */
 .modal-backdrop {
   display: none !important;
