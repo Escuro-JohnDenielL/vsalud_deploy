@@ -18,7 +18,7 @@
     @stack('styles')
 </head>
 
-<body>
+<body class="vs-layout--admin">
 
     <header class="header-image">
         <img src="{{ asset('images/background_picture.jpeg') }}" alt="Villa Salud Header" class="header-banner">
@@ -44,7 +44,7 @@
         $isActive = fn($patterns) => collect((array) $patterns)->contains(fn($p) => request()->is($p));
     @endphp
 
-    <nav class="navbar">
+    <nav class="navbar vs-admin-nav">
         <ul class="navbar">
             {{-- Bookings Dropdown --}}
             @if($canAccess('reservations') || $canAccess('inquiries') || $canAccess('reserve-logs') || $canAccess('payment-logs') || $canAccess('cancellations') || $canAccess('waitlist'))

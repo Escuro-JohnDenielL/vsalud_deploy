@@ -976,3 +976,289 @@ textarea:focus,
     padding: 20px 12px;
   }
 }
+
+/* === Landing-derived shared navigation and toast styles === */
+.vs-layout--admin .vs-admin-nav,
+.vs-layout--patron .vs-patron-nav {
+  background: var(--vs-color-white);
+  border-bottom: 1px solid var(--vs-color-control-border);
+  color: var(--vs-color-deep-green);
+  min-height: var(--navbar-height);
+  z-index: 100;
+}
+
+.vs-layout--admin .vs-admin-nav {
+  position: sticky;
+  top: 0;
+}
+
+.vs-layout--admin .vs-admin-nav > .navbar {
+  height: var(--navbar-height);
+}
+
+.vs-layout--patron .vs-patron-nav {
+  position: sticky;
+  top: 0;
+}
+
+.vs-layout--admin .vs-admin-nav a,
+.vs-layout--patron .vs-patron-nav a {
+  border-radius: var(--vs-radius-pill);
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-medium);
+  transition: color var(--vs-duration-fast), background-color var(--vs-duration-fast), border-color var(--vs-duration-fast);
+}
+
+.vs-layout--admin .vs-admin-nav a:hover,
+.vs-layout--patron .vs-patron-nav a:hover {
+  background: var(--vs-color-pale-green);
+  color: var(--vs-color-deep-green);
+  transform: none;
+}
+
+.vs-layout--admin .vs-admin-nav a.active,
+.vs-layout--admin .vs-admin-nav .nav-dropdown.active > .nav-dropdown-toggle,
+.vs-layout--patron .vs-patron-nav .nav-links a.active {
+  background: var(--vs-color-dark-green);
+  color: var(--vs-color-white);
+  font-weight: var(--vs-weight-semibold);
+}
+
+.vs-layout--admin .vs-admin-nav a.active:hover,
+.vs-layout--admin .vs-admin-nav .nav-dropdown.active > .nav-dropdown-toggle:hover,
+.vs-layout--patron .vs-patron-nav .nav-links a.active:hover {
+  background: var(--vs-color-dark-green);
+  color: var(--vs-color-white);
+}
+
+.vs-layout--admin .vs-admin-nav .nav-dropdown-menu,
+.vs-layout--patron .vs-patron-nav .nav-dropdown-menu {
+  background: var(--vs-color-white);
+  border-color: var(--vs-color-control-border);
+  z-index: 200;
+}
+
+.vs-layout--admin .vs-admin-nav .nav-dropdown-menu a,
+.vs-layout--patron .vs-patron-nav .nav-dropdown-menu a {
+  font-size: var(--vs-text-body-min);
+}
+
+.vs-layout--admin .vs-admin-nav .nav-dropdown-menu a.active,
+.vs-layout--admin .vs-admin-nav .nav-dropdown-menu a.active:hover,
+.vs-layout--patron .vs-patron-nav .nav-dropdown-menu a.active,
+.vs-layout--patron .vs-patron-nav .nav-dropdown-menu a.active:hover {
+  background: var(--vs-color-dark-green);
+  color: var(--vs-color-white);
+}
+
+.vs-layout--admin .vs-admin-nav .dropdown-arrow,
+.vs-layout--patron .vs-patron-nav .dropdown-arrow {
+  transition: transform var(--vs-duration-base);
+}
+
+.vs-layout--admin .vs-admin-nav a:focus-visible,
+.vs-layout--admin .vs-admin-nav button:focus-visible,
+.vs-layout--patron .vs-patron-nav a:focus-visible,
+.vs-layout--patron .vs-patron-nav button:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.vs-layout--admin .vs-admin-nav a.active:focus-visible,
+.vs-layout--admin .vs-admin-nav .nav-dropdown.active > .nav-dropdown-toggle:focus-visible,
+.vs-layout--patron .vs-patron-nav .nav-links a.active:focus-visible,
+.vs-layout--admin .vs-admin-nav .nav-dropdown-menu a.active:focus-visible,
+.vs-layout--patron .vs-patron-nav .nav-dropdown-menu a.active:focus-visible {
+  outline-color: var(--vs-focus-on-dark);
+}
+
+.vs-layout--admin #toast.toast-notification,
+.vs-layout--admin #toast.toast,
+.vs-layout--patron #toast.toast-notification {
+  position: fixed;
+  top: auto;
+  right: var(--vs-space-4);
+  bottom: max(var(--vs-space-4), env(safe-area-inset-bottom));
+  left: auto;
+  z-index: 10000;
+  width: max-content;
+  max-width: min(420px, calc(100vw - 32px));
+  padding: var(--vs-space-3) var(--vs-space-4);
+  border: 1px solid var(--vs-status-neutral-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-status-neutral-bg);
+  box-shadow: var(--vs-shadow-card);
+  color: var(--vs-status-neutral-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-normal);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(var(--vs-space-2));
+  transition: opacity var(--vs-duration-base), transform var(--vs-duration-base), background-color var(--vs-duration-fast), color var(--vs-duration-fast);
+  visibility: hidden;
+}
+
+.vs-layout--admin #toast.toast-notification.show,
+.vs-layout--admin #toast.toast.show,
+.vs-layout--patron #toast.toast-notification.show {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.vs-layout--admin #toast.toast:not(.error) {
+  background: var(--vs-status-success-bg);
+  border-color: var(--vs-status-success-border);
+  color: var(--vs-status-success-text);
+}
+
+.vs-layout--admin #toast.toast-notification.toast-success,
+.vs-layout--admin #toast.toast-success,
+.vs-layout--patron #toast.toast-notification.toast-success {
+  background: var(--vs-status-success-bg);
+  border-color: var(--vs-status-success-border);
+  color: var(--vs-status-success-text);
+}
+
+.vs-layout--admin #toast.toast-notification.toast-warning,
+.vs-layout--admin #toast.toast-warning,
+.vs-layout--patron #toast.toast-notification.toast-warning {
+  background: var(--vs-status-warning-bg);
+  border-color: var(--vs-status-warning-border);
+  color: var(--vs-status-warning-text);
+}
+
+.vs-layout--admin #toast.toast-notification.toast-info,
+.vs-layout--admin #toast.toast-info,
+.vs-layout--patron #toast.toast-notification.toast-info {
+  background: var(--vs-status-info-bg);
+  border-color: var(--vs-status-info-border);
+  color: var(--vs-status-info-text);
+}
+
+.vs-layout--admin #toast.toast-notification.toast-error,
+.vs-layout--admin #toast.toast-error,
+.vs-layout--admin #toast.toast.error,
+.vs-layout--patron #toast.toast-notification.toast-error {
+  background: var(--vs-status-danger-bg);
+  border-color: var(--vs-status-danger-border);
+  color: var(--vs-status-danger-text);
+}
+
+.vs-layout--admin .notification {
+  position: fixed;
+  right: var(--vs-space-4);
+  bottom: max(var(--vs-space-4), env(safe-area-inset-bottom));
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: var(--vs-space-2);
+  max-width: min(420px, calc(100vw - 32px));
+  padding: var(--vs-space-3) var(--vs-space-4);
+  border: 1px solid var(--vs-status-info-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-status-info-bg);
+  box-shadow: var(--vs-shadow-card);
+  color: var(--vs-status-info-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-normal);
+}
+
+.vs-layout--admin .notification.success {
+  background: var(--vs-status-success-bg);
+  border-color: var(--vs-status-success-border);
+  color: var(--vs-status-success-text);
+}
+
+.vs-layout--admin .notification.error {
+  background: var(--vs-status-danger-bg);
+  border-color: var(--vs-status-danger-border);
+  color: var(--vs-status-danger-text);
+}
+
+.vs-layout--admin .notification.info {
+  background: var(--vs-status-info-bg);
+  border-color: var(--vs-status-info-border);
+  color: var(--vs-status-info-text);
+}
+
+@media (max-width: 991.98px) {
+  .vs-layout--admin .vs-admin-nav {
+    position: static;
+    height: auto;
+    align-items: stretch;
+    padding: var(--vs-space-2) var(--vs-space-4);
+  }
+
+  .vs-layout--admin .vs-admin-nav > .navbar {
+    height: auto;
+    min-height: var(--navbar-height);
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--vs-space-2);
+  }
+}
+
+@media (max-width: 1200px) {
+  .vs-layout--patron:not(.nav-js) .vs-patron-nav {
+    height: auto;
+    min-height: var(--navbar-height);
+    flex-wrap: wrap;
+    padding: var(--vs-space-2) var(--vs-space-4);
+  }
+
+  .vs-layout--patron:not(.nav-js) .vs-patron-nav .nav-links {
+    position: static;
+    display: flex;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--vs-space-1);
+    width: 100%;
+    height: auto;
+    max-height: none;
+    margin: 0;
+    padding: var(--vs-space-3) 0 var(--vs-space-2);
+  }
+
+  .vs-layout--patron:not(.nav-js) .vs-patron-nav .nav-links li {
+    display: block;
+    width: 100%;
+  }
+
+  .vs-layout--patron:not(.nav-js) .vs-patron-nav .nav-links a {
+    display: block;
+    width: 100%;
+    padding: var(--vs-space-3);
+    text-align: left;
+  }
+}
+
+@media (max-width: 600px) {
+  .vs-layout--admin #toast.toast-notification,
+  .vs-layout--admin #toast.toast,
+  .vs-layout--patron #toast.toast-notification,
+  .vs-layout--admin .notification {
+    right: var(--vs-space-3);
+    bottom: calc(var(--vs-space-3) + env(safe-area-inset-bottom));
+    left: calc(44px + var(--vs-space-6) + var(--vs-space-2));
+    width: auto;
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-layout--admin .vs-admin-nav a,
+  .vs-layout--admin .vs-admin-nav .dropdown-arrow,
+  .vs-layout--patron .vs-patron-nav a,
+  .vs-layout--patron .vs-patron-nav .dropdown-arrow,
+  .vs-layout--admin #toast.toast-notification,
+  .vs-layout--admin #toast.toast,
+  .vs-layout--patron #toast.toast-notification {
+    transition-duration: 0.01ms;
+  }
+}
