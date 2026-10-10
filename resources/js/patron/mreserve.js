@@ -234,6 +234,11 @@ document.addEventListener("DOMContentLoaded", function () {
             cell.classList.add("calendar-day");
             cell.textContent = day;
             cell.setAttribute("data-date", dateKey);
+            const today = new Date();
+            if (dateKey === `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`) {
+                cell.classList.add("vs-calendar-day--today");
+            }
+            if (dateKey === dateInput?.value) cell.classList.add("vs-calendar-day--selected");
 
             if (dateStatuses[dateKey]) {
                 applyStatusStyle(cell, dateStatuses[dateKey]);
@@ -244,22 +249,22 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function applyStatusStyle(cell, status) {
-        cell.classList.remove("Available", "Half", "Nearly", "Full", "Closed");
+        cell.classList.remove("Available", "Half", "Nearly", "Full", "Closed", "vs-calendar-day--success", "vs-calendar-day--half", "vs-calendar-day--nearly", "vs-calendar-day--danger", "vs-calendar-day--neutral");
         switch (status) {
             case "Available":
-                cell.classList.add("Available");
+                cell.classList.add("Available", "vs-calendar-day--success");
                 break;
             case "Half":
-                cell.classList.add("Half");
+                cell.classList.add("Half", "vs-calendar-day--half");
                 break;
             case "Nearly":
-                cell.classList.add("Nearly");
+                cell.classList.add("Nearly", "vs-calendar-day--nearly");
                 break;
             case "Full":
-                cell.classList.add("Full");
+                cell.classList.add("Full", "vs-calendar-day--danger");
                 break;
             case "Closed":
-                cell.classList.add("Closed");
+                cell.classList.add("Closed", "vs-calendar-day--neutral");
                 break;
         }
     }
@@ -328,6 +333,10 @@ document.addEventListener("DOMContentLoaded", function () {
             dateUnavailableModal.style.display = "block";
             dateInput.value = "";
         }
+
+        document.querySelectorAll("#calendar .calendar-day[data-date]").forEach((cell) => {
+            cell.classList.toggle("vs-calendar-day--selected", cell.getAttribute("data-date") === dateInput.value);
+        });
     });
 
     // Waitlist join handler

@@ -192,3 +192,140 @@ button:hover {
     padding: 8px;
   }
 }
+
+.vs-layout--patron .patron-content > .container {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  align-items: start;
+  width: 100%;
+  max-width: 1200px;
+  gap: var(--vs-space-6);
+  margin: var(--vs-space-8) auto;
+  padding: var(--vs-space-6);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface-beige);
+  box-shadow: var(--vs-shadow-card);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+}
+
+.vs-layout--patron .patron-content > .container:hover {
+  box-shadow: var(--vs-shadow-card);
+}
+
+.vs-layout--patron .left-section,
+.vs-layout--patron .right-section {
+  min-width: 0;
+  padding: 0;
+}
+
+.vs-layout--patron .contact-box {
+  padding: var(--vs-space-5);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface);
+  box-shadow: none;
+}
+
+.vs-layout--patron .contact-box h1,
+.vs-layout--patron .contact-info h2 {
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-display);
+  font-size: 28px;
+  line-height: var(--vs-leading-tight);
+}
+
+.vs-layout--patron .contact-box p,
+.vs-layout--patron .contact-info p {
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-relaxed);
+}
+
+.vs-layout--patron .contact-box label {
+  margin-top: var(--vs-space-3);
+  color: var(--vs-color-text);
+  font-size: var(--vs-text-body-min);
+}
+
+.vs-layout--patron .contact-box :is(input, textarea) {
+  min-height: 40px;
+  padding: var(--vs-space-2) var(--vs-space-3);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-control-min);
+}
+
+.vs-layout--patron .contact-box :is(input, textarea, button):focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.vs-layout--patron .contact-box button {
+  min-height: 40px;
+  border: 1px solid var(--vs-button-primary-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-button-primary-bg);
+  color: var(--vs-button-primary-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-control-min);
+  font-weight: var(--vs-weight-semibold);
+  box-shadow: none;
+}
+
+.vs-layout--patron .contact-box button:hover {
+  transform: none;
+  border-color: var(--vs-button-primary-hover-border);
+  background: var(--vs-button-primary-hover-bg);
+  color: var(--vs-button-primary-hover-text);
+  box-shadow: none;
+}
+
+.vs-layout--patron .contact-info {
+  margin: var(--vs-space-5) 0 0;
+  padding: var(--vs-space-4) 0 0;
+  border-top: 1px solid var(--vs-color-control-border);
+  max-width: none;
+  text-align: left;
+}
+
+.vs-layout--patron .right-section iframe {
+  min-height: 0;
+  height: 360px;
+  max-height: 45vh;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  box-shadow: none;
+}
+
+@media (max-width: 900px) {
+  .vs-layout--patron .patron-content > .container {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .vs-layout--patron .right-section iframe {
+    height: 420px;
+    max-height: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .vs-layout--patron .patron-content > .container {
+    gap: var(--vs-space-4);
+    padding: var(--vs-space-4);
+  }
+
+  .vs-layout--patron .right-section iframe {
+    min-height: 300px;
+    height: 300px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-layout--patron .contact-box button {
+    transition: none;
+  }
+}

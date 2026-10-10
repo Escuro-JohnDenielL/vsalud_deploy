@@ -41,16 +41,19 @@
 
             <div class="calendar-legend">
                 <div class="legend-item">
-                    <div class="legend-box legend-green vs-admin-reservation__legend-box vs-admin-reservation__legend-box--success"></div> Available (1–2 left)
+                    <div class="legend-box legend-green vs-admin-reservation__legend-box vs-admin-reservation__legend-box--success vs-calendar__legend-swatch vs-calendar-day--success"></div> Available (1–2 left)
                 </div>
                 <div class="legend-item">
-                    <div class="legend-box legend-yellow legend-orange vs-admin-reservation__legend-box vs-admin-reservation__legend-box--warning"></div> Half Full (2/4) to Nearly Full (3/4)
+                    <div class="legend-box legend-yellow vs-admin-reservation__legend-box vs-admin-reservation__legend-box--warning vs-calendar__legend-swatch vs-calendar-day--half"></div> Half Full (2/4)
                 </div>
                 <div class="legend-item">
-                    <div class="legend-box legend-red vs-admin-reservation__legend-box vs-admin-reservation__legend-box--danger"></div> Full (4/4)
+                    <div class="legend-box legend-orange vs-admin-reservation__legend-box vs-admin-reservation__legend-box--warning vs-calendar__legend-swatch vs-calendar-day--nearly"></div> Nearly Full (3/4)
                 </div>
                 <div class="legend-item">
-                    <div class="legend-box legend-gray vs-admin-reservation__legend-box vs-admin-reservation__legend-box--neutral"></div> Closed
+                    <div class="legend-box legend-red vs-admin-reservation__legend-box vs-admin-reservation__legend-box--danger vs-calendar__legend-swatch vs-calendar-day--danger"></div> Full (4/4)
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box legend-gray vs-admin-reservation__legend-box vs-admin-reservation__legend-box--neutral vs-calendar__legend-swatch vs-calendar-day--neutral"></div> Closed
                 </div>
             </div>
         </div>

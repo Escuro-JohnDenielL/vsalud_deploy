@@ -460,6 +460,326 @@
     border-radius: 4px;
 }
 
+.vs-patron-reservation {
+    color: var(--vs-color-text);
+    font-family: var(--vs-font-ui);
+}
+
+.vs-patron-reservation .vs-patron-reservation__layout {
+    display: flex;
+    max-width: 1200px;
+    align-items: flex-start;
+    justify-content: center;
+    gap: var(--vs-space-8);
+    margin: var(--vs-space-8) auto;
+    padding: var(--vs-space-6);
+    border: 1px solid var(--vs-color-control-border);
+    border-radius: var(--vs-radius-card);
+    background: var(--vs-color-surface);
+    box-shadow: var(--vs-shadow-card);
+}
+
+.vs-patron-reservation .reservation-container {
+    min-width: 0;
+    width: min(100%, 600px);
+    flex: 1 1 600px;
+}
+
+.vs-patron-reservation .reservation-container h2 {
+    margin: 0 0 var(--vs-space-5);
+    color: var(--vs-color-deep-green);
+    font-family: var(--vs-font-ui);
+    font-size: 1.375rem;
+    line-height: var(--vs-leading-tight);
+}
+
+.vs-patron-reservation .form-group {
+    margin-bottom: var(--vs-space-4);
+}
+
+.vs-patron-reservation .form-group label {
+    margin-bottom: var(--vs-space-1);
+    color: var(--vs-color-text);
+    font-size: var(--vs-text-body-min);
+    font-weight: var(--vs-weight-semibold);
+}
+
+.vs-patron-reservation .form-group input,
+.vs-patron-reservation .form-group select,
+.vs-patron-reservation .form-group textarea {
+    width: 100%;
+    min-height: 40px;
+    padding: var(--vs-space-2) var(--vs-space-3);
+    border: 1px solid var(--vs-color-control-border);
+    border-radius: var(--vs-radius-control);
+    background: var(--vs-color-surface);
+    color: var(--vs-color-text);
+    font-family: var(--vs-font-ui);
+    font-size: var(--vs-text-control-min);
+}
+
+.vs-patron-reservation .form-group button {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid var(--vs-button-primary-border);
+    border-radius: var(--vs-radius-control);
+    background: var(--vs-button-primary-bg);
+    color: var(--vs-button-primary-text);
+    font-family: var(--vs-font-ui);
+    font-size: var(--vs-text-control-min);
+    font-weight: var(--vs-weight-semibold);
+    box-shadow: none;
+}
+
+.vs-patron-reservation .form-group button:hover {
+    background: var(--vs-button-primary-hover-bg);
+    color: var(--vs-button-primary-hover-text);
+    transform: none;
+    box-shadow: none;
+}
+
+.vs-patron-reservation .form-group :is(input, select, textarea, button):focus-visible,
+.vs-patron-reservation .calendar-header button:focus-visible {
+    outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+    outline-offset: var(--vs-focus-offset);
+    box-shadow: none;
+}
+
+.vs-patron-reservation .calendar-container {
+    width: min(100%, 370px);
+    min-width: 0;
+    flex: 0 0 350px;
+    padding: var(--vs-space-4);
+    border: 1px solid var(--vs-color-control-border);
+    border-radius: var(--vs-radius-card);
+    background: var(--vs-color-surface-beige);
+    box-shadow: var(--vs-shadow-card);
+}
+
+.vs-patron-reservation .calendar-header {
+    gap: var(--vs-space-2);
+    margin-bottom: var(--vs-space-3);
+    color: var(--vs-color-deep-green);
+    font-size: 1.125rem;
+    font-weight: var(--vs-weight-semibold);
+}
+
+.vs-patron-reservation .calendar-header button {
+    min-width: 40px;
+    min-height: 40px;
+    padding: var(--vs-space-2);
+    border: 1px solid var(--vs-color-control-border);
+    border-radius: var(--vs-radius-control);
+    background: var(--vs-color-surface);
+    color: var(--vs-color-deep-green);
+    font-size: 1rem;
+}
+
+.vs-patron-reservation #calendar {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: var(--vs-space-1);
+    padding-top: var(--vs-space-2);
+}
+
+.vs-patron-reservation .calendar-day {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: var(--vs-space-1);
+    border: 2px solid var(--vs-color-control-border);
+    border-radius: var(--vs-radius-control);
+    background: var(--vs-color-surface);
+    color: var(--vs-color-text);
+    font-size: var(--vs-text-body-min);
+    font-weight: var(--vs-weight-bold);
+    text-align: center;
+    transition: background-color var(--vs-duration-fast), border-color var(--vs-duration-fast), color var(--vs-duration-fast);
+}
+
+.vs-patron-reservation .calendar-day.day-header {
+    background: var(--vs-color-surface-beige);
+    color: var(--vs-color-deep-green);
+    cursor: default;
+}
+
+.vs-patron-reservation .calendar-day.empty {
+    border-color: transparent;
+    background: transparent;
+    cursor: default;
+}
+
+.vs-patron-reservation .calendar-day.vs-calendar-day--success,
+.vs-patron-reservation .vs-calendar__legend-swatch.vs-calendar-day--success {
+    border-color: var(--vs-calendar-success-fill);
+    background: var(--vs-calendar-success-fill);
+    color: var(--vs-calendar-day-text);
+}
+
+.vs-patron-reservation .calendar-day.vs-calendar-day--half,
+.vs-patron-reservation .vs-calendar__legend-swatch.vs-calendar-day--half {
+    border-color: var(--vs-calendar-half-fill);
+    background: var(--vs-calendar-half-fill);
+    color: var(--vs-calendar-day-text);
+}
+
+.vs-patron-reservation .calendar-day.vs-calendar-day--nearly,
+.vs-patron-reservation .vs-calendar__legend-swatch.vs-calendar-day--nearly {
+    border-color: var(--vs-calendar-nearly-fill);
+    background: var(--vs-calendar-nearly-fill);
+    color: var(--vs-calendar-day-text);
+}
+
+.vs-patron-reservation .calendar-day.vs-calendar-day--danger,
+.vs-patron-reservation .vs-calendar__legend-swatch.vs-calendar-day--danger {
+    border-color: var(--vs-calendar-danger-fill);
+    background: var(--vs-calendar-danger-fill);
+    color: var(--vs-calendar-day-text);
+}
+
+.vs-patron-reservation .calendar-day.vs-calendar-day--neutral,
+.vs-patron-reservation .vs-calendar__legend-swatch.vs-calendar-day--neutral {
+    border-color: var(--vs-calendar-neutral-fill);
+    background: var(--vs-calendar-neutral-fill);
+    color: var(--vs-calendar-day-text);
+}
+
+.vs-patron-reservation .calendar-day.vs-calendar-day--success::before { content: "A"; }
+.vs-patron-reservation .calendar-day.vs-calendar-day--half::before { content: "H"; }
+.vs-patron-reservation .calendar-day.vs-calendar-day--nearly::before { content: "N"; }
+.vs-patron-reservation .calendar-day.vs-calendar-day--danger::before { content: "F"; }
+.vs-patron-reservation .calendar-day.vs-calendar-day--neutral::before { content: "C"; }
+
+.vs-patron-reservation .calendar-day.vs-calendar-day--success::before,
+.vs-patron-reservation .calendar-day.vs-calendar-day--half::before,
+.vs-patron-reservation .calendar-day.vs-calendar-day--nearly::before,
+.vs-patron-reservation .calendar-day.vs-calendar-day--danger::before,
+.vs-patron-reservation .calendar-day.vs-calendar-day--neutral::before {
+    flex: 0 0 auto;
+    font-size: 10px;
+    line-height: 1;
+}
+
+.vs-patron-reservation .calendar-day.vs-calendar-day--today::after {
+    position: absolute;
+    inset: -4px;
+    border: 1px dashed var(--vs-color-deep-green);
+    border-radius: var(--vs-radius-control);
+    content: "";
+    pointer-events: none;
+}
+
+.vs-patron-reservation .calendar-day.vs-calendar-day--selected {
+    outline: 2px solid var(--vs-color-deep-green);
+    outline-offset: 2px;
+}
+
+.vs-patron-reservation .calendar-legend {
+    gap: var(--vs-space-2);
+    margin-top: var(--vs-space-4);
+    color: var(--vs-color-text);
+    font-size: var(--vs-text-body-min);
+    line-height: var(--vs-leading-normal);
+}
+
+.vs-patron-reservation .calendar-legend p {
+    margin: 0;
+}
+
+.vs-patron-reservation .vs-calendar__legend-swatch {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    border: 2px solid;
+    border-radius: var(--vs-radius-control);
+}
+
+.vs-patron-reservation .modal-content {
+    border: 1px solid var(--vs-color-control-border);
+    border-radius: var(--vs-radius-card);
+    background: var(--vs-color-surface);
+    color: var(--vs-color-text);
+    font-family: var(--vs-font-ui);
+}
+
+.vs-layout--patron #agreementModal .guidelines-content {
+    max-width: 720px;
+    max-height: 90vh;
+    padding: var(--vs-space-6);
+    border: 1px solid var(--vs-color-control-border);
+    border-radius: var(--vs-radius-card);
+    background: var(--vs-color-surface);
+    box-shadow: var(--vs-shadow-card);
+    color: var(--vs-color-text);
+    font-family: var(--vs-font-ui);
+    font-size: var(--vs-text-body-min);
+}
+
+.vs-layout--patron #agreementModal .guidelines-content h3:first-child,
+.vs-layout--patron #agreementModal .guidelines-content section h3 {
+    border-color: var(--vs-color-control-border);
+    color: var(--vs-color-deep-green);
+    font-family: var(--vs-font-ui);
+}
+
+.vs-layout--patron #agreementModal .guidelines-content p,
+.vs-layout--patron #agreementModal .guidelines-content li {
+    color: var(--vs-color-text-secondary);
+    font-size: var(--vs-text-body-min);
+}
+
+.vs-layout--patron #agreementModal #agreeButton {
+    min-height: 44px;
+    border: 1px solid var(--vs-button-primary-border);
+    border-radius: var(--vs-radius-control);
+    background: var(--vs-button-primary-bg);
+    color: var(--vs-button-primary-text);
+    font-family: var(--vs-font-ui);
+    font-size: var(--vs-text-control-min);
+}
+
+.vs-layout--patron #agreementModal #agreeButton:not(:disabled):hover {
+    background: var(--vs-button-primary-hover-bg);
+    color: var(--vs-button-primary-hover-text);
+    transform: none;
+    box-shadow: none;
+}
+
+@media (max-width: 900px) {
+    .vs-patron-reservation .vs-patron-reservation__layout {
+        flex-direction: column;
+    }
+
+    .vs-patron-reservation .reservation-container,
+    .vs-patron-reservation .calendar-container {
+        width: 100%;
+        flex: 1 1 auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .vs-patron-reservation .vs-patron-reservation__layout {
+        gap: var(--vs-space-5);
+        padding: var(--vs-space-4);
+    }
+
+    .vs-patron-reservation .calendar-day {
+        min-height: 36px;
+        padding: 2px;
+        font-size: var(--vs-text-secondary-min);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vs-patron-reservation .calendar-day,
+    .vs-patron-reservation .calendar-header button {
+        transition: none;
+    }
+}
+
 .legend-box.Available {
     background-color: #4caf50;
 }

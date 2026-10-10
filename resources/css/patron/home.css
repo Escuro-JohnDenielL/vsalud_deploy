@@ -510,3 +510,128 @@
     max-height: 200px;
   }
 }
+
+/* Shared patron surface styling */
+.vs-layout--patron .banner-container {
+  justify-content: stretch;
+  padding: var(--vs-space-5) 0;
+}
+
+.vs-layout--patron .banner {
+  width: 100%;
+  border: 1px solid var(--vs-color-dark-green);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-dark-green);
+  color: var(--vs-color-white);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-normal);
+  box-shadow: none;
+}
+
+.vs-layout--patron .packages {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: var(--vs-space-5);
+  padding: var(--vs-space-4) 0;
+}
+
+.vs-layout--patron .package-card {
+  width: min(100%, 280px);
+  flex: 0 1 280px;
+  min-width: 0;
+  margin-inline: auto;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
+  box-shadow: var(--vs-shadow-card);
+  transition: box-shadow var(--vs-duration-base), transform var(--vs-duration-base);
+}
+
+.vs-layout--patron .package-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--vs-shadow-card);
+}
+
+.vs-layout--patron .package-card__title,
+.vs-layout--patron .pkg-modal__title,
+.vs-layout--patron .privacy-modal h2 {
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-ui);
+}
+
+.vs-layout--patron .package-card__desc,
+.vs-layout--patron .privacy-modal__body {
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-body-min);
+}
+
+.vs-layout--patron .package-card__price,
+.vs-layout--patron .pkg-modal__price,
+.vs-layout--patron .privacy-modal__subtitle {
+  color: var(--vs-color-deep-green);
+}
+
+.vs-layout--patron .package-card .btn,
+.vs-layout--patron .package-card__view,
+.vs-layout--patron .privacy-btn {
+  min-height: 40px;
+  border: 1px solid var(--vs-button-primary-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-button-primary-bg);
+  color: var(--vs-button-primary-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-control-min);
+  font-weight: var(--vs-weight-semibold);
+  box-shadow: none;
+  transition: background-color var(--vs-duration-fast), border-color var(--vs-duration-fast);
+}
+
+.vs-layout--patron .package-card .btn:hover,
+.vs-layout--patron .package-card__view:hover,
+.vs-layout--patron .privacy-btn:hover {
+  transform: none;
+  border-color: var(--vs-button-primary-hover-border);
+  background: var(--vs-button-primary-hover-bg);
+  color: var(--vs-button-primary-hover-text);
+  box-shadow: none;
+}
+
+.vs-layout--patron .pkg-modal__dialog,
+.vs-layout--patron .privacy-modal {
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
+  color: var(--vs-color-text);
+  box-shadow: var(--vs-shadow-card);
+  font-family: var(--vs-font-ui);
+}
+
+.vs-layout--patron .pkg-modal__close:focus-visible,
+.vs-layout--patron .privacy-modal__close:focus-visible,
+.vs-layout--patron .package-card :is(button, a):focus-visible,
+.vs-layout--patron .privacy-btn:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+@media (max-width: 600px) {
+  .vs-layout--patron .packages {
+    justify-content: center;
+  }
+
+  .vs-layout--patron .package-card {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-layout--patron .package-card,
+  .vs-layout--patron .package-card img,
+  .vs-layout--patron .package-card :is(button, a),
+  .vs-layout--patron .privacy-btn {
+    transition: none;
+  }
+}

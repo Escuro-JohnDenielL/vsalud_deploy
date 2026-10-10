@@ -244,6 +244,97 @@
   background: var(--vs-status-neutral-bg);
 }
 
+.vs-admin-reservation .calendar-day {
+  position: relative;
+  min-height: 40px;
+  gap: 2px;
+  border-width: 2px;
+  font-weight: var(--vs-weight-bold);
+}
+
+.vs-admin-reservation .calendar-day.vs-calendar-day--success,
+.vs-admin-reservation .vs-calendar__legend-swatch.vs-calendar-day--success {
+  border-color: var(--vs-calendar-success-fill);
+  background: var(--vs-calendar-success-fill);
+  color: var(--vs-calendar-day-text);
+}
+
+.vs-admin-reservation .calendar-day.vs-calendar-day--half,
+.vs-admin-reservation .vs-calendar__legend-swatch.vs-calendar-day--half {
+  border-color: var(--vs-calendar-half-fill);
+  background: var(--vs-calendar-half-fill);
+  color: var(--vs-calendar-day-text);
+}
+
+.vs-admin-reservation .calendar-day.vs-calendar-day--nearly,
+.vs-admin-reservation .vs-calendar__legend-swatch.vs-calendar-day--nearly {
+  border-color: var(--vs-calendar-nearly-fill);
+  background: var(--vs-calendar-nearly-fill);
+  color: var(--vs-calendar-day-text);
+}
+
+.vs-admin-reservation .calendar-day.vs-calendar-day--danger,
+.vs-admin-reservation .vs-calendar__legend-swatch.vs-calendar-day--danger {
+  border-color: var(--vs-calendar-danger-fill);
+  background: var(--vs-calendar-danger-fill);
+  color: var(--vs-calendar-day-text);
+}
+
+.vs-admin-reservation .calendar-day.vs-calendar-day--neutral,
+.vs-admin-reservation .vs-calendar__legend-swatch.vs-calendar-day--neutral {
+  border-color: var(--vs-calendar-neutral-fill);
+  background: var(--vs-calendar-neutral-fill);
+  color: var(--vs-calendar-day-text);
+}
+
+.vs-admin-reservation .calendar-day.vs-calendar-day--success::before { content: "A"; }
+.vs-admin-reservation .calendar-day.vs-calendar-day--half::before { content: "H"; }
+.vs-admin-reservation .calendar-day.vs-calendar-day--nearly::before { content: "N"; }
+.vs-admin-reservation .calendar-day.vs-calendar-day--danger::before { content: "F"; }
+.vs-admin-reservation .calendar-day.vs-calendar-day--neutral::before { content: "C"; }
+
+.vs-admin-reservation .calendar-day.vs-calendar-day--success::before,
+.vs-admin-reservation .calendar-day.vs-calendar-day--half::before,
+.vs-admin-reservation .calendar-day.vs-calendar-day--nearly::before,
+.vs-admin-reservation .calendar-day.vs-calendar-day--danger::before,
+.vs-admin-reservation .calendar-day.vs-calendar-day--neutral::before {
+  flex: 0 0 auto;
+  font-size: 10px;
+  line-height: 1;
+}
+
+.vs-admin-reservation .calendar-day.vs-calendar-day--today::after {
+  position: absolute;
+  inset: -4px;
+  border: 1px dashed var(--vs-color-deep-green);
+  border-radius: var(--vs-radius-control);
+  content: "";
+  pointer-events: none;
+}
+
+.vs-admin-reservation .calendar-day.vs-calendar-day--selected {
+  outline: 2px solid var(--vs-color-deep-green);
+  outline-offset: 2px;
+}
+
+.vs-admin-reservation .calendar-day:hover:not(.day-header):not(.empty):not(.vs-calendar-day--success):not(.vs-calendar-day--warning):not(.vs-calendar-day--half):not(.vs-calendar-day--nearly):not(.vs-calendar-day--danger):not(.vs-calendar-day--neutral) {
+  background: var(--vs-color-surface-pale-green);
+}
+
+.vs-admin-reservation .vs-calendar__legend-swatch {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  border-width: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-admin-reservation .calendar-day,
+  .vs-admin-reservation .calendar-header button {
+    transition: none;
+  }
+}
+
 .vs-admin-reservation .vs-admin-reservation__notice {
   padding: var(--vs-space-3);
   border: 1px solid var(--vs-status-danger-border);

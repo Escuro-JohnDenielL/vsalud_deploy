@@ -259,3 +259,141 @@
         padding: 18px;
     }
 }
+
+    .vs-layout--patron .cancel-reservation-container {
+        max-width: 900px;
+        margin: var(--vs-space-8) auto;
+        padding: var(--vs-space-6);
+        border: 1px solid var(--vs-color-control-border);
+        border-radius: var(--vs-radius-card);
+        background: var(--vs-color-surface);
+        box-shadow: var(--vs-shadow-card);
+        color: var(--vs-color-text);
+        font-family: var(--vs-font-ui);
+    }
+
+    .vs-layout--patron .cancel-reservation-container:hover {
+        box-shadow: var(--vs-shadow-card);
+    }
+
+    .vs-layout--patron .cancel-reservation-container h2,
+    .vs-layout--patron .cancel-reservation-container h3 {
+        color: var(--vs-color-deep-green);
+        font-family: var(--vs-font-display);
+    }
+
+    .vs-layout--patron .cancel-reservation-container > p {
+        color: var(--vs-color-text-secondary);
+        font-size: var(--vs-text-body-min);
+    }
+
+    .vs-layout--patron #lookupForm .form-group label,
+    .vs-layout--patron .cancel-form-card .form-group label {
+        color: var(--vs-color-text);
+        font-size: var(--vs-text-body-min);
+    }
+
+    .vs-layout--patron #lookupForm .form-group input,
+    .vs-layout--patron .cancel-form-card .form-group :is(input, textarea) {
+        min-height: 40px;
+        padding: var(--vs-space-2) var(--vs-space-3);
+        border: 1px solid var(--vs-color-control-border);
+        border-radius: var(--vs-radius-control);
+        background: var(--vs-color-surface);
+        color: var(--vs-color-text);
+        font-family: var(--vs-font-ui);
+        font-size: var(--vs-text-control-min);
+    }
+
+    .vs-layout--patron .cancel-reservation-container :is(input, textarea, button):focus-visible {
+        outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+        outline-offset: var(--vs-focus-offset);
+        box-shadow: none;
+    }
+
+    .vs-layout--patron .details-card,
+    .vs-layout--patron .cancel-form-card {
+        border: 1px solid var(--vs-color-control-border);
+        border-radius: var(--vs-radius-control);
+        background: var(--vs-color-surface-beige);
+        color: var(--vs-color-text);
+    }
+
+    .vs-layout--patron .details-card h3 {
+        border-color: var(--vs-color-control-border);
+    }
+
+    .vs-layout--patron .details-table td {
+        color: var(--vs-color-text);
+        font-size: var(--vs-text-body-min);
+    }
+
+    .vs-layout--patron .details-table td:first-child {
+        color: var(--vs-color-text-secondary);
+    }
+
+    .vs-layout--patron .cancel-section-divider-label {
+        color: var(--vs-status-danger-text);
+    }
+
+    .vs-layout--patron .btn-lookup,
+    .vs-layout--patron .btn-submit-cancel {
+        min-height: 40px;
+        border: 1px solid var(--vs-button-primary-border);
+        border-radius: var(--vs-radius-control);
+        background: var(--vs-button-primary-bg);
+        color: var(--vs-button-primary-text);
+        font-family: var(--vs-font-ui);
+        font-size: var(--vs-text-control-min);
+        font-weight: var(--vs-weight-semibold);
+        box-shadow: none;
+    }
+
+    .vs-layout--patron .btn-submit-cancel {
+        border-color: var(--vs-button-danger-border);
+        background: var(--vs-button-danger-bg);
+        color: var(--vs-button-danger-text);
+    }
+
+    .vs-layout--patron .btn-lookup:hover,
+    .vs-layout--patron .btn-submit-cancel:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .vs-layout--patron .btn-submit-cancel:hover {
+        border-color: var(--vs-button-danger-hover-border);
+        background: var(--vs-button-danger-hover-bg);
+        color: var(--vs-button-danger-hover-text);
+    }
+
+    .vs-layout--patron .cancel-reservation-container .alert-success {
+        border-color: var(--vs-status-success-border);
+        background: var(--vs-status-success-bg);
+        color: var(--vs-status-success-text);
+    }
+
+    .vs-layout--patron .cancel-reservation-container .alert-error {
+        border-color: var(--vs-status-danger-border);
+        background: var(--vs-status-danger-bg);
+        color: var(--vs-status-danger-text);
+    }
+
+    .vs-layout--patron .cancel-reservation-container .alert-info {
+        border-color: var(--vs-status-info-border);
+        background: var(--vs-status-info-bg);
+        color: var(--vs-status-info-text);
+    }
+
+    @media (max-width: 480px) {
+        .vs-layout--patron .cancel-reservation-container {
+            margin: var(--vs-space-5) 0;
+            padding: var(--vs-space-4);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .vs-layout--patron .cancel-reservation-container :is(input, textarea, button) {
+            transition: none;
+        }
+    }

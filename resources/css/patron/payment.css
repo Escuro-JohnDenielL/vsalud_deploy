@@ -348,3 +348,163 @@ input[type="file"]::file-selector-button:hover {
     max-width: 180px;
   }
 }
+
+.vs-layout--patron .payment-wrapper {
+  max-width: 900px;
+  margin: var(--vs-space-8) auto;
+  padding-inline: var(--vs-space-4);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+}
+
+.vs-layout--patron .payment-container {
+  padding: var(--vs-space-6);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
+  box-shadow: var(--vs-shadow-card);
+}
+
+.vs-layout--patron .payment-container:hover {
+  box-shadow: var(--vs-shadow-card);
+}
+
+.vs-layout--patron .payment-header h2,
+.vs-layout--patron .payment-method h3,
+.vs-layout--patron .success-message h3 {
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-ui);
+}
+
+.vs-layout--patron .payment-header p,
+.vs-layout--patron .payment-info p,
+.vs-layout--patron .success-message p {
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-body-min);
+}
+
+.vs-layout--patron .payment-header h2::after {
+  background: var(--vs-color-dark-green);
+}
+
+.vs-layout--patron .payment-container label {
+  color: var(--vs-color-text);
+  font-size: var(--vs-text-body-min);
+}
+
+.vs-layout--patron .payment-container input,
+.vs-layout--patron .payment-container select {
+  min-height: 40px;
+  padding: var(--vs-space-2) var(--vs-space-3);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-control-min);
+}
+
+.vs-layout--patron .payment-container :is(input, select, textarea, button):focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+  box-shadow: none;
+}
+
+.vs-layout--patron .payment-container input.error {
+  border-color: var(--vs-status-danger-border);
+}
+
+.vs-layout--patron .input-error {
+  color: var(--vs-status-danger-text);
+  font-size: var(--vs-text-body-min);
+}
+
+.vs-layout--patron .btn-submit,
+.vs-layout--patron .payment-container input[type="file"]::file-selector-button {
+  min-height: 40px;
+  border: 1px solid var(--vs-button-primary-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-button-primary-bg);
+  color: var(--vs-button-primary-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-control-min);
+  font-weight: var(--vs-weight-semibold);
+  box-shadow: none;
+}
+
+.vs-layout--patron .btn-submit:hover,
+.vs-layout--patron .payment-container input[type="file"]::file-selector-button:hover {
+  transform: none;
+  border-color: var(--vs-button-primary-hover-border);
+  background: var(--vs-button-primary-hover-bg);
+  color: var(--vs-button-primary-hover-text);
+  box-shadow: none;
+}
+
+.vs-layout--patron .payment-info,
+.vs-layout--patron .payment-method,
+.vs-layout--patron .receipt-upload,
+.vs-layout--patron .success-message {
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface-beige);
+  color: var(--vs-color-text);
+}
+
+.vs-layout--patron .payment-info {
+  border-left: 4px solid var(--vs-color-dark-green);
+}
+
+.vs-layout--patron .payment-method {
+  border-left: 4px solid var(--vs-color-dark-green);
+}
+
+.vs-layout--patron .payment-method h3,
+.vs-layout--patron .payment-info strong,
+.vs-layout--patron .payment-container .steps li::before {
+  color: var(--vs-color-deep-green);
+}
+
+.vs-layout--patron .payment-badge {
+  border-radius: var(--vs-radius-pill);
+  background: var(--vs-color-dark-green);
+  color: var(--vs-color-white);
+}
+
+.vs-layout--patron .reference-number {
+  background: var(--vs-color-pale-green);
+  color: var(--vs-color-deep-green);
+}
+
+.vs-layout--patron .bank-note {
+  border: 1px solid var(--vs-status-danger-border);
+  background: var(--vs-status-danger-bg);
+  color: var(--vs-status-danger-text);
+}
+
+.vs-layout--patron .receipt-upload {
+  border-style: dashed;
+}
+
+.vs-layout--patron .success-message {
+  border-color: var(--vs-status-success-border);
+  background: var(--vs-status-success-bg);
+}
+
+.vs-layout--patron #backButton {
+  border-color: var(--vs-button-secondary-border);
+  background: var(--vs-button-secondary-bg);
+  color: var(--vs-button-secondary-text);
+}
+
+@media (max-width: 480px) {
+  .vs-layout--patron .payment-container {
+    padding: var(--vs-space-4);
+    margin: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-layout--patron .payment-container :is(input, select, textarea, button) {
+    transition: none;
+  }
+}

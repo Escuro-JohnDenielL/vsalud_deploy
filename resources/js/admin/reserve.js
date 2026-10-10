@@ -165,6 +165,11 @@ document.addEventListener("DOMContentLoaded", function () {
             const dateKey = `${year}-${paddedMonth}-${paddedDay}`;
             // const dateKey = `${year}-${month + 1}-${day}`;
             dayCell.setAttribute("data-date", dateKey);
+            const today = new Date();
+            if (dateKey === `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`) {
+                dayCell.classList.add("vs-calendar-day--today");
+            }
+            if (dateKey === selectedDate) dayCell.classList.add("vs-calendar-day--selected");
 
             // Apply status if it exists
             if (dateStatuses[dateKey]) {
@@ -176,6 +181,8 @@ document.addEventListener("DOMContentLoaded", function () {
             dayCell.addEventListener("click", function (e) {
                 e.preventDefault();
                 selectedDate = dateKey;
+                calendar.querySelectorAll(".vs-calendar-day--selected").forEach((cell) => cell.classList.remove("vs-calendar-day--selected"));
+                dayCell.classList.add("vs-calendar-day--selected");
                 if (statusSelect) {
                     statusSelect.value = dateStatuses[dateKey] || "";
                 }
@@ -194,8 +201,8 @@ document.addEventListener("DOMContentLoaded", function () {
         cell.classList.remove("vs-calendar-day--success", "vs-calendar-day--warning", "vs-calendar-day--danger", "vs-calendar-day--neutral");
         const statusClasses = {
             Available: "vs-calendar-day--success",
-            Half: "vs-calendar-day--warning",
-            Nearly: "vs-calendar-day--warning",
+            Half: "vs-calendar-day--half",
+            Nearly: "vs-calendar-day--nearly",
             Full: "vs-calendar-day--danger",
             Unavailable: "vs-calendar-day--danger",
             Closed: "vs-calendar-day--neutral",

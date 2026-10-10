@@ -35,6 +35,14 @@
   --vs-status-neutral-bg: #edf0ed;
   --vs-status-neutral-border: #707c75;
 
+  /* High-visibility calendar fills; each is paired with white text. */
+  --vs-calendar-success-fill: #006b53;
+  --vs-calendar-half-fill: #7a4b00;
+  --vs-calendar-nearly-fill: #a33a12;
+  --vs-calendar-danger-fill: #8b1e2d;
+  --vs-calendar-neutral-fill: #46514c;
+  --vs-calendar-day-text: #ffffff;
+
   /* Password-strength text/bar colors use the existing semantic pairings. */
   --vs-strength-weak: #743232;
   --vs-strength-fair: #634800;

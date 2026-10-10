@@ -1071,6 +1071,20 @@ body.vs-layout--admin .vs-admin-dashboard__edit-modal.modal.show > .modal-dialog
   top: 0;
 }
 
+.vs-layout--patron .vs-patron-nav > .nav-links {
+  height: auto;
+  min-height: 0;
+  border: 0;
+  background: transparent;
+}
+
+@media (min-width: 1201px) {
+  .vs-layout--patron .vs-patron-nav,
+  .vs-layout--patron .vs-patron-nav > .nav-links {
+    justify-content: center;
+  }
+}
+
 .vs-layout--admin .vs-admin-nav a,
 .vs-layout--patron .vs-patron-nav a {
   border-radius: var(--vs-radius-pill);

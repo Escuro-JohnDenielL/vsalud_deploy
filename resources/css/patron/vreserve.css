@@ -230,6 +230,40 @@
     white-space: nowrap;
 }
 
+.vs-reservation-page {
+    max-width: 760px;
+    margin: var(--vs-space-8) auto;
+    padding-inline: var(--vs-space-4);
+}
+
+.vs-reservation-page .reservation-container {
+    border: 1px solid var(--vs-color-control-border);
+    border-radius: var(--vs-radius-card);
+    background: var(--vs-color-surface);
+    box-shadow: var(--vs-shadow-card);
+}
+
+.vs-reservation-page .reservation-container > h2 {
+    font-family: var(--vs-font-display);
+    font-size: 28px;
+    line-height: var(--vs-leading-tight);
+}
+
+.vs-reservation-page .reservation-container > p {
+    max-width: 64ch;
+}
+
+.vs-reservation-page .form-group input {
+    border-color: var(--vs-color-control-border);
+}
+
+.vs-reservation-page .form-group input:focus-visible,
+.vs-reservation-page .view-details:focus-visible,
+.vs-reservation-page .vs-modal__close:focus-visible {
+    outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+    outline-offset: var(--vs-focus-offset);
+}
+
 @media (max-width: 600px) {
     .vs-reservation-page {
         margin: var(--vs-space-6) auto;

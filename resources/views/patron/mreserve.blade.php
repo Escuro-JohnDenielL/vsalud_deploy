@@ -116,8 +116,8 @@
         window.agreeUrl = @json(route('patron.agree'));
     </script>
 
-    <div class="page-wrapper">
-        <div class="container">
+    <div class="page-wrapper vs-patron-reservation">
+        <div class="container vs-patron-reservation__layout">
             <div class="reservation-container">
                 <h2>Let's bring your vision to life—just fill out the form.</h2>
 
@@ -140,7 +140,7 @@
                 @endif
             </div>
 
-            <div class="calendar-container">
+            <div class="calendar-container vs-calendar">
                 <div class="calendar-header">
                     <button id="prevMonth">◀</button>
                     <span id="month-year"></span>
@@ -149,11 +149,11 @@
                 <div id="calendar"></div>
 
                 <div class="calendar-legend">
-                    <p><span class="legend-box Available"></span> Available (1-2 left)</p>
-                    <p><span class="legend-box Half"></span> Half Full (2/4)</p>
-                    <p><span class="legend-box Nearly"></span> Nearly Full (3/4)</p>
-                    <p><span class="legend-box Full"></span> Full (4/4)</p>
-                    <p><span class="legend-box Closed"></span> Closed</p>
+                    <p><span class="legend-box Available vs-calendar__legend-swatch vs-calendar-day--success"></span> Available (1-2 left)</p>
+                    <p><span class="legend-box Half vs-calendar__legend-swatch vs-calendar-day--half"></span> Half Full (2/4)</p>
+                    <p><span class="legend-box Nearly vs-calendar__legend-swatch vs-calendar-day--nearly"></span> Nearly Full (3/4)</p>
+                    <p><span class="legend-box Full vs-calendar__legend-swatch vs-calendar-day--danger"></span> Full (4/4)</p>
+                    <p><span class="legend-box Closed vs-calendar__legend-swatch vs-calendar-day--neutral"></span> Closed</p>
                 </div>
             </div>
         </div>
