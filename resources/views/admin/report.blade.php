@@ -23,79 +23,61 @@
         </div>
     </div>
 
-    <!-- Dashboard Header -->
-    <div class="dashboard-header">
-        <div class="header-content">
-            
-            <div class="header-left">
-                <h1>Report Dashboard</h1>
+    <x-ui.page-header title="Report Dashboard" subtitle="Monitor inquiries, reservations, and event trends.">
+        <x-slot:action>
+            <button type="button" class="refresh-btn" onclick="window.dashboardManager.refreshDashboard()">
+                <i class='bx bx-refresh'></i>
+                Refresh Data
+            </button>
+        </x-slot:action>
+    </x-ui.page-header>
+
+    <p class="report-last-updated">Last updated: <span id="last-updated-time">--</span></p>
+
+    <div class="report-controls">
+        <label class="vs-label" for="report-period">Period</label>
+        <select id="report-period" class="vs-input">
+            <option value="week">This Week</option>
+            <option value="month" selected>This Month</option>
+            <option value="3months">Last 3 Months</option>
+            <option value="year">This Year</option>
+            <option value="all">All Time</option>
+        </select>
+    </div>
+
+    <div class="vs-stat-grid">
+        <div class="vs-stat-card">
+            <strong class="vs-stat-card__value" id="total-inquiries-overview">0</strong>
+            <span class="vs-stat-card__label"><span class="vs-stat-card__dot vs-stat-card__dot--info" aria-hidden="true"></span>Total Inquiries</span>
+            <div class="metric-change positive" id="inquiry-change">
+                <i class='bx bx-trending-up'></i>
+                <span>0% vs last period</span>
             </div>
+        </div>
 
-            <div class="refresh-container">
-                <button class="refresh-btn" onclick="window.dashboardManager.refreshDashboard()">
-                    <i class='bx bx-refresh'></i>
-                    Refresh Data
-                </button>
-                <div class="last-updated">
-                    <span>Last updated: <span id="last-updated-time">--</span></span>
-                </div>
+        <div class="vs-stat-card">
+            <strong class="vs-stat-card__value" id="total-reservations-overview">0</strong>
+            <span class="vs-stat-card__label"><span class="vs-stat-card__dot vs-stat-card__dot--success" aria-hidden="true"></span>Total Reservations</span>
+            <div class="metric-change positive" id="reservation-change">
+                <i class='bx bx-trending-up'></i>
+                <span>0% vs last period</span>
             </div>
-
-            <!-- Key Metrics Overview - Forced to Single Row -->
-            <div class="metrics-overview">
-                <div class="metric-card primary">
-                    <div class="metric-icon">
-                        <i class='bx bxs-message-dots'></i>
-                    </div>
-                    <div class="metric-content">
-                        <div class="metric-value" id="total-inquiries-overview">0</div>
-                        <div class="metric-label">Total Inquiries</div>
-                        <div class="metric-change positive" id="inquiry-change">
-                            <i class='bx bx-trending-up'></i>
-                            <span>+12% vs last period</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="metric-card secondary">
-                    <div class="metric-icon">
-                        <i class='bx bxs-calendar-check'></i>
-                    </div>
-                    <div class="metric-content">
-                        <div class="metric-value" id="total-reservations-overview">0</div>
-                        <div class="metric-label">Total Reservations</div>
-                        <div class="metric-change positive" id="reservation-change">
-                            <i class='bx bx-trending-up'></i>
-                            <span>+8% vs last period</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 
     <!-- Chart Panels -->
     <div class="chart-grid">
         @foreach ([
-        ['id' => 'inquiryChart', 'title' => 'Inquiries Trend', 'desc' => 'Track inquiry patterns over time', 'stats' => [['Peak', 'inquiry-peak-day'], ['Average Daily', 'inquiry-avg-daily']], 'filter' => 'inquiry-filter'],
-        ['id' => 'reservation-chart', 'title' => 'Reservation Analytics', 'desc' => 'Monitor booking performance', 'stats' => [['Best Month', 'reservation-best-month'], ['Growth Rate', 'reservation-growth']], 'filter' => 'reservation-filter'],
+        ['id' => 'inquiryChart', 'title' => 'Inquiries by date submitted', 'desc' => 'Track inquiry patterns over time', 'stats' => [['Peak', 'inquiry-peak-day'], ['Average Daily', 'inquiry-avg-daily']], 'filter' => 'inquiry-filter'],
+        ['id' => 'reservation-chart', 'title' => 'Reservations by event date', 'desc' => 'Monitor bookings by their event date', 'stats' => [['Best period', 'reservation-best-month'], ['Growth Rate', 'reservation-growth']], 'filter' => 'reservation-filter'],
         ['id' => 'themeChart', 'title' => 'Theme Popularity', 'desc' => 'Most requested themes and packages', 'stats' => [['Most Popular', 'most-popular-theme'], ['Total Themes', 'total-themes']], 'filter' => 'theme-filter'],
-        ['id' => 'inquiry-type-chart', 'title' => 'Inquiry Categories', 'desc' => 'Breakdown by inquiry type', 'stats' => [['Top Category', 'top-inquiry-category'], ['Response Rate', 'inquiry-response-rate']], 'filter' => 'inquiry-type-chart-filter'],
+        ['id' => 'inquiry-type-chart', 'title' => 'Inquiry Categories', 'desc' => 'Breakdown by inquiry type', 'stats' => [['Top Category', 'top-inquiry-category'], ['Total Categories', 'inquiry-response-rate']], 'filter' => 'inquiry-type-chart-filter'],
         ] as $chart)
         <div class="chart-panel">
             <div class="panel-header">
                 <div class="panel-title">
                     <h3>{{ $chart['title'] }}</h3>
                     <p>{{ $chart['desc'] }}</p>
-                </div>
-                <div class="panel-controls">
-                    <select id="{{ $chart['filter'] }}" class="filter-select">
-                        <option value="day">Today</option>
-                        <option value="week">This Week</option>
-                        <option value="month" selected>This Month</option>
-                        <option value="year">This Year</option>
-                    </select>
                 </div>
             </div>
             <div class="chart-container">
@@ -105,7 +87,7 @@
                 <div class="chart-stats">
                     @foreach ($chart['stats'] as [$label, $id])
                     <div class="stat-item">
-                        <span class="stat-label">{{ $label }}:</span>
+                        <span class="stat-label" id="{{ $id }}-label">{{ $label }}:</span>
                         <span class="stat-value" id="{{ $id }}">--</span>
                     </div>
                     @endforeach

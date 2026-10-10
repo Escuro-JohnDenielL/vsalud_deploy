@@ -10,56 +10,60 @@
     @param \Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Support\Collection|array $incidents
 --}}
 @forelse($incidents as $incident)
-    <tr data-id="{{ $incident->id }}">
-        <td>#{{ $incident->id }}</td>
+    <tr class="vs-table__row" data-id="{{ $incident->id }}">
+        <td class="vs-cell-nowrap">#{{ $incident->id }}</td>
         <td class="incident-title">{{ \Illuminate\Support\Str::limit($incident->title, 60) }}</td>
         <td>
             @php
-                $severityClass = match($incident->severity) {
+                $severityVariant = match($incident->severity) {
                     'critical' => 'danger',
                     'high'     => 'warning',
                     'medium'   => 'info',
-                    'low'      => 'success',
-                    default    => 'info',
+                    default    => 'neutral',
                 };
             @endphp
-            <span class="badge-modern {{ $severityClass }}">
-                {{ ucfirst($incident->severity) }}
-            </span>
+            <x-ui.badge :variant="$severityVariant">{{ ucfirst($incident->severity) }}</x-ui.badge>
         </td>
         <td>
             @php
-                $statusClass = match($incident->status) {
-                    'open'           => 'danger',
-                    'investigating'  => 'warning',
+                $statusVariant = match($incident->status) {
+                    'open'           => 'warning',
+                    'investigating'  => 'info',
                     'resolved'       => 'success',
-                    'closed'         => 'info',
-                    default          => 'info',
+                    'closed'         => 'neutral',
+                    default          => 'neutral',
                 };
             @endphp
-            <span class="badge-modern {{ $statusClass }}">
-                {{ ucfirst($incident->status) }}
-            </span>
+            <x-ui.badge :variant="$statusVariant">{{ ucfirst($incident->status) }}</x-ui.badge>
         </td>
-        <td>{{ $incident->detected_at?->format('M d, Y g:i A') ?? '—' }}</td>
-        <td>{{ $incident->resolved_at ? $incident->resolved_at->format('M d, Y g:i A') : '—' }}</td>
-        <td>{{ $incident->reported_by ?? '—' }}</td>
-        <td>
-            <div class="action-buttons">
-                <button class="admin-btn admin-btn-primary admin-btn-sm view-incident-btn"
-                    data-id="{{ $incident->id }}">View</button>
-                @if(!in_array($incident->status, ['resolved', 'closed']))
-                    <button class="admin-btn admin-btn-ghost admin-btn-sm resolve-incident-btn"
-                        data-id="{{ $incident->id }}">Resolve</button>
-                @endif
-                <button class="admin-btn admin-btn-danger admin-btn-sm delete-incident-btn"
-                    data-id="{{ $incident->id }}"
-                    data-title="{{ $incident->title }}">Delete</button>
-            </div>
+        <td class="vs-cell-nowrap">{{ $incident->detected_at ? vs_datetime($incident->detected_at) : 'None' }}</td>
+        <td class="vs-cell-nowrap">{{ $incident->resolved_at ? vs_datetime($incident->resolved_at) : 'None' }}</td>
+        <td>{{ $incident->reported_by ?? 'None' }}</td>
+        <td class="vs-cell-actions">
+            <x-ui.row-actions>
+                <x-slot:view>
+                    <button type="button" class="vs-row-actions__view view-incident-btn"
+                        data-id="{{ $incident->id }}">View</button>
+                </x-slot:view>
+                <x-slot:menu>
+                    @if(!in_array($incident->status, ['resolved', 'closed']))
+                        <button type="button" class="vs-overflow__item resolve-incident-btn"
+                            data-id="{{ $incident->id }}">Resolve</button>
+                    @endif
+                    <div class="vs-overflow__separator"></div>
+                    <button type="button" class="vs-overflow__item vs-overflow__item--danger delete-incident-btn"
+                        data-id="{{ $incident->id }}"
+                        data-title="{{ $incident->title }}">Delete</button>
+                </x-slot:menu>
+            </x-ui.row-actions>
         </td>
     </tr>
 @empty
     <tr data-empty>
-        <td colspan="8" class="text-center">No incidents logged yet.</td>
+        <td colspan="8">
+            <div class="vs-empty">
+                <p class="vs-empty__msg">No incidents logged yet.</p>
+            </div>
+        </td>
     </tr>
 @endforelse

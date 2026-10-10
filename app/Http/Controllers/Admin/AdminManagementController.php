@@ -14,7 +14,7 @@ class AdminManagementController extends Controller
      */
     public function index()
     {
-        $adminCount = Admin::count();
+        $adminCount = Admin::withTrashed()->count();
         $activeAdminCount = Admin::whereNull('deleted_at')->count();
         $deletedAdminCount = Admin::onlyTrashed()->count();
 

@@ -7,35 +7,19 @@
 @endpush
 
 @section('content')
-    <div class="container vs-admin-incident-logs">
-        <div class="page-header">
-            <h1>Incident Logs</h1>
-            <p>Record, track, and manage security incidents and system issues.</p>
-        </div>
+    <div class="vs-page vs-admin-incident-logs">
+        <x-ui.page-header title="Incident Logs" subtitle="Record, track, and manage security incidents and system issues.">
+            <x-slot:action>
+                <button class="admin-btn admin-btn-primary" id="logIncidentBtn">+ Log Incident</button>
+            </x-slot:action>
+        </x-ui.page-header>
 
         {{-- Stats (values are refreshed in place by incident-logs.js after each change) --}}
-        <div class="incident-stats-row">
-            <div class="incident-stat-card open">
-                <strong data-stat="open">{{ $stats['open'] }}</strong>
-                <span>Open / Investigating</span>
-            </div>
-            <div class="incident-stat-card resolved">
-                <strong data-stat="resolved">{{ $stats['resolved'] }}</strong>
-                <span>Resolved / Closed</span>
-            </div>
-            <div class="incident-stat-card critical">
-                <strong data-stat="critical">{{ $stats['critical'] }}</strong>
-                <span>Critical (Unresolved)</span>
-            </div>
-            <div class="incident-stat-card total">
-                <strong data-stat="total">{{ $stats['total'] }}</strong>
-                <span>Total Incidents</span>
-            </div>
-        </div>
-
-        {{-- Log Incident Button --}}
-        <div style="margin-bottom: 20px;">
-            <button class="admin-btn admin-btn-primary" id="logIncidentBtn">+ Log Incident</button>
+        <div class="vs-stat-grid">
+            <x-ui.stat-card :value="$stats['open']" label="Open / Investigating" dot="warning" stat="open" />
+            <x-ui.stat-card :value="$stats['resolved']" label="Resolved / Closed" dot="success" stat="resolved" />
+            <x-ui.stat-card :value="$stats['critical']" label="Critical (Unresolved)" dot="danger" stat="critical" />
+            <x-ui.stat-card :value="$stats['total']" label="Total Incidents" stat="total" />
         </div>
 
         @if(session('success'))
@@ -43,9 +27,9 @@
         @endif
 
         {{-- Table --}}
-        <div class="table-container">
-            <div class="table-wrapper">
-                <table class="incident-table">
+        <div class="vs-table-frame">
+            <div class="vs-table-wrap" role="region" tabindex="0" aria-label="Incident logs table">
+                <table class="vs-table">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -55,7 +39,7 @@
                             <th>Detected</th>
                             <th>Resolved</th>
                             <th>Reported By</th>
-                            <th>Actions</th>
+                            <th class="vs-cell-actions">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="incidentRowsBody">
@@ -63,7 +47,7 @@
                     </tbody>
                 </table>
             </div>
-            <div style="margin-top: 16px;" id="incidentPagination">
+            <div id="incidentPagination">
                 {{ $incidents->links() }}
             </div>
         </div>

@@ -10,6 +10,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const packages = {};
 
+    // Branded placeholder for packages with no photo, or when a photo fails to load.
+    const PACKAGE_FALLBACK = "/images/package_placeholder.svg";
+
     // Pending delete state for confirm modal
     let pendingDelete = null;
 
@@ -181,9 +184,9 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("modalPrice").textContent = formatPrice(data.price);
 
         const images = [
-            data.image_path || "/images/default_package.jpg",
-            data.image_2_path || data.image_path || "/images/default_package.jpg",
-            data.image_3_path || data.image_path || "/images/default_package.jpg"
+            data.image_path || PACKAGE_FALLBACK,
+            data.image_2_path || data.image_path || PACKAGE_FALLBACK,
+            data.image_3_path || data.image_path || PACKAGE_FALLBACK
         ];
         
         document.getElementById("modalMainImage").src = images[0];
@@ -218,22 +221,32 @@ document.addEventListener("DOMContentLoaded", function () {
         wrapper.className = "package-card";
         wrapper.dataset.package = data.name;
 
-        const image = data.image_path || "/images/default_package.jpg";
+        const image = data.image_path || PACKAGE_FALLBACK;
         const description = data.description || "No description available";
         const truncatedDesc = description.length > 80 ? description.substring(0, 80) + "..." : description;
 
         wrapper.innerHTML = `
-            <img src="${image}" alt="${data.name}" onerror="this.src='/images/default_package.jpg'">
+            <img src="${image}" alt="${data.name}" data-package-image class="${data.image_path ? '' : 'is-fallback'}">
             <div class="package-content">
                 <h3>${data.name}</h3>
                 <div class="package-details">
                     <p class="package-description">${truncatedDesc}</p>
                     <p class="package-price">${formatPrice(data.price)}</p>
                 </div>
-                <div class="buttons-row">
-                    <button type="button" class="admin-btn admin-btn-primary admin-btn-sm view-package">View Package</button>
-                    <button type="button" class="admin-btn admin-btn-ghost admin-btn-sm edit-btn">Edit</button>
-                    <button type="button" class="admin-btn admin-btn-danger admin-btn-sm delete-btn">Delete</button>
+                <div class="vs-admin-dashboard__card-actions">
+                    <div class="vs-row-actions">
+                        <button type="button" class="vs-row-actions__view view-package">View</button>
+                        <div class="vs-overflow" data-overflow>
+                            <button type="button" class="vs-overflow__toggle" data-overflow-toggle aria-haspopup="menu" aria-expanded="false" aria-label="Package actions">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+                            </button>
+                            <div class="vs-overflow__menu" data-overflow-menu role="menu" hidden>
+                                <button type="button" class="vs-overflow__item edit-btn">Edit</button>
+                                <div class="vs-overflow__separator"></div>
+                                <button type="button" class="vs-overflow__item vs-overflow__item--danger delete-btn">Delete</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -425,11 +438,18 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Global error handler for images
+    // Swap any package photo that fails to load for the branded placeholder.
+    // Scoped to package images so unrelated page images are left alone.
     document.addEventListener('error', function(e) {
-        if (e.target.tagName === 'IMG') {
-            e.target.src = '/images/default_package.jpg';
-        }
+        const img = e.target;
+        if (!img || img.tagName !== 'IMG') return;
+        const PACKAGE_IMAGE_IDS = ['modalMainImage', 'modalImg1', 'modalImg2', 'modalImg3', 'currentMainImage', 'currentImage2', 'currentImage3'];
+        const isPackageImage = img.hasAttribute('data-package-image') || PACKAGE_IMAGE_IDS.indexOf(img.id) !== -1;
+        if (!isPackageImage || img.dataset.fallbackApplied === 'true') return;
+        img.dataset.fallbackApplied = 'true';
+        if (img.getAttribute('src') === PACKAGE_FALLBACK) return;
+        img.src = PACKAGE_FALLBACK;
+        img.classList.add('is-fallback');
     }, true);
 
     // Clear every file input in the shared edit modal.
@@ -468,7 +488,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!container) return null;
 
         const row = document.createElement("div");
-        row.className = "input-group mb-2";
+        row.className = "vs-inclusion-row mb-2";
         row.innerHTML = `
             <input type="text" name="inclusions[]" class="form-control" placeholder="Enter inclusion">
             <button type="button" class="admin-btn admin-btn-danger admin-btn-sm remove-inclusion">Remove</button>
@@ -512,7 +532,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Handle remove inclusion for existing inputs (delegated)
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('remove-inclusion')) {
-            e.target.closest('.input-group').remove();
+            e.target.closest('.vs-inclusion-row').remove();
         }
     });
 

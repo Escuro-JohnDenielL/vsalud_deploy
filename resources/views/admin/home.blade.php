@@ -3,28 +3,35 @@
 @section('title', 'Admin Dashboard')
 
 @section('content')
-<div class="vs-admin-dashboard">
+<div class="vs-page vs-admin-dashboard">
 
-{{-- Promotional Banner --}}
-<section class="banner-container vs-admin-dashboard__banner">
-    <div class="banner text-center text-white fw-bold py-4">
-        Big events, bigger savings! Grab our special deals for weddings, birthdays, and more!
-    </div>
-</section>
-
+<x-ui.page-header
+    title="Packages"
+    subtitle="Create and manage the packages shown to patrons.">
+    <x-slot:action>
+        <button type="button" id="addPackageBtn" class="admin-btn admin-btn-primary" data-bs-toggle="modal" data-bs-target="#addPackageModal">+ Add New Package</button>
+    </x-slot:action>
+</x-ui.page-header>
 
 {{-- Package Cards --}}
 <section class="packages-grid vs-admin-dashboard__packages-grid" id="packagesContainer">
     @forelse($packages as $package)
     <div class="package-card" data-package="{{ $package->name }}" data-id="{{ $package->id }}">
-        <img src="{{ asset(ltrim($package->image_path ?? 'images/default_package.jpg', '/')) }}" alt="{{ $package->name }}">
+        <img src="{{ asset(ltrim($package->image_path ?: 'images/package_placeholder.svg', '/')) }}" alt="{{ $package->name }}" data-package-image class="{{ $package->image_path ? '' : 'is-fallback' }}">
         <div class="package-content">
             <h3>{{ $package->name }}</h3>
             <div class="package-details"></div>
-            <div class="buttons-row">
-                <button type="button" class="admin-btn admin-btn-primary admin-btn-sm view-package">View Package</button>
-                <button type="button" class="admin-btn admin-btn-ghost admin-btn-sm edit-btn">Edit</button>
-                <button type="button" class="admin-btn admin-btn-danger admin-btn-sm delete-btn">Delete</button>
+            <div class="vs-admin-dashboard__card-actions">
+                <x-ui.row-actions label="Package actions">
+                    <x-slot:view>
+                        <button type="button" class="vs-row-actions__view view-package">View</button>
+                    </x-slot:view>
+                    <x-slot:menu>
+                        <button type="button" class="vs-overflow__item edit-btn">Edit</button>
+                        <div class="vs-overflow__separator"></div>
+                        <button type="button" class="vs-overflow__item vs-overflow__item--danger delete-btn">Delete</button>
+                    </x-slot:menu>
+                </x-ui.row-actions>
             </div>
         </div>
     </div>
@@ -34,11 +41,6 @@
     </div>
     @endforelse
 </section>
-
-{{-- Add New Package Button --}}
-<div class="add-package-container text-center mt-4 mb-4">
-    <button id="addPackageBtn" class="add-package-btn admin-btn admin-btn-primary" data-bs-toggle="modal" data-bs-target="#addPackageModal">+ Add New Package</button>
-</div>
 
 {{-- View Package Modal --}}
 <div class="modal fade" id="packageModal" tabindex="-1" aria-labelledby="packageModalLabel" aria-hidden="true">
@@ -128,6 +130,7 @@
                             <img id="currentImage3" src="" alt="Current Image 3" class="img-fluid rounded mb-2 vs-admin-dashboard__edit-image vs-admin-dashboard__edit-image--optional">
                             <input type="file" id="editPackageImage3" class="form-control" accept="image/*">
                         </div>
+                        <p class="vs-admin-dashboard__field-note">Use a landscape photo without text, at least 1200px wide.</p>
                     </div>
                     <p class="text-muted mb-0 vs-admin-dashboard__edit-note"><small>Leave a photo field empty to keep the package's current photo. Only the slots where you pick a new file are replaced.</small></p>
                 </div>
@@ -141,7 +144,7 @@
 </div>
 
 {{-- Add Package Modal --}}
-<div class="modal fade" id="addPackageModal" tabindex="-1" aria-labelledby="addPackageModalLabel" aria-hidden="true">
+<div class="modal fade vs-admin-dashboard__add-modal" id="addPackageModal" tabindex="-1" aria-labelledby="addPackageModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -164,24 +167,25 @@
                         <label class="form-label">Description</label>
                         <textarea name="description" id="newPackageDescription" class="form-control" rows="3"></textarea>
                     </div>
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Package Image</label>
+                    <div class="vs-admin-dashboard__add-media">
+                        <div class="mb-3">
+                            <label class="form-label" for="newPackageImage">Package Image</label>
                             <input type="file" name="image" id="newPackageImage" class="form-control" accept="image/*" required>
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Image 2 (Optional)</label>
+                        <div class="mb-3">
+                            <label class="form-label" for="newPackageImage2">Image 2 (Optional)</label>
                             <input type="file" name="image2" id="newPackageImage2" class="form-control" accept="image/*">
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Image 3 (Optional)</label>
+                        <div class="mb-3">
+                            <label class="form-label" for="newPackageImage3">Image 3 (Optional)</label>
                             <input type="file" name="image3" id="newPackageImage3" class="form-control" accept="image/*">
                         </div>
+                        <p class="vs-admin-dashboard__field-note">Use a landscape photo without text, at least 1200px wide.</p>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Package Inclusions</label>
                         <div id="inclusionsContainer">
-                            <div class="input-group mb-2">
+                            <div class="vs-inclusion-row mb-2">
                                 <input type="text" name="inclusions[]" class="form-control" placeholder="Enter inclusion">
                                 <button type="button" class="admin-btn admin-btn-danger admin-btn-sm remove-inclusion">Remove</button>
                             </div>

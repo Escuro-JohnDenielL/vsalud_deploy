@@ -851,8 +851,13 @@ textarea:focus,
 
 .modal.show .modal-header .btn-close {
   position: absolute;
-  top: 14px;
-  right: 18px;
+  top: 6px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
   font-size: 24px;
   font-weight: normal;
   color: var(--color-text-muted);
@@ -861,13 +866,12 @@ textarea:focus,
   opacity: 1;
   line-height: 1;
   padding: 0;
-  width: auto;
-  height: auto;
+  cursor: pointer;
   box-shadow: none;
 }
 
 .modal.show .modal-header .btn-close::before {
-  content: "";
+  content: "\00d7";
   font-size: 24px;
 }
 
@@ -894,8 +898,8 @@ textarea:focus,
   max-width: 420px;
 }
 
-/* Keep the package editor wide and centered over the full admin viewport. */
-body.vs-layout--admin .vs-admin-dashboard__edit-modal.modal.show {
+/* Keep the package Add and Edit modals wide and centered over the full admin viewport. */
+body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__add-modal).modal.show {
   position: fixed;
   inset: 0;
   display: flex;
@@ -904,19 +908,19 @@ body.vs-layout--admin .vs-admin-dashboard__edit-modal.modal.show {
   padding: var(--vs-space-4);
 }
 
-body.vs-layout--admin .vs-admin-dashboard__edit-modal.modal.show > .modal-dialog {
+body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__add-modal).modal.show > .modal-dialog {
   width: min(1000px, calc(100vw - var(--vs-space-8)));
   max-width: none;
   margin: 0;
 }
 
-body.vs-layout--admin .vs-admin-dashboard__edit-modal.modal.show > .modal-dialog > .modal-content {
+body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__add-modal).modal.show > .modal-dialog > .modal-content {
   width: 100%;
   max-width: none;
 }
 
 @media (max-width: 768px) {
-  body.vs-layout--admin .vs-admin-dashboard__edit-modal.modal.show > .modal-dialog {
+  body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__add-modal).modal.show > .modal-dialog {
     width: calc(100vw - var(--vs-space-6));
   }
 }
@@ -960,7 +964,7 @@ body.vs-layout--admin .vs-admin-dashboard__edit-modal.modal.show > .modal-dialog
 }
 
 /* Collapse the patron nav into a hamburger menu on smaller viewports */
-@media (max-width: 1200px) {
+@media (max-width: 991.98px) {
   body.nav-js .nav-collapsible {
     flex-wrap: wrap;
     min-height: var(--navbar-height);
@@ -1078,12 +1082,8 @@ body.vs-layout--admin .vs-admin-dashboard__edit-modal.modal.show > .modal-dialog
   background: transparent;
 }
 
-@media (min-width: 1201px) {
-  .vs-layout--patron .vs-patron-nav,
-  .vs-layout--patron .vs-patron-nav > .nav-links {
-    justify-content: center;
-  }
-}
+/* Links sit left, right after the brand; the booking actions are pushed to the
+   right edge with an auto margin on the outline button. */
 
 .vs-layout--admin .vs-admin-nav a,
 .vs-layout--patron .vs-patron-nav a {
@@ -1156,6 +1156,285 @@ body.vs-layout--admin .vs-admin-dashboard__edit-modal.modal.show > .modal-dialog
 .vs-layout--admin .vs-admin-nav .nav-dropdown-menu a.active:focus-visible,
 .vs-layout--patron .vs-patron-nav .nav-dropdown-menu a.active:focus-visible {
   outline-color: var(--vs-focus-on-dark);
+}
+
+/* ============================================================
+   Navigation revamp (batch 1): grouped dropdowns, current-page
+   marker, admin account menu, patron brand and primary CTA.
+   Uses existing landing-derived tokens only.
+   ============================================================ */
+
+/* Subtle fade for dropdown groups (admin and patron). No slide. */
+@keyframes vs-dropdown-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.vs-layout--admin .vs-admin-nav .nav-dropdown.open > .nav-dropdown-menu,
+.vs-layout--patron .vs-patron-nav .nav-dropdown.open > .nav-dropdown-menu {
+  animation: vs-dropdown-fade var(--vs-duration-base) ease-out both;
+}
+
+/* Current page inside a dropdown: subtle left bar plus bold text. */
+.vs-layout--admin .vs-admin-nav .nav-dropdown-menu a,
+.vs-layout--patron .vs-patron-nav .nav-dropdown-menu a {
+  position: relative;
+}
+
+.vs-layout--admin .vs-admin-nav .nav-dropdown-menu a.active,
+.vs-layout--admin .vs-admin-nav .nav-dropdown-menu a.active:hover,
+.vs-layout--patron .vs-patron-nav .nav-dropdown-menu a.active,
+.vs-layout--patron .vs-patron-nav .nav-dropdown-menu a.active:hover {
+  background: var(--vs-color-pale-green);
+  color: var(--vs-color-deep-green);
+  font-weight: var(--vs-weight-semibold);
+}
+
+.vs-layout--admin .vs-admin-nav .nav-dropdown-menu a.active::before,
+.vs-layout--patron .vs-patron-nav .nav-dropdown-menu a.active::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 7px;
+  bottom: 7px;
+  width: 3px;
+  border-radius: var(--vs-radius-pill);
+  background: var(--vs-color-emerald);
+}
+
+.vs-layout--admin .vs-admin-nav .nav-dropdown-menu a.active:focus-visible,
+.vs-layout--patron .vs-patron-nav .nav-dropdown-menu a.active:focus-visible {
+  outline-color: var(--vs-focus-on-light);
+}
+
+/* Admin nav: links row fills the bar; account menu pinned far right. */
+.vs-layout--admin .vs-admin-nav > .vs-admin-nav__links {
+  flex: 1;
+  justify-content: center;
+}
+
+.vs-layout--admin .vs-admin-nav .vs-account-menu {
+  margin-left: auto;
+}
+
+.vs-layout--admin .vs-admin-nav .vs-account-toggle {
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--vs-radius-pill);
+  background: transparent;
+  color: var(--vs-color-deep-green);
+}
+
+.vs-layout--admin .vs-admin-nav .vs-account-toggle:hover {
+  background: var(--vs-color-pale-green);
+}
+
+.vs-layout--admin .vs-avatar {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--vs-color-dark-green);
+  color: var(--vs-color-white);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-secondary-min);
+  font-weight: var(--vs-weight-semibold);
+  letter-spacing: 0.5px;
+}
+
+.vs-layout--admin .vs-account-menu.active > .vs-account-toggle {
+  background: var(--vs-color-pale-green);
+}
+
+.vs-layout--admin .vs-account-menu > .nav-dropdown-menu {
+  left: auto;
+  right: 0;
+  transform: none;
+  min-width: 230px;
+}
+
+.vs-layout--admin .vs-account-menu__header {
+  padding: var(--vs-space-2) var(--vs-space-3);
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-secondary-min);
+  font-weight: var(--vs-weight-medium);
+  white-space: nowrap;
+}
+
+.vs-layout--admin .vs-account-menu__divider {
+  height: 1px;
+  margin: var(--vs-space-1) 0;
+  background: var(--color-border);
+}
+
+.vs-layout--admin .vs-account-menu form {
+  margin: 0;
+}
+
+.vs-layout--admin .vs-account-menu .admin-logout-button {
+  display: block;
+  width: 100%;
+  padding: var(--vs-space-2) var(--vs-space-3);
+  border: 1px solid transparent;
+  border-radius: var(--vs-radius-control);
+  background: transparent;
+  color: var(--vs-status-danger-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-medium);
+  text-align: start;
+  cursor: pointer;
+}
+
+.vs-layout--admin .vs-account-menu .admin-logout-button:hover {
+  background: var(--vs-status-danger-bg);
+  color: var(--vs-status-danger-text);
+}
+
+/* Patron nav: brand and links on the left, booking actions on the right. */
+.vs-layout--patron .vs-patron-nav {
+  justify-content: space-between;
+  gap: var(--vs-space-3);
+}
+
+/* Brand: reuse the landing-page logo markup, recolored for the light nav. */
+.vs-layout--patron .vs-patron-nav a.landing-logo,
+.vs-layout--patron .vs-patron-nav a.landing-logo:hover {
+  flex: 0 0 auto;
+  padding: 4px;
+  background: transparent;
+  color: var(--vs-color-dark-green);
+}
+
+.vs-layout--patron .vs-patron-nav .landing-logo__mark {
+  width: 40px;
+  height: 40px;
+  border-color: var(--vs-color-control-border);
+  color: var(--vs-color-dark-green);
+  font-size: 15px;
+}
+
+.vs-layout--patron .vs-patron-nav .landing-logo__name {
+  color: var(--vs-color-dark-green);
+  letter-spacing: 3px;
+}
+
+/* Links sit directly after the brand, aligned left (not centered). */
+.vs-layout--patron .vs-patron-nav > .nav-links {
+  justify-content: flex-start;
+}
+
+/* Right cluster: outline Track Booking, then the filled Make Reservation. */
+.vs-layout--patron .vs-patron-nav a.vs-nav-track,
+.vs-layout--patron .vs-patron-nav a.vs-nav-track:focus {
+  display: inline-flex;
+  flex: 0 0 auto;
+  margin-left: auto;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  border: 1px solid var(--vs-button-secondary-border);
+  border-radius: var(--vs-radius-pill);
+  background: var(--vs-button-secondary-bg);
+  color: var(--vs-button-secondary-text);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-semibold);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.vs-layout--patron .vs-patron-nav a.vs-nav-track:hover {
+  background: var(--vs-button-secondary-hover-bg);
+  border-color: var(--vs-button-secondary-hover-border);
+  color: var(--vs-button-secondary-hover-text);
+}
+
+/* Track Booking lives in the collapsed panel on small screens, so hide the
+   in-bar outline button by default here (desktop) and reveal the menu item. */
+.vs-layout--patron .vs-nav-menu-only {
+  display: none;
+}
+
+.vs-layout--patron .vs-patron-nav .nav-dropdown.active > .nav-dropdown-toggle,
+.vs-layout--patron .vs-patron-nav .nav-dropdown.active > .nav-dropdown-toggle:hover {
+  background: var(--vs-color-dark-green);
+  color: var(--vs-color-white);
+  font-weight: var(--vs-weight-semibold);
+}
+
+.vs-layout--patron .vs-patron-nav a.vs-nav-cta,
+.vs-layout--patron .vs-patron-nav a.vs-nav-cta:focus {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 8px 20px;
+  border: 1px solid var(--vs-button-primary-border);
+  border-radius: var(--vs-radius-pill);
+  background: var(--vs-button-primary-bg);
+  color: var(--vs-button-primary-text);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-semibold);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.vs-layout--patron .vs-patron-nav a.vs-nav-cta:hover {
+  background: var(--vs-button-primary-hover-bg);
+  border-color: var(--vs-button-primary-hover-border);
+  color: var(--vs-button-primary-hover-text);
+}
+
+/* Patron nav below 992px: dropdown groups expand inline in the panel. */
+@media (max-width: 991.98px) {
+  body.nav-js.vs-layout--patron .vs-patron-nav {
+    justify-content: space-between;
+  }
+
+  body.nav-js.vs-layout--patron .vs-patron-nav .vs-nav-cta {
+    margin-left: auto;
+  }
+
+  /* Track Booking moves into the collapsed panel on small screens. */
+  .vs-layout--patron .vs-patron-nav a.vs-nav-track {
+    display: none;
+  }
+
+  body.nav-js.vs-layout--patron .vs-patron-nav .nav-dropdown-menu {
+    position: static;
+    left: auto;
+    top: auto;
+    transform: none;
+    min-width: 0;
+    margin: var(--vs-space-1) 0 var(--vs-space-2);
+    box-shadow: none;
+    display: none !important;
+  }
+
+  body.nav-js.vs-layout--patron .vs-patron-nav .nav-dropdown.open > .nav-dropdown-menu {
+    display: flex !important;
+  }
+
+  body.nav-js.vs-layout--patron .vs-patron-nav .nav-dropdown-menu a {
+    padding-left: var(--vs-space-5) !important;
+  }
+}
+
+/* Below 576px the two-line wordmark collapses to just the monogram. */
+@media (max-width: 575.98px) {
+  .vs-layout--patron .vs-patron-nav .landing-logo__name {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-layout--admin .vs-admin-nav .nav-dropdown.open > .nav-dropdown-menu,
+  .vs-layout--patron .vs-patron-nav .nav-dropdown.open > .nav-dropdown-menu {
+    animation: none;
+  }
 }
 
 .vs-layout--admin #toast.toast-notification,
@@ -1287,7 +1566,7 @@ body.vs-layout--admin .vs-admin-dashboard__edit-modal.modal.show > .modal-dialog
   }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 991.98px) {
   .vs-layout--patron:not(.nav-js) .vs-patron-nav {
     height: auto;
     min-height: var(--navbar-height);
@@ -1763,9 +2042,9 @@ body.vs-layout--admin .vs-admin-dashboard__edit-modal.modal.show > .modal-dialog
 }
 
 /* === Scoped baseline for legacy page elements === */
-.vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close),
+.vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-row-actions__view):not(.vs-overflow__toggle):not(.vs-overflow__item):not(.preset-btn),
 .vs-layout--admin .btn,
-.vs-layout--patron button:not(.close-btn):not(.btn-close),
+.vs-layout--patron button:not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button),
 .vs-layout--patron .btn,
 .vs-layout--admin-auth button:not(.close-btn):not(.btn-close),
 .vs-layout--admin-auth .btn {
@@ -1781,9 +2060,9 @@ body.vs-layout--admin .vs-admin-dashboard__edit-modal.modal.show > .modal-dialog
   transition: background-color var(--vs-duration-fast), border-color var(--vs-duration-fast), box-shadow var(--vs-duration-fast), color var(--vs-duration-fast);
 }
 
-.vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close):hover,
+.vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-row-actions__view):not(.vs-overflow__toggle):not(.vs-overflow__item):not(.preset-btn):hover,
 .vs-layout--admin .btn:hover,
-.vs-layout--patron button:not(.close-btn):not(.btn-close):not(.btn-submit):hover,
+.vs-layout--patron button:not(.close-btn):not(.btn-close):not(.btn-submit):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):hover,
 .vs-layout--patron .btn:hover,
 .vs-layout--admin-auth button:not(.close-btn):not(.btn-close):hover,
 .vs-layout--admin-auth .btn:hover {

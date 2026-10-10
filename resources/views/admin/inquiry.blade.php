@@ -7,88 +7,92 @@
 @endpush
 
 @section('content')
-    <div class="container vs-admin-inquiry">
-        <div class="page-header">
-            <h1>View Inquiries</h1>
-            <p>View and manage customer inquiries.</p>
-        </div>
+    <div class="vs-page vs-admin-inquiry">
+        <x-ui.page-header title="Inquiries" subtitle="View and manage customer inquiries." />
 
-        <div class="table-container vs-inquiry-table-container">
-            <div class="table-wrapper">
-                <div class="vs-table-wrap" role="region" tabindex="0" aria-label="Inquiries table">
-                <table class="inquiry-table vs-table">
+        <div class="vs-table-frame">
+            <div class="vs-table-wrap" role="region" tabindex="0" aria-label="Inquiries table">
+                <table class="vs-table inquiry-table">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Contact Number</th>
-                            <th>Tracking Code</th>
-                            <th>Time</th>
-                            <th>Date</th>
+                            <th>Patron</th>
+                            <th>Code</th>
+                            <th>Event date</th>
                             <th>Venue</th>
                             <th>Event Type</th>
-                            <th>Theme and Motif</th>
+                            <th>Theme</th>
                             <th>Status</th>
-                            <th>Submitted By</th>
-                            <th>Actions</th>
+                            <th class="vs-cell-actions">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($inquiries as $index => $inquiry)
+                            @php
+                                $inqName = $inquiry->patron->name ?? 'None';
+                                $inqEmail = $inquiry->patron->email ?? 'None';
+                                $inqContact = $inquiry->patron->contact_number ?? 'None';
+                                $inqVenue = ($inquiry->venue === 'Others' ? $inquiry->other_venue : $inquiry->venue) ?? 'None';
+                                $inqEventType = ($inquiry->event_type === 'Others' ? $inquiry->other_event_type : $inquiry->event_type) ?? 'None';
+                                $inqTheme = ($inquiry->theme_motif === 'Others' ? $inquiry->other_theme_motif : $inquiry->theme_motif) ?? 'None';
+                            @endphp
                             <tr class="vs-table__row" data-inquiry-id="{{ $inquiry->inquiry_id }}">
-                                <td>{{ $inquiry->patron->name ?? 'N/A' }}</td>
-                                <td>{{ $inquiry->patron->email ?? '-' }}</td>
-                                <td>{{ $inquiry->patron->contact_number ?? '-' }}</td>
-                                <td><strong>{{ $inquiry->tracking_code ?? '-' }}</strong></td>
-                                <td>{{ $inquiry->time ?? '-' }}</td>
-                                <td>{{ $inquiry->date ?? '-' }}</td>
-                                <td>{{ ($inquiry->venue === 'Others' ? $inquiry->other_venue : $inquiry->venue) ?? '-' }}</td>
-                                <td>{{ ($inquiry->event_type === 'Others' ? $inquiry->other_event_type : $inquiry->event_type) ?? '-' }}</td>
-                                <td>{{ ($inquiry->theme_motif === 'Others' ? $inquiry->other_theme_motif : $inquiry->theme_motif) ?? '-' }}</td>
                                 <td>
-                                    <select class="status-dropdown vs-status-select" data-index="{{ $index }}">
-                                        <option value="" {{ $inquiry->status == null ? 'selected hidden' : 'hidden' }}>Set Status</option>
-                                        <option value="Pending" {{ $inquiry->status === 'Pending' ? 'selected' : '' }}>Pending</option>
-                                        <option value="In Progress" {{ $inquiry->status === 'In Progress' ? 'selected' : '' }}>In Progress</option>
-                                        <option value="Completed" {{ $inquiry->status === 'Completed' ? 'selected' : '' }}>Completed</option>
-                                        <option value="Cancelled" {{ $inquiry->status === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
-                                    </select>
+                                    <strong>{{ $inqName }}</strong>
+                                    <br><span class="vs-cell-truncate vs-none" title="{{ $inqEmail }}">{{ $inqEmail }}</span>
+                                    <br><span class="vs-none">{{ $inqContact }}</span>
                                 </td>
-                                <td>patron</td>
-                                <td class="vs-table__actions">
-                                    <div class="action-buttons vs-table__action-list">
-                                        <button class="admin-btn admin-btn-ghost admin-btn-sm vs-btn vs-btn--secondary vs-btn--sm view-inquiry-btn"
-                                            data-name="{{ $inquiry->patron->name ?? 'N/A' }}"
-                                            data-email="{{ $inquiry->patron->email ?? '-' }}"
-                                            data-contact="{{ $inquiry->patron->contact_number ?? '-' }}"
-                                            data-code="{{ $inquiry->tracking_code ?? '-' }}"
-                                            data-time="{{ $inquiry->time ?? '-' }}"
-                                            data-date="{{ $inquiry->date ?? '-' }}"
-                                            data-venue="{{ ($inquiry->venue === 'Others' ? $inquiry->other_venue : $inquiry->venue) ?? '-' }}"
-                                            data-event-type="{{ ($inquiry->event_type === 'Others' ? $inquiry->other_event_type : $inquiry->event_type) ?? '-' }}"
-                                            data-theme="{{ ($inquiry->theme_motif === 'Others' ? $inquiry->other_theme_motif : $inquiry->theme_motif) ?? '-' }}"
-                                            data-status="{{ $inquiry->status ?? 'Pending' }}"
-                                            data-message="{{ $inquiry->message ?? '' }}">View</button>
-                                        <button class="admin-btn admin-btn-primary admin-btn-sm vs-btn vs-btn--primary vs-btn--sm reply-btn"
-                                            data-inquiry-id="{{ $inquiry->inquiry_id }}"
-                                            data-email="{{ $inquiry->patron->email ?? '-' }}"
-                                            data-status="{{ $inquiry->status ?? 'Pending' }}">Reply</button>
-                                    </div>
+                                <td class="vs-cell-nowrap"><strong>{{ $inquiry->tracking_code ?? 'None' }}</strong></td>
+                                <td class="vs-cell-nowrap">
+                                    {{ $inquiry->date ? vs_date($inquiry->date) : 'None' }}
+                                    <br><span class="vs-none">{{ $inquiry->time ? vs_time($inquiry->time) : 'None' }}</span>
+                                </td>
+                                <td>{{ $inqVenue }}</td>
+                                <td>{{ $inqEventType }}</td>
+                                <td>{{ $inqTheme }}</td>
+                                <td>
+                                    <x-ui.status-select
+                                        name="status"
+                                        :selected="$inquiry->status"
+                                        :options="['Pending' => 'Pending', 'In Progress' => 'In Progress', 'Completed' => 'Completed', 'Cancelled' => 'Cancelled']"
+                                        :variants="['Pending' => 'warning', 'In Progress' => 'info', 'Completed' => 'success', 'Cancelled' => 'danger']"
+                                        placeholder="Set Status"
+                                        class="status-dropdown"
+                                        data-index="{{ $index }}" />
+                                </td>
+                                <td class="vs-cell-actions">
+                                    <x-ui.row-actions>
+                                        <x-slot:view>
+                                            <button type="button" class="vs-row-actions__view view-inquiry-btn"
+                                                data-name="{{ $inqName }}"
+                                                data-email="{{ $inqEmail }}"
+                                                data-contact="{{ $inqContact }}"
+                                                data-code="{{ $inquiry->tracking_code ?? 'None' }}"
+                                                data-time="{{ $inquiry->time ? vs_time($inquiry->time) : 'None' }}"
+                                                data-date="{{ $inquiry->date ? vs_date($inquiry->date) : 'None' }}"
+                                                data-venue="{{ $inqVenue }}"
+                                                data-event-type="{{ $inqEventType }}"
+                                                data-theme="{{ $inqTheme }}"
+                                                data-status="{{ $inquiry->status ?? 'Pending' }}"
+                                                data-message="{{ $inquiry->message ?? '' }}">View</button>
+                                        </x-slot:view>
+                                        <x-slot:menu>
+                                            <button type="button" class="vs-overflow__item reply-btn"
+                                                data-inquiry-id="{{ $inquiry->inquiry_id }}"
+                                                data-email="{{ $inqEmail }}"
+                                                data-status="{{ $inquiry->status ?? 'Pending' }}">Reply</button>
+                                        </x-slot:menu>
+                                    </x-ui.row-actions>
                                 </td>
                             </tr>
                         @empty
-                            <tr class="vs-table__row">
-                                <td colspan="12" class="text-center">No inquiries found.</td>
-                            </tr>
+                            <x-ui.empty-row :colspan="8" message="No inquiries found." />
                         @endforelse
                     </tbody>
                 </table>
-                </div>
-            </div>
-            <div class="vs-inquiry-pagination">
-                {{ $inquiries->links() }}
             </div>
         </div>
+
+        {{ $inquiries->links() }}
     </div>
 
     {{-- View Inquiry Modal --}}

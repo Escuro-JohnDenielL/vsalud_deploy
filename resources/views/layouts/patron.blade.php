@@ -23,12 +23,90 @@
         <img src="{{ asset('images/background_picture.jpeg') }}" alt="Villa Salud Header" class="header-banner">
     </header>
 
-
-    <a href="{{ url('/') }}" class="site-home-btn" title="Back to Homepage">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    </a>
-
     <nav class="navbar nav-collapsible vs-patron-nav" aria-label="Main navigation">
+        <a href="{{ url('/') }}" class="landing-logo vs-patron-brand" aria-label="Villa Salud home">
+            <span class="landing-logo__mark">VS</span>
+            <span class="landing-logo__name"><small>VILLA</small><strong>SALUD</strong></span>
+        </a>
+
+        <ul class="navbar nav-links" id="patronNavLinks">
+            <li>
+                <a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">
+                    Home
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('patron.home') }}"
+                    class="{{ request()->routeIs('patron.home') ? 'active' : '' }}">
+                    Packages
+                </a>
+            </li>
+            <li class="nav-dropdown {{ request()->routeIs('patron.vreserve', 'patron.payment', 'patron.cancel-reservation') ? 'active' : '' }}">
+                <a class="nav-dropdown-toggle" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                    Manage Booking
+                    <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </a>
+                <ul class="nav-dropdown-menu">
+                    <li>
+                        <a href="{{ route('patron.vreserve') }}"
+                            class="{{ request()->routeIs('patron.vreserve') ? 'active' : '' }}">
+                            View Reservation
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('patron.payment') }}"
+                            class="{{ request()->routeIs('patron.payment') ? 'active' : '' }}">
+                            Payment Order
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('patron.cancel-reservation') }}"
+                            class="{{ request()->routeIs('patron.cancel-reservation') ? 'active' : '' }}">
+                            Cancel Reservation
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-dropdown {{ request()->routeIs('patron.guidelines', 'patron.faq', 'patron.feedback') ? 'active' : '' }}">
+                <a class="nav-dropdown-toggle" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                    Help
+                    <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </a>
+                <ul class="nav-dropdown-menu">
+                    <li>
+                        <a href="{{ route('patron.guidelines') }}"
+                            class="{{ request()->routeIs('patron.guidelines') ? 'active' : '' }}">
+                            Guidelines
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('patron.faq') }}" class="{{ request()->routeIs('patron.faq') ? 'active' : '' }}">
+                            FAQs
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url('/') }}#contact">Contact Us</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('patron.feedback') }}"
+                            class="{{ request()->routeIs('patron.feedback') ? 'active' : '' }}">
+                            Feedback
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="vs-nav-menu-only">
+                <a href="{{ route('patron.vreserve') }}"
+                    class="{{ request()->routeIs('patron.vreserve') ? 'active' : '' }}">
+                    Track Booking
+                </a>
+            </li>
+        </ul>
+
+        <a href="{{ route('patron.vreserve') }}" class="vs-nav-track">Track Booking</a>
+
+        <a href="{{ route('patron.mreserve') }}" class="vs-nav-cta">Make Reservation</a>
+
         <button type="button" class="nav-toggle" id="patronNavToggle"
                 aria-label="Toggle navigation menu" aria-controls="patronNavLinks"
                 aria-expanded="false">
@@ -36,55 +114,6 @@
             <span class="nav-toggle-bar"></span>
             <span class="nav-toggle-bar"></span>
         </button>
-        <ul class="navbar nav-links" id="patronNavLinks">
-            <li>
-                <a href="{{ route('patron.home') }}"
-                    class="{{ request()->routeIs('patron.home') ? 'active' : '' }}">
-                    Packages
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('patron.mreserve') }}"
-                    class="{{ request()->routeIs('patron.mreserve') ? 'active' : '' }}">
-                    Make Reservation
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('patron.vreserve') }}"
-                    class="{{ request()->routeIs('patron.vreserve') ? 'active' : '' }}">
-                    View Reservation
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('patron.cancel-reservation') }}"
-                    class="{{ request()->routeIs('patron.cancel-reservation') ? 'active' : '' }}">
-                    Cancel Reservation
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('patron.payment') }}"
-                    class="{{ request()->routeIs('patron.payment') ? 'active' : '' }}">
-                    Payment Order
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('patron.guidelines') }}"
-                    class="{{ request()->routeIs('patron.guidelines') ? 'active' : '' }}">
-                    Guidelines
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('patron.faq') }}" class="{{ request()->routeIs('patron.faq') ? 'active' : '' }}">
-                    FAQs
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('patron.feedback') }}"
-                    class="{{ request()->routeIs('patron.feedback') ? 'active' : '' }}">
-                    Feedback
-                </a>
-            </li>
-        </ul>
     </nav>
 
     {{-- Toast notification --}}

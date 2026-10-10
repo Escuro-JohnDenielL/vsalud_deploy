@@ -22,6 +22,7 @@ class CheckPagePermission
         'admin.reserve-logs'   => 'reserve-logs',
         'admin.report'         => 'reports',
         'admin.feedback'       => 'feedback',
+        'admin.feedback.destroy' => 'feedback',
         // Package CRUD
         'admin.packages.destroy' => 'packages',
         'admin.packages.store'   => 'packages',

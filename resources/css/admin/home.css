@@ -3,30 +3,6 @@
   font-family: var(--vs-font-ui);
 }
 
-.vs-admin-dashboard .banner-container {
-  display: flex;
-  justify-content: center;
-  padding: var(--vs-space-5) 0;
-}
-
-.vs-admin-dashboard .banner {
-  width: 100%;
-  padding: var(--vs-space-5) var(--vs-space-6);
-  border: 1px solid var(--vs-color-dark-green);
-  border-radius: var(--vs-radius-card);
-  background: var(--vs-color-dark-green);
-  color: var(--vs-color-white);
-  font-family: var(--vs-font-ui);
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  line-height: var(--vs-leading-normal);
-}
-
-.vs-admin-dashboard .add-package-container {
-  display: flex;
-  justify-content: center;
-  padding: var(--vs-space-4) 0;
-}
-
 .vs-admin-dashboard .packages-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
@@ -37,6 +13,7 @@
 
 .vs-admin-dashboard .package-card {
   display: flex;
+  width: 100%;
   min-width: 0;
   max-width: 420px;
   flex-direction: column;
@@ -55,7 +32,13 @@
 }
 
 .vs-admin-dashboard .package-card img {
-  width: 100%;
+  /* Bleed 14px past each side and let the card clip it, so square art with
+     transparent padding fills the band instead of showing empty corners.
+     Only the width is oversized, so nothing overlaps the card content. */
+  width: calc(100% + 28px);
+  max-width: none;
+  margin-left: -14px;
+  margin-right: -14px;
   height: 220px;
   flex-shrink: 0;
   object-fit: cover;
@@ -107,22 +90,29 @@
   font-weight: var(--vs-weight-bold);
 }
 
-.vs-admin-dashboard .buttons-row {
+.vs-admin-dashboard .vs-admin-dashboard__card-actions {
   display: flex;
-  flex-wrap: wrap;
-  align-items: stretch;
-  justify-content: space-between;
-  gap: var(--vs-space-2);
+  justify-content: flex-end;
   margin-top: var(--vs-space-4);
 }
 
-.vs-admin-dashboard .buttons-row .admin-btn {
-  min-width: 0;
-  min-height: 40px;
-  flex: 1 1 auto;
-  padding: var(--vs-space-2) var(--vs-space-3);
-  font-size: var(--vs-text-body-min);
-  white-space: normal;
+/* Branded placeholder used when a package has no photo or the photo fails to load.
+   The card band uses cover so it bleeds to the card edges; modal previews keep contain. */
+.vs-admin-dashboard .package-card img.is-fallback {
+  object-fit: cover;
+  background: var(--vs-color-surface-beige);
+}
+
+.vs-admin-dashboard .modal-content img.is-fallback {
+  object-fit: contain;
+  background: var(--vs-color-surface-beige);
+}
+
+.vs-admin-dashboard .vs-admin-dashboard__field-note {
+  margin: var(--vs-space-2) 0 0;
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-secondary-min);
+  line-height: var(--vs-leading-normal);
 }
 
 .vs-admin-dashboard .modal-content,
@@ -251,6 +241,45 @@
   font-size: var(--vs-text-secondary-min);
 }
 
+/* Add Package modal: full-width file fields and a scrollable body */
+.vs-admin-dashboard__add-modal .modal-body {
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+}
+
+.vs-admin-dashboard__add-media {
+  display: grid;
+  gap: var(--vs-space-3);
+}
+
+.vs-admin-dashboard__add-media > .mb-3 {
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.vs-admin-dashboard__add-media .form-control[type="file"] {
+  width: 100%;
+  min-width: 0;
+  padding: var(--vs-space-2);
+  font-size: var(--vs-text-secondary-min);
+}
+
+/* Inclusion rows: input plus a compact danger button (no input-group stretching) */
+.vs-admin-dashboard .vs-inclusion-row {
+  display: flex;
+  align-items: center;
+  gap: var(--vs-space-2);
+}
+
+.vs-admin-dashboard .vs-inclusion-row .form-control {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.vs-admin-dashboard .vs-inclusion-row .admin-btn {
+  flex: 0 0 auto;
+}
+
 .vs-admin-dashboard__edit-modal #editPackageForm .modal-body > .vs-admin-dashboard__edit-note {
   grid-column: 1 / -1;
 }
@@ -341,17 +370,8 @@
     width: min(100%, 440px);
   }
 
-  .vs-admin-dashboard .buttons-row {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  .vs-admin-dashboard .buttons-row .admin-btn {
-    width: 100%;
-  }
-
-  .vs-admin-dashboard .banner {
-    padding: var(--vs-space-4);
+  .vs-admin-dashboard .vs-admin-dashboard__card-actions {
+    justify-content: flex-start;
   }
 }
 

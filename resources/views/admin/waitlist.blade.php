@@ -108,48 +108,29 @@
 @endpush
 
 @section('content')
-    <div class="container vs-admin-waitlist">
-        <div class="page-header">
-            <h1>Waitlist</h1>
-            <p>Track patrons waiting for available dates. Read-only — entries are managed automatically.</p>
-        </div>
+    <div class="vs-page vs-admin-waitlist">
+        <x-ui.page-header title="Waitlist" subtitle="Track patrons waiting for available dates. Entries are managed automatically." />
 
-        <!-- Stats -->
-        <div class="stats-row">
-            <div class="stat-card waiting">
-                <span class="number">{{ $stats['waiting'] }}</span>
-                <span class="label">Waiting</span>
-            </div>
-            <div class="stat-card notified">
-                <span class="number">{{ $stats['notified'] }}</span>
-                <span class="label">Notified</span>
-            </div>
-            <div class="stat-card claimed">
-                <span class="number">{{ $stats['claimed'] }}</span>
-                <span class="label">Claimed</span>
-            </div>
-            <div class="stat-card expired">
-                <span class="number">{{ $stats['expired'] }}</span>
-                <span class="label">Expired</span>
-            </div>
-            <div class="stat-card">
-                <span class="number">{{ $stats['total'] }}</span>
-                <span class="label">Total</span>
-            </div>
+        <div class="vs-stat-grid">
+            <x-ui.stat-card :value="$stats['waiting']" label="Waiting" dot="warning" />
+            <x-ui.stat-card :value="$stats['notified']" label="Notified" dot="info" />
+            <x-ui.stat-card :value="$stats['claimed']" label="Claimed" dot="success" />
+            <x-ui.stat-card :value="$stats['expired']" label="Expired" dot="danger" />
+            <x-ui.stat-card :value="$stats['total']" label="Total" />
         </div>
 
         <!-- Waitlist entries grouped by date -->
-        <div class="table-container">
+        <div class="vs-table-frame">
             @if($grouped->isEmpty())
-                <div class="empty-state">
-                    <p>No waitlist entries yet.</p>
+                <div class="vs-empty">
+                    <p class="vs-empty__msg">No waitlist entries yet.</p>
                 </div>
             @else
-                @foreach($grouped as $date => $entries)
+                @foreach($grouped as $date => $waitEntries)
                     <div class="date-group">
-                        <div class="date-header">{{ $date }}</div>
+                        <div class="date-header">{{ vs_date($date) }}</div>
                         <div class="vs-table-wrap" role="region" tabindex="0" aria-label="Waitlist table for {{ $date }}">
-                        <table class="waitlist-table">
+                        <table class="vs-table">
                             <thead>
                                 <tr>
                                     <th>Patron Name</th>
@@ -161,24 +142,26 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($entries as $entry)
-                                    <tr>
-                                        <td>{{ $entry->patron_name }}</td>
-                                        <td>{{ $entry->patron_email }}</td>
+                                @foreach($waitEntries as $entry)
+                                    <tr class="vs-table__row">
+                                        <td>{{ $entry->patron_name ?? 'None' }}</td>
+                                        <td class="vs-cell-email">{{ $entry->patron_email ?? 'None' }}</td>
                                         <td>
                                             @if($entry->status === 'waiting')
-                                                <span class="badge-modern warning">Waiting</span>
+                                                <x-ui.badge variant="warning">Waiting</x-ui.badge>
                                             @elseif($entry->status === 'notified')
-                                                <span class="badge-modern success">Notified</span>
+                                                <x-ui.badge variant="info">Notified</x-ui.badge>
                                             @elseif($entry->status === 'claimed')
-                                                <span class="badge-modern success">Claimed</span>
+                                                <x-ui.badge variant="success">Claimed</x-ui.badge>
                                             @elseif($entry->status === 'expired')
-                                                <span class="badge-modern danger">Expired</span>
+                                                <x-ui.badge variant="danger">Expired</x-ui.badge>
+                                            @else
+                                                <span class="vs-none">None</span>
                                             @endif
                                         </td>
-                                        <td>{{ $entry->created_at->format('M d, Y g:i A') }}</td>
-                                        <td>{{ $entry->notified_at ? $entry->notified_at->format('M d, Y g:i A') : '—' }}</td>
-                                        <td>{{ $entry->claimed_at ? $entry->claimed_at->format('M d, Y g:i A') : '—' }}</td>
+                                        <td class="vs-cell-nowrap">{{ vs_datetime($entry->created_at) }}</td>
+                                        <td class="vs-cell-nowrap">{{ $entry->notified_at ? vs_datetime($entry->notified_at) : 'None' }}</td>
+                                        <td class="vs-cell-nowrap">{{ $entry->claimed_at ? vs_datetime($entry->claimed_at) : 'None' }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -188,8 +171,7 @@
                 @endforeach
             @endif
         </div>
-        <div style="margin-top: 16px; padding: 16px 20px;">
-            {{ $entries->links() }}
-        </div>
+
+        {{ $entries->links() }}
     </div>
 @endsection

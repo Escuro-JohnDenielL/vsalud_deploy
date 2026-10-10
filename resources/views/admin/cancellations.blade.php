@@ -7,15 +7,12 @@
 @endpush
 
 @section('content')
-    <div class="container vs-admin-cancellations">
-        <div class="page-header">
-            <h1>Cancellation Requests</h1>
-            <p>Review and manage patron cancellation requests.</p>
-        </div>
+    <div class="vs-page vs-admin-cancellations">
+        <x-ui.page-header title="Cancellation Requests" subtitle="Review and manage patron cancellation requests." />
 
-        <div class="table-container">
-            <div class="table-wrapper">
-                <table class="cancellation-table">
+        <div class="vs-table-frame">
+            <div class="vs-table-wrap" role="region" tabindex="0" aria-label="Cancellation requests table">
+                <table class="vs-table">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -26,61 +23,80 @@
                             <th>Reason</th>
                             <th>Status</th>
                             <th>Requested</th>
-                            <th>Actions</th>
+                            <th>Processed by</th>
+                            <th class="vs-cell-actions">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($requests as $req)
-                            <tr>
-                                <td>#{{ $req->id }}</td>
+                            <tr class="vs-table__row">
+                                <td class="vs-cell-nowrap">#{{ $req->id }}</td>
                                 <td>
-                                    {{ $req->reservation->patron->name ?? 'N/A' }}
-                                    <br><small style="color:#888;">{{ $req->patron_email }}</small>
+                                    {{ $req->reservation->patron->name ?? 'None' }}
+                                    <br><small class="vs-none">{{ $req->patron_email ?? 'None' }}</small>
                                 </td>
-                                <td>{{ $req->reservation->inquiry->tracking_code ?? $req->reservation->reserve_id ?? 'N/A' }}</td>
-                                <td>{{ $req->reservation->date ?? 'N/A' }}</td>
-                                <td>{{ $req->reservation->venue ?? 'N/A' }}</td>
-                                <td>{{ \Illuminate\Support\Str::limit($req->reason, 60) ?: '—' }}</td>
+                                <td class="vs-cell-nowrap">{{ $req->reservation->inquiry->tracking_code ?? $req->reservation->reserve_id ?? 'None' }}</td>
+                                <td class="vs-cell-nowrap">{{ vs_datetime($req->reservation->date ?? null) }}</td>
+                                <td>{{ $req->reservation->venue ?? 'None' }}</td>
                                 <td>
-                                    @if($req->status === 'pending')
-                                        <span class="badge-modern warning">Pending</span>
-                                    @elseif($req->status === 'approved')
-                                        <span class="badge-modern success">Approved</span>
-                                    @elseif($req->status === 'denied')
-                                        <span class="badge-modern danger">Denied</span>
+                                    @php($reason = $req->reason)
+                                    @if ($reason && \Illuminate\Support\Str::length($reason) > 60)
+                                        <details class="vs-reason">
+                                            <summary class="vs-reason__summary">{{ \Illuminate\Support\Str::limit($reason, 60) }}</summary>
+                                            <p class="vs-reason__full">{{ $reason }}</p>
+                                        </details>
+                                    @else
+                                        {{ $reason ?: 'None' }}
                                     @endif
                                 </td>
-                                <td>{{ $req->created_at->format('M d, Y g:i A') }}</td>
                                 <td>
                                     @if($req->status === 'pending')
-                                        <div class="action-buttons">
-                                            <button class="admin-btn admin-btn-primary admin-btn-sm btn-approve"
-                                                data-request-id="{{ $req->id }}">Approve</button>
-                                            <button class="admin-btn admin-btn-danger admin-btn-sm btn-deny"
-                                                data-request-id="{{ $req->id }}">Deny</button>
-                                        </div>
+                                        <x-ui.badge variant="warning">Pending</x-ui.badge>
+                                    @elseif($req->status === 'approved')
+                                        <x-ui.badge variant="success">Approved</x-ui.badge>
+                                    @elseif($req->status === 'denied')
+                                        <x-ui.badge variant="danger">Denied</x-ui.badge>
                                     @else
-                                        <span class="text-muted">
-                                            Processed by {{ $req->admin?->name ?? 'N/A' }}
-                                            @if($req->admin_note)
-                                                <br><small>"{{ \Illuminate\Support\Str::limit($req->admin_note, 40) }}"</small>
-                                            @endif
-                                        </span>
+                                        <span class="vs-none">None</span>
+                                    @endif
+                                </td>
+                                <td class="vs-cell-nowrap">{{ vs_datetime($req->created_at) }}</td>
+                                <td>
+                                    @if($req->status === 'pending')
+                                        <span class="vs-none">None</span>
+                                    @else
+                                        {{ $req->admin?->name ?? 'None' }}
+                                        @if($req->admin_note)
+                                            <br><small class="vs-none">{{ \Illuminate\Support\Str::limit($req->admin_note, 60) }}</small>
+                                        @endif
+                                    @endif
+                                </td>
+                                <td class="vs-cell-actions">
+                                    @if($req->status === 'pending')
+                                        <x-ui.row-actions>
+                                            <x-slot:view>
+                                                <button type="button" class="vs-row-actions__view btn-approve"
+                                                    data-request-id="{{ $req->id }}">Approve</button>
+                                            </x-slot:view>
+                                            <x-slot:menu>
+                                                <button type="button" class="vs-overflow__item vs-overflow__item--danger btn-deny"
+                                                    data-request-id="{{ $req->id }}">Deny</button>
+                                            </x-slot:menu>
+                                        </x-ui.row-actions>
+                                    @else
+                                        <span class="vs-none">None</span>
                                     @endif
                                 </td>
                             </tr>
                         @empty
-                            <tr>
-                                <td colspan="9" class="text-center">No cancellation requests found.</td>
-                            </tr>
+                            <x-ui.empty-row :colspan="10" message="No cancellation requests found." />
                         @endforelse
                     </tbody>
                 </table>
             </div>
-            <div style="margin-top: 16px;">
-                {{ $requests->links() }}
-            </div>
         </div>
+
+        {{ $requests->links() }}
     </div>
 
     {{-- Approve Modal --}}

@@ -7,30 +7,15 @@
 @endpush
 
 @section('content')
-    <div class="container vs-admin-audit-logs">
-        <div class="page-header">
-            <h1>Audit Logs</h1>
-            <p>Every action taken inside the admin panel. Entries are append-only and cannot be edited or deleted.</p>
-        </div>
+    <div class="vs-page vs-admin-audit-logs">
+        <x-ui.page-header title="Audit Logs" subtitle="Every action taken inside the admin panel. Entries are append-only and cannot be edited or deleted." />
 
         {{-- Summary counters (always over the whole trail, not the current filter) --}}
-        <div class="audit-stats-row">
-            <div class="audit-stat-card total">
-                <strong>{{ number_format($stats['total']) }}</strong>
-                <span>Total entries</span>
-            </div>
-            <div class="audit-stat-card today">
-                <strong>{{ number_format($stats['today']) }}</strong>
-                <span>Recorded today</span>
-            </div>
-            <div class="audit-stat-card security">
-                <strong>{{ number_format($stats['sensitive']) }}</strong>
-                <span>Auth &amp; security events</span>
-            </div>
-            <div class="audit-stat-card admins">
-                <strong>{{ number_format($stats['admins']) }}</strong>
-                <span>Admins on record</span>
-            </div>
+        <div class="vs-stat-grid">
+            <x-ui.stat-card :value="number_format($stats['total'])" label="Total entries" />
+            <x-ui.stat-card :value="number_format($stats['today'])" label="Recorded today" dot="success" />
+            <x-ui.stat-card :value="number_format($stats['sensitive'])" label="Auth and security events" dot="warning" />
+            <x-ui.stat-card :value="number_format($stats['admins'])" label="Admins on record" dot="info" />
         </div>
 
         {{-- Filters (plain GET form — every view has a shareable URL) --}}
@@ -85,7 +70,7 @@
         <div class="audit-meta">
             <span class="audit-meta-count">
                 @if($logs->total())
-                    Showing {{ $logs->firstItem() }}–{{ $logs->lastItem() }} of {{ number_format($logs->total()) }}
+                    Showing {{ $logs->firstItem() }} to {{ $logs->lastItem() }} of {{ number_format($logs->total()) }}
                     {{ $logs->total() === 1 ? 'entry' : 'entries' }}
                 @else
                     No entries

@@ -41,6 +41,80 @@ document.addEventListener('DOMContentLoaded', () => {
     // into a hamburger menu (graceful fallback to stacked links without JS).
     document.body.classList.add('nav-js');
 
+    /* ----------------------------------------------------------
+       Navigation dropdown groups (shared by the admin and patron
+       navigation). A click or keyboard activation opens a group,
+       opening one closes the others, Escape closes every group,
+       and focus moving outside a group closes it.
+       ---------------------------------------------------------- */
+    const groups = Array.from(document.querySelectorAll('.nav-dropdown'));
+
+    const setGroupOpen = (group, open) => {
+        group.classList.toggle('open', open);
+        const button = group.querySelector('.nav-dropdown-toggle');
+        if (button) button.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+
+    const closeAllGroups = (except) => {
+        groups.forEach((group) => {
+            if (group !== except) setGroupOpen(group, false);
+        });
+    };
+
+    const toggleGroup = (group) => {
+        const willOpen = !group.classList.contains('open');
+        closeAllGroups(group);
+        setGroupOpen(group, willOpen);
+    };
+
+    document.addEventListener('click', (e) => {
+        const button = e.target.closest('.nav-dropdown-toggle');
+        if (button) {
+            const group = button.closest('.nav-dropdown');
+            if (group) {
+                e.preventDefault();
+                toggleGroup(group);
+                return;
+            }
+        }
+
+        // Choosing a destination inside an open group closes it.
+        if (e.target.closest('.nav-dropdown-menu a')) {
+            closeAllGroups();
+            return;
+        }
+
+        // Clicking anywhere else closes every open group.
+        if (!e.target.closest('.nav-dropdown')) closeAllGroups();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeAllGroups();
+            return;
+        }
+
+        // Anchor toggles do not activate on Space, so handle it here.
+        if (e.key === ' ' || e.key === 'Spacebar') {
+            const button = e.target.closest('.nav-dropdown-toggle');
+            const group = button ? button.closest('.nav-dropdown') : null;
+            if (group) {
+                e.preventDefault();
+                toggleGroup(group);
+            }
+        }
+    });
+
+    // Tabbing out of a group closes it.
+    groups.forEach((group) => {
+        group.addEventListener('focusout', (e) => {
+            if (!group.contains(e.relatedTarget)) setGroupOpen(group, false);
+        });
+    });
+
+    /* ----------------------------------------------------------
+       Patron collapsible (hamburger) menu.
+       ---------------------------------------------------------- */
     const nav = document.querySelector('.nav-collapsible');
     if (!nav) return;
 
@@ -59,10 +133,12 @@ document.addEventListener('DOMContentLoaded', () => {
         setOpen(!nav.classList.contains('open'));
     });
 
-    // Close the menu after picking a destination link.
+    // Close the panel after choosing a destination, but keep it open while the
+    // patron is expanding a dropdown group (that toggle is a link too).
     if (links) {
         links.addEventListener('click', (e) => {
-            if (e.target.closest('a')) setOpen(false);
+            const link = e.target.closest('a');
+            if (link && !link.classList.contains('nav-dropdown-toggle')) setOpen(false);
         });
     }
 

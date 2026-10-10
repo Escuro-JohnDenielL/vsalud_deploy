@@ -18,30 +18,13 @@ class DashboardManager {
     }
 
     setupEventListeners() {
-        // Filter change events
-        document
-            .getElementById("inquiry-filter")
-            .addEventListener("change", (e) => {
-                this.fetchInquiryData(e.target.value);
+        // One page-level period selector drives the KPIs, trends and all charts.
+        const periodSelect = document.getElementById("report-period");
+        if (periodSelect) {
+            periodSelect.addEventListener("change", (e) => {
+                this.loadAllData(e.target.value);
             });
-
-        document
-            .getElementById("reservation-filter")
-            .addEventListener("change", (e) => {
-                this.loadReservationChart(e.target.value);
-            });
-
-        document
-            .getElementById("theme-filter")
-            .addEventListener("change", (e) => {
-                this.fetchThemeData(e.target.value);
-            });
-
-        document
-            .getElementById("inquiry-type-chart-filter")
-            .addEventListener("change", (e) => {
-                this.loadInquiryTypeChart(e.target.value);
-            });
+        }
 
         // Auto-refresh every 5 minutes
         setInterval(() => {
@@ -97,16 +80,21 @@ class DashboardManager {
         }, 3000);
     }
 
-    async loadAllData() {
+    currentPeriod() {
+        const select = document.getElementById("report-period");
+        return select ? select.value : "month";
+    }
+
+    async loadAllData(period = this.currentPeriod()) {
         try {
             this.isLoading = true;
 
-            // Load all dashboard components
+            // Load all dashboard components for the selected period
             await Promise.all([
-                this.fetchInquiryData("month"),
-                this.loadReservationChart("month"),
-                this.fetchThemeData("month"),
-                this.loadInquiryTypeChart("month"),
+                this.fetchInquiryData(period),
+                this.loadReservationChart(period),
+                this.fetchThemeData(period),
+                this.loadInquiryTypeChart(period),
                 this.loadActivityLog(),
                 this.updateMetricsOverview(),
             ]);
@@ -122,14 +110,27 @@ class DashboardManager {
     updateMetricsOverview(total, change) {
         const elTotal = document.getElementById("total-inquiries-overview");
         const elChange = document.querySelector("#inquiry-change span");
+        const changeBox = document.getElementById("inquiry-change");
 
         if (elTotal) {
             elTotal.textContent = total || 0;
         }
 
         if (elChange) {
-            const symbol = change > 0 ? "+" : "";
-            elChange.textContent = `${symbol}${change}% vs last period`;
+            const value = Number(change) || 0;
+            const symbol = value > 0 ? "+" : "";
+            elChange.textContent = `${symbol}${value}% vs last period`;
+
+            // A decline must not look like a green up arrow.
+            if (changeBox) {
+                changeBox.classList.toggle("positive", value >= 0);
+                changeBox.classList.toggle("negative", value < 0);
+                const icon = changeBox.querySelector("i");
+                if (icon) {
+                    icon.classList.toggle("bx-trending-up", value >= 0);
+                    icon.classList.toggle("bx-trending-down", value < 0);
+                }
+            }
         }
     }
 
@@ -138,7 +139,7 @@ class DashboardManager {
 
         try {
             const response = await fetch(
-                `/admin/inquiry-data?filter=${timeRange}`
+                `/admin/inquiry-data?period=${timeRange}`
             );
             const data = await response.json();
             console.log("Inquiry data response:", data);
@@ -172,6 +173,33 @@ class DashboardManager {
         }
     }
 
+    chartHasData(data) {
+        return Array.isArray(data) && data.some((value) => Number(value) > 0);
+    }
+
+    showChartEmpty(canvasId, message) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas || !canvas.parentElement) return;
+
+        canvas.style.display = "none";
+        let note = canvas.parentElement.querySelector(".vs-chart-empty");
+        if (!note) {
+            note = document.createElement("p");
+            note.className = "vs-chart-empty";
+            canvas.parentElement.appendChild(note);
+        }
+        note.textContent = message || "No data for this period.";
+    }
+
+    clearChartEmpty(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas || !canvas.parentElement) return;
+
+        canvas.style.display = "";
+        const note = canvas.parentElement.querySelector(".vs-chart-empty");
+        if (note) note.remove();
+    }
+
     updateInquiryChart(data) {
         const ctx = document.getElementById("inquiryChart")?.getContext("2d");
         if (!ctx) return;
@@ -181,6 +209,13 @@ class DashboardManager {
             this.charts.inquiry.destroy();
         }
 
+        if (!this.chartHasData(data.data)) {
+            if (this.charts.inquiry) { this.charts.inquiry.destroy(); this.charts.inquiry = null; }
+            this.showChartEmpty("inquiryChart", "No inquiries for this period.");
+            return;
+        }
+        this.clearChartEmpty("inquiryChart");
+
         this.charts.inquiry = new Chart(ctx, {
             type: "line",
             data: {
@@ -189,8 +224,8 @@ class DashboardManager {
                     {
                         label: "Inquiries",
                         data: data.data || [],
-                        borderColor: "#4f46e5",
-                        backgroundColor: "rgba(79, 70, 229, 0.1)",
+                        borderColor: "#006b53",
+                        backgroundColor: "rgba(0, 107, 83, 0.12)",
                         borderWidth: 2,
                         fill: true,
                         tension: 0.4,
@@ -208,6 +243,7 @@ class DashboardManager {
                 scales: {
                     y: {
                         beginAtZero: true,
+                        ticks: { precision: 0 },
                         grid: {
                             color: "rgba(0, 0, 0, 0.1)",
                         },
@@ -249,7 +285,7 @@ class DashboardManager {
     async loadReservationChart(timeRange) {
         try {
             const response = await fetch(
-                `/admin/reservation-data?filter=${timeRange}`
+                `/admin/reservation-data?period=${timeRange}`
             );
             const data = await response.json();
 
@@ -276,6 +312,29 @@ class DashboardManager {
             const growthEl = document.getElementById("reservation-growth");
             if (bestEl) bestEl.textContent = data.best_period;
             if (growthEl) growthEl.textContent = `${data.growth_rate}%`;
+
+            // "Best Month"/"Best Week" follows the selected period.
+            const bestLabelEl = document.getElementById("reservation-best-month-label");
+            if (bestLabelEl) {
+                bestLabelEl.textContent = (data.best_period_label || "Best period") + ":";
+            }
+
+            // Reservations KPI trend (danger + down arrow when negative).
+            const resChangeBox = document.getElementById("reservation-change");
+            const resChangeText = document.querySelector("#reservation-change span");
+            if (resChangeText) {
+                const value = Number(data.growth_rate) || 0;
+                resChangeText.textContent = `${value > 0 ? "+" : ""}${value}% vs previous period`;
+                if (resChangeBox) {
+                    resChangeBox.classList.toggle("positive", value >= 0);
+                    resChangeBox.classList.toggle("negative", value < 0);
+                    const icon = resChangeBox.querySelector("i");
+                    if (icon) {
+                        icon.classList.toggle("bx-trending-up", value >= 0);
+                        icon.classList.toggle("bx-trending-down", value < 0);
+                    }
+                }
+            }
         } catch (error) {
             console.error("Reservation data fetch failed:", error);
             this.showNotification("Failed to load reservation data", "error");
@@ -294,6 +353,13 @@ class DashboardManager {
             this.charts.reservation.destroy();
         }
 
+        if (!this.chartHasData(data.data)) {
+            if (this.charts.reservation) { this.charts.reservation.destroy(); this.charts.reservation = null; }
+            this.showChartEmpty("reservation-chart", "No reservations for this period.");
+            return;
+        }
+        this.clearChartEmpty("reservation-chart");
+
         this.charts.reservation = new Chart(ctx, {
             type: "bar",
             data: {
@@ -302,8 +368,8 @@ class DashboardManager {
                     {
                         label: "Reservations",
                         data: data.data || [],
-                        backgroundColor: "#10b981",
-                        borderColor: "#059669",
+                        backgroundColor: "#009b77",
+                        borderColor: "#006b53",
                         borderWidth: 1,
                     },
                 ],
@@ -319,6 +385,7 @@ class DashboardManager {
                 scales: {
                     y: {
                         beginAtZero: true,
+                        ticks: { precision: 0 },
                         grid: {
                             color: "rgba(0, 0, 0, 0.1)",
                         },
@@ -338,7 +405,7 @@ class DashboardManager {
 
         try {
             const response = await fetch(
-                `/admin/theme-data?filter=${timeRange}`
+                `/admin/theme-data?period=${timeRange}`
             );
             const data = await response.json();
 
@@ -370,6 +437,18 @@ class DashboardManager {
             this.charts.theme.destroy();
         }
 
+        if (!this.chartHasData(data.data)) {
+            if (this.charts.theme) { this.charts.theme.destroy(); this.charts.theme = null; }
+            this.showChartEmpty("themeChart", "No theme data for this period.");
+            return;
+        }
+        if ((data.labels || []).length <= 1) {
+            if (this.charts.theme) { this.charts.theme.destroy(); this.charts.theme = null; }
+            this.showChartEmpty("themeChart", (data.labels[0] || "Only one theme") + ": " + (data.data[0] || 0));
+            return;
+        }
+        this.clearChartEmpty("themeChart");
+
         this.charts.theme = new Chart(ctx, {
             type: "doughnut",
             data: {
@@ -378,12 +457,12 @@ class DashboardManager {
                     {
                         data: data.data || [],
                         backgroundColor: [
-                            "#f59e0b",
-                            "#ef4444",
-                            "#8b5cf6",
-                            "#06b6d4",
-                            "#84cc16",
-                            "#f97316",
+                            "#006b53",
+                            "#009b77",
+                            "#7a4b00",
+                            "#46514c",
+                            "#707c75",
+                            "#004c3a",
                         ],
                         borderWidth: 2,
                         borderColor: "#ffffff",
@@ -409,7 +488,7 @@ class DashboardManager {
     async loadInquiryTypeChart(timeRange) {
         try {
             const response = await fetch(
-                `/admin/event-type-data?filter=${timeRange}`
+                `/admin/event-type-data?period=${timeRange}`
             );
             const data = await response.json();
 
@@ -447,6 +526,18 @@ class DashboardManager {
             this.charts.inquiryType.destroy();
         }
 
+        if (!this.chartHasData(data.data)) {
+            if (this.charts.inquiryType) { this.charts.inquiryType.destroy(); this.charts.inquiryType = null; }
+            this.showChartEmpty("inquiry-type-chart", "No category data for this period.");
+            return;
+        }
+        if ((data.labels || []).length <= 1) {
+            if (this.charts.inquiryType) { this.charts.inquiryType.destroy(); this.charts.inquiryType = null; }
+            this.showChartEmpty("inquiry-type-chart", (data.labels[0] || "Only one category") + ": " + (data.data[0] || 0));
+            return;
+        }
+        this.clearChartEmpty("inquiry-type-chart");
+
         this.charts.inquiryType = new Chart(ctx, {
             type: "pie",
             data: {
@@ -455,12 +546,12 @@ class DashboardManager {
                     {
                         data: data.data || [],
                         backgroundColor: [
-                            "#3b82f6",
-                            "#10b981",
-                            "#f59e0b",
-                            "#ef4444",
-                            "#8b5cf6",
-                            "#06b6d4",
+                            "#006b53",
+                            "#009b77",
+                            "#7a4b00",
+                            "#46514c",
+                            "#707c75",
+                            "#4f8067",
                         ],
                         borderWidth: 2,
                         borderColor: "#ffffff",

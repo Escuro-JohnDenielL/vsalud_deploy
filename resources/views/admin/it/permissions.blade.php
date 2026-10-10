@@ -4,91 +4,284 @@
 
 @push('styles')
 <style>
-    .perm-container { max-width: 780px; margin: 0 auto; padding: 32px 20px 60px; }
-    .perm-title { font-family: var(--font-heading); font-size: 28px; color: var(--color-primary); margin: 0 0 4px; }
-    .perm-subtitle { color: var(--color-text-muted); margin: 0 0 24px; }
-    .perm-admin-card { background: #f9fafb; border-radius: 14px; padding: 18px 22px; border: 1px solid var(--color-border); margin-bottom: 24px; display: flex; align-items: center; gap: 16px; }
-    .perm-admin-card .avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--color-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px; flex-shrink: 0; }
-    .perm-admin-card .info h3 { margin: 0; font-size: 16px; color: #2d2d2d; }
-    .perm-admin-card .info p { margin: 2px 0 0; color: var(--color-text-muted); font-size: 13px; }
+    .perm-back {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--vs-space-1);
+        margin-bottom: var(--vs-space-4);
+        color: var(--vs-color-text-secondary);
+        font-family: var(--vs-font-ui);
+        font-size: var(--vs-text-body-min);
+        text-decoration: none;
+    }
 
-    /* Presets */
-    .presets-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
-    .preset-btn { background: #fff; border: 1px solid var(--color-border); border-radius: 999px; padding: 8px 18px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; color: var(--color-text); }
-    .preset-btn:hover { border-color: var(--color-primary); background: var(--color-primary-light); }
-    .preset-btn.active { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
-    .preset-btn .preset-desc { display: none; }
+    .perm-back:hover {
+        color: var(--vs-color-dark-green);
+        text-decoration: underline;
+    }
 
-    /* Checklist */
-    .perm-panel { background: #fff; border-radius: 16px; border: 1px solid var(--color-border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 22px; }
-    .perm-panel h2 { font-size: 18px; color: #2d2d2d; margin: 0 0 16px; font-weight: 600; }
-    .perm-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
-    .perm-item:last-child { border-bottom: none; }
-    .perm-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--color-primary); cursor: pointer; flex-shrink: 0; }
-    .perm-item .perm-label { flex: 1; }
-    .perm-item .perm-label strong { display: block; font-size: 14px; color: #2d2d2d; }
-    .perm-item .perm-label span { font-size: 12px; color: #9ca3af; }
-    .perm-item .perm-icon { font-size: 22px; width: 32px; text-align: center; flex-shrink: 0; }
+    .perm-back:focus-visible {
+        outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+        outline-offset: var(--vs-focus-offset);
+    }
 
-    .perm-actions { margin-top: 20px; display: flex; gap: 10px; }
-    .btn-save-perms { background: #0d7a3e; color: #fff; border: none; border-radius: var(--radius-sm); padding: 12px 32px; font-weight: 600; font-size: 15px; cursor: pointer; }
-    .btn-save-perms:hover { background: #0a5e2f; }
-    .btn-save-perms:disabled { opacity: 0.5; cursor: not-allowed; }
-    .back-link { display: inline-block; margin-top: 16px; color: var(--color-text-muted); font-size: 14px; text-decoration: none; }
-    .back-link:hover { text-decoration: underline; color: var(--color-primary); }
+    .perm-admin {
+        display: flex;
+        align-items: center;
+        gap: var(--vs-space-3);
+        padding: var(--vs-space-3) var(--vs-space-4);
+        border: 1px solid var(--vs-color-surface-pale-green);
+        border-radius: var(--vs-radius-card);
+        background: var(--vs-color-surface);
+    }
 
-    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--color-primary); color: #fff; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,0.15); z-index: 2000; opacity: 0; transform: translateY(20px); transition: all 0.3s; pointer-events: none; }
-    .toast.show { opacity: 1; transform: translateY(0); }
-    .toast.error { background: #dc3545; }
+    .perm-admin__avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+        border-radius: var(--vs-radius-pill);
+        background: var(--vs-color-dark-green);
+        color: #fff;
+        font-family: var(--vs-font-ui);
+        font-size: 16px;
+        font-weight: var(--vs-weight-bold);
+    }
 
-    .page-slug-hint { font-size: 11px; color: #9ca3af; font-family: monospace; }
+    .perm-admin__name {
+        display: block;
+        color: var(--vs-color-text);
+        font-family: var(--vs-font-ui);
+        font-size: var(--vs-text-body-min);
+        font-weight: var(--vs-weight-semibold);
+        line-height: 1.3;
+    }
+
+    .perm-admin__meta {
+        display: block;
+        color: var(--vs-color-text-secondary);
+        font-family: var(--vs-font-ui);
+        font-size: var(--vs-text-secondary-min);
+    }
+
+    .perm-section-title {
+        margin: 0 0 var(--vs-space-3);
+        color: var(--vs-color-deep-green);
+        font-family: var(--vs-font-display);
+        font-size: 20px;
+        font-weight: var(--vs-weight-bold);
+    }
+
+    .perm-presets {
+        margin-bottom: var(--vs-space-6);
+    }
+
+    .preset-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--vs-space-3);
+    }
+
+    .preset-btn {
+        display: flex;
+        flex: 1 1 220px;
+        min-width: 0;
+        flex-direction: column;
+        gap: 2px;
+        padding: var(--vs-space-3) var(--vs-space-4);
+        border: 1px solid var(--vs-button-secondary-border);
+        border-radius: var(--vs-radius-control);
+        background: var(--vs-color-surface);
+        color: var(--vs-color-text);
+        font-family: var(--vs-font-ui);
+        text-align: left;
+        cursor: pointer;
+        transition: background-color .15s, border-color .15s, box-shadow .15s;
+    }
+
+    .preset-btn:hover {
+        background: var(--vs-button-secondary-hover-bg);
+        border-color: var(--vs-button-secondary-hover-border);
+    }
+
+    .preset-btn:focus-visible {
+        outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+        outline-offset: var(--vs-focus-offset);
+    }
+
+    .preset-btn[aria-pressed="true"] {
+        border-color: var(--vs-color-dark-green);
+        background: var(--vs-color-surface-pale-green);
+        box-shadow: inset 0 0 0 1px var(--vs-color-dark-green);
+    }
+
+    .preset-btn__label {
+        font-size: var(--vs-text-body-min);
+        font-weight: var(--vs-weight-semibold);
+    }
+
+    .preset-btn__desc {
+        color: var(--vs-color-text-secondary);
+        font-size: var(--vs-text-secondary-min);
+        line-height: var(--vs-leading-normal);
+    }
+
+    .perm-panel {
+        padding: var(--vs-space-5);
+        border: 1px solid var(--vs-color-control-border);
+        border-radius: var(--vs-radius-card);
+        background: var(--vs-color-surface);
+        box-shadow: var(--vs-shadow-card);
+    }
+
+    .perm-item {
+        display: flex;
+        align-items: center;
+        gap: var(--vs-space-3);
+        min-height: 44px;
+        padding: var(--vs-space-3) 0;
+        border-bottom: 1px solid var(--vs-color-surface-pale-green);
+        cursor: pointer;
+    }
+
+    .perm-item:last-child {
+        border-bottom: 0;
+    }
+
+    .perm-item__input {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        accent-color: var(--vs-color-dark-green);
+        cursor: pointer;
+    }
+
+    .perm-item__input:focus-visible {
+        outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+        outline-offset: var(--vs-focus-offset);
+    }
+
+    .perm-item__label {
+        color: var(--vs-color-text);
+        font-family: var(--vs-font-ui);
+        font-size: var(--vs-text-body-min);
+        font-weight: var(--vs-weight-medium);
+    }
+
+    .perm-note {
+        margin: var(--vs-space-4) 0 0;
+        color: var(--vs-color-text-secondary);
+        font-family: var(--vs-font-ui);
+        font-size: var(--vs-text-secondary-min);
+    }
+
+    .perm-note strong {
+        color: var(--vs-color-text);
+    }
+
+    .perm-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--vs-space-3);
+        margin-top: var(--vs-space-5);
+    }
+
+    .perm-dialog {
+        width: min(460px, calc(100% - 32px));
+        padding: var(--vs-space-6);
+        border: 1px solid var(--vs-color-control-border);
+        border-radius: var(--vs-radius-card);
+        background: var(--vs-color-surface);
+        color: var(--vs-color-text);
+        font-family: var(--vs-font-ui);
+        box-shadow: var(--vs-shadow-card);
+    }
+
+    .perm-dialog::backdrop {
+        background: rgba(0, 76, 58, 0.45);
+    }
+
+    .perm-dialog__title {
+        margin: 0 0 var(--vs-space-2);
+        color: var(--vs-color-deep-green);
+        font-family: var(--vs-font-display);
+        font-size: 22px;
+        font-weight: var(--vs-weight-bold);
+    }
+
+    .perm-dialog__body {
+        margin: 0 0 var(--vs-space-5);
+        color: var(--vs-color-text-secondary);
+        font-size: var(--vs-text-body-min);
+        line-height: var(--vs-leading-normal);
+    }
+
+    .perm-dialog__actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: var(--vs-space-3);
+    }
+
+    @media (max-width: 480px) {
+        .perm-dialog__actions {
+            flex-direction: column-reverse;
+        }
+
+        .perm-dialog__actions > * {
+            width: 100%;
+        }
+    }
 </style>
 @endpush
 
 @section('content')
-<div class="perm-container">
-    <a href="{{ route('admin.it.dashboard') }}" class="back-link">&larr; Back to IT Dashboard</a>
+<div class="vs-page">
+    <a href="{{ route('admin.it.dashboard') }}" class="perm-back">&larr; Back to IT Dashboard</a>
 
-    <div class="perm-admin-card">
-        <div class="avatar">{{ strtoupper(substr($admin->f_name, 0, 1)) }}{{ strtoupper(substr($admin->l_name, 0, 1)) }}</div>
-        <div class="info">
-            <h3>{{ $admin->f_name }} {{ $admin->l_name }}</h3>
-            <p>{{ $admin->email }} &middot; {{ ucfirst($admin->role) }}</p>
+    <x-ui.page-header
+        title="Page Permissions"
+        subtitle="Choose which pages this admin can access. Unchecked pages are hidden from their navigation and blocked on the server.">
+        <x-slot:action>
+            <div class="perm-admin">
+                <span class="perm-admin__avatar" aria-hidden="true">{{ strtoupper(substr($admin->f_name, 0, 1)) }}{{ strtoupper(substr($admin->l_name, 0, 1)) }}</span>
+                <span>
+                    <span class="perm-admin__name">{{ $admin->f_name }} {{ $admin->l_name }}</span>
+                    <span class="perm-admin__meta">{{ $admin->email }} &middot; {{ ucfirst($admin->role) }}</span>
+                </span>
+            </div>
+        </x-slot:action>
+    </x-ui.page-header>
+
+    <section class="perm-presets" aria-labelledby="presetsHeading">
+        <h2 class="perm-section-title" id="presetsHeading">Presets</h2>
+        <div class="preset-grid" role="group" aria-labelledby="presetsHeading">
+            @foreach ($presets as $key => $preset)
+                <button type="button" class="preset-btn" data-preset="{{ $key }}" aria-pressed="false" onclick="applyPreset('{{ $key }}')">
+                    <span class="preset-btn__label">{{ $preset['label'] }}</span>
+                    <span class="preset-btn__desc">{{ $preset['description'] }}</span>
+                </button>
+            @endforeach
         </div>
-    </div>
+    </section>
 
-    <h1 class="perm-title">Page Permissions</h1>
-    <p class="perm-subtitle">Check the pages this admin can access. Unchecked pages are hidden from nav and blocked server-side.</p>
-
-    {{-- Presets --}}
-    <div class="presets-row">
-        @foreach ($presets as $key => $preset)
-            <button type="button" class="preset-btn" onclick="applyPreset('{{ $key }}')" title="{{ $preset['description'] }}">
-                {{ $preset['label'] }}
-            </button>
-        @endforeach
-    </div>
-
-    {{-- Checklist --}}
     <div class="perm-panel">
-        <h2>Available Pages</h2>
+        <h2 class="perm-section-title">Available pages</h2>
         <div id="permissionsList">
             @foreach ($availablePages as $slug => $label)
-                <div class="perm-item">
+                <label class="perm-item">
                     <input type="checkbox"
-                           id="perm_{{ $slug }}"
+                           class="perm-item__input"
                            value="{{ $slug }}"
                            {{ in_array($slug, $grantedPages) ? 'checked' : '' }}>
-                    <span class="perm-icon">{{ pageIcon($slug) }}</span>
-                    <div class="perm-label">
-                        <strong>{{ $label }}</strong>
-                        <span class="page-slug-hint">{{ $slug }}</span>
-                    </div>
-                </div>
+                    <span class="perm-item__label">{{ $label }}</span>
+                </label>
             @endforeach
         </div>
 
-         <p class="it-help-text">
+        <p class="perm-note">
             <strong>Always accessible:</strong> Admin Profile, Logout
             @if(auth('admin')->user()?->role === 'super_admin')
                 &middot; IT Management
@@ -96,21 +289,45 @@
         </p>
 
         <div class="perm-actions">
-            <button class="admin-btn admin-btn-primary" id="savePermsBtn" onclick="savePermissions()">Save Permissions</button>
+            <button type="button" class="admin-btn admin-btn-primary" id="savePermsBtn">Save Permissions</button>
         </div>
     </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<dialog id="presetDialog" class="perm-dialog" aria-labelledby="presetDialogTitle">
+    <h2 class="perm-dialog__title" id="presetDialogTitle">Apply preset</h2>
+    <p class="perm-dialog__body" id="presetDialogBody"></p>
+    <div class="perm-dialog__actions">
+        <button type="button" class="admin-btn admin-btn-ghost" id="presetCancelBtn">Cancel</button>
+        <button type="button" class="admin-btn admin-btn-primary" id="presetConfirmBtn">Apply preset</button>
+    </div>
+</dialog>
 
 @push('scripts')
 <script>
     const adminId = {{ $admin->admin_id }};
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}';
+    const PRESET_LABELS = @json(collect($presets)->map(fn ($preset) => $preset['label'])->all());
+    const PRESET_DESCRIPTIONS = @json(collect($presets)->map(fn ($preset) => $preset['description'])->all());
+    const PRESET_PAGES = @json(collect($presets)->map(fn ($preset) => $preset['pages'])->all());
 
     function getCheckedPages() {
         return [...document.querySelectorAll('#permissionsList input[type="checkbox"]:checked')]
             .map(cb => cb.value);
+    }
+
+    function sameSet(a, b) {
+        if (a.length !== b.length) return false;
+        return a.every(item => b.indexOf(item) !== -1);
+    }
+
+    // Marks the preset whose pages match the current selection.
+    function syncPresetState() {
+        const checked = getCheckedPages();
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            const pages = PRESET_PAGES[btn.dataset.preset] || [];
+            btn.setAttribute('aria-pressed', sameSet(pages, checked) ? 'true' : 'false');
+        });
     }
 
     function savePermissions() {
@@ -131,21 +348,41 @@
         .then(r => r.json())
         .then(d => {
             if (d.success) {
-                showToast(d.message);
+                window.showAdminToast(d.message || 'Permissions saved.', 'success');
             } else {
-                showToast(d.message || 'Error saving permissions', true);
+                window.showAdminToast(d.message || 'Error saving permissions', 'error');
             }
         })
-        .catch(() => showToast('Network error', true))
+        .catch(() => window.showAdminToast('Network error', 'error'))
         .finally(() => {
             btn.disabled = false;
             btn.textContent = 'Save Permissions';
         });
     }
 
-    function applyPreset(presetKey) {
-        if (!confirm('Apply "' + presetKey.replace('-', ' ') + '" preset? This will replace all current permissions for this admin.')) return;
+    // Presets use the shared dialog instead of window.confirm().
+    let pendingPreset = null;
+    const presetDialog = document.getElementById('presetDialog');
+    const presetDialogTitle = document.getElementById('presetDialogTitle');
+    const presetDialogBody = document.getElementById('presetDialogBody');
 
+    function applyPreset(presetKey) {
+        pendingPreset = presetKey;
+        const label = PRESET_LABELS[presetKey] || presetKey;
+        presetDialogTitle.textContent = 'Apply the ' + label + ' preset?';
+        const description = PRESET_DESCRIPTIONS[presetKey] || '';
+        presetDialogBody.textContent = (description ? description + '. ' : '')
+            + (presetKey === 'no-access'
+                ? 'This removes access to every page for this admin.'
+                : 'This replaces all current permissions for this admin.');
+        if (typeof presetDialog.showModal === 'function') {
+            presetDialog.showModal();
+        } else {
+            submitPreset(presetKey);
+        }
+    }
+
+    function submitPreset(presetKey) {
         fetch('/admin/permissions/' + adminId + '/preset', {
             method: 'POST',
             headers: {
@@ -163,35 +400,28 @@
                 document.querySelectorAll('#permissionsList input[type="checkbox"]').forEach(cb => {
                     cb.checked = d.pages.includes(cb.value);
                 });
-                showToast(d.message);
+                syncPresetState();
+                window.showAdminToast(d.message || 'Preset applied.', 'success');
             } else {
-                showToast(d.message || 'Error applying preset', true);
+                window.showAdminToast(d.message || 'Error applying preset', 'error');
             }
         })
-        .catch(() => showToast('Network error', true));
+        .catch(() => window.showAdminToast('Network error', 'error'));
     }
 
-    function showToast(msg, isError = false) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.className = 'toast' + (isError ? ' error' : '');
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
+    document.getElementById('presetConfirmBtn').addEventListener('click', () => {
+        const presetKey = pendingPreset;
+        presetDialog.close();
+        if (presetKey) submitPreset(presetKey);
+    });
+
+    document.getElementById('presetCancelBtn').addEventListener('click', () => presetDialog.close());
+
+    document.getElementById('savePermsBtn').addEventListener('click', savePermissions);
+
+    document.getElementById('permissionsList').addEventListener('change', syncPresetState);
+
+    syncPresetState();
 </script>
 @endpush
 @endsection
-
-@php
-function pageIcon($slug) {
-    return match($slug) {
-        'packages' => 'Packages',
-        'reservations' => 'Reservations',
-        'inquiries' => 'Inquiries',
-        'reserve-logs' => 'Reservation logs',
-        'reports' => 'Reports',
-        'feedback' => 'Feedback',
-        default => 'Page',
-    };
-}
-@endphp

@@ -1,169 +1,466 @@
 @import "app.css";
 
-/* Floating Home Button (bottom-left) — matches the patron layout */
-.site-home-btn {
-  position: fixed;
-  bottom: 24px;
-  left: 24px;
-  z-index: 999;
+/* ============================================================
+   Admin auth pages (login + MFA challenge): shared split card.
+   Everything is scoped to .vs-layout--admin-auth so nothing
+   leaks. Reuses existing palette, fonts and CSS variables only.
+   ============================================================ */
+
+.vs-layout--admin-auth {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--vs-space-6);
+  background: linear-gradient(135deg, var(--color-bg) 0%, #e8f5e9 100%);
+  font-family: var(--vs-font-ui);
+  color: var(--vs-color-text);
+}
+
+.vs-layout--admin-auth *,
+.vs-layout--admin-auth *::before,
+.vs-layout--admin-auth *::after {
+  box-sizing: border-box;
+}
+
+/* --- Shell + card --- */
+.vs-layout--admin-auth .auth-shell {
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.vs-layout--admin-auth .auth-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: 540px;
+  background: var(--vs-color-surface);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  box-shadow: var(--vs-shadow-card);
+  overflow: hidden;
+}
+
+.vs-layout--admin-auth .auth-form-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--vs-space-4);
+  padding: var(--vs-space-12) var(--vs-space-10);
+}
+
+/* --- Brand (monogram + wordmark) --- */
+.vs-layout--admin-auth .auth-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vs-space-3);
+  color: var(--vs-color-dark-green);
+}
+
+.vs-layout--admin-auth .auth-brand__mark {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: 50%;
+  color: var(--vs-color-dark-green);
+  font-family: var(--vs-font-display);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.vs-layout--admin-auth .auth-brand__name {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  letter-spacing: 3px;
+  font-family: var(--vs-font-display);
+}
+
+.vs-layout--admin-auth .auth-brand__name small {
+  font-size: 9px;
+}
+
+.vs-layout--admin-auth .auth-brand__name strong {
+  margin-top: 2px;
+  font-size: 15px;
+}
+
+/* --- Headings + supporting copy --- */
+.vs-layout--admin-auth .auth-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vs-space-2);
+}
+
+.vs-layout--admin-auth .auth-title {
+  margin: 0;
+  font-family: var(--vs-font-display);
+  font-size: clamp(26px, 3.2vw, 34px);
+  font-weight: var(--vs-weight-bold);
+  line-height: var(--vs-leading-tight);
+  color: var(--vs-color-deep-green);
+}
+
+.vs-layout--admin-auth .auth-sub {
+  margin: 0;
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-relaxed);
+}
+
+.vs-layout--admin-auth .auth-sub strong {
+  color: var(--vs-color-text);
+  font-weight: var(--vs-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+/* --- Messages (announced to screen readers) --- */
+.vs-layout--admin-auth .auth-alert {
+  margin: 0;
+  padding: var(--vs-space-3) var(--vs-space-4);
+  border: 1px solid var(--vs-status-neutral-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-status-neutral-bg);
+  color: var(--vs-status-neutral-text);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-normal);
+}
+
+.vs-layout--admin-auth .auth-alert[hidden] {
+  display: none;
+}
+
+.vs-layout--admin-auth .auth-alert--error {
+  border-color: var(--vs-status-danger-border);
+  background: var(--vs-status-danger-bg);
+  color: var(--vs-status-danger-text);
+}
+
+.vs-layout--admin-auth .auth-alert--success {
+  border-color: var(--vs-status-success-border);
+  background: var(--vs-status-success-bg);
+  color: var(--vs-status-success-text);
+}
+
+/* --- Form fields --- */
+.vs-layout--admin-auth .auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vs-space-4);
+  margin: 0;
+}
+
+.vs-layout--admin-auth .auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vs-space-1);
+}
+
+.vs-layout--admin-auth .auth-label {
+  font-size: var(--vs-text-control-min);
+  font-weight: var(--vs-weight-semibold);
+  color: var(--vs-color-text);
+}
+
+.vs-layout--admin-auth .auth-input {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 14px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-white);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-control-min);
+  transition: border-color var(--vs-duration-fast), background-color var(--vs-duration-fast);
+}
+
+.vs-layout--admin-auth .auth-input::placeholder {
+  color: var(--vs-color-text-secondary);
+  opacity: 0.7;
+}
+
+.vs-layout--admin-auth .auth-input:focus,
+.vs-layout--admin-auth .auth-input:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+  border-color: var(--vs-color-dark-green);
+}
+
+.vs-layout--admin-auth .auth-field--error .auth-input,
+.vs-layout--admin-auth .auth-input[aria-invalid="true"] {
+  border-color: var(--vs-status-danger-border);
+  background: var(--vs-status-danger-bg);
+}
+
+.vs-layout--admin-auth .auth-error {
+  color: var(--vs-status-danger-text);
+  font-size: var(--vs-text-secondary-min);
+  font-weight: var(--vs-weight-medium);
+}
+
+/* Password field with the in-field eye toggle */
+.vs-layout--admin-auth .auth-input-group {
+  position: relative;
+}
+
+.vs-layout--admin-auth .auth-input-group .auth-input {
+  padding-right: 52px;
+}
+
+.vs-layout--admin-auth .auth-card .auth-form-panel button.auth-eye {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  background: var(--color-primary);
-  color: #fff;
-  border-radius: var(--radius-full);
-  box-shadow: var(--shadow-lg);
-  transition: all var(--transition-base);
-  text-decoration: none;
-}
-
-.site-home-btn:hover {
-  background: var(--color-primary-hover);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-xl);
-  color: #fff;
-}
-
-.site-home-btn svg {
-  display: block;
-}
-
-.checkbox-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 5px;
-  font-size: 14px;
-}
-
-.checkbox-container input {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-}
-
-.checkbox-container label {
-  cursor: pointer;
-}
-
-body {
+  width: 36px;
+  min-height: 36px;
   margin: 0;
   padding: 0;
-  font-family: var(--font-body);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, var(--color-bg) 0%, #e8f5e9 100%);
-}
-
-.container {
-  display: flex;
-  width: 80%;
-  max-width: 1200px;
-  background: var(--color-surface);
-  box-shadow: var(--shadow-xl);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  transition: box-shadow var(--transition-base);
-}
-
-.container:hover {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-}
-
-.left-section {
-  width: 50%;
-  padding: 40px;
-}
-
-.right-section {
-  width: 50%;
-}
-
-h1 {
-  font-size: 24px;
-  color: var(--color-primary);
-  font-family: var(--font-heading);
-}
-
-.login-box {
-  margin-top: 20px;
-  border: 1px solid var(--color-border);
-  padding: 24px;
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-}
-
-h2 {
-  font-size: 22px;
-  text-align: center;
-  color: var(--color-primary);
-  font-family: var(--font-heading);
-}
-
-label {
-  display: block;
-  margin-top: 10px;
-  font-weight: 500;
-  color: var(--color-text);
-  font-size: 14px;
-}
-
-input {
-  width: 100%;
-  padding: 10px 14px;
-  margin-top: 5px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  box-sizing: border-box;
-  font-family: var(--font-body);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(13, 122, 62, 0.1);
-}
-
-button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 15px;
-  background: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 16px;
-  font-weight: 600;
+  border: 0;
+  border-radius: var(--vs-radius-pill);
+  background: transparent;
+  color: var(--vs-color-dark-green);
   cursor: pointer;
-  font-family: var(--font-body);
-  transition: all var(--transition-base);
 }
 
-button:hover {
-  background: var(--color-primary-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+.vs-layout--admin-auth .auth-card .auth-form-panel button.auth-eye:hover {
+  background: var(--vs-color-pale-green);
 }
 
-.login-link {
-  text-align: center;
-  margin-top: 10px;
-  font-size: 14px;
-  color: var(--color-text-muted);
+.vs-layout--admin-auth .auth-card .auth-form-panel button.auth-eye:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
 }
 
-.login-link a {
-  color: var(--color-primary);
-  text-decoration: none;
-  font-weight: 600;
+.vs-layout--admin-auth .auth-eye svg {
+  display: block;
+  width: 18px;
+  height: 18px;
 }
 
-.login-link a:hover {
+/* --- Primary button (only filled button on the page) --- */
+.vs-layout--admin-auth .auth-card .auth-form-panel button.auth-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--vs-space-2);
+  width: 100%;
+  min-height: 46px;
+  margin: 0;
+  padding: 10px 18px;
+  border: 1px solid var(--vs-button-primary-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-button-primary-bg);
+  color: var(--vs-button-primary-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-control-min);
+  font-weight: var(--vs-weight-semibold);
+  cursor: pointer;
+  transition: background-color var(--vs-duration-fast), border-color var(--vs-duration-fast), color var(--vs-duration-fast);
+}
+
+.vs-layout--admin-auth .auth-card .auth-form-panel button.auth-btn:hover {
+  background: var(--vs-button-primary-hover-bg);
+  border-color: var(--vs-button-primary-hover-border);
+}
+
+.vs-layout--admin-auth .auth-card .auth-form-panel button.auth-btn:active {
+  background: var(--vs-button-primary-active-bg);
+  border-color: var(--vs-button-primary-active-border);
+}
+
+.vs-layout--admin-auth .auth-card .auth-form-panel button.auth-btn:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.vs-layout--admin-auth .auth-card .auth-form-panel button.auth-btn:disabled {
+  border-color: var(--vs-button-primary-disabled-border);
+  border-style: dashed;
+  background: var(--vs-button-primary-disabled-bg);
+  color: var(--vs-button-primary-disabled-text);
+  cursor: not-allowed;
+}
+
+/* --- Plain text links (resend, use a different account) --- */
+.vs-layout--admin-auth .auth-card .auth-form-panel button.auth-textlink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vs-space-2);
+  width: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--vs-color-dark-green);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-semibold);
   text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color var(--vs-duration-fast);
+}
+
+.vs-layout--admin-auth .auth-card .auth-form-panel button.auth-textlink:hover {
+  color: var(--vs-color-deep-green);
+}
+
+.vs-layout--admin-auth .auth-card .auth-form-panel button.auth-textlink:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+  border-radius: var(--vs-radius-control);
+}
+
+.vs-layout--admin-auth .auth-card .auth-form-panel button.auth-textlink:disabled {
+  color: var(--vs-color-text-secondary);
+  text-decoration: none;
+  cursor: not-allowed;
+}
+
+.vs-layout--admin-auth .auth-textlink svg {
+  flex: 0 0 auto;
+}
+
+.vs-layout--admin-auth .auth-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--vs-space-3);
+  padding-top: var(--vs-space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.vs-layout--admin-auth .auth-account-form {
+  margin: 0;
+}
+
+/* --- Small muted notes (text-wrap keeps the last word off its own line) --- */
+.vs-layout--admin-auth .auth-note {
+  margin: 0;
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-secondary-min);
+  line-height: var(--vs-leading-relaxed);
+  text-wrap: balance;
+}
+
+.vs-layout--admin-auth .auth-note:empty {
+  display: none;
+}
+
+/* --- One-time code input --- */
+.vs-layout--admin-auth .auth-code {
+  width: 100%;
+  min-height: 64px;
+  padding: var(--vs-space-2);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-white);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+  font-size: 32px;
+  font-weight: var(--vs-weight-semibold);
+  letter-spacing: 12px;
+  text-align: center;
+  text-indent: 12px;
+  transition: border-color var(--vs-duration-fast), background-color var(--vs-duration-fast);
+}
+
+.vs-layout--admin-auth .auth-code::placeholder {
+  color: var(--vs-color-text-secondary);
+  opacity: 0.4;
+  font-size: 22px;
+  font-weight: var(--vs-weight-regular);
+  letter-spacing: 4px;
+}
+
+.vs-layout--admin-auth .auth-code:focus,
+.vs-layout--admin-auth .auth-code:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+  border-color: var(--vs-color-dark-green);
+}
+
+.vs-layout--admin-auth .auth-code[aria-invalid="true"] {
+  border-color: var(--vs-status-danger-border);
+  background: var(--vs-status-danger-bg);
+}
+
+/* --- Development-only code box --- */
+.vs-layout--admin-auth .auth-dev {
+  padding: var(--vs-space-3) var(--vs-space-4);
+  border: 1px solid var(--vs-status-warning-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-status-warning-bg);
+  text-align: center;
+}
+
+/* --- Media (event photo collage) --- */
+.vs-layout--admin-auth .auth-media {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 6px;
+  background: var(--vs-color-dark-green);
+}
+
+.vs-layout--admin-auth .auth-media__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: cover;
+}
+
+/* --- Responsive: the photo panel hides below 900px --- */
+@media (max-width: 899.98px) {
+  .vs-layout--admin-auth .auth-card {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .vs-layout--admin-auth .auth-media {
+    display: none;
+  }
+
+  .vs-layout--admin-auth .auth-form-panel {
+    padding: var(--vs-space-10) var(--vs-space-8);
+  }
+}
+
+@media (max-width: 575.98px) {
+  .vs-layout--admin-auth {
+    padding: var(--vs-space-4) var(--vs-space-3);
+  }
+
+  .vs-layout--admin-auth .auth-form-panel {
+    gap: var(--vs-space-3);
+    padding: var(--vs-space-8) var(--vs-space-5);
+  }
+
+  .vs-layout--admin-auth .auth-code {
+    font-size: 26px;
+    letter-spacing: 8px;
+    text-indent: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-layout--admin-auth .auth-input,
+  .vs-layout--admin-auth .auth-code,
+  .vs-layout--admin-auth .auth-btn,
+  .vs-layout--admin-auth .auth-textlink,
+  .vs-layout--admin-auth .auth-eye {
+    transition-duration: 0.01ms;
+  }
 }

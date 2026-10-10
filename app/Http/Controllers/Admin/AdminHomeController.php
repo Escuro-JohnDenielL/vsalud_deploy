@@ -20,66 +20,147 @@ class AdminHomeController extends Controller
         return view('admin.home', compact('packages'));
     }
 
-    public function getInquiryData(Request $request)
+    /**
+     * Resolve the page-level period into current and previous bounds.
+     * Returns [start, end, previousStart, previousEnd]; nulls mean "no limit".
+     */
+    private function periodBounds(string $period): array
     {
-        $filter = $request->query('filter', 'month'); // Default: month
+        $now = Carbon::now();
 
+        return match ($period) {
+            'week' => [
+                $now->copy()->subDays(6)->startOfDay(),
+                $now->copy()->endOfDay(),
+                $now->copy()->subDays(13)->startOfDay(),
+                $now->copy()->subDays(7)->endOfDay(),
+            ],
+            '3months' => [
+                $now->copy()->subMonthsNoOverflow(2)->startOfMonth(),
+                $now->copy()->endOfMonth(),
+                $now->copy()->subMonthsNoOverflow(5)->startOfMonth(),
+                $now->copy()->subMonthsNoOverflow(3)->endOfMonth(),
+            ],
+            'year' => [
+                $now->copy()->startOfYear(),
+                $now->copy()->endOfYear(),
+                $now->copy()->subYear()->startOfYear(),
+                $now->copy()->subYear()->endOfYear(),
+            ],
+            'all' => [null, null, null, null],
+            default => [
+                $now->copy()->startOfMonth(),
+                $now->copy()->endOfMonth(),
+                $now->copy()->subMonthNoOverflow()->startOfMonth(),
+                $now->copy()->subMonthNoOverflow()->endOfMonth(),
+            ],
+        };
+    }
+
+    /**
+     * Build [labels, data] for a time series.
+     * Buckets: week = daily, month = weekly, 3months/year/all = monthly
+     * ("all" is capped at 24 monthly buckets).
+     */
+    private function timeSeries(string $model, string $period, string $column, ?\Closure $scope = null): array
+    {
         $now = Carbon::now();
         $labels = [];
         $data = [];
-        $total = 0;
-        $previousTotal = 0;
+        $count = function ($query) use ($scope) {
+            if ($scope) {
+                $scope($query);
+            }
 
-        switch ($filter) {
+            return $query->count();
+        };
+
+        switch ($period) {
             case 'week':
-                // Current week (7 days)
                 for ($i = 6; $i >= 0; $i--) {
                     $day = $now->copy()->subDays($i);
-                    $count = Inquiry::whereDate('created_at', $day->toDateString())->count();
-                    $data[] = $count;
                     $labels[] = $day->format('D');
-                    $total += $count;
+                    $data[] = $count($model::whereDate($column, $day->toDateString()));
                 }
+                break;
 
-                // Previous week
-                for ($i = 13; $i >= 7; $i--) {
-                    $day = $now->copy()->subDays($i);
-                    $previousTotal += Inquiry::whereDate('created_at', $day->toDateString())->count();
+            case '3months':
+                for ($i = 2; $i >= 0; $i--) {
+                    $month = $now->copy()->subMonthsNoOverflow($i);
+                    $labels[] = $month->format('M Y');
+                    $data[] = $count($model::whereYear($column, $month->year)->whereMonth($column, $month->month));
+                }
+                break;
+
+            case 'year':
+                for ($i = 0; $i < 12; $i++) {
+                    $month = $now->copy()->startOfYear()->addMonths($i);
+                    $labels[] = $month->format('M');
+                    $data[] = $count($model::whereYear($column, $month->year)->whereMonth($column, $month->month));
+                }
+                break;
+
+            case 'all':
+                $earliest = $model::min($column);
+                $cursor = $earliest ? Carbon::parse($earliest)->startOfMonth() : $now->copy()->startOfMonth();
+                $guard = 0;
+                while ($cursor->lte($now) && $guard < 24) {
+                    $labels[] = $cursor->format('M Y');
+                    $data[] = $count($model::whereYear($column, $cursor->year)->whereMonth($column, $cursor->month));
+                    $cursor->addMonth();
+                    $guard++;
                 }
                 break;
 
             case 'month':
             default:
-                // Current month, grouped by week
                 $start = $now->copy()->startOfMonth();
-                for ($i = 0; $i < 4; $i++) {
-                    $startOfWeek = $start->copy()->addWeeks($i);
-                    $endOfWeek = $startOfWeek->copy()->addDays(6);
-                    $count = Inquiry::whereBetween('created_at', [$startOfWeek, $endOfWeek])->count();
-                    $data[] = $count;
+                $weeks = (int) ceil($start->copy()->endOfMonth()->day / 7);
+                for ($i = 0; $i < $weeks; $i++) {
+                    $from = $start->copy()->addWeeks($i);
+                    $to = ($i === $weeks - 1) ? $start->copy()->endOfMonth() : $from->copy()->addDays(6);
                     $labels[] = 'Week ' . ($i + 1);
-                    $total += $count;
+                    $data[] = $count($model::whereBetween($column, [$from, $to]));
                 }
-
-                // Previous month
-                $previousStart = $now->copy()->subMonth()->startOfMonth();
-                $previousEnd = $previousStart->copy()->endOfMonth();
-                $previousTotal = Inquiry::whereBetween('created_at', [$previousStart, $previousEnd])->count();
                 break;
         }
+
+        return [$labels, $data];
+    }
+
+    /**
+     * Count for the previous period of equal length (0 for "all").
+     */
+    private function previousTotal(string $model, string $period, string $column, ?\Closure $scope = null): int
+    {
+        [, , $prevStart, $prevEnd] = $this->periodBounds($period);
+
+        if (! $prevStart || ! $prevEnd) {
+            return 0;
+        }
+
+        $query = $model::whereBetween($column, [$prevStart, $prevEnd]);
+        if ($scope) {
+            $scope($query);
+        }
+
+        return $query->count();
+    }
+
+    public function getInquiryData(Request $request)
+    {
+        $period = $request->query('period', $request->query('filter', 'month'));
+
+        [$labels, $data] = $this->timeSeries(Inquiry::class, $period, 'created_at');
+        $total = array_sum($data);
+        $previousTotal = $this->previousTotal(Inquiry::class, $period, 'created_at');
 
         $change = $previousTotal > 0
             ? round((($total - $previousTotal) / $previousTotal) * 100)
             : 0;
 
-
-        // Calculate average inquiries per day (based on data array)
-        $averagePerDay = count($data) > 0
-            ? round(array_sum($data) / count($data), 1)
-            : 0;
-
-        // Get peak day
-        $peakIndex = array_keys($data, max($data))[0] ?? null;
+        $averagePerDay = count($data) > 0 ? round($total / count($data), 1) : 0;
+        $peakIndex = ! empty($data) ? (array_keys($data, max($data))[0] ?? null) : null;
         $peakDay = $labels[$peakIndex] ?? 'N/A';
 
         return response()->json([
@@ -94,96 +175,47 @@ class AdminHomeController extends Controller
 
     public function getReservationData(Request $request)
     {
-        $filter = $request->query('filter', 'month');
-        $now = Carbon::now();
-        $labels = [];
-        $data = [];
+        $period = $request->query('period', $request->query('filter', 'month'));
 
-        $total = Reservation::count(); // all-time for metric card
-        $previousTotal = 0;
+        // Reservations are bucketed by EVENT DATE and cancelled bookings are excluded
+        // from the KPI, the chart and the trend.
+        $notCancelled = fn ($query) => $query->where('status', '!=', 'cancelled');
 
-        switch ($filter) {
-            case 'year':
-                for ($i = 0; $i < 12; $i++) {
-                    $month = $now->copy()->startOfYear()->addMonths($i);
-                    $count = Reservation::whereMonth('created_at', $month->month)
-                        ->whereYear('created_at', $month->year)
-                        ->count();
-                    $labels[] = $month->format('M');
-                    $data[] = $count;
-                }
-
-                // Previous year
-                $previousTotal = Reservation::whereYear('created_at', $now->year - 1)->count();
-                break;
-
-            case 'week':
-                for ($i = 6; $i >= 0; $i--) {
-                    $day = $now->copy()->subDays($i);
-                    $labels[] = $day->format('D');
-                    $data[] = Reservation::whereDate('created_at', $day->toDateString())->count();
-                }
-
-                // Previous week
-                for ($i = 13; $i >= 7; $i--) {
-                    $day = $now->copy()->subDays($i);
-                    $previousTotal += Reservation::whereDate('created_at', $day->toDateString())->count();
-                }
-                break;
-
-            case 'month':
-            default:
-                $start = $now->copy()->startOfMonth();
-                for ($i = 0; $i < 4; $i++) {
-                    $startOfWeek = $start->copy()->addWeeks($i);
-                    $endOfWeek = $startOfWeek->copy()->addDays(6);
-                    $labels[] = 'Week ' . ($i + 1);
-                    $count = Reservation::whereBetween('created_at', [$startOfWeek, $endOfWeek])->count();
-                    $data[] = $count;
-                }
-
-                // Previous month
-                $previousStart = $now->copy()->subMonth()->startOfMonth();
-                $previousEnd = $previousStart->copy()->endOfMonth();
-                $previousTotal = Reservation::whereBetween('created_at', [$previousStart, $previousEnd])->count();
-                break;
-        }
+        [$labels, $data] = $this->timeSeries(Reservation::class, $period, 'date', $notCancelled);
+        $total = array_sum($data);
+        $previousTotal = $this->previousTotal(Reservation::class, $period, 'date', $notCancelled);
 
         $growth = $previousTotal > 0
             ? round((($total - $previousTotal) / $previousTotal) * 100)
             : 0;
 
-        // Best month = index of max count
-        $bestIndex = array_keys($data, max($data))[0] ?? null;
+        $bestIndex = ! empty($data) ? (array_keys($data, max($data))[0] ?? null) : null;
         $bestLabel = $labels[$bestIndex] ?? 'N/A';
+        $bestPeriodLabel = match ($period) {
+            'week' => 'Best day',
+            'month' => 'Best week',
+            '3months', 'year', 'all' => 'Best month',
+            default => 'Best period',
+        };
 
         return response()->json([
             'labels' => $labels,
             'data' => $data,
             'total' => $total,
             'growth_rate' => $growth,
-            'best_period' => $bestLabel
+            'best_period' => $bestLabel,
+            'best_period_label' => $bestPeriodLabel,
         ]);
     }
 
     public function getThemeData(Request $request)
     {
-        $filter = $request->query('filter', 'month');
-        $now = now();
-        $startDate = $now->copy()->startOfMonth();
-        $endDate = $now->copy()->endOfMonth();
+        $period = $request->query('period', $request->query('filter', 'month'));
+        [$startDate, $endDate] = $this->periodBounds($period);
 
-        if ($filter === 'week') {
-            $startDate = $now->copy()->startOfWeek();
-            $endDate = $now->copy()->endOfWeek();
-        } elseif ($filter === 'year') {
-            $startDate = $now->copy()->startOfYear();
-            $endDate = $now->copy()->endOfYear();
-        }
-
-        // Get counts by theme_motif
+        // Category counts come from inquiries, so the range stays on created_at.
         $themes = Inquiry::select('theme_motif', DB::raw('count(*) as total'))
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->when($startDate, fn ($query) => $query->whereBetween('created_at', [$startDate, $endDate]))
             ->groupBy('theme_motif')
             ->orderByDesc('total')
             ->get();
@@ -201,21 +233,11 @@ class AdminHomeController extends Controller
 
     public function getEventTypeData(Request $request)
     {
-        $filter = $request->query('filter', 'month');
-        $now = now();
-        $startDate = $now->copy()->startOfMonth();
-        $endDate = $now->copy()->endOfMonth();
-
-        if ($filter === 'week') {
-            $startDate = $now->copy()->startOfWeek();
-            $endDate = $now->copy()->endOfWeek();
-        } elseif ($filter === 'year') {
-            $startDate = $now->copy()->startOfYear();
-            $endDate = $now->copy()->endOfYear();
-        }
+        $period = $request->query('period', $request->query('filter', 'month'));
+        [$startDate, $endDate] = $this->periodBounds($period);
 
         $types = Inquiry::select('event_type', DB::raw('count(*) as total'))
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->when($startDate, fn ($query) => $query->whereBetween('created_at', [$startDate, $endDate]))
             ->groupBy('event_type')
             ->orderByDesc('total')
             ->get();

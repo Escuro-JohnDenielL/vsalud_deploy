@@ -37,40 +37,26 @@
 @endpush
 
 @section('content')
-<div class="it-container">
-    <div class="admin-page-header">
-        <h1>IT Management</h1>
-        <p>System administration — manage admin accounts.</p>
-    </div>
+<div class="vs-page">
+    <x-ui.page-header title="IT Management" subtitle="Manage admin accounts and access.">
+        <x-slot:action>
+            <button class="admin-btn admin-btn-primary" data-bs-toggle="modal" data-bs-target="#createAdminModal">+ Create New Admin</button>
+        </x-slot:action>
+    </x-ui.page-header>
 
     @if (session('success'))
         <div class="alert alert-success" id="page-success">{{ session('success') }}</div>
     @endif
 
-    {{-- Stats --}}
-    <div class="admin-stats-row">
-        <div class="admin-stat-card">
-            <strong>{{ $activeAdminCount }}</strong>
-            <span>Active Admins</span>
-        </div>
-        <div class="admin-stat-card">
-            <strong>{{ $deletedAdminCount }}</strong>
-            <span>Deactivated</span>
-        </div>
-        <div class="admin-stat-card">
-            <strong>{{ $adminCount }}</strong>
-            <span>Total Accounts</span>
-        </div>
+    <div class="vs-stat-grid">
+        <x-ui.stat-card :value="$activeAdminCount" label="Active Admins" dot="success" />
+        <x-ui.stat-card :value="$deletedAdminCount" label="Deactivated" dot="danger" />
+        <x-ui.stat-card :value="$adminCount" label="Total Accounts" />
     </div>
 
-    {{-- Admin Accounts List --}}
-    <div class="admin-panel">
-        <div class="admin-panel-header">
-            <h2>All Admin Accounts</h2>
-            <button class="admin-btn admin-btn-primary" data-bs-toggle="modal" data-bs-target="#createAdminModal">+ Create New Admin</button>
-        </div>
-        <div class="table-wrap">
-            <table class="it-table">
+    <div class="vs-table-frame">
+        <div class="vs-table-wrap" role="region" tabindex="0" aria-label="Admin accounts table">
+            <table class="vs-table">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -79,71 +65,75 @@
                         <th>Phone</th>
                         <th>Role</th>
                         <th>Status</th>
-                        <th>Actions</th>
+                        <th class="vs-cell-actions">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($admins as $admin)
-                        <tr class="{{ $admin->trashed() ? 'deleted' : '' }}">
-                            <td>{{ $admin->admin_id }}</td>
+                        <tr class="vs-table__row">
+                            <td class="vs-cell-nowrap">{{ $admin->admin_id }}</td>
                             <td>{{ $admin->f_name }} {{ $admin->l_name }}</td>
-                            <td>{{ $admin->email }}</td>
-                            <td>{{ $admin->phone }}</td>
+                            <td class="vs-cell-email">{{ $admin->email }}</td>
+                            <td class="vs-cell-nowrap">{{ $admin->phone ?: 'None' }}</td>
                             <td>
                                 @if ($admin->role === 'super_admin')
-                                    <span class="badge-modern success">Super Admin</span>
+                                    <x-ui.badge variant="info">Super Admin</x-ui.badge>
                                 @else
-                                    <span class="badge-modern warning">Admin</span>
+                                    <x-ui.badge variant="neutral">Admin</x-ui.badge>
                                 @endif
                             </td>
                             <td>
                                 @if ($admin->trashed())
-                                    <span class="badge-modern danger">Deactivated</span>
+                                    <x-ui.badge variant="danger">Deactivated</x-ui.badge>
                                 @else
-                                    <span class="badge-modern success">Active</span>
+                                    <x-ui.badge variant="success">Active</x-ui.badge>
                                 @endif
                             </td>
-                            <td>
-                                <div class="admin-action-group">
-                                    @if (!$admin->trashed())
-                                        <a href="{{ route('admin.it.edit', $admin->admin_id) }}" class="admin-btn admin-btn-primary admin-btn-sm">Edit</a>
-                                        @if ($admin->role !== 'super_admin')
-                                            <a href="{{ route('admin.it.permissions', $admin->admin_id) }}" class="admin-btn admin-btn-primary admin-btn-sm">Permissions</a>
-                                        @endif
-                                        @if ($admin->role !== 'super_admin' && (int) $admin->admin_id !== (int) auth('admin')->id())
-                                            <form method="POST" action="{{ route('admin.it.deactivate', $admin->admin_id) }}" style="display:inline;" id="deactivate-form-{{ $admin->admin_id }}">
+                            <td class="vs-cell-actions">
+                                <x-ui.row-actions>
+                                    <x-slot:view>
+                                        @if (!$admin->trashed())
+                                            <a href="{{ route('admin.it.edit', $admin->admin_id) }}" class="vs-row-actions__view">Edit</a>
+                                        @else
+                                            <form method="POST" action="{{ route('admin.it.restore', $admin->admin_id) }}">
                                                 @csrf
-                                                <button type="button" class="admin-btn admin-btn-danger admin-btn-sm" onclick="showConfirmModal('Deactivate Admin', 'Deactivate {{ $admin->f_name }} {{ $admin->l_name }}?', 'deactivate-form-{{ $admin->admin_id }}')">Deactivate</button>
+                                                <button type="submit" class="vs-row-actions__view">Restore</button>
                                             </form>
                                         @endif
-                                    @else
-                                        <form method="POST" action="{{ route('admin.it.restore', $admin->admin_id) }}" style="display:inline;">
-                                            @csrf
-                                            <button type="submit" class="admin-btn admin-btn-primary admin-btn-sm">Restore</button>
-                                        </form>
-                                        <form method="POST" action="{{ route('admin.it.force-delete', $admin->admin_id) }}" style="display:inline;" id="force-delete-form-{{ $admin->admin_id }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="button" class="admin-btn admin-btn-danger admin-btn-sm" onclick="showConfirmModal('Delete Forever', 'Permanently delete this account? This cannot be undone.', 'force-delete-form-{{ $admin->admin_id }}')">Delete Forever</button>
-                                        </form>
-                                    @endif
-                                </div>
+                                    </x-slot:view>
+                                    <x-slot:menu>
+                                        @if (!$admin->trashed())
+                                            @if ($admin->role !== 'super_admin')
+                                                <a href="{{ route('admin.it.permissions', $admin->admin_id) }}" class="vs-overflow__item">Permissions</a>
+                                            @endif
+                                            @if ($admin->role !== 'super_admin' && (int) $admin->admin_id !== (int) auth('admin')->id())
+                                                <div class="vs-overflow__separator"></div>
+                                                <form method="POST" action="{{ route('admin.it.deactivate', $admin->admin_id) }}" id="deactivate-form-{{ $admin->admin_id }}">
+                                                    @csrf
+                                                    <button type="button" class="vs-overflow__item vs-overflow__item--danger" onclick="showConfirmModal('Deactivate Admin', 'Deactivate {{ $admin->f_name }} {{ $admin->l_name }}?', 'deactivate-form-{{ $admin->admin_id }}')">Deactivate</button>
+                                                </form>
+                                            @endif
+                                        @else
+                                            <div class="vs-overflow__separator"></div>
+                                            <form method="POST" action="{{ route('admin.it.force-delete', $admin->admin_id) }}" id="force-delete-form-{{ $admin->admin_id }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button" class="vs-overflow__item vs-overflow__item--danger" onclick="showConfirmModal('Delete Forever', 'Permanently delete this account? This cannot be undone.', 'force-delete-form-{{ $admin->admin_id }}')">Delete Forever</button>
+                                            </form>
+                                        @endif
+                                    </x-slot:menu>
+                                </x-ui.row-actions>
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="muted it-empty-cell">No admin accounts found.</td></tr>
+                        <x-ui.empty-row :colspan="7" message="No admin accounts found." />
                     @endforelse
                 </tbody>
             </table>
         </div>
-
-        <div class="pagination-info">
-            Showing {{ $admins->firstItem() ?? 0 }} – {{ $admins->lastItem() ?? 0 }} of {{ $admins->total() }} admins
-        </div>
-        <div class="it-modal-actions">
-            {{ $admins->links() }}
-        </div>
     </div>
+
+    {{ $admins->links() }}
 </div>
 
 {{-- Create Admin Modal --}}

@@ -1,0 +1,607 @@
+/* ============================================================
+   Shared admin UI (batch 3). Scoped to .vs-layout--admin.
+   Reuses existing palette, fonts and CSS variables only.
+   ============================================================ */
+
+/* --- Standard page container (one max width for admin pages) --- */
+.vs-layout--admin .vs-page {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* --- Page header --- */
+.vs-layout--admin .vs-page-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  gap: var(--vs-space-4);
+  margin-bottom: var(--vs-space-6);
+}
+
+.vs-layout--admin .vs-page-header__title-wrap {
+  grid-column: 2;
+  text-align: center;
+}
+
+.vs-layout--admin .vs-page-header__title {
+  margin: 0;
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-display);
+  font-size: clamp(26px, 3vw, 34px);
+  font-weight: var(--vs-weight-bold);
+  line-height: var(--vs-leading-tight);
+}
+
+.vs-layout--admin .vs-page-header__sub {
+  margin: var(--vs-space-1) 0 0;
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-normal);
+  text-wrap: balance;
+}
+
+.vs-layout--admin .vs-page-header__action {
+  grid-column: 3;
+  justify-self: end;
+  align-self: center;
+}
+
+@media (max-width: 767.98px) {
+  .vs-layout--admin .vs-page-header {
+    grid-template-columns: 1fr;
+    gap: var(--vs-space-3);
+  }
+
+  .vs-layout--admin .vs-page-header__title-wrap,
+  .vs-layout--admin .vs-page-header__action {
+    grid-column: 1;
+  }
+
+  .vs-layout--admin .vs-page-header__action {
+    justify-self: stretch;
+  }
+
+  .vs-layout--admin .vs-page-header__action > * {
+    width: 100%;
+  }
+}
+
+/* --- Data table: extends the existing app.css .vs-table (cream header) --- */
+.vs-layout--admin .vs-table-frame {
+  overflow: hidden;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
+  box-shadow: var(--vs-shadow-card);
+}
+
+.vs-layout--admin .vs-table-frame .vs-table-wrap {
+  width: 100%;
+}
+
+/* Subtle row hover even when rows do not carry .vs-table__row */
+.vs-layout--admin .vs-table tbody tr:hover td {
+  background: var(--vs-color-surface-pale-green);
+}
+
+.vs-layout--admin .vs-table tbody td {
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+/* Never break an email mid-word; let the table scroll instead. */
+.vs-layout--admin .vs-table .vs-cell-email,
+.vs-layout--admin .vs-table .vs-cell-nowrap {
+  white-space: nowrap;
+}
+
+/* Truncate instead of breaking mid-word (pair with a title tooltip). */
+.vs-layout--admin .vs-table .vs-cell-truncate {
+  display: inline-block;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+.vs-layout--admin .vs-table .vs-cell-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.vs-layout--admin .vs-table .vs-cell-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* --- Empty state (inside a table body) --- */
+.vs-layout--admin .vs-empty-row td {
+  padding: 0;
+  border-bottom: 0;
+}
+
+.vs-layout--admin .vs-empty {
+  padding: var(--vs-space-10) var(--vs-space-6);
+  text-align: center;
+}
+
+.vs-layout--admin .vs-empty__msg {
+  margin: 0;
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-body-min);
+}
+
+.vs-layout--admin .vs-empty__action {
+  margin-top: var(--vs-space-4);
+}
+
+/* --- Status badge --- */
+.vs-layout--admin .vs-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vs-space-1);
+  padding: 3px 10px;
+  border: 1px solid var(--vs-status-neutral-border);
+  border-radius: var(--vs-radius-pill);
+  background: var(--vs-status-neutral-bg);
+  color: var(--vs-status-neutral-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-secondary-min);
+  font-weight: var(--vs-weight-semibold);
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.vs-layout--admin .vs-badge--success {
+  border-color: var(--vs-status-success-border);
+  background: var(--vs-status-success-bg);
+  color: var(--vs-status-success-text);
+}
+
+.vs-layout--admin .vs-badge--warning {
+  border-color: var(--vs-status-warning-border);
+  background: var(--vs-status-warning-bg);
+  color: var(--vs-status-warning-text);
+}
+
+.vs-layout--admin .vs-badge--danger {
+  border-color: var(--vs-status-danger-border);
+  background: var(--vs-status-danger-bg);
+  color: var(--vs-status-danger-text);
+}
+
+.vs-layout--admin .vs-badge--info {
+  border-color: var(--vs-status-info-border);
+  background: var(--vs-status-info-bg);
+  color: var(--vs-status-info-text);
+}
+
+.vs-layout--admin .vs-badge--neutral {
+  border-color: var(--vs-status-neutral-border);
+  background: var(--vs-status-neutral-bg);
+  color: var(--vs-status-neutral-text);
+}
+
+/* --- Status select (badge height, colour variants) --- */
+.vs-layout--admin .vs-status-select {
+  width: auto;
+  max-width: 100%;
+  min-height: 30px;
+  height: 30px;
+  min-width: 140px;
+  padding: 2px 10px;
+  border: 1px solid var(--vs-status-neutral-border);
+  border-radius: var(--vs-radius-pill);
+  background: var(--vs-status-neutral-bg);
+  color: var(--vs-status-neutral-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-secondary-min);
+  font-weight: var(--vs-weight-semibold);
+  cursor: pointer;
+}
+
+.vs-layout--admin .vs-status-select:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.vs-layout--admin .vs-status-select--success {
+  border-color: var(--vs-status-success-border);
+  background: var(--vs-status-success-bg);
+  color: var(--vs-status-success-text);
+}
+
+.vs-layout--admin .vs-status-select--warning {
+  border-color: var(--vs-status-warning-border);
+  background: var(--vs-status-warning-bg);
+  color: var(--vs-status-warning-text);
+}
+
+.vs-layout--admin .vs-status-select--danger {
+  border-color: var(--vs-status-danger-border);
+  background: var(--vs-status-danger-bg);
+  color: var(--vs-status-danger-text);
+}
+
+.vs-layout--admin .vs-status-select--info {
+  border-color: var(--vs-status-info-border);
+  background: var(--vs-status-info-bg);
+  color: var(--vs-status-info-text);
+}
+
+/* --- Row actions (View + overflow menu) --- */
+.vs-layout--admin .vs-row-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vs-space-2);
+  justify-content: flex-end;
+}
+
+.vs-layout--admin .vs-row-actions__view {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vs-space-1);
+  min-height: 32px;
+  padding: 5px 14px;
+  border: 1px solid var(--vs-button-secondary-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-button-secondary-bg);
+  color: var(--vs-button-secondary-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-secondary-min);
+  font-weight: var(--vs-weight-semibold);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.vs-layout--admin .vs-row-actions__view:hover {
+  background: var(--vs-button-secondary-hover-bg);
+  color: var(--vs-button-secondary-hover-text);
+}
+
+.vs-layout--admin .vs-overflow {
+  position: relative;
+}
+
+.vs-layout--admin .vs-overflow__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--vs-color-border, var(--vs-status-neutral-border));
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface);
+  color: var(--vs-color-text-secondary);
+  cursor: pointer;
+}
+
+.vs-layout--admin .vs-overflow__toggle:hover {
+  background: var(--vs-color-surface-pale-green);
+  color: var(--vs-color-dark-green);
+}
+
+.vs-layout--admin .vs-overflow__toggle:focus-visible,
+.vs-layout--admin .vs-overflow__menu :is(button, a):focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.vs-layout--admin .vs-overflow__menu {
+  /* Fixed so it escapes .vs-table-wrap (overflow:auto) instead of being clipped.
+     Top/left are set by resources/js/admin/shared.js. */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 300;
+  display: flex;
+  min-width: 190px;
+  max-height: calc(100vh - 16px);
+  overflow-y: auto;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--vs-space-1);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface);
+  box-shadow: var(--vs-shadow-card);
+}
+
+.vs-layout--admin .vs-overflow__menu[hidden] {
+  display: none;
+}
+
+.vs-layout--admin .vs-overflow__item {
+  display: block;
+  width: 100%;
+  padding: var(--vs-space-2) var(--vs-space-3);
+  border: 0;
+  border-radius: var(--vs-radius-control);
+  background: transparent;
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-medium);
+  text-align: left;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.vs-layout--admin .vs-overflow__item:hover {
+  background: var(--vs-color-surface-pale-green);
+  color: var(--vs-color-dark-green);
+}
+
+.vs-layout--admin .vs-overflow__item--danger {
+  color: var(--vs-status-danger-text);
+}
+
+.vs-layout--admin .vs-overflow__item--danger:hover {
+  background: var(--vs-status-danger-bg);
+  color: var(--vs-status-danger-text);
+}
+
+.vs-layout--admin .vs-overflow__separator {
+  height: 1px;
+  margin: var(--vs-space-1) 0;
+  background: var(--vs-color-surface-pale-green);
+}
+
+.vs-layout--admin .vs-overflow__menu form {
+  margin: 0;
+}
+
+.vs-layout--admin .vs-overflow__menu form .vs-overflow__item {
+  width: 100%;
+}
+
+/* --- Stat card --- */
+.vs-layout--admin .vs-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--vs-space-4);
+  margin-bottom: var(--vs-space-6);
+}
+
+.vs-layout--admin .vs-stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vs-space-1);
+  padding: var(--vs-space-4) var(--vs-space-5);
+  border: 1px solid var(--vs-color-border, var(--vs-status-neutral-border));
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
+}
+
+.vs-layout--admin .vs-stat-card__value {
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-ui);
+  font-size: 30px;
+  font-weight: var(--vs-weight-bold);
+  line-height: 1.1;
+}
+
+.vs-layout--admin .vs-stat-card__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vs-space-2);
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-secondary-min);
+  font-weight: var(--vs-weight-medium);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.vs-layout--admin .vs-stat-card__dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  border-radius: 50%;
+  background: var(--vs-status-neutral-border);
+}
+
+.vs-layout--admin .vs-stat-card__dot--success { background: var(--vs-status-success-border); }
+.vs-layout--admin .vs-stat-card__dot--warning { background: var(--vs-status-warning-border); }
+.vs-layout--admin .vs-stat-card__dot--danger { background: var(--vs-status-danger-border); }
+.vs-layout--admin .vs-stat-card__dot--info { background: var(--vs-status-info-border); }
+
+/* --- Report Dashboard KPI trend line --- */
+.vs-layout--admin .report-last-updated {
+  margin: calc(-1 * var(--vs-space-4)) 0 var(--vs-space-4);
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-secondary-min);
+  text-align: center;
+}
+
+.vs-layout--admin .vs-stat-card .metric-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: var(--vs-space-2);
+  font-size: var(--vs-text-secondary-min);
+  font-weight: var(--vs-weight-semibold);
+}
+
+.vs-layout--admin .vs-stat-card .metric-change.positive {
+  color: var(--vs-status-success-text);
+}
+
+.vs-layout--admin .vs-stat-card .metric-change.negative {
+  color: var(--vs-status-danger-text);
+}
+
+/* --- Report Dashboard chart empty state --- */
+.vs-layout--admin .vs-chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  margin: 0;
+  color: var(--vs-color-text-secondary);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  text-align: center;
+}
+
+/* --- Report Dashboard period selector --- */
+.vs-layout--admin .report-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--vs-space-2);
+  margin-bottom: var(--vs-space-5);
+}
+
+/* --- Muted "None" placeholder --- */
+.vs-layout--admin .vs-none {
+  color: var(--vs-color-text-secondary);
+}
+
+/* --- Toolbar (search and bulk actions above a table) --- */
+.vs-layout--admin .vs-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--vs-space-4);
+  margin-bottom: var(--vs-space-4);
+}
+
+.vs-layout--admin .vs-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vs-space-1);
+}
+
+.vs-layout--admin .vs-toolbar .vs-field {
+  min-width: 260px;
+}
+
+.vs-layout--admin .vs-label {
+  color: var(--vs-color-text);
+  font-size: var(--vs-text-secondary-min);
+  font-weight: var(--vs-weight-semibold);
+}
+
+.vs-layout--admin .vs-input {
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+}
+
+.vs-layout--admin .vs-input:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.vs-layout--admin .vs-table .vs-cell-select {
+  width: 44px;
+  text-align: center;
+}
+
+.vs-layout--admin .vs-table .vs-cell-select input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--vs-color-dark-green);
+}
+
+/* --- Expandable long text (for example a cancellation reason) --- */
+.vs-layout--admin .vs-reason {
+  display: block;
+  max-width: 34rem;
+}
+
+.vs-layout--admin .vs-reason__summary {
+  cursor: pointer;
+  color: var(--vs-color-dark-green);
+  font-weight: var(--vs-weight-medium);
+}
+
+.vs-layout--admin .vs-reason__summary:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.vs-layout--admin .vs-reason__full {
+  margin: var(--vs-space-2) 0 0;
+  color: var(--vs-color-text);
+  white-space: pre-wrap;
+}
+
+/* --- Pagination (Bootstrap 5 markup) --- */
+.vs-layout--admin .vs-pagination {
+  margin-top: var(--vs-space-5);
+  padding: var(--vs-space-4) var(--vs-space-4) 0;
+}
+
+.vs-layout--admin .vs-pagination .pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vs-space-1);
+  margin: 0 0 var(--vs-space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.vs-layout--admin .vs-pagination .page-link {
+  min-width: 38px;
+  padding: 6px 10px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface);
+  color: var(--vs-color-dark-green);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  text-align: center;
+  text-decoration: none;
+}
+
+.vs-layout--admin .vs-pagination .page-link:hover {
+  background: var(--vs-color-surface-pale-green);
+  color: var(--vs-color-deep-green);
+}
+
+.vs-layout--admin .vs-pagination .page-item.active .page-link {
+  border-color: var(--vs-color-dark-green);
+  background: var(--vs-color-dark-green);
+  color: var(--vs-color-white);
+}
+
+.vs-layout--admin .vs-pagination .page-item.disabled .page-link {
+  border-color: var(--vs-status-neutral-border);
+  background: var(--vs-status-neutral-bg);
+  color: var(--vs-status-neutral-text);
+  cursor: not-allowed;
+}
+
+.vs-layout--admin .vs-pagination .page-link:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.vs-layout--admin .vs-pagination__summary {
+  margin: 0;
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-secondary-min);
+  line-height: var(--vs-leading-normal);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-layout--admin .vs-table tbody tr:hover td,
+  .vs-layout--admin .vs-row-actions__view,
+  .vs-layout--admin .vs-overflow__toggle {
+    transition: none;
+  }
+}
