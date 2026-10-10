@@ -6,42 +6,33 @@
     <title>Password Reset Code</title>
 </head>
 
-<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 30px; color: #333;">
+<body style="margin:0; padding:24px 12px; background-color:#f5f2df; color:#004c3a; font-family:Inter, Arial, sans-serif; font-size:16px; line-height:1.5;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f5f2df" style="width:100%; border-collapse:collapse; background-color:#f5f2df; color:#004c3a;"><tr><td align="center" bgcolor="#f5f2df" style="background-color:#f5f2df; color:#004c3a;">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="width:100%; max-width:600px; border-collapse:collapse; background-color:#ffffff; color:#004c3a;"><tr><td bgcolor="#ffffff" style="padding:28px; background-color:#ffffff; color:#004c3a; font-family:Inter, Arial, sans-serif; font-size:16px; line-height:1.5;">
 
-    <div
-        style="max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+        <h2 style="margin:0 0 20px; background-color:#ffffff; color:#004c3a; font-family:Inter, Arial, sans-serif; font-size:22px; line-height:1.4;">Hi {{ $data['name'] }},</h2>
 
-        <h2 style="color: #2c3e50;">Hi {{ $data['name'] }},</h2>
-
-        <p style="font-size: 16px;">
+        <p style="margin:0 0 16px; background-color:#ffffff; color:#004c3a; font-size:16px; line-height:1.5;">
             We received a request to change your password for your Villa Salud account.
         </p>
 
-        <p style="font-size: 16px;">
+        <p style="margin:0 0 16px; background-color:#ffffff; color:#004c3a; font-size:16px; line-height:1.5;">
             Use the verification code below to proceed with changing your password. This code will expire in <strong>10 minutes</strong>.
         </p>
 
-        <div style="text-align: center; margin: 30px 0;">
-            <div style="display: inline-block; background-color: #f0f4f8; padding: 20px 40px; border-radius: 8px; letter-spacing: 8px; font-size: 32px; font-weight: bold; color: #0d7a3e;">
-                {{ $data['code'] }}
-            </div>
-        </div>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#e4eff8" style="width:100%; border-collapse:collapse; background-color:#e4eff8; color:#123d67;"><tr><td align="center" bgcolor="#e4eff8" style="padding:20px; background-color:#e4eff8; color:#123d67; font-size:32px; font-weight:bold; letter-spacing:8px; line-height:1.4;">{{ $data['code'] }}</td></tr></table>
 
-        <p style="font-size: 16px; color: #6b7280;">
+        <p style="margin:16px 0; background-color:#ffffff; color:#4b5d55; font-size:16px; line-height:1.5;">
             If you did not request a password change, please ignore this email or contact support immediately.
         </p>
 
-        <div style="background-color: #fdf2f2; border-left: 4px solid #e74c3c; padding: 15px; margin: 20px 0; border-radius: 4px;">
-            <p style="margin: 0; font-size: 14px; color: #721c24;">
-                ⚠️ <strong>Security Notice:</strong> Never share this code with anyone. Our team will never ask for your verification code.
-            </p>
-        </div>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f6e8e6" style="width:100%; margin:20px 0; border-collapse:collapse; background-color:#f6e8e6; color:#743232;"><tr><td bgcolor="#f6e8e6" style="padding:15px; background-color:#f6e8e6; color:#743232; font-size:14px; line-height:1.5;"><strong>Security Notice:</strong> Never share this code with anyone. Our team will never ask for your verification code.</td></tr></table>
 
-        <p style="margin-top: 30px;">
+        <p style="margin:24px 0 0; background-color:#ffffff; color:#004c3a; font-size:16px; line-height:1.5;">
             Warm regards,<br>
             <strong>Events Team</strong>
         </p>
-    </div>
-
+        </td></tr></table>
+    </td></tr></table>
 </body>
 </html>
