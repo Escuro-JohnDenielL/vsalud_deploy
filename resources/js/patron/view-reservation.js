@@ -20,15 +20,23 @@ const RESERVATION_STATUS_CLASSES = {
     canceled: "badge-danger",
 };
 
+const RESERVATION_STATUS_TOKENS = {
+    pending: "vs-badge--warning",
+    "in progress": "vs-badge--info",
+    completed: "vs-badge--success",
+    cancelled: "vs-badge--danger",
+    canceled: "vs-badge--danger",
+};
+
 /**
  * Payment status label map. The single place the display-only labels for the
  * payments.status enum live. The DB enum is not changed.
  */
 const PAYMENT_STATUS = {
-    pending: { label: "Awaiting Verification", badgeClass: "badge-warning" },
-    approved: { label: "Payment Confirmed", badgeClass: "badge-success" },
-    rejected: { label: "Payment Rejected", badgeClass: "badge-danger" },
-    refunded: { label: "Refunded", badgeClass: "badge-muted" },
+    pending: { label: "Awaiting Verification", badgeClass: "badge-warning", tokenClass: "vs-badge--warning" },
+    approved: { label: "Payment Confirmed", badgeClass: "badge-success", tokenClass: "vs-badge--success" },
+    rejected: { label: "Payment Rejected", badgeClass: "badge-danger", tokenClass: "vs-badge--danger" },
+    refunded: { label: "Refunded", badgeClass: "badge-muted", tokenClass: "vs-badge--neutral" },
 };
 
 /**
@@ -117,6 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Pending / In Progress / Completed / Cancelled.
             const statusRaw = String(r.Status || "Pending").trim().toLowerCase();
             const badgeClass = RESERVATION_STATUS_CLASSES[statusRaw] || "badge-muted";
+            const statusTokenClass = RESERVATION_STATUS_TOKENS[statusRaw] || "vs-badge--neutral";
 
             // Payment status badge (second badge). No payment or a null status
             // renders nothing; an unrecognized status falls back to its escaped
@@ -128,7 +137,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const payment = PAYMENT_STATUS[paymentKey];
                 const paymentLabel = payment ? payment.label : String(paymentRaw);
                 const paymentBadgeClass = payment ? payment.badgeClass : "badge-muted";
-                paymentBadgeHtml = `<span class="badge-modern ${paymentBadgeClass}">${escHtml(paymentLabel)}</span>`;
+                const paymentTokenClass = payment ? payment.tokenClass : "vs-badge--neutral";
+                paymentBadgeHtml = `<span class="badge-modern ${paymentBadgeClass} vs-badge ${paymentTokenClass}">${escHtml(paymentLabel)}</span>`;
             }
 
             // Build organized sections: known keys first, then extras
@@ -139,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
             let headerHtml = `
                 <div class="modal-detail-header">
                     <h3 class="detail-name">${escHtml(r.Name || "Reservation Details")}</h3>
-                    <span class="badge-modern ${badgeClass}">${escHtml(r.Status || "Pending")}</span>
+                    <span class="badge-modern ${badgeClass} vs-badge ${statusTokenClass}">${escHtml(r.Status || "Pending")}</span>
                     ${paymentBadgeHtml}
                 </div>
             `;
