@@ -1,0 +1,142 @@
+:root {
+  --error-deep-green: #004c3a;
+  --error-dark-green: #006b53;
+  --error-white: #ffffff;
+  --error-beige: #f5f2df;
+  --error-text-secondary: #4b5d55;
+  --error-danger-text: #743232;
+  --error-danger-bg: #f6e8e6;
+  --error-danger-border: #a15852;
+  --error-warning-text: #634800;
+  --error-warning-bg: #fff2d1;
+  --error-warning-border: #98731d;
+  --error-info-text: #123d67;
+  --error-info-bg: #e4eff8;
+  --error-info-border: #47779f;
+  --error-neutral-text: #46514c;
+  --error-neutral-bg: #edf0ed;
+  --error-neutral-border: #707c75;
+}
+
+body.vs-error-page {
+  min-height: 100vh;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--error-beige);
+  color: var(--error-deep-green);
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.vs-error-page *,
+.vs-error-page *::before,
+.vs-error-page *::after {
+  box-sizing: border-box;
+}
+
+.vs-error-page__layout {
+  width: min(100%, 48rem);
+}
+
+.vs-error-page .vs-card {
+  padding: 32px;
+  border: 1px solid var(--error-dark-green);
+  border-radius: 16px;
+  background: var(--error-white);
+  box-shadow: 0 8px 24px rgba(0, 76, 58, 0.12);
+  text-align: center;
+}
+
+.vs-error-page .vs-badge {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  padding: 4px 8px;
+  border: 1px solid var(--error-neutral-border);
+  border-radius: 9999px;
+  background: var(--error-neutral-bg);
+  color: var(--error-neutral-text);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.vs-error-page .vs-badge--danger {
+  border-color: var(--error-danger-border);
+  background: var(--error-danger-bg);
+  color: var(--error-danger-text);
+}
+
+.vs-error-page .vs-badge--warning {
+  border-color: var(--error-warning-border);
+  background: var(--error-warning-bg);
+  color: var(--error-warning-text);
+}
+
+.vs-error-page .vs-badge--info {
+  border-color: var(--error-info-border);
+  background: var(--error-info-bg);
+  color: var(--error-info-text);
+}
+
+.vs-error-page .vs-badge--neutral {
+  border-color: var(--error-neutral-border);
+  background: var(--error-neutral-bg);
+  color: var(--error-neutral-text);
+}
+
+.vs-error-page__title {
+  margin: 16px 0;
+  color: var(--error-deep-green);
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 32px;
+  line-height: 1.25;
+}
+
+.vs-error-page__message {
+  margin: 0 0 24px;
+  color: var(--error-text-secondary);
+}
+
+.vs-error-page .vs-btn {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border: 1px solid var(--error-dark-green);
+  border-radius: 10px;
+  background: var(--error-dark-green);
+  color: var(--error-white);
+  font: 600 14px/1.4 "Inter", Arial, sans-serif;
+  text-align: center;
+  text-decoration: none;
+}
+
+.vs-error-page .vs-btn--primary:hover {
+  border-color: #005b48;
+  background: #005b48;
+  color: var(--error-white);
+}
+
+.vs-error-page .vs-btn:focus-visible {
+  outline: 2px solid var(--error-dark-green);
+  outline-offset: 3px;
+}
+
+@media (max-width: 575.98px) {
+  body.vs-error-page {
+    padding: 16px;
+  }
+
+  .vs-error-page .vs-card {
+    padding: 24px 20px;
+  }
+
+  .vs-error-page__title {
+    font-size: 28px;
+  }
+}
