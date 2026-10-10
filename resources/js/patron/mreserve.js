@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // ✅ Agreement Modal Logic
+    // Agreement Modal Logic
     const agreementModal = document.getElementById("agreementModal");
     const agreementContent = document.getElementById("agreementContent");
     const agreeButton = document.getElementById("agreeButton");
@@ -188,7 +188,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ✅ Calendar Rendering
+    // Calendar Rendering
     const calendar = document.getElementById("calendar");
     const monthYear = document.getElementById("month-year");
     const prevMonthBtn = document.getElementById("prevMonth");
@@ -338,20 +338,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!name) {
             msgEl.textContent = "Please enter your name.";
-            msgEl.style.color = "#e74c3c";
+            msgEl.classList.remove("vs-state--neutral");
+            msgEl.classList.add("vs-state--error");
             msgEl.style.display = "block";
             return;
         }
 
         if (!email || !email.includes("@")) {
             msgEl.textContent = "Please enter a valid email address.";
-            msgEl.style.color = "#e74c3c";
+            msgEl.classList.remove("vs-state--neutral");
+            msgEl.classList.add("vs-state--error");
             msgEl.style.display = "block";
             return;
         }
 
         msgEl.textContent = "Joining waitlist...";
-        msgEl.style.color = "#555";
+        msgEl.classList.remove("vs-state--error");
+        msgEl.classList.add("vs-state--neutral");
         msgEl.style.display = "block";
         this.disabled = true;
 
@@ -380,14 +383,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
                 } else {
                     msgEl.textContent = data.message || "Failed to join waitlist. Please try again.";
-                    msgEl.style.color = "#e74c3c";
+                    msgEl.classList.remove("vs-state--neutral");
+                    msgEl.classList.add("vs-state--error");
                     msgEl.style.display = "block";
                 }
             })
             .catch((err) => {
                 this.disabled = false;
                 msgEl.textContent = "An error occurred. Please try again.";
-                msgEl.style.color = "#e74c3c";
+                msgEl.classList.remove("vs-state--neutral");
+                msgEl.classList.add("vs-state--error");
                 msgEl.style.display = "block";
                 console.error("Waitlist join error:", err);
             });

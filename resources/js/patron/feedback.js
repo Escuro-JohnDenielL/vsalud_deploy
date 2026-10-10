@@ -74,7 +74,8 @@ document.addEventListener('DOMContentLoaded', function() {
             field.parentNode.appendChild(errorElement);
         }
         errorElement.textContent = message;
-        field.style.borderColor = '#dc3545';
+        field.classList.remove('vs-state--neutral');
+        field.classList.add('vs-state--error');
     }
     
     function clearError(field) {
@@ -82,7 +83,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (errorElement && !errorElement.textContent.includes('The ')) {
             errorElement.textContent = '';
         }
-        field.style.borderColor = '#ccc';
+        field.classList.remove('vs-state--error');
+        field.classList.add('vs-state--neutral');
     }
     
     // Form submission with loading state

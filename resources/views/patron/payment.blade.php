@@ -117,8 +117,7 @@
                         <span id="receiptError" class="input-error">Please upload your payment receipt.</span>
                         <button type="submit" id="submitReceipt" class="btn-submit">Submit Receipt</button>
                     </form>
-                    <button type="button" id="backButton" class="btn-submit"
-                        style="background-color:#6c757d;">Back</button>
+                    <button type="button" id="backButton" class="btn-submit payment-back-button">Back</button>
                     <div class="loader">
                         <div class="loader-spinner"></div>
                     </div>
