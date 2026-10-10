@@ -13,9 +13,10 @@
             <p>View and manage customer inquiries.</p>
         </div>
 
-        <div class="table-container">
+        <div class="table-container vs-inquiry-table-container">
             <div class="table-wrapper">
-                <table class="inquiry-table">
+                <div class="vs-table-wrap" role="region" tabindex="0" aria-label="Inquiries table">
+                <table class="inquiry-table vs-table">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -34,7 +35,7 @@
                     </thead>
                     <tbody>
                         @forelse ($inquiries as $index => $inquiry)
-                            <tr data-inquiry-id="{{ $inquiry->inquiry_id }}">
+                            <tr class="vs-table__row" data-inquiry-id="{{ $inquiry->inquiry_id }}">
                                 <td>{{ $inquiry->patron->name ?? 'N/A' }}</td>
                                 <td>{{ $inquiry->patron->email ?? '-' }}</td>
                                 <td>{{ $inquiry->patron->contact_number ?? '-' }}</td>
@@ -45,7 +46,7 @@
                                 <td>{{ ($inquiry->event_type === 'Others' ? $inquiry->other_event_type : $inquiry->event_type) ?? '-' }}</td>
                                 <td>{{ ($inquiry->theme_motif === 'Others' ? $inquiry->other_theme_motif : $inquiry->theme_motif) ?? '-' }}</td>
                                 <td>
-                                    <select class="status-dropdown" data-index="{{ $index }}">
+                                    <select class="status-dropdown vs-status-select" data-index="{{ $index }}">
                                         <option value="" {{ $inquiry->status == null ? 'selected hidden' : 'hidden' }}>Set Status</option>
                                         <option value="Pending" {{ $inquiry->status === 'Pending' ? 'selected' : '' }}>Pending</option>
                                         <option value="In Progress" {{ $inquiry->status === 'In Progress' ? 'selected' : '' }}>In Progress</option>
@@ -54,9 +55,9 @@
                                     </select>
                                 </td>
                                 <td>patron</td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="admin-btn admin-btn-ghost admin-btn-sm view-inquiry-btn"
+                                <td class="vs-table__actions">
+                                    <div class="action-buttons vs-table__action-list">
+                                        <button class="admin-btn admin-btn-ghost admin-btn-sm vs-btn vs-btn--secondary vs-btn--sm view-inquiry-btn"
                                             data-name="{{ $inquiry->patron->name ?? 'N/A' }}"
                                             data-email="{{ $inquiry->patron->email ?? '-' }}"
                                             data-contact="{{ $inquiry->patron->contact_number ?? '-' }}"
@@ -68,7 +69,7 @@
                                             data-theme="{{ ($inquiry->theme_motif === 'Others' ? $inquiry->other_theme_motif : $inquiry->theme_motif) ?? '-' }}"
                                             data-status="{{ $inquiry->status ?? 'Pending' }}"
                                             data-message="{{ $inquiry->message ?? '' }}">View</button>
-                                        <button class="admin-btn admin-btn-primary admin-btn-sm reply-btn"
+                                        <button class="admin-btn admin-btn-primary admin-btn-sm vs-btn vs-btn--primary vs-btn--sm reply-btn"
                                             data-inquiry-id="{{ $inquiry->inquiry_id }}"
                                             data-email="{{ $inquiry->patron->email ?? '-' }}"
                                             data-status="{{ $inquiry->status ?? 'Pending' }}">Reply</button>
@@ -76,23 +77,24 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr>
+                            <tr class="vs-table__row">
                                 <td colspan="12" class="text-center">No inquiries found.</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
-            <div style="margin-top: 16px; padding: 16px 20px;">
+            <div class="vs-inquiry-pagination">
                 {{ $inquiries->links() }}
             </div>
         </div>
     </div>
 
     {{-- View Inquiry Modal --}}
-    <div id="viewInquiryModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" id="closeViewInquiryModal">&times;</span>
+    <div id="viewInquiryModal" class="modal vs-modal">
+        <div class="modal-content vs-modal__dialog">
+            <button type="button" class="close-btn vs-modal__close" id="closeViewInquiryModal" aria-label="Close inquiry details"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
             <h2>Inquiry Details</h2>
             <div class="inquiry-detail">
                 <div class="detail-section">
@@ -113,7 +115,7 @@
                         <span class="detail-label">Tracking Code</span>
                         <span class="detail-value" id="view-code"></span>
                     </div>
-                    <div class="detail-row" style="border:none;">
+                    <div class="detail-row vs-inquiry-detail-row--last">
                         <span class="detail-label">Status</span>
                         <span class="detail-value" id="view-status"></span>
                     </div>
@@ -136,7 +138,7 @@
                         <span class="detail-label">Event Type</span>
                         <span class="detail-value" id="view-event-type"></span>
                     </div>
-                    <div class="detail-row" style="border:none;">
+                    <div class="detail-row vs-inquiry-detail-row--last">
                         <span class="detail-label">Theme and Motif</span>
                         <span class="detail-value" id="view-theme"></span>
                     </div>
@@ -150,24 +152,24 @@
     </div>
 
     {{-- Reply Modal --}}
-    <div id="replyModal" class="modal">
-        <div class="modal-content modal-lg">
-            <span class="close-btn" id="closeReplyModal">&times;</span>
+    <div id="replyModal" class="modal vs-modal">
+        <div class="modal-content modal-lg vs-modal__dialog">
+            <button type="button" class="close-btn vs-modal__close" id="closeReplyModal" aria-label="Close reply dialog"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
             <h2>Reply to Inquiry</h2>
-            <p style="font-size: 14px; color: var(--color-text-muted); margin: -8px 0 16px;">Send a response to the patron's inquiry.</p>
+            <p class="vs-inquiry-copy">Send a response to the patron's inquiry.</p>
 
             <div class="detail-section">
                 <div class="detail-section-title">Your Message</div>
-                <p style="font-size: 13px; color: var(--color-text-muted); margin-top: -8px;">Tip: use <strong>AI Draft Reply</strong> below to generate a personalized draft from the inquiry.</p>
-                <p style="font-size: 12px; color: var(--color-text-muted); font-style: italic; margin-top: -4px;">Disclaimer: AI drafts are generated from general Villa Salud info only — package prices and details inside the venue may not be fully accurate. Always review and edit before sending.</p>
-                <textarea id="replyMessage" placeholder="Type your reply..." rows="6"></textarea>
+                <p class="vs-inquiry-copy vs-inquiry-copy--tip">Tip: use <strong>AI Draft Reply</strong> below to generate a personalized draft from the inquiry.</p>
+                <p class="vs-inquiry-copy vs-inquiry-copy--disclaimer">Disclaimer: AI drafts are generated from general Villa Salud info only; package prices and details inside the venue may not be fully accurate. Always review and edit before sending.</p>
+                <textarea id="replyMessage" class="vs-form-control" placeholder="Type your reply..." rows="6"></textarea>
                 <p id="aiDraftStatus" class="ai-draft-status"></p>
             </div>
 
             <div class="modal-footer">
                 <button id="cancelReplyBtn" class="admin-btn admin-btn-ghost">Cancel</button>
                 <button id="aiDraftBtn" class="admin-btn admin-btn-ghost" type="button">
-                    <span id="aiDraftLabel">✨ AI Draft Reply</span>
+                    <span id="aiDraftLabel">AI Draft Reply</span>
                 </button>
                 <button id="sendReplyBtn" class="admin-btn admin-btn-primary">Send Reply</button>
             </div>

@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (data.success) {
                 replyMessage.value = data.draft;
-                aiDraftStatus.textContent = "Draft generated — review and edit before sending.";
+                aiDraftStatus.textContent = "Draft generated. Review and edit before sending.";
                 aiDraftStatus.className = "ai-draft-status ai-draft-success";
             } else {
                 aiDraftStatus.textContent = data.message || "Could not generate a draft.";
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
             aiDraftStatus.className = "ai-draft-status ai-draft-error";
         } finally {
             aiDraftBtn.disabled = false;
-            aiDraftLabel.textContent = "✨ AI Draft Reply";
+            aiDraftLabel.textContent = "AI Draft Reply";
         }
     });
 
@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function applyStatusColors() {
-    document.querySelectorAll(".status-dropdown").forEach((select) => {
+    document.querySelectorAll(".vs-status-select").forEach((select) => {
         updateStatusColor(select);
         select.addEventListener("change", function () {
             updateStatusColor(this);
@@ -174,34 +174,29 @@ function applyStatusColors() {
 
 function updateStatusColor(select) {
     const value = select.value;
-    select.style.color = "black";
-    select.style.backgroundColor = "white";
-    select.style.fontWeight = "normal";
+    select.classList.remove(
+        "vs-status-select--pending",
+        "vs-status-select--in-progress",
+        "vs-status-select--completed",
+        "vs-status-select--cancelled",
+        "vs-status-select--neutral"
+    );
 
     switch (value) {
         case "Pending":
-            select.style.backgroundColor = "#ffc107";
-            select.style.color = "black";
-            select.style.fontWeight = "bold";
+            select.classList.add("vs-status-select--pending");
             break;
         case "In Progress":
-            select.style.backgroundColor = "#17a2b8";
-            select.style.color = "white";
-            select.style.fontWeight = "bold";
+            select.classList.add("vs-status-select--in-progress");
             break;
         case "Completed":
-            select.style.backgroundColor = "#28a745";
-            select.style.color = "white";
-            select.style.fontWeight = "bold";
+            select.classList.add("vs-status-select--completed");
             break;
         case "Cancelled":
-            select.style.backgroundColor = "#dc3545";
-            select.style.color = "white";
-            select.style.fontWeight = "bold";
+            select.classList.add("vs-status-select--cancelled");
             break;
         default:
-            select.style.backgroundColor = "#f8f9fa";
-            select.style.color = "#6c757d";
+            select.classList.add("vs-status-select--neutral");
             break;
     }
 }
