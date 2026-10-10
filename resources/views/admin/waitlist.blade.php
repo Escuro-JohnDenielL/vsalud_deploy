@@ -108,7 +108,7 @@
 @endpush
 
 @section('content')
-    <div class="container">
+    <div class="container vs-admin-waitlist">
         <div class="page-header">
             <h1>Waitlist</h1>
             <p>Track patrons waiting for available dates. Read-only — entries are managed automatically.</p>
@@ -148,6 +148,7 @@
                 @foreach($grouped as $date => $entries)
                     <div class="date-group">
                         <div class="date-header">{{ $date }}</div>
+                        <div class="vs-table-wrap" role="region" tabindex="0" aria-label="Waitlist table for {{ $date }}">
                         <table class="waitlist-table">
                             <thead>
                                 <tr>
@@ -182,6 +183,7 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 @endforeach
             @endif

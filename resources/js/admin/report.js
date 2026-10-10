@@ -161,7 +161,7 @@ class DashboardManager {
             // Update metric card
             this.updateMetricsOverview(data.total, data.change_percentage);
 
-            // ✅ Add these two lines to update the graph card stats
+            // Add these two lines to update the graph card stats
             document.getElementById(
                 "inquiry-avg-daily"
             ).textContent = `${data.average_per_day} / day`;
@@ -259,19 +259,19 @@ class DashboardManager {
                 throw new Error(data.error);
             }
 
-            // ✅ Update chart
+            // Update chart
             this.updateReservationChart({
                 labels: data.labels,
                 data: data.data,
             });
 
-            // ✅ Update top card metric
+            // Update top card metric
             const totalEl = document.getElementById(
                 "total-reservations-overview"
             );
             if (totalEl) totalEl.textContent = data.total || 0;
 
-            // ✅ Update bottom chart stats
+            // Update bottom chart stats
             const bestEl = document.getElementById("reservation-best-month");
             const growthEl = document.getElementById("reservation-growth");
             if (bestEl) bestEl.textContent = data.best_period;
@@ -344,7 +344,7 @@ class DashboardManager {
 
             console.log("Theme data response:", data);
 
-            // ✅ Update chart
+            // Update chart
             this.updateThemeChart({
                 labels: data.labels,
                 data: data.data,

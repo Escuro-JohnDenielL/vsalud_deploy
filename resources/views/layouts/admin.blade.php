@@ -174,15 +174,15 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" id="reportIssueLink" style="color:#6b7280;">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;vertical-align:middle;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <a href="#" id="reportIssueLink" class="vs-inline-muted">
+                            <svg class="vs-inline-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                             Report an Issue
                         </a>
                     </li>
                     <li>
                         <form method="POST" action="{{ route('admin.logout') }}" style="display:inline;">
                             @csrf
-                            <button type="submit" style="background:none;border:none;color:#dc3545;cursor:pointer;font:inherit;padding:8px 20px;width:100%;text-align:left;">
+                            <button type="submit" class="admin-logout-button">
                                 Logout
                             </button>
                         </form>
@@ -221,7 +221,7 @@
         <div class="modal-content">
             <span class="js-modal-close close-btn">&times;</span>
             <h2>Report a Security Issue</h2>
-            <p style="font-size: 14px; color: var(--color-text-muted); margin: -8px 0 20px;">For reporting security vulnerabilities, suspected breaches, or system problems.</p>
+            <p class="vs-inline-note report-issue-intro">For reporting security vulnerabilities, suspected breaches, or system problems.</p>
 
             <div class="detail-section">
                 <div class="detail-section-title">Contact</div>
@@ -230,7 +230,7 @@
                         <span class="detail-label">Email</span>
                         <span class="detail-value"><a href="mailto:security@villasalud.com">security@villasalud.com</a></span>
                     </div>
-                    <div class="detail-row" style="border:none;">
+                    <div class="detail-row detail-row--borderless">
                         <span class="detail-label">Response</span>
                         <span class="detail-value">Within 48 hours on business days</span>
                     </div>
@@ -239,7 +239,7 @@
 
             <div class="detail-section">
                 <div class="detail-section-title">What to Include</div>
-                <ul style="font-size: 14px; color: var(--color-text); line-height: 1.7; padding-left: 20px; margin: 0;">
+                <ul class="report-issue-list">
                     <li>A brief description of the issue</li>
                     <li>How and when it was discovered</li>
                     <li>Any relevant system logs or timestamps</li>
@@ -249,7 +249,7 @@
 
             <div class="detail-section">
                 <div class="detail-section-title">Already Logged?</div>
-                <p style="font-size: 14px; color: var(--color-text); margin: 0; line-height: 1.6;">
+                <p class="report-issue-copy">
                     Once reported, incidents should be recorded in the <a href="{{ route('admin.incident-logs') }}">Incident Log</a> for tracking.
                     For urgent issues (active breach, service outage), contact the administrator directly.
                 </p>

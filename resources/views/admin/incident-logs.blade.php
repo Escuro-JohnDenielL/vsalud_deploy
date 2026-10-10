@@ -7,7 +7,7 @@
 @endpush
 
 @section('content')
-    <div class="container">
+    <div class="container vs-admin-incident-logs">
         <div class="page-header">
             <h1>Incident Logs</h1>
             <p>Record, track, and manage security incidents and system issues.</p>

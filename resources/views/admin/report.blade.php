@@ -12,8 +12,8 @@
 {{-- Header image --}}
 <div class="header-image"></div>
 
-{{-- ✅ Start content container --}}
-<div class="report-container">
+{{-- Start content container --}}
+<div class="report-container vs-admin-report">
 
     <!-- Loading Overlay -->
     <div id="loading-overlay" class="loading-overlay">
@@ -144,7 +144,7 @@
     <span id="total-inquiries" style="display:none;"></span>
     <span id="total-reservations" style="display:none;"></span>
 
-</div> {{-- ✅ End .report-container --}}
+</div> {{-- End .report-container --}}
 
 @endsection
 

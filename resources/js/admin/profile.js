@@ -1,4 +1,4 @@
-console.log("admin/profile.js loaded ✅");
+console.log("admin/profile.js loaded");
 
 function generateId(length = 12) {
     const chars =
@@ -394,11 +394,19 @@ document.addEventListener("DOMContentLoaded", function () {
         // Reset strength bar & checklist
         const sBar = document.getElementById("strength-bar");
         const sText = document.getElementById("strength-text");
-        if (sBar) { sBar.style.width = "0%"; sBar.style.backgroundColor = "#dc3545"; }
+        if (sBar) {
+            sBar.style.width = "0%";
+            sBar.classList.remove("vs-strength--weak", "vs-strength--fair", "vs-strength--good", "vs-strength--strong");
+            sBar.classList.add("vs-strength--weak");
+        }
         if (sText) sText.textContent = "";
         ["req-length","req-uppercase","req-lowercase","req-number","req-special"].forEach(id => {
             const el = document.getElementById(id);
-            if (el) { el.style.color = "#999"; el.textContent = "✗ " + el.textContent.replace(/^[✓✗]\s*/, ""); }
+            if (el) {
+                el.classList.remove("vs-state--valid", "vs-state--error");
+                el.classList.add("vs-state--error");
+                el.textContent = "Not met " + el.textContent.replace(/^(?:Met|Not met)\s*/, "");
+            }
         });
     }
 
@@ -786,48 +794,55 @@ document.addEventListener("DOMContentLoaded", function () {
       // Update requirement checklist
       if (reqs.length) {
         const ok = val.length >= 8;
-        reqs.length.style.color = ok ? "#28a745" : "#999";
-        reqs.length.textContent = (ok ? "✓" : "✗") + " At least 8 characters";
+        reqs.length.classList.toggle("vs-state--valid", ok);
+        reqs.length.classList.toggle("vs-state--error", !ok);
+        reqs.length.textContent = (ok ? "Met" : "Not met") + " At least 8 characters";
       }
       if (reqs.uppercase) {
         const ok = /[A-Z]/.test(val);
-        reqs.uppercase.style.color = ok ? "#28a745" : "#999";
-        reqs.uppercase.textContent = (ok ? "✓" : "✗") + " At least 1 uppercase letter";
+        reqs.uppercase.classList.toggle("vs-state--valid", ok);
+        reqs.uppercase.classList.toggle("vs-state--error", !ok);
+        reqs.uppercase.textContent = (ok ? "Met" : "Not met") + " At least 1 uppercase letter";
       }
       if (reqs.lowercase) {
         const ok = /[a-z]/.test(val);
-        reqs.lowercase.style.color = ok ? "#28a745" : "#999";
-        reqs.lowercase.textContent = (ok ? "✓" : "✗") + " At least 1 lowercase letter";
+        reqs.lowercase.classList.toggle("vs-state--valid", ok);
+        reqs.lowercase.classList.toggle("vs-state--error", !ok);
+        reqs.lowercase.textContent = (ok ? "Met" : "Not met") + " At least 1 lowercase letter";
       }
       if (reqs.number) {
         const ok = /\d/.test(val);
-        reqs.number.style.color = ok ? "#28a745" : "#999";
-        reqs.number.textContent = (ok ? "✓" : "✗") + " At least 1 number";
+        reqs.number.classList.toggle("vs-state--valid", ok);
+        reqs.number.classList.toggle("vs-state--error", !ok);
+        reqs.number.textContent = (ok ? "Met" : "Not met") + " At least 1 number";
       }
       if (reqs.special) {
         const ok = /[!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?]/.test(val);
-        reqs.special.style.color = ok ? "#28a745" : "#999";
-        reqs.special.textContent = (ok ? "✓" : "✗") + " At least 1 special character";
+        reqs.special.classList.toggle("vs-state--valid", ok);
+        reqs.special.classList.toggle("vs-state--error", !ok);
+        reqs.special.textContent = (ok ? "Met" : "Not met") + " At least 1 special character";
       }
 
       // Map score to strength level
       const levels = [
-        { label: "Very Weak", color: "#dc3545", width: "10%" },
-        { label: "Weak",      color: "#dc3545", width: "25%" },
-        { label: "Fair",      color: "#ffc107", width: "45%" },
-        { label: "Good",      color: "#17a2b8", width: "65%" },
-        { label: "Strong",    color: "#28a745", width: "85%" },
-        { label: "Very Strong", color: "#28a745", width: "100%" },
+        { label: "Very Weak", state: "weak", width: "10%" },
+        { label: "Weak", state: "weak", width: "25%" },
+        { label: "Fair", state: "fair", width: "45%" },
+        { label: "Good", state: "good", width: "65%" },
+        { label: "Strong", state: "strong", width: "85%" },
+        { label: "Very Strong", state: "strong", width: "100%" },
       ];
 
       const idx = Math.min(score, levels.length - 1);
       if (strengthBar) {
         strengthBar.style.width = levels[idx].width;
-        strengthBar.style.backgroundColor = levels[idx].color;
+                strengthBar.classList.remove("vs-strength--weak", "vs-strength--fair", "vs-strength--good", "vs-strength--strong");
+                strengthBar.classList.add(`vs-strength--${levels[idx].state}`);
       }
       if (strengthText) {
         strengthText.textContent = val.length > 0 ? levels[idx].label : "";
-        strengthText.style.color = levels[idx].color;
+                strengthText.classList.remove("vs-strength--weak", "vs-strength--fair", "vs-strength--good", "vs-strength--strong");
+                if (val.length > 0) strengthText.classList.add(`vs-strength--${levels[idx].state}`);
       }
     }
 
@@ -849,10 +864,18 @@ document.addEventListener("DOMContentLoaded", function () {
             if (resetCode) resetCode.value = "";
             if (confirmPw) confirmPw.value = "";
             // Reset strength UI
-            if (strengthBar) { strengthBar.style.width = "0%"; strengthBar.style.backgroundColor = "#dc3545"; }
+            if (strengthBar) {
+                strengthBar.style.width = "0%";
+                strengthBar.classList.remove("vs-strength--weak", "vs-strength--fair", "vs-strength--good", "vs-strength--strong");
+                strengthBar.classList.add("vs-strength--weak");
+            }
             if (strengthText) strengthText.textContent = "";
             Object.values(reqs).forEach(el => {
-              if (el) { el.style.color = "#999"; el.textContent = el.textContent.replace(/^[✓✗]/, "✗"); }
+                            if (el) {
+                                el.classList.remove("vs-state--valid", "vs-state--error");
+                                el.classList.add("vs-state--error");
+                                el.textContent = el.textContent.replace(/^(?:Met|Not met)/, "Not met");
+                            }
             });
         });
     }
@@ -980,13 +1003,15 @@ document.addEventListener("DOMContentLoaded", function () {
         const value = input.value.trim();
 
         // Remove existing error styling
-        input.style.borderColor = "#ccc";
+        input.classList.remove("vs-state--error", "vs-state--neutral");
+        input.classList.add("vs-state--neutral");
 
         // Validate based on input type
         if (input.type === "email" && value !== "") {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(value)) {
-                input.style.borderColor = "#dc3545";
+                input.classList.remove("vs-state--neutral");
+                input.classList.add("vs-state--error");
                 addToHistory(
                     "system",
                     "Validation error",
@@ -1001,7 +1026,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 !phoneRegex.test(value) &&
                 value.replace(/\D/g, "").length > 0
             ) {
-                input.style.borderColor = "#dc3545";
+                input.classList.remove("vs-state--neutral");
+                input.classList.add("vs-state--error");
                 addToHistory(
                     "system",
                     "Validation error",
@@ -1011,7 +1037,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (input.type === "password" && value !== "" && value.length < 6) {
-            input.style.borderColor = "#dc3545";
+            input.classList.remove("vs-state--neutral");
+            input.classList.add("vs-state--error");
             addToHistory(
                 "security",
                 "Validation error",

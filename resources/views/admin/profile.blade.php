@@ -21,21 +21,21 @@ if ($user && !$isSuperAdmin) {
 @endphp
 
 @if($user && !$isSuperAdmin && $grantedPageCount === 0)
-<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;">
-    <span style="font-size:22px;flex-shrink:0;">🔒</span>
+<div class="profile-access-card">
+  <span class="profile-access-icon">Security</span>
     <div>
-        <strong style="color:#2d2d2d;font-size:15px;display:block;margin-bottom:4px;">Limited Access</strong>
-        <p style="color:#6b7280;margin:0;font-size:14px;line-height:1.5;">
+        <strong class="profile-access-title">Limited Access</strong>
+        <p class="profile-access-copy">
             You don't have access to any pages yet. Please contact a Super Administrator to request access to the pages you need.
         </p>
     </div>
 </div>
 @elseif($user && !$isSuperAdmin && $grantedPageCount > 0 && $grantedPageCount < count(\App\Models\AdminPagePermission::availablePages()))
-<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;">
-    <span style="font-size:22px;flex-shrink:0;">ℹ️</span>
+<div class="profile-access-card">
+  <span class="profile-access-icon">Info</span>
     <div>
-        <strong style="color:#2d2d2d;font-size:15px;display:block;margin-bottom:4px;">Partial Access</strong>
-        <p style="color:#6b7280;margin:0;font-size:14px;line-height:1.5;">
+        <strong class="profile-access-title">Partial Access</strong>
+        <p class="profile-access-copy">
             You have access to some pages. If you need access to additional modules, please contact a Super Administrator.
         </p>
     </div>
@@ -52,15 +52,15 @@ if ($user && !$isSuperAdmin) {
         <input type="file" id="profile-pic-input" accept="image/*" style="display: none;">
       </div>
       --}}
-      <h2 id="admin-name" style="color:var(--color-primary);font-weight:600;font-size:20px;line-height:1.35;overflow-wrap:anywhere;word-break:break-word;">{{ $user->name ?? ($user->f_name . ' ' . $user->l_name) }}</h2>
-      <p style="color:#6b7280;">System Administrator</p>
+      <h2 id="admin-name" class="profile-admin-name">{{ $user->name ?? ($user->f_name . ' ' . $user->l_name) }}</h2>
+      <p class="vs-inline-muted">System Administrator</p>
     </div>
     <div class="profile-info">
       <h3>Profile Information</h3>
       <p><strong>Email:</strong> <span id="admin-email">{{ $user->email }}</span></p>
       <p><strong>Phone:</strong> <span id="admin-phone">{{ $user->phone ?? 'N/A' }}</span></p>
       <p><strong>Username:</strong> <span id="admin-username">{{ explode('@', $user->email)[0] }}</span></p>
-      <p><strong>Password:</strong> •••••••• <a href="#" class="change-password" id="change-password-link">Change</a></p>
+      <p><strong>Password:</strong> Password hidden <a href="#" class="change-password" id="change-password-link">Change</a></p>
     </div>
     <div class="buttons">
       <button class="admin-btn admin-btn-primary" id="edit-profile-btn">Edit Profile</button>
@@ -68,7 +68,7 @@ if ($user && !$isSuperAdmin) {
   </div>
 
   {{-- MFA Section --}}
-  <div class="profile-info" style="background:#ffffff;border-radius:var(--radius-lg);box-shadow:var(--shadow-md);padding:20px;width:350px;box-sizing:border-box;align-self:flex-start;">
+  <div class="profile-info profile-info-card">
     <h3>Two-Factor Authentication (2FA) <span id="mfa-status-badge" style="display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;vertical-align:middle;margin-left:8px;
       {{ $user->hasMfaEnabled() ? 'background:#f0fdf4;color:#0d7a3e;' : 'background:#fef2f2;color:#dc2626;' }}">
       {{ $user->hasMfaEnabled() ? 'Enabled' : 'Not Set Up' }}
@@ -159,7 +159,7 @@ if ($user && !$isSuperAdmin) {
       <div class="form-group">
         <label for="edit-username">Username:</label>
         <input type="text" id="edit-username" name="username" readonly style="background-color: #f5f5f5;">
-        <small style="color: #6b7280; font-size: 12px;">Username is automatically generated from email</small>
+        <small class="vs-inline-field-note">Username is automatically generated from email</small>
       </div>
       <div class="modal-footer">
         <button type="button" id="cancel-edit" class="admin-btn admin-btn-ghost">Cancel</button>
@@ -192,24 +192,24 @@ if ($user && !$isSuperAdmin) {
       <div class="form-group">
         <label for="reset-code">Verification Code:</label>
         <input type="text" id="reset-code" name="reset_code" maxlength="6" placeholder="Enter 6-digit code" required autocomplete="off">
-        <small style="color: #6b7280; font-size: 12px;">Enter the code sent to your email</small>
+        <small class="vs-inline-field-note">Enter the code sent to your email</small>
       </div>
       <div class="form-group">
         <label for="new-password">New Password:</label>
         <input type="password" id="new-password" name="new_password" required autocomplete="off">
-        <small style="color: #6b7280; font-size: 12px;">Min 8 characters, 1 uppercase, 1 number, 1 special character</small>
-        <div class="password-strength-container" style="margin-top:8px;">
-          <div style="height:6px; background:#e0e0e0; border-radius:4px; overflow:hidden;">
-            <div id="strength-bar" style="width:0%; height:100%; background:#dc3545; border-radius:4px; transition:all 0.3s ease;"></div>
+        <small class="vs-inline-field-note">Min 8 characters, 1 uppercase, 1 number, 1 special character</small>
+        <div class="password-strength-container password-strength-container--spaced">
+          <div class="vs-inline-strength-track">
+            <div id="strength-bar" class="vs-inline-strength-bar vs-strength-bar" style="width:0%;"></div>
           </div>
           <span id="strength-text" style="font-size:12px; color:#999;"></span>
         </div>
-        <div id="password-requirements" style="font-size:12px; margin-top:6px; line-height:2;">
-          <div id="req-length" style="color:#999;">✗ At least 8 characters</div>
-          <div id="req-uppercase" style="color:#999;">✗ At least 1 uppercase letter</div>
-          <div id="req-lowercase" style="color:#999;">✗ At least 1 lowercase letter</div>
-          <div id="req-number" style="color:#999;">✗ At least 1 number</div>
-          <div id="req-special" style="color:#999;">✗ At least 1 special character</div>
+        <div id="password-requirements" class="vs-inline-requirements">
+          <div id="req-length" class="vs-state--error">Not met At least 8 characters</div>
+          <div id="req-uppercase" class="vs-state--error">Not met At least 1 uppercase letter</div>
+          <div id="req-lowercase" class="vs-state--error">Not met At least 1 lowercase letter</div>
+          <div id="req-number" class="vs-state--error">Not met At least 1 number</div>
+          <div id="req-special" class="vs-state--error">Not met At least 1 special character</div>
         </div>
       </div>
       <div class="form-group">

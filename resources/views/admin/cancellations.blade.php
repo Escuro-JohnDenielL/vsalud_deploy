@@ -7,7 +7,7 @@
 @endpush
 
 @section('content')
-    <div class="container">
+    <div class="container vs-admin-cancellations">
         <div class="page-header">
             <h1>Cancellation Requests</h1>
             <p>Review and manage patron cancellation requests.</p>

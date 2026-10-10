@@ -7,7 +7,7 @@
 @endpush
 
 @section('content')
-    <div class="container">
+    <div class="container vs-admin-inquiry">
         <div class="page-header">
             <h1>View Inquiries</h1>
             <p>View and manage customer inquiries.</p>
