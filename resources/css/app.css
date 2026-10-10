@@ -767,6 +767,11 @@ textarea:focus,
   to { opacity: 1; }
 }
 
+@keyframes vs-modal-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
 .vs-layout--admin .modal:not(.fade),
 .vs-layout--patron .modal:not(.fade),
 .vs-layout--patron .pkg-modal,
@@ -1693,5 +1698,21 @@ textarea:focus,
   .vs-form-control,
   .vs-modal__close {
     transition-duration: 0.01ms;
+  }
+}
+
+.vs-layout--admin .modal.vs-modal--closing,
+.vs-layout--patron .modal.vs-modal--closing,
+.vs-layout--patron .pkg-modal.vs-modal--closing,
+.vs-layout--patron .privacy-overlay.vs-modal--closing {
+  animation: vs-modal-fade-out var(--vs-duration-base) ease-in both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-layout--admin .modal.vs-modal--closing,
+  .vs-layout--patron .modal.vs-modal--closing,
+  .vs-layout--patron .pkg-modal.vs-modal--closing,
+  .vs-layout--patron .privacy-overlay.vs-modal--closing {
+    animation: none;
   }
 }

@@ -16,6 +16,40 @@ document.addEventListener("DOMContentLoaded", function () {
     // View Inquiry modal
     const viewInquiryModal = document.getElementById("viewInquiryModal");
     const closeViewInquiryModal = document.getElementById("closeViewInquiryModal");
+    const modalCloseTimers = new WeakMap();
+
+    function openModal(modal) {
+        const closeTimer = modalCloseTimers.get(modal);
+        if (closeTimer) window.clearTimeout(closeTimer);
+        modalCloseTimers.delete(modal);
+        modal.classList.remove("vs-modal--closing");
+        modal.style.display = "flex";
+        modal.classList.add("open");
+    }
+
+    function closeModal(modal) {
+        if (modal.classList.contains("vs-modal--closing")) return;
+
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduceMotion) {
+            modal.style.display = "none";
+            modal.classList.remove("open", "vs-modal--closing");
+            return;
+        }
+
+        modal.classList.add("vs-modal--closing");
+        const durationValue = getComputedStyle(document.documentElement)
+            .getPropertyValue("--vs-duration-base")
+            .trim();
+        const duration = Number.parseFloat(durationValue) || 200;
+        const durationMs = durationValue.endsWith("ms") ? duration : duration * 1000;
+        const closeTimer = window.setTimeout(() => {
+            modal.style.display = "none";
+            modal.classList.remove("open", "vs-modal--closing");
+            modalCloseTimers.delete(modal);
+        }, durationMs);
+        modalCloseTimers.set(modal, closeTimer);
+    }
 
     function escHtml(str) {
         if (!str) return str;
@@ -38,13 +72,11 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("view-theme").textContent = btn.dataset.theme || "-";
         document.getElementById("view-status").textContent = btn.dataset.status || "Pending";
         document.getElementById("view-message").textContent = btn.dataset.message || "No message provided.";
-        viewInquiryModal.style.display = "flex";
-        viewInquiryModal.classList.add("open");
+        openModal(viewInquiryModal);
     }
 
     function closeViewInquiryModalFn() {
-        viewInquiryModal.style.display = "none";
-        viewInquiryModal.classList.remove("open");
+        closeModal(viewInquiryModal);
     }
 
     closeViewInquiryModal.addEventListener("click", closeViewInquiryModalFn);
@@ -62,18 +94,15 @@ document.addEventListener("DOMContentLoaded", function () {
         replyMessage.value = "";
         aiDraftStatus.textContent = "";
         aiDraftStatus.className = "ai-draft-status";
-        replyModal.style.display = "flex";
-        replyModal.classList.add('open');
+        openModal(replyModal);
     }
 
     cancelReplyBtn.addEventListener("click", () => {
-        replyModal.style.display = "none";
-        replyModal.classList.remove('open');
+        closeModal(replyModal);
     });
 
     closeReplyModal.addEventListener("click", () => {
-        replyModal.style.display = "none";
-        replyModal.classList.remove('open');
+        closeModal(replyModal);
     });
 
     sendReplyBtn.addEventListener("click", () => {
@@ -103,8 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else {
                     window.showAdminToast(data.message || 'Failed to send reply.', 'error');
                 }
-                replyModal.style.display = "none";
-                replyModal.classList.remove('open');
+                closeModal(replyModal);
             })
             .catch((err) => {
                 console.error("Error:", err);
