@@ -24,17 +24,19 @@ class AdminPagePermission extends Model
     public static function availablePages(): array
     {
         return [
-            'packages'      => 'Packages',
-            'reservations'  => 'Reservations',
-            'inquiries'     => 'Inquiries',
-            'reserve-logs'  => 'Reservation Logs',
-            'payment-logs'  => 'Payment Logs',
-            'cancellations' => 'Cancellation Requests',
-            'waitlist'      => 'Waitlist',
-            'incident-logs' => 'Incident Logs',
-            'audit-logs'    => 'Audit Logs',
-            'reports'       => 'Reports',
-            'feedback'      => 'Feedback',
+            'packages'         => 'Packages',
+            'reservations'     => 'Reservations',
+            'availability'     => 'Availability',
+            'inquiries'        => 'Inquiries',
+            'reserve-logs'     => 'Reservation Logs',
+            'payment-logs'     => 'Payment Logs',
+            'payment-settings' => 'Payment Settings',
+            'cancellations'    => 'Cancellation Requests',
+            'waitlist'         => 'Waitlist',
+            'incident-logs'    => 'Incident Logs',
+            'audit-logs'       => 'Audit Logs',
+            'reports'          => 'Reports',
+            'feedback'         => 'Feedback',
         ];
     }
 
@@ -46,8 +48,8 @@ class AdminPagePermission extends Model
         return [
             'full-access' => [
                 'label' => 'Full Access',
-                'description' => 'All pages (packages, reservations, inquiries, logs, cancellations, waitlist, payment logs, incident logs, audit logs, reports, feedback)',
-                'pages' => ['packages', 'reservations', 'inquiries', 'reserve-logs', 'payment-logs', 'cancellations', 'waitlist', 'incident-logs', 'audit-logs', 'reports', 'feedback'],
+                'description' => 'All pages (packages, reservations, availability, inquiries, logs, payment settings, cancellations, waitlist, incident logs, audit logs, reports, feedback)',
+                'pages' => ['packages', 'reservations', 'availability', 'inquiries', 'reserve-logs', 'payment-logs', 'payment-settings', 'cancellations', 'waitlist', 'incident-logs', 'audit-logs', 'reports', 'feedback'],
             ],
             'view-only' => [
                 'label' => 'View Only',
@@ -61,8 +63,8 @@ class AdminPagePermission extends Model
             ],
             'reservation-handler' => [
                 'label' => 'Reservation Handler',
-                'description' => 'Reservations, logs, payment logs, and inquiries',
-                'pages' => ['reservations', 'reserve-logs', 'payment-logs', 'inquiries'],
+                'description' => 'Reservations, availability, logs, payment logs, and inquiries',
+                'pages' => ['reservations', 'availability', 'reserve-logs', 'payment-logs', 'inquiries'],
             ],
             'customer-service' => [
                 'label' => 'Customer Service',

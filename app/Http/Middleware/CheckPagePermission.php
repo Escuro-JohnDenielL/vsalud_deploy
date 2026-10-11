@@ -14,6 +14,23 @@ class CheckPagePermission
      * Page slug mapping: route name → permission slug.
      * Add new admin routes here as they are created.
      */
+    /**
+     * Routes an admin may always use on their own account, regardless of the
+     * pages granted to them: profile, password, own activity log and the
+     * authentication entry points.
+     */
+    public const SELF_SERVICE_ROUTES = [
+        'admin.profile',
+        'admin.profile.update',
+        'admin.password.send-code',
+        'admin.password.change',
+        'admin.activities',
+        'admin.activities.store',
+        'admin.login',
+        'admin.login.submit',
+        'admin.logout',
+    ];
+
     const ROUTE_PAGE_MAP = [
         'admin.home'           => 'packages',
         'admin.reserve.create' => 'reservations',
@@ -24,18 +41,48 @@ class CheckPagePermission
         'admin.feedback'       => 'feedback',
         'admin.feedback.destroy' => 'feedback',
         'admin.feedback.bulk-destroy' => 'feedback',
-        // Package CRUD
-        'admin.packages.destroy' => 'packages',
-        'admin.packages.store'   => 'packages',
+        // Packages (the real names carry the "admin." group prefix twice)
+        'admin.admin.packages.store'   => 'packages',
+        'admin.admin.packages.destroy' => 'packages',
+        'admin.packages.index'         => 'packages',
+        'admin.packages.update'        => 'packages',
         // Inquiry sub-routes
         'admin.inquiry.store'  => 'inquiries',
         'admin.inquiries.draft-reply' => 'inquiries',
+        'admin.inquiries.update-status' => 'inquiries',
+        'admin.send-reply'     => 'inquiries',
+        // Reservations
+        'admin.reservations.show'      => 'reservations',
+        'admin.reservations.total'     => 'reservations',
+        'admin.reservations.status'    => 'reservations',
+        'admin.reservations.delete'    => 'reservations',
+        'admin.reservations.ai-brief'  => 'reservations',
         // Reports data endpoints
         'admin.inquiry.data'     => 'reports',
         'admin.reservation.data' => 'reports',
         'admin.theme.data'       => 'reports',
         'admin.event-type.data'  => 'reports',
         'admin.activities.all'   => 'reports',
+        // Availability
+        'admin.availability.index'           => 'availability',
+        'admin.availability.toggle'          => 'availability',
+        'admin.availability.remove-override' => 'availability',
+        // Payments
+        'admin.payment-logs'            => 'payment-logs',
+        'admin.payments.status'         => 'payment-logs',
+        'admin.receipts.show'           => 'payment-logs',
+        'admin.payment-settings'        => 'payment-settings',
+        'admin.payment-settings.update' => 'payment-settings',
+        // Cancellations
+        'admin.cancellations'         => 'cancellations',
+        'admin.cancellations.approve' => 'cancellations',
+        'admin.cancellations.deny'    => 'cancellations',
+        // Incident logs
+        'admin.incident-logs'         => 'incident-logs',
+        'admin.incident-logs.store'   => 'incident-logs',
+        'admin.incident-logs.show'    => 'incident-logs',
+        'admin.incident-logs.update'  => 'incident-logs',
+        'admin.incident-logs.destroy' => 'incident-logs',
         // Waitlist
         'admin.waitlist'         => 'waitlist',
         // Audit trail (every action of every admin)

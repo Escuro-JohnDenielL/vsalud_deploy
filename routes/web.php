@@ -101,14 +101,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
     Route::get('/home', [AdminHomeController::class, 'index'])->name('home');
 
     // Packages on Admin homepage
-    Route::get('/packages', [PackageController::class, 'index']);
+    Route::get('/packages', [PackageController::class, 'index'])->name('packages.index');
     Route::post('/packages', [PackageController::class, 'store'])->name('admin.packages.store');
-    Route::put('/packages/{package}', [PackageController::class, 'update']);
+    Route::put('/packages/{package}', [PackageController::class, 'update'])->name('packages.update');
     Route::delete('/packages/{package}', [PackageController::class, 'destroy'])->name('admin.packages.destroy');
 
     // Inquiry
     Route::get('/inquiry', [InquiryController::class, 'index'])->name('inquiry');
-    Route::post('/inquiries/{id}/update-status', [InquiryController::class, 'updateStatusAjax']);
+    Route::post('/inquiries/{id}/update-status', [InquiryController::class, 'updateStatusAjax'])->name('inquiries.update-status');
     Route::post('/inquiry', [InquiryController::class, 'store'])->name('inquiry.store');
 
     // AI-assisted reply draft (Google Gemini) — max 10 requests per minute
@@ -183,7 +183,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
     // Report page
     Route::view('/report', 'admin.report')->name('report');
 
-    Route::post('/send-reply', [ReservationController::class, 'sendReply']);
+    Route::post('/send-reply', [ReservationController::class, 'sendReply'])->name('send-reply');
 
     // Cancellation requests (admin)
     Route::get('/cancellations', [AdminCancellationController::class, 'index'])->name('cancellations');
