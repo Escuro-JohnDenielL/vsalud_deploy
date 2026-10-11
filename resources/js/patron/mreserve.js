@@ -39,41 +39,54 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const dateStatuses = {};
 
-    function loadAvailabilityData() {
-        fetch("/calendar/availability")
-            .then((res) => res.json())
-            .then((data) => {
-                Object.entries(data).forEach(([date, status]) => {
-                    dateStatuses[date] = status;
-                });
-                renderCalendar();
-            })
-            .catch((err) => {
-                console.error("Failed to load availability:", err);
-                renderCalendar();
-            });
-    }
-
-    function applyStatusStyle(cell, status) {
-        cell.classList.remove("Available", "Half", "Nearly", "Full", "Closed");
-        switch (status) {
-            case "Available":
-                cell.classList.add("Available");
-                break;
-            case "Half":
-                cell.classList.add("Half");
-                break;
-            case "Nearly":
-                cell.classList.add("Nearly");
-                break;
-            case "Full":
-                cell.classList.add("Full");
-                break;
-            case "Closed":
-                cell.classList.add("Closed");
-                break;
-        }
-    }
+    // Availability states: the color class, the text cue shown under the day
+    // number, and the word used in the accessible label. 0/4 and 1/4 are both
+    // "Available" (green); "Half" (2 booked) is the 2/4 Limited range.
+    const AVAILABILITY_STATES = {
+        Available: {
+            className: "vs-calendar-day--success",
+            cue: "1/4",
+            label: "available",
+            booked: 1,
+        },
+        Half: {
+            className: "vs-calendar-day--half",
+            cue: "2/4",
+            label: "limited",
+            booked: 2,
+        },
+        Nearly: {
+            className: "vs-calendar-day--nearly",
+            cue: "3/4",
+            label: "nearly full",
+            booked: 3,
+        },
+        Full: {
+            className: "vs-calendar-day--danger",
+            cue: "Full",
+            label: "full",
+            booked: 4,
+        },
+        Closed: {
+            className: "vs-calendar-day--neutral",
+            cue: "Closed",
+            label: "closed",
+            booked: 0,
+        },
+    };
+    const FREE_STATE = {
+        className: "vs-calendar-day--success",
+        cue: "",
+        label: "available",
+        booked: 0,
+    };
+    const AVAILABILITY_CLASSES = [
+        "vs-calendar-day--success",
+        "vs-calendar-day--half",
+        "vs-calendar-day--nearly",
+        "vs-calendar-day--danger",
+        "vs-calendar-day--neutral",
+    ];
 
     function toggleOtherInput(selectEl, inputEl) {
         if (!selectEl || !inputEl) return;
@@ -194,7 +207,27 @@ document.addEventListener("DOMContentLoaded", function () {
     const prevMonthBtn = document.getElementById("prevMonth");
     const nextMonthBtn = document.getElementById("nextMonth");
 
-    let currentDate = new Date();
+    const calendarContainer = document.querySelector(
+        ".vs-patron-reservation .calendar-container"
+    );
+    const maxSlots =
+        Number.parseInt(calendarContainer?.dataset.maxSlots, 10) || 4;
+    // "Today" comes from the server (computed for Manila on this page) so it
+    // never follows the visitor's browser clock. The browser value is only a
+    // fallback for the unlikely case where the attribute is missing.
+    const todayKey =
+        calendarContainer?.dataset.today || new Date().toISOString().slice(0, 10);
+
+    let currentDate = new Date(`${todayKey}T00:00:00`);
+
+    function formatLongDate(dateKey) {
+        const [year, month, day] = dateKey.split("-").map(Number);
+        return new Intl.DateTimeFormat("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+        }).format(new Date(Date.UTC(year, month - 1, day)));
+    }
 
     function renderCalendar() {
         const month = currentDate.getMonth();
@@ -216,12 +249,14 @@ document.addEventListener("DOMContentLoaded", function () {
             const dayHeader = document.createElement("div");
             dayHeader.classList.add("calendar-day", "day-header");
             dayHeader.textContent = day;
+            dayHeader.setAttribute("aria-hidden", "true");
             calendar.appendChild(dayHeader);
         });
 
         for (let i = 0; i < firstDay; i++) {
             const emptyCell = document.createElement("div");
             emptyCell.classList.add("calendar-day", "empty");
+            emptyCell.setAttribute("aria-hidden", "true");
             calendar.appendChild(emptyCell);
         }
 
@@ -230,43 +265,83 @@ document.addEventListener("DOMContentLoaded", function () {
             const paddedDay = String(day).padStart(2, "0");
             const dateKey = `${year}-${paddedMonth}-${paddedDay}`;
 
-            const cell = document.createElement("div");
-            cell.classList.add("calendar-day");
-            cell.textContent = day;
+            const cell = document.createElement("button");
+            cell.type = "button";
+            cell.classList.add("calendar-day", "vs-calendar-btn");
             cell.setAttribute("data-date", dateKey);
-            const today = new Date();
-            if (dateKey === `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`) {
-                cell.classList.add("vs-calendar-day--today");
-            }
-            if (dateKey === dateInput?.value) cell.classList.add("vs-calendar-day--selected");
 
-            if (dateStatuses[dateKey]) {
-                applyStatusStyle(cell, dateStatuses[dateKey]);
+            const number = document.createElement("span");
+            number.className = "calendar-day__number";
+            number.textContent = day;
+            cell.appendChild(number);
+
+            const status = dateStatuses[dateKey];
+            const longDate = formatLongDate(dateKey);
+
+            if (dateKey < todayKey) {
+                // Past dates: aria-disabled, skipped in tab order, never selectable.
+                cell.classList.add("is-past");
+                cell.setAttribute("aria-disabled", "true");
+                cell.tabIndex = -1;
+                cell.setAttribute(
+                    "aria-label",
+                    `${longDate}, unavailable, this date has passed`
+                );
+            } else {
+                if (dateKey === todayKey) {
+                    cell.classList.add("vs-calendar-day--today");
+                }
+
+                const state = applyStatusStyle(cell, status);
+
+                let accessibleLabel = `${longDate}, ${state.label}`;
+                if (status && status !== "Closed") {
+                    accessibleLabel += `, ${state.booked} of ${maxSlots} slots booked`;
+                }
+                cell.setAttribute("aria-label", accessibleLabel);
+
+                if (dateKey === dateInput?.value) {
+                    cell.classList.add("vs-calendar-day--selected");
+                }
             }
 
             calendar.appendChild(cell);
         }
     }
 
+    // Clicking or keyboard-activating a day fills the Date field and highlights it.
+    calendar?.addEventListener("click", (event) => {
+        const cell = event.target.closest(".calendar-day[data-date]");
+        if (!cell || cell.classList.contains("is-past") || !dateInput) return;
+
+        const dateKey = cell.getAttribute("data-date");
+        if (!dateKey) return;
+
+        dateInput.value = dateKey;
+        // Programmatic assignment does not emit "change", so fire the events the
+        // rest of the page listens to (unavailable-date modal, selected highlight).
+        dateInput.dispatchEvent(new Event("input", { bubbles: true }));
+        dateInput.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+
+    // Applies the availability color and the text cue, and returns the state so
+    // the caller can build the accessible label. Days with no data are 0/4.
     function applyStatusStyle(cell, status) {
-        cell.classList.remove("Available", "Half", "Nearly", "Full", "Closed", "vs-calendar-day--success", "vs-calendar-day--half", "vs-calendar-day--nearly", "vs-calendar-day--danger", "vs-calendar-day--neutral");
-        switch (status) {
-            case "Available":
-                cell.classList.add("Available", "vs-calendar-day--success");
-                break;
-            case "Half":
-                cell.classList.add("Half", "vs-calendar-day--half");
-                break;
-            case "Nearly":
-                cell.classList.add("Nearly", "vs-calendar-day--nearly");
-                break;
-            case "Full":
-                cell.classList.add("Full", "vs-calendar-day--danger");
-                break;
-            case "Closed":
-                cell.classList.add("Closed", "vs-calendar-day--neutral");
-                break;
+        cell.classList.remove(...AVAILABILITY_CLASSES);
+        cell.querySelector(".calendar-day__cue")?.remove();
+
+        const state = AVAILABILITY_STATES[status] || FREE_STATE;
+        cell.classList.add(state.className);
+
+        if (state.cue) {
+            const cue = document.createElement("span");
+            cue.className = "calendar-day__cue";
+            cue.setAttribute("aria-hidden", "true");
+            cue.textContent = state.cue;
+            cell.appendChild(cue);
         }
+
+        return state;
     }
 
     prevMonthBtn?.addEventListener("click", () => {

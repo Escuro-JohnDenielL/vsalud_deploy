@@ -116,9 +116,74 @@ document.addEventListener("DOMContentLoaded", function () {
     const statusSelect = document.getElementById("statusSelect");
     const undoStatusBtn = document.getElementById("undoStatus");
 
-    let currentDate = new Date();
+    const calendarContainer = document.querySelector(
+        ".vs-admin-reservation .calendar-container"
+    );
+    const maxSlots = Number.parseInt(calendarContainer?.dataset.maxSlots, 10) || 4;
+    // "Today" comes from the server (computed for Manila on this page) so past
+    // dates are marked consistently without using the browser clock.
+    const todayKey =
+        calendarContainer?.dataset.today || new Date().toISOString().slice(0, 10);
+
+    let currentDate = new Date(`${todayKey}T00:00:00`);
     let selectedDate = null;
     let dateStatuses = {};
+
+    // Availability states. Kept identical to resources/js/patron/mreserve.js.
+    const AVAILABILITY_STATES = {
+        Available: {
+            className: "vs-calendar-day--success",
+            cue: "1/4",
+            label: "available",
+            booked: 1,
+        },
+        Half: {
+            className: "vs-calendar-day--half",
+            cue: "2/4",
+            label: "limited",
+            booked: 2,
+        },
+        Nearly: {
+            className: "vs-calendar-day--nearly",
+            cue: "3/4",
+            label: "nearly full",
+            booked: 3,
+        },
+        Full: {
+            className: "vs-calendar-day--danger",
+            cue: "Full",
+            label: "full",
+            booked: 4,
+        },
+        Closed: {
+            className: "vs-calendar-day--neutral",
+            cue: "Closed",
+            label: "closed",
+            booked: 0,
+        },
+    };
+    const FREE_STATE = {
+        className: "vs-calendar-day--success",
+        cue: "",
+        label: "available",
+        booked: 0,
+    };
+    const AVAILABILITY_CLASSES = [
+        "vs-calendar-day--success",
+        "vs-calendar-day--half",
+        "vs-calendar-day--nearly",
+        "vs-calendar-day--danger",
+        "vs-calendar-day--neutral",
+    ];
+
+    function formatLongDate(dateKey) {
+        const [year, month, day] = dateKey.split("-").map(Number);
+        return new Intl.DateTimeFormat("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+        }).format(new Date(Date.UTC(year, month - 1, day)));
+    }
 
     function renderCalendar() {
         if (!calendar || !monthYear) return;
@@ -157,25 +222,36 @@ document.addEventListener("DOMContentLoaded", function () {
         for (let day = 1; day <= lastDate; day++) {
             const dayCell = document.createElement("div");
             dayCell.classList.add("calendar-day");
-            dayCell.textContent = day;
 
-            // Format date as YYYY-M-D to match backend format
+            const number = document.createElement("span");
+            number.className = "calendar-day__number";
+            number.textContent = day;
+            dayCell.appendChild(number);
+
+            // Format date as YYYY-MM-DD to match backend format
             const paddedMonth = String(month + 1).padStart(2, "0");
             const paddedDay = String(day).padStart(2, "0");
             const dateKey = `${year}-${paddedMonth}-${paddedDay}`;
-            // const dateKey = `${year}-${month + 1}-${day}`;
             dayCell.setAttribute("data-date", dateKey);
-            const today = new Date();
-            if (dateKey === `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`) {
+            if (dateKey === todayKey) {
                 dayCell.classList.add("vs-calendar-day--today");
             }
             if (dateKey === selectedDate) dayCell.classList.add("vs-calendar-day--selected");
 
-            // Apply status if it exists
-            if (dateStatuses[dateKey]) {
-                console.log(dateStatuses[dateKey]);
-                applyStatusStyle(dayCell, dateStatuses[dateKey]);
+            // Past dates stay selectable here; they are only visually muted.
+            if (dateKey < todayKey) {
+                dayCell.classList.add("is-past");
             }
+
+            // Apply status (0/4 when there is none) plus the text cue.
+            const status = dateStatuses[dateKey];
+            const state = applyStatusStyle(dayCell, status);
+            const longDate = formatLongDate(dateKey);
+            let accessibleLabel = `${longDate}, ${state.label}`;
+            if (status && status !== "Closed") {
+                accessibleLabel += `, ${state.booked} of ${maxSlots} slots booked`;
+            }
+            dayCell.setAttribute("aria-label", accessibleLabel);
 
             // Add click handler for admin functionality
             dayCell.addEventListener("click", function (e) {
@@ -196,19 +272,24 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // Applies the availability color and the text cue, and returns the state so
+    // the caller can build the accessible label. Days with no data are 0/4.
     function applyStatusStyle(cell, status) {
-        cell.classList.remove("Available", "Half", "Nearly", "Full", "Closed");
-        cell.classList.remove("vs-calendar-day--success", "vs-calendar-day--warning", "vs-calendar-day--danger", "vs-calendar-day--neutral");
-        const statusClasses = {
-            Available: "vs-calendar-day--success",
-            Half: "vs-calendar-day--half",
-            Nearly: "vs-calendar-day--nearly",
-            Full: "vs-calendar-day--danger",
-            Unavailable: "vs-calendar-day--danger",
-            Closed: "vs-calendar-day--neutral",
-        };
-        if (statusClasses[status]) cell.classList.add(statusClasses[status]);
-        cell.title = status;
+        cell.classList.remove(...AVAILABILITY_CLASSES);
+        cell.querySelector(".calendar-day__cue")?.remove();
+
+        const state = AVAILABILITY_STATES[status] || FREE_STATE;
+        cell.classList.add(state.className);
+
+        if (state.cue) {
+            const cue = document.createElement("span");
+            cue.className = "calendar-day__cue";
+            cue.setAttribute("aria-hidden", "true");
+            cue.textContent = state.cue;
+            cell.appendChild(cue);
+        }
+
+        return state;
     }
 
     // Modal event handlers

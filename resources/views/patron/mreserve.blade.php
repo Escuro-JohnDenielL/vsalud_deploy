@@ -119,7 +119,7 @@
     <div class="page-wrapper vs-patron-reservation">
         <div class="container vs-patron-reservation__layout">
             <div class="reservation-container">
-                <h2>Let's bring your vision to life—just fill out the form.</h2>
+                <h2>Let's bring your vision to life. Fill out the form below.</h2>
 
                 @php
                     $reservationForm = \App\Models\Form::with('activeFields')
@@ -140,20 +140,25 @@
                 @endif
             </div>
 
-            <div class="calendar-container vs-calendar">
+            {{-- data-today is computed for Manila on this page only (the app
+                 timezone stays UTC) so past-date handling never depends on the
+                 visitor's browser clock. --}}
+            <div class="calendar-container vs-calendar"
+                 data-today="{{ \Carbon\Carbon::now('Asia/Manila')->toDateString() }}"
+                 data-max-slots="{{ (int) config('availability.max_inquiries', 4) }}">
                 <div class="calendar-header">
-                    <button id="prevMonth">◀</button>
+                    <button id="prevMonth" class="vs-calendar-btn">◀</button>
                     <span id="month-year"></span>
-                    <button id="nextMonth">▶</button>
+                    <button id="nextMonth" class="vs-calendar-btn">▶</button>
                 </div>
                 <div id="calendar"></div>
 
                 <div class="calendar-legend">
-                    <p><span class="legend-box Available vs-calendar__legend-swatch vs-calendar-day--success"></span> Available (1-2 left)</p>
-                    <p><span class="legend-box Half vs-calendar__legend-swatch vs-calendar-day--half"></span> Half Full (2/4)</p>
-                    <p><span class="legend-box Nearly vs-calendar__legend-swatch vs-calendar-day--nearly"></span> Nearly Full (3/4)</p>
-                    <p><span class="legend-box Full vs-calendar__legend-swatch vs-calendar-day--danger"></span> Full (4/4)</p>
-                    <p><span class="legend-box Closed vs-calendar__legend-swatch vs-calendar-day--neutral"></span> Closed</p>
+                    <p><span class="vs-calendar__legend-swatch vs-calendar-day--success"></span> 0/4 to 1/4 Available</p>
+                    <p><span class="vs-calendar__legend-swatch vs-calendar-day--half"></span> 2/4 Limited</p>
+                    <p><span class="vs-calendar__legend-swatch vs-calendar-day--nearly"></span> 3/4 Nearly Full</p>
+                    <p><span class="vs-calendar__legend-swatch vs-calendar-day--danger"></span> 4/4 Full</p>
+                    <p><span class="vs-calendar__legend-swatch vs-calendar-day--neutral"></span> Closed</p>
                 </div>
             </div>
         </div>

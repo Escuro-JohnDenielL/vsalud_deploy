@@ -145,9 +145,9 @@ class ReservationFormSeeder extends Seeder
                 'label'      => 'Other Request',
                 'name'       => 'message',
                 'placeholder' => 'Please describe your specific requirements...',
-                'required'   => true,
+                'required'   => false,
                 'order'      => 9,
-                'validation_rules' => ['required', 'string'],
+                'validation_rules' => ['nullable', 'string'],
                 'is_fixed'   => false,
             ],
         ];

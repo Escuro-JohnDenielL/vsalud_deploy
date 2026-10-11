@@ -163,10 +163,15 @@
   background: var(--vs-color-surface-pale-green);
 }
 
+/* Weekday headers: plain muted text, never bordered or clickable. */
 .vs-admin-reservation .calendar-day.day-header {
-  background: var(--vs-color-surface-beige);
-  color: var(--vs-color-deep-green);
+  min-height: auto;
+  padding: 0 0 var(--vs-space-1);
+  border: 0;
+  background: transparent;
+  color: var(--vs-color-text-secondary);
   cursor: default;
+  font-size: var(--vs-text-secondary-min);
   font-weight: var(--vs-weight-semibold);
 }
 
@@ -247,9 +252,11 @@
 .vs-admin-reservation .calendar-day {
   position: relative;
   min-height: 40px;
-  gap: 2px;
+  flex-direction: column;
+  gap: 1px;
   border-width: 2px;
   font-weight: var(--vs-weight-bold);
+  line-height: 1;
 }
 
 .vs-admin-reservation .calendar-day.vs-calendar-day--success,
@@ -287,20 +294,18 @@
   color: var(--vs-calendar-day-text);
 }
 
-.vs-admin-reservation .calendar-day.vs-calendar-day--success::before { content: "A"; }
-.vs-admin-reservation .calendar-day.vs-calendar-day--half::before { content: "H"; }
-.vs-admin-reservation .calendar-day.vs-calendar-day--nearly::before { content: "N"; }
-.vs-admin-reservation .calendar-day.vs-calendar-day--danger::before { content: "F"; }
-.vs-admin-reservation .calendar-day.vs-calendar-day--neutral::before { content: "C"; }
-
-.vs-admin-reservation .calendar-day.vs-calendar-day--success::before,
-.vs-admin-reservation .calendar-day.vs-calendar-day--half::before,
-.vs-admin-reservation .calendar-day.vs-calendar-day--nearly::before,
-.vs-admin-reservation .calendar-day.vs-calendar-day--danger::before,
-.vs-admin-reservation .calendar-day.vs-calendar-day--neutral::before {
+/* Non-color cue: a small caption under the day number. */
+.vs-admin-reservation .calendar-day[data-date] .calendar-day__cue {
   flex: 0 0 auto;
-  font-size: 10px;
+  font-size: 9px;
+  font-weight: var(--vs-weight-semibold);
   line-height: 1;
+  opacity: 0.9;
+}
+
+/* Past dates stay selectable on this page: muted only, never disabled. */
+.vs-admin-reservation .calendar-day[data-date].is-past {
+  opacity: 0.55;
 }
 
 .vs-admin-reservation .calendar-day.vs-calendar-day--today::after {

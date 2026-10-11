@@ -518,6 +518,17 @@
     font-size: var(--vs-text-control-min);
 }
 
+/* Custom chevron: reset the native arrow and draw our own inside the control. */
+.vs-patron-reservation .form-group select {
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: calc(var(--vs-space-3) + 20px);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23004c3a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--vs-space-3) center;
+    background-size: 14px 14px;
+}
+
 .vs-patron-reservation .form-group button {
     width: 100%;
     min-height: 44px;
@@ -581,28 +592,38 @@
     padding-top: var(--vs-space-2);
 }
 
-.vs-patron-reservation .calendar-day {
+.vs-patron-reservation .calendar-day[data-date] {
     position: relative;
     display: flex;
+    flex-direction: column;
     min-width: 0;
     min-height: 40px;
     align-items: center;
     justify-content: center;
-    gap: 2px;
+    gap: 1px;
     padding: var(--vs-space-1);
     border: 2px solid var(--vs-color-control-border);
     border-radius: var(--vs-radius-control);
     background: var(--vs-color-surface);
     color: var(--vs-color-text);
+    font-family: var(--vs-font-ui);
     font-size: var(--vs-text-body-min);
     font-weight: var(--vs-weight-bold);
+    line-height: 1;
     text-align: center;
+    cursor: pointer;
     transition: background-color var(--vs-duration-fast), border-color var(--vs-duration-fast), color var(--vs-duration-fast);
 }
 
+/* Weekday headers: plain muted text, never bordered or clickable. */
 .vs-patron-reservation .calendar-day.day-header {
-    background: var(--vs-color-surface-beige);
-    color: var(--vs-color-deep-green);
+    min-height: auto;
+    padding: 0 0 var(--vs-space-1);
+    border: 0;
+    background: transparent;
+    color: var(--vs-color-text-secondary);
+    font-size: var(--vs-text-secondary-min);
+    font-weight: var(--vs-weight-semibold);
     cursor: default;
 }
 
@@ -612,58 +633,59 @@
     cursor: default;
 }
 
-.vs-patron-reservation .calendar-day.vs-calendar-day--success,
+/* Past dates: grayed out, not clickable, skipped in tab order. */
+.vs-patron-reservation .calendar-day[data-date].is-past {
+    border-color: var(--vs-status-neutral-border);
+    background: var(--vs-status-neutral-bg);
+    color: var(--vs-status-neutral-text);
+    cursor: not-allowed;
+}
+
+.vs-patron-reservation .calendar-day[data-date].vs-calendar-day--success,
 .vs-patron-reservation .vs-calendar__legend-swatch.vs-calendar-day--success {
     border-color: var(--vs-calendar-success-fill);
     background: var(--vs-calendar-success-fill);
     color: var(--vs-calendar-day-text);
 }
 
-.vs-patron-reservation .calendar-day.vs-calendar-day--half,
+.vs-patron-reservation .calendar-day[data-date].vs-calendar-day--half,
 .vs-patron-reservation .vs-calendar__legend-swatch.vs-calendar-day--half {
     border-color: var(--vs-calendar-half-fill);
     background: var(--vs-calendar-half-fill);
     color: var(--vs-calendar-day-text);
 }
 
-.vs-patron-reservation .calendar-day.vs-calendar-day--nearly,
+.vs-patron-reservation .calendar-day[data-date].vs-calendar-day--nearly,
 .vs-patron-reservation .vs-calendar__legend-swatch.vs-calendar-day--nearly {
     border-color: var(--vs-calendar-nearly-fill);
     background: var(--vs-calendar-nearly-fill);
     color: var(--vs-calendar-day-text);
 }
 
-.vs-patron-reservation .calendar-day.vs-calendar-day--danger,
+.vs-patron-reservation .calendar-day[data-date].vs-calendar-day--danger,
 .vs-patron-reservation .vs-calendar__legend-swatch.vs-calendar-day--danger {
     border-color: var(--vs-calendar-danger-fill);
     background: var(--vs-calendar-danger-fill);
     color: var(--vs-calendar-day-text);
 }
 
-.vs-patron-reservation .calendar-day.vs-calendar-day--neutral,
+.vs-patron-reservation .calendar-day[data-date].vs-calendar-day--neutral,
 .vs-patron-reservation .vs-calendar__legend-swatch.vs-calendar-day--neutral {
     border-color: var(--vs-calendar-neutral-fill);
     background: var(--vs-calendar-neutral-fill);
     color: var(--vs-calendar-day-text);
 }
 
-.vs-patron-reservation .calendar-day.vs-calendar-day--success::before { content: "A"; }
-.vs-patron-reservation .calendar-day.vs-calendar-day--half::before { content: "H"; }
-.vs-patron-reservation .calendar-day.vs-calendar-day--nearly::before { content: "N"; }
-.vs-patron-reservation .calendar-day.vs-calendar-day--danger::before { content: "F"; }
-.vs-patron-reservation .calendar-day.vs-calendar-day--neutral::before { content: "C"; }
-
-.vs-patron-reservation .calendar-day.vs-calendar-day--success::before,
-.vs-patron-reservation .calendar-day.vs-calendar-day--half::before,
-.vs-patron-reservation .calendar-day.vs-calendar-day--nearly::before,
-.vs-patron-reservation .calendar-day.vs-calendar-day--danger::before,
-.vs-patron-reservation .calendar-day.vs-calendar-day--neutral::before {
+/* Non-color cue: a small caption under the day number. */
+.vs-patron-reservation .calendar-day[data-date] .calendar-day__cue {
     flex: 0 0 auto;
-    font-size: 10px;
+    font-size: 9px;
+    font-weight: var(--vs-weight-semibold);
     line-height: 1;
+    opacity: 0.9;
 }
 
-.vs-patron-reservation .calendar-day.vs-calendar-day--today::after {
+.vs-patron-reservation .calendar-day[data-date].vs-calendar-day--today::after {
     position: absolute;
     inset: -4px;
     border: 1px dashed var(--vs-color-deep-green);
@@ -672,7 +694,7 @@
     pointer-events: none;
 }
 
-.vs-patron-reservation .calendar-day.vs-calendar-day--selected {
+.vs-patron-reservation .calendar-day[data-date].vs-calendar-day--selected {
     outline: 2px solid var(--vs-color-deep-green);
     outline-offset: 2px;
 }
@@ -748,6 +770,17 @@
     box-shadow: none;
 }
 
+@media (min-width: 901px) {
+    /* Desktop: the calendar column stays in view while the form scrolls. The
+       offset clears the sticky patron navbar (--navbar-height) so the top of
+       the card is never hidden behind the header. */
+    .vs-patron-reservation .calendar-container {
+        position: sticky;
+        top: calc(var(--navbar-height) + var(--vs-space-4));
+        align-self: flex-start;
+    }
+}
+
 @media (max-width: 900px) {
     .vs-patron-reservation .vs-patron-reservation__layout {
         flex-direction: column;
@@ -758,6 +791,12 @@
         width: 100%;
         flex: 1 1 auto;
     }
+
+    /* Stacked below the form: never sticky on mobile. */
+    .vs-patron-reservation .calendar-container {
+        position: static;
+        top: auto;
+    }
 }
 
 @media (max-width: 480px) {
@@ -766,10 +805,30 @@
         padding: var(--vs-space-4);
     }
 
-    .vs-patron-reservation .calendar-day {
+    .vs-patron-reservation .calendar-day[data-date] {
         min-height: 36px;
         padding: 2px;
         font-size: var(--vs-text-secondary-min);
+    }
+}
+
+@media (max-width: 380px) {
+    .vs-patron-reservation .calendar-container {
+        padding: var(--vs-space-2);
+    }
+
+    .vs-patron-reservation #calendar {
+        gap: 2px;
+    }
+
+    .vs-patron-reservation .calendar-day[data-date] {
+        min-height: 32px;
+        border-width: 1px;
+        font-size: var(--vs-text-secondary-min);
+    }
+
+    .vs-patron-reservation .calendar-day[data-date] .calendar-day__cue {
+        font-size: 8px;
     }
 }
 
@@ -780,18 +839,5 @@
     }
 }
 
-.legend-box.Available {
-    background-color: #4caf50;
-}
-.legend-box.Half {
-    background-color: #ffc107;
-}
-.legend-box.Nearly {
-    background-color: #ff9800;
-}
-.legend-box.Full {
-    background-color: #e53935;
-}
-.legend-box.Closed {
-    background-color: #9e9e9e;
-}
+/* Legacy .legend-box color helpers removed: the legend now uses the shared
+   .vs-calendar__legend-swatch classes so the swatches match the day cells. */

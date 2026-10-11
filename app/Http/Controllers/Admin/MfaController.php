@@ -167,20 +167,32 @@ class MfaController extends Controller
             return redirect()->intended('/admin/home');
         }
 
-        // DEVELOPMENT-ONLY workaround: show the code on-screen since testers
-        // may not be able to reach their email / authenticator app.
         $devOtpCode = null;
-        if ($this->mfaService->showCodeOnPage()) {
-            if ($admin->mfa_method === 'email') {
+
+        if ($admin->mfa_method === 'email') {
+            // Auto-send a verification code as soon as the challenge page opens so
+            // the admin never has to click "Resend code" to receive one. Skip the
+            // send when a still-valid code already exists (e.g. a page refresh) or
+            // while the resend cooldown is running, so we don't spam the inbox.
+            $hasActiveCode = $this->mfaService->currentOtpCode() !== null;
+            $onCooldown = $this->mfaService->otpResendAvailableIn() > 0;
+
+            if (!$hasActiveCode && !$onCooldown) {
                 try {
                     $this->mfaService->generateAndSendOtp($admin);
                 } catch (\Exception $e) {
-                    Log::warning('Dev workaround: could not email OTP, showing on page instead. ' . $e->getMessage());
+                    Log::warning('Could not email MFA OTP on challenge page: ' . $e->getMessage());
                 }
-                $devOtpCode = $this->mfaService->currentOtpCode();
-            } elseif ($admin->mfa_method === 'authenticator' && $admin->mfa_secret) {
-                $devOtpCode = $this->mfaService->currentTotpCode($admin->mfa_secret);
             }
+
+            // DEVELOPMENT-ONLY workaround: show the code on-screen since testers
+            // may not be able to reach their email.
+            if ($this->mfaService->showCodeOnPage()) {
+                $devOtpCode = $this->mfaService->currentOtpCode();
+            }
+        } elseif ($admin->mfa_method === 'authenticator' && $admin->mfa_secret && $this->mfaService->showCodeOnPage()) {
+            // DEVELOPMENT-ONLY workaround for authenticator app testers.
+            $devOtpCode = $this->mfaService->currentTotpCode($admin->mfa_secret);
         }
 
         $resendAvailableIn = $this->mfaService->otpResendAvailableIn();

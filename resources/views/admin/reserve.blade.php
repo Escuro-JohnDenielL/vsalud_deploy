@@ -32,7 +32,12 @@
             @endif
         </div>
 
-        <div class="calendar-container">
+        {{-- data-today is computed for Manila on this page only (the app
+             timezone stays UTC) so past-date marking never depends on the
+             visitor's browser clock. --}}
+        <div class="calendar-container"
+             data-today="{{ \Carbon\Carbon::now('Asia/Manila')->toDateString() }}"
+             data-max-slots="{{ (int) config('availability.max_inquiries', 4) }}">
             <div class="calendar-header">
                 <button type="button" id="prevMonth">◀</button>
                 <span id="month-year"></span>
@@ -42,16 +47,16 @@
 
             <div class="calendar-legend">
                 <div class="legend-item">
-                    <div class="legend-box legend-green vs-admin-reservation__legend-box vs-admin-reservation__legend-box--success vs-calendar__legend-swatch vs-calendar-day--success"></div> Available (1–2 left)
+                    <div class="legend-box legend-green vs-admin-reservation__legend-box vs-admin-reservation__legend-box--success vs-calendar__legend-swatch vs-calendar-day--success"></div> 0/4 to 1/4 Available
                 </div>
                 <div class="legend-item">
-                    <div class="legend-box legend-yellow vs-admin-reservation__legend-box vs-admin-reservation__legend-box--warning vs-calendar__legend-swatch vs-calendar-day--half"></div> Half Full (2/4)
+                    <div class="legend-box legend-yellow vs-admin-reservation__legend-box vs-admin-reservation__legend-box--warning vs-calendar__legend-swatch vs-calendar-day--half"></div> 2/4 Limited
                 </div>
                 <div class="legend-item">
-                    <div class="legend-box legend-orange vs-admin-reservation__legend-box vs-admin-reservation__legend-box--warning vs-calendar__legend-swatch vs-calendar-day--nearly"></div> Nearly Full (3/4)
+                    <div class="legend-box legend-orange vs-admin-reservation__legend-box vs-admin-reservation__legend-box--warning vs-calendar__legend-swatch vs-calendar-day--nearly"></div> 3/4 Nearly Full
                 </div>
                 <div class="legend-item">
-                    <div class="legend-box legend-red vs-admin-reservation__legend-box vs-admin-reservation__legend-box--danger vs-calendar__legend-swatch vs-calendar-day--danger"></div> Full (4/4)
+                    <div class="legend-box legend-red vs-admin-reservation__legend-box vs-admin-reservation__legend-box--danger vs-calendar__legend-swatch vs-calendar-day--danger"></div> 4/4 Full
                 </div>
                 <div class="legend-item">
                     <div class="legend-box legend-gray vs-admin-reservation__legend-box vs-admin-reservation__legend-box--neutral vs-calendar__legend-swatch vs-calendar-day--neutral"></div> Closed
