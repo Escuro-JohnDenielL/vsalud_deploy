@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Middleware\CheckPagePermission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -72,16 +71,12 @@ class AuthController extends Controller
                 return redirect()->route('admin.mfa.setup');
             }
 
-            // Send the admin to the first page they may open. The intended URL is
-            // used only when it resolves to a route they are allowed to see, and
-            // the destination is rebuilt from that route, never followed as a
-            // user-supplied URL.
-            return redirect()->to(
-                CheckPagePermission::postLoginUrl(
-                    $admin,
-                    $request->session()->pull('url.intended')
-                )
-            );
+            // Redirect permissionless admins to their profile instead of the home page
+            if ($admin->role !== 'super_admin' && !\App\Models\AdminPagePermission::where('admin_id', $admin->admin_id)->exists()) {
+                return redirect()->route('admin.profile');
+            }
+
+            return redirect()->intended('/admin/home');
         }
 
         RateLimiter::hit($key, 60);
