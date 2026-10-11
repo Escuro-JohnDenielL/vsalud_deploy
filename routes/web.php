@@ -323,23 +323,4 @@ Route::get('/login', function () {
     return redirect()->route('admin.login');
 })->name('login');
 
-// -------------------------------------------------------------------
-// TEMPORARY DIAGNOSTIC (batch 8). Answers only when the one-time token from
-// the DIAG_TOKEN environment variable matches, otherwise 404. Returns the
-// three values only, nothing else. Remove this block in the follow-up change.
-// -------------------------------------------------------------------
-Route::get('/__diag/ip', function (\Illuminate\Http\Request $request) {
-    $token = (string) config('services.diag.token');
-
-    if ($token === '' || ! hash_equals($token, (string) $request->query('token'))) {
-        abort(404);
-    }
-
-    return response()->json([
-        'remote_addr' => $_SERVER['REMOTE_ADDR'] ?? null,
-        'x_forwarded_for' => $request->header('X-Forwarded-For'),
-        'resolved_ip' => $request->ip(),
-    ]);
-});
-
 
