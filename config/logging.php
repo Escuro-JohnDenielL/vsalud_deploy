@@ -65,6 +65,36 @@ return [
             'replace_placeholders' => true,
         ],
 
+        /*
+         * Abuse signals from the public forms (rate limit and honeypot
+         * triggers). Daily files keep 14 days of history, and the stderr leg
+         * means the entries still surface after a Railway redeploy wipes the
+         * container filesystem.
+         */
+        'security' => [
+            'driver' => 'stack',
+            'channels' => ['security_daily', 'security_stderr'],
+            'ignore_exceptions' => false,
+        ],
+
+        'security_daily' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/security.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => env('LOG_SECURITY_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
+        'security_stderr' => [
+            'driver' => 'monolog',
+            'level' => env('LOG_LEVEL', 'debug'),
+            'handler' => StreamHandler::class,
+            'handler_with' => [
+                'stream' => 'php://stderr',
+            ],
+            'processors' => [PsrLogMessageProcessor::class],
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),

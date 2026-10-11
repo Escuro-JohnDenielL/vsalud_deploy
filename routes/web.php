@@ -38,7 +38,9 @@ Route::name('patron.')->group(function () {
 
     // Feedback
     Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback');
-    Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+    Route::post('/feedback', [FeedbackController::class, 'store'])
+        ->middleware('throttle:feedback')
+        ->name('feedback.store');
 
     // Reservation form
     Route::get('/mreserve', [ReservationController::class, 'create'])->name('mreserve');

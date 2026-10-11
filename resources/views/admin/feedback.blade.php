@@ -114,13 +114,6 @@
 
 @push('scripts')
 <script>
-    function escHtml(str) {
-        if (!str) return str;
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
-    }
-
     document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('feedbackModal');
         const closeBtn = document.getElementById('closeModalBtn');
@@ -129,8 +122,14 @@
             btn.addEventListener('click', function() {
                 document.getElementById('detail-name').textContent = this.dataset.name;
                 const emailEl = document.getElementById('detail-email');
-                const email = this.dataset.email;
-                emailEl.innerHTML = '<a href="mailto:' + encodeURIComponent(email) + '">' + escHtml(email) + '</a>';
+                const email = this.dataset.email || '';
+                // Build the mailto link with textContent, never innerHTML, so a
+                // crafted address cannot inject markup.
+                emailEl.textContent = '';
+                const emailLink = document.createElement('a');
+                emailLink.href = 'mailto:' + encodeURIComponent(email);
+                emailLink.textContent = email;
+                emailEl.appendChild(emailLink);
                 document.getElementById('detail-date').textContent = this.dataset.date;
                 document.getElementById('detail-message').textContent = this.dataset.message;
                 window.vsModalPrepareOpen(modal);

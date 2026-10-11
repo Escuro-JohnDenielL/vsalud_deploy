@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\Admin;
+use App\Support\Csv;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -103,21 +104,24 @@ class AuditLogController extends Controller
                 ->limit(self::MAX_EXPORT)
                 ->cursor()
                 ->each(function (ActivityLog $entry) use ($out) {
+                    // Every column in this export is text, so each value is
+                    // neutralized so it cannot be read as a formula. A numeric
+                    // column would be passed straight through instead.
                     $this->putCsvRow($out, [
-                        $entry->created_at?->format('Y-m-d H:i:s'),
-                        $entry->category_label,
-                        $entry->activity_type,
-                        $entry->description,
-                        $entry->admin_name,
-                        optional($entry->admin)->email,
-                        optional($entry->admin)->role,
-                        $entry->http_method,
-                        $entry->route_name,
-                        $entry->subject,
-                        $entry->ip_address,
-                        $entry->inquiry_id,
-                        $entry->reserve_id,
-                        $entry->user_agent,
+                        Csv::neutralize($entry->created_at?->format('Y-m-d H:i:s')),
+                        Csv::neutralize($entry->category_label),
+                        Csv::neutralize($entry->activity_type),
+                        Csv::neutralize($entry->description),
+                        Csv::neutralize($entry->admin_name),
+                        Csv::neutralize(optional($entry->admin)->email),
+                        Csv::neutralize(optional($entry->admin)->role),
+                        Csv::neutralize($entry->http_method),
+                        Csv::neutralize($entry->route_name),
+                        Csv::neutralize($entry->subject),
+                        Csv::neutralize($entry->ip_address),
+                        Csv::neutralize($entry->inquiry_id),
+                        Csv::neutralize($entry->reserve_id),
+                        Csv::neutralize($entry->user_agent),
                     ]);
                 });
 
@@ -231,6 +235,9 @@ class AuditLogController extends Controller
 
     /**
      * fputcsv with explicit delimiter/enclosure/escape, so PHP 8.4 does not warn.
+     *
+     * Cells are written exactly as given. Text columns are neutralized through
+     * App\Support\Csv before they reach here; numeric columns are not.
      */
     private function putCsvRow($handle, array $row): void
     {

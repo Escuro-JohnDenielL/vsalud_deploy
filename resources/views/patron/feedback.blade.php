@@ -16,6 +16,20 @@
       <form method="POST" action="{{ route('patron.feedback.store') }}">
         @csrf
 
+        {{-- Spam controls. The honeypot sits off-screen, out of the tab order
+             and hidden from assistive tech, so a person never fills it. The
+             hidden token carries the encrypted form start time. --}}
+        <div class="feedback-hp" aria-hidden="true">
+          <label for="hp_ref">Reference</label>
+          <input type="text" id="hp_ref" name="hp_ref" value="" tabindex="-1" autocomplete="off">
+        </div>
+        <input type="hidden" name="form_started_at" value="{{ vs_feedback_form_token() }}">
+
+        {{-- Rendered with the 429 response when the limit is hit --}}
+        @if (! empty($rateLimited))
+        <div class="alert alert-error" role="alert">Too many messages were sent from this connection. Please wait a while, then try again.</div>
+        @endif
+
         {{-- Success message --}}
         @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>

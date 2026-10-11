@@ -330,3 +330,33 @@ button:hover {
     transition: none;
   }
 }
+
+/* === Notices === */
+.alert {
+  padding: var(--vs-space-3) var(--vs-space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  margin-bottom: var(--vs-space-3);
+}
+
+.alert-success {
+  background: var(--vs-color-pale-green);
+  border-color: var(--vs-color-control-border);
+  color: var(--vs-color-deep-green);
+}
+
+.alert-error {
+  background: var(--vs-status-danger-bg);
+  border-color: var(--vs-status-danger-border);
+  color: var(--vs-status-danger-text);
+}
+
+/* === Honeypot: off-screen, still in the DOM for bots to find === */
+.feedback-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

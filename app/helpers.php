@@ -12,6 +12,18 @@ if (! function_exists('payment_setting')) {
     }
 }
 
+if (! function_exists('vs_feedback_form_token')) {
+    /**
+     * Encrypted start time rendered into the public feedback form and checked
+     * server-side. A script cannot decrypt it to fake an older time, and a
+     * stale or replayed form can be rejected by age.
+     */
+    function vs_feedback_form_token(): string
+    {
+        return \Illuminate\Support\Facades\Crypt::encryptString((string) now()->timestamp);
+    }
+}
+
 if (! function_exists('vs_date')) {
     /**
      * Format a date as "Oct 10, 2026" (presentation only; never mutates the value).
