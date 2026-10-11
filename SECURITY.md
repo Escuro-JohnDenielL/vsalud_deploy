@@ -43,6 +43,22 @@ For critical CVEs that can't wait for the next cadence:
 
 ---
 
+## Payment Receipt Storage and Access
+
+Proof-of-payment uploads are handled as follows.
+
+- **Storage location**: the Laravel `public` disk, which on Railway is the persistent volume mounted at `/var/www/storage/app/public`. Files are written to the `receipts/` directory. R2 and the private `local` disk remain as fallbacks for environments without a volume.
+- **File names**: Laravel generates the name (`store()`), so each file is a random 40 character hexadecimal name. Names are not sequential and cannot be guessed.
+- **Upload endpoint**: `POST /submit-payment` is public (patrons are not logged in). It is limited to JPG and PNG validated by real content type (`image` plus `mimetypes:image/jpeg,image/png`), capped at 5 MB, rate limited (`throttle:5,1`), and it must match a real `inquiry.tracking_code` together with the patron email on record.
+- **Admin viewing**: receipts are read only through `GET /admin/receipts/{payment}` (`PaymentLogsController@showReceipt`), which is behind `auth:admin`, `auth.session`, `mfa` and `page.permission`, and streams the file through the Storage facade with `X-Content-Type-Options: nosniff`. The `/storage` URL is not used for viewing.
+- **Known residual risk**: because the volume root equals the public disk root and `storage:link` runs at boot, a receipt is technically reachable at `/storage/receipts/<hash>.jpg` with no authentication if that exact URL leaks. Directory listing is not enabled, so files cannot be browsed, only fetched by exact name.
+
+**Mitigation status**: accepted for the current deployment. A second Railway volume cannot be added, the mount is fixed at `/var/www/storage/app/public`, and storing receipts on R2 adds noticeable latency for uploads and admin viewing. The mitigation in force is the unguessable random filename plus admin-only viewing through the authenticated route.
+
+**Future options** if a stronger guarantee is required: add a second volume mounted at `/var/www/storage/app/private` and store receipts on the `local` disk (private, persistent, fast), move receipts to R2 (private, persistent, higher latency), or encrypt receipt bytes at rest on the current volume and decrypt only in the admin route.
+
+---
+
 ## Reporting a Security Issue or System Incident
 
 If you discover a security vulnerability, suspect a breach, or need to report a system issue affecting Villa Salud:

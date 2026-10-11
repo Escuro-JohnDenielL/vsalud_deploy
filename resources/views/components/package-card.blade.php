@@ -17,8 +17,10 @@
         ->values()
         ->all();
 
-    if (empty($gallery)) {
-        $gallery = [asset('images/default_package.jpg')];
+    $hasPhoto = ! empty($gallery);
+
+    if (! $hasPhoto) {
+        $gallery = [asset('images/package_placeholder.svg')];
     }
 
     $inclusions = collect(is_array($inclusions) ? $inclusions : [])
@@ -38,7 +40,11 @@
 @endphp
 
 <div class="package-card">
-    <img src="{{ $gallery[0] }}" alt="{{ $name }}">
+    <div class="package-card__media">
+        <img src="{{ $gallery[0] }}" alt="{{ $name }}" loading="lazy"
+             @if (! $hasPhoto) class="is-fallback" @endif
+             onerror="this.onerror=null;this.src='{{ asset('images/package_placeholder.svg') }}';this.classList.add('is-fallback');">
+    </div>
     <div class="package-card__body">
         <div class="package-card__title-area">
             <h3 class="package-card__title">{{ $name }}</h3>
@@ -46,7 +52,17 @@
         <div class="package-card__desc-area">
             <p class="package-card__desc">{{ $description }}</p>
         </div>
-        <strong class="package-card__price">₱{{ number_format($price, 2) }}</strong>
+        @if (! empty($inclusions))
+            <ul class="package-card__inclusions">
+                @foreach (array_slice($inclusions, 0, 3) as $item)
+                    <li>{{ $item }}</li>
+                @endforeach
+            </ul>
+        @endif
+        <p class="package-card__price">
+            <span class="package-card__price-label">Starting at</span>
+            <strong>&#8369;{{ number_format($price, 2) }}</strong>
+        </p>
         <button type="button" class="package-card__view view-package" data-package='@json($payload)'>
             View Package
         </button>

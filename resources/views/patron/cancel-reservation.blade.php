@@ -31,11 +31,6 @@
                 <div id="detailsContent"></div>
             </div>
 
-            {{-- Visual separator between details and cancellation form --}}
-            <div class="cancel-section-divider">
-                <span class="cancel-section-divider-label">Request Cancellation</span>
-            </div>
-
             <div class="cancel-form-card">
                 <form id="cancelForm">
                     @csrf
@@ -49,6 +44,17 @@
 
                     <button type="submit" class="btn-submit-cancel">Submit Cancellation Request</button>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="cancelConfirm" class="cancel-confirm" role="dialog" aria-modal="true" aria-labelledby="cancelConfirmTitle" hidden>
+        <div class="cancel-confirm__dialog">
+            <h3 id="cancelConfirmTitle">Send cancellation request?</h3>
+            <p>This sends a request for admin review. Your reservation is not cancelled until it is approved.</p>
+            <div class="cancel-confirm__actions">
+                <button type="button" class="cancel-confirm__cancel" id="cancelConfirmDismiss">Keep reservation</button>
+                <button type="button" class="cancel-confirm__confirm" id="cancelConfirmSubmit">Send request</button>
             </div>
         </div>
     </div>

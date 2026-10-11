@@ -2041,10 +2041,145 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
   }
 }
 
+/* === Shared page header (admin and patron) === */
+.vs-page-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  gap: var(--vs-space-4);
+  margin-bottom: var(--vs-space-6);
+}
+
+.vs-page-header__title-wrap {
+  grid-column: 2;
+  text-align: center;
+}
+
+.vs-page-header__title {
+  margin: 0;
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-display);
+  font-size: clamp(26px, 3vw, 34px);
+  font-weight: var(--vs-weight-bold);
+  line-height: var(--vs-leading-tight);
+}
+
+.vs-page-header__sub {
+  margin: var(--vs-space-1) 0 0;
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-normal);
+  text-wrap: balance;
+}
+
+.vs-page-header__action {
+  grid-column: 3;
+  justify-self: end;
+  align-self: center;
+}
+
+@media (max-width: 767.98px) {
+  .vs-page-header {
+    grid-template-columns: 1fr;
+    gap: var(--vs-space-3);
+  }
+
+  .vs-page-header__title-wrap,
+  .vs-page-header__action {
+    grid-column: 1;
+  }
+
+  .vs-page-header__action {
+    justify-self: stretch;
+  }
+
+  .vs-page-header__action > * {
+    width: 100%;
+  }
+}
+
+/* === Patron site footer === */
+.vs-patron-footer {
+  margin-top: var(--vs-space-8);
+  padding: var(--vs-space-6) var(--vs-space-4);
+  border-top: 1px solid var(--vs-color-control-border);
+  background: var(--vs-color-surface-beige);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+}
+
+.vs-patron-footer .site-footer__inner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--vs-space-5);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.vs-patron-footer .site-footer__logo {
+  color: var(--vs-color-deep-green);
+  font-size: var(--vs-text-body-min);
+  letter-spacing: 3px;
+}
+
+.vs-patron-footer .site-footer__heading {
+  margin: 0 0 var(--vs-space-2);
+  color: var(--vs-color-deep-green);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-semibold);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.vs-patron-footer .site-footer__list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vs-patron-footer .site-footer__list li {
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-normal);
+}
+
+.vs-patron-footer .site-footer__email {
+  white-space: nowrap;
+}
+
+.vs-patron-footer .site-footer__list a {
+  color: var(--vs-color-dark-green);
+  text-decoration: none;
+}
+
+.vs-patron-footer .site-footer__list a:hover {
+  text-decoration: underline;
+}
+
+.vs-patron-footer .site-footer__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--vs-space-3);
+  max-width: 1100px;
+  margin: var(--vs-space-5) auto 0;
+  padding-top: var(--vs-space-3);
+  border-top: 1px solid var(--vs-color-control-border);
+}
+
+.vs-patron-footer .site-footer__bottom p {
+  margin: 0;
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-body-min);
+}
+
 /* === Scoped baseline for legacy page elements === */
 .vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-row-actions__view):not(.vs-overflow__toggle):not(.vs-overflow__item):not(.preset-btn),
 .vs-layout--admin .btn,
-.vs-layout--patron button:not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-calendar-btn),
+.vs-layout--patron button:where(:not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-calendar-btn):not(.faq-question):not(.btn-submit-cancel):not(.cancel-confirm__cancel):not(.cancel-confirm__confirm)),
 .vs-layout--patron .btn,
 .vs-layout--admin-auth button:not(.close-btn):not(.btn-close),
 .vs-layout--admin-auth .btn {
@@ -2062,7 +2197,7 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
 
 .vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-row-actions__view):not(.vs-overflow__toggle):not(.vs-overflow__item):not(.preset-btn):hover,
 .vs-layout--admin .btn:hover,
-.vs-layout--patron button:not(.close-btn):not(.btn-close):not(.btn-submit):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-calendar-btn):hover,
+.vs-layout--patron button:where(:not(.close-btn):not(.btn-close):not(.btn-submit):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-calendar-btn):not(.faq-question):not(.btn-submit-cancel):not(.cancel-confirm__cancel):not(.cancel-confirm__confirm)):hover,
 .vs-layout--patron .btn:hover,
 .vs-layout--admin-auth button:not(.close-btn):not(.btn-close):hover,
 .vs-layout--admin-auth .btn:hover {

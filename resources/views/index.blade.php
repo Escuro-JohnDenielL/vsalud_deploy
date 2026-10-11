@@ -86,18 +86,22 @@
                     <p>Have questions about your event or reservation? Contact Villa Salud and we'll be happy to assist you.</p>
                 </div>
                 <div class="row g-3 landing-contact__details">
-                    <div class="col-md-4"><div class="contact-detail"><strong>Phone</strong><p>288376801</p></div></div>
-                    <div class="col-md-4"><div class="contact-detail"><strong>Email</strong><p class="text-break">villasaludcateringservices@gmail.com</p></div></div>
-                    <div class="col-md-4"><div class="contact-detail"><strong>Location</strong><p>Taguig, Philippines</p></div></div>
+                    @if (config('villasalud.contact.phone'))
+                        <div class="col-md-4"><div class="contact-detail"><strong>Phone</strong><p>{{ config('villasalud.contact.phone') }}</p></div></div>
+                    @endif
+                    @if (config('villasalud.contact.email'))
+                        <div class="col-md-4"><div class="contact-detail"><strong>Email</strong><p>{{ config('villasalud.contact.email') }}</p></div></div>
+                    @endif
+                    @if (config('villasalud.contact.address'))
+                        <div class="col-md-4"><div class="contact-detail"><strong>Location</strong><p>{{ config('villasalud.contact.address') }}</p></div></div>
+                    @endif
                 </div>
                 <a class="landing-outline-link landing-outline-link--light" href="#home">Back to Home</a>
             </div>
         </section>
     </main>
-    <footer class="landing-footer">
-        <span>VILLA SALUD</span>
-        <p>&copy; {{ date('Y') }} Villa Salud Catering. All rights reserved.</p>
+    <x-site-footer class="landing-footer">
         <a class="landing-admin-link" href="{{ route('admin.login') }}">Admin</a>
-    </footer>
+    </x-site-footer>
 </body>
 </html>

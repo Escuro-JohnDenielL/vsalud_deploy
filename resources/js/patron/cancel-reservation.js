@@ -13,6 +13,52 @@ document.addEventListener("DOMContentLoaded", () => {
         messageContainer.innerHTML = "";
     }
 
+    function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '\"': "&quot;",
+            "'": "&#39;",
+        })[char]);
+    }
+
+    // Mirror vs_date(): "Aug 25, 2026"
+    function formatDate(value) {
+        if (!value) return "None";
+        const raw = String(value).trim();
+        const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        const date = match
+            ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
+            : new Date(raw);
+        if (Number.isNaN(date.getTime())) return raw;
+        return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    }
+
+    // Mirror vs_time(): "9:00 AM"
+    function formatTimeToken(token) {
+        const clean = token.trim().toLowerCase().replace(/\s+/g, "");
+        const match = clean.match(/^(\d{1,2})(?::(\d{2}))?(am|pm)?$/);
+        if (!match) return token.trim();
+        let hours = parseInt(match[1], 10);
+        const minutes = match[2] ? parseInt(match[2], 10) : 0;
+        const meridiem = match[3];
+        if (meridiem === "pm" && hours < 12) hours += 12;
+        if (meridiem === "am" && hours === 12) hours = 0;
+        const date = new Date();
+        date.setHours(hours, minutes, 0, 0);
+        return date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    }
+
+    // Reservation times are ranges ("9am-1pm") -> "9:00 AM to 1:00 PM"
+    function formatTime(value) {
+        if (!value) return "None";
+        const raw = String(value).trim();
+        const parts = raw.split(/\s*(?:[-\u2013]|\bto\b)\s*/i).filter(Boolean);
+        if (parts.length === 0) return raw;
+        return parts.map(formatTimeToken).join(" to ");
+    }
+
     // Step 1: Look up reservation by tracking code
     lookupForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -48,14 +94,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const r = data.reservation;
             detailsContent.innerHTML = `
                 <table class="details-table">
-                    <tr><td><strong>Code:</strong></td><td>${r.tracking_code}</td></tr>
-                    <tr><td><strong>Name:</strong></td><td>${r.patron_name}</td></tr>
-                    <tr><td><strong>Email:</strong></td><td>${r.patron_email}</td></tr>
-                    <tr><td><strong>Date:</strong></td><td>${r.date}</td></tr>
-                    <tr><td><strong>Time:</strong></td><td>${r.time}</td></tr>
-                    <tr><td><strong>Venue:</strong></td><td>${r.venue}</td></tr>
-                    <tr><td><strong>Event Type:</strong></td><td>${r.event_type}</td></tr>
-                    <tr><td><strong>Theme/Motif:</strong></td><td>${r.theme_motif}</td></tr>
+                    <tr><td><strong>Code:</strong></td><td>${escapeHtml(r.tracking_code)}</td></tr>
+                    <tr><td><strong>Name:</strong></td><td>${escapeHtml(r.patron_name)}</td></tr>
+                    <tr><td><strong>Email:</strong></td><td>${escapeHtml(r.patron_email)}</td></tr>
+                    <tr><td><strong>Date:</strong></td><td>${escapeHtml(formatDate(r.date))}</td></tr>
+                    <tr><td><strong>Time:</strong></td><td>${escapeHtml(formatTime(r.time))}</td></tr>
+                    <tr><td><strong>Venue:</strong></td><td>${escapeHtml(r.venue)}</td></tr>
+                    <tr><td><strong>Package:</strong></td><td>${escapeHtml(r.event_type)}</td></tr>
+                    <tr><td><strong>Theme/Motif:</strong></td><td>${escapeHtml(r.theme_motif)}</td></tr>
                 </table>
             `;
 
@@ -71,9 +117,27 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Step 2: Submit cancellation request
-    cancelForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+    // Step 2: Confirm, then submit the cancellation request
+    const confirmDialog = document.getElementById("cancelConfirm");
+    const confirmSubmitBtn = document.getElementById("cancelConfirmSubmit");
+    const confirmDismissBtn = document.getElementById("cancelConfirmDismiss");
+    let lastFocused = null;
+
+    function openConfirm() {
+        lastFocused = document.activeElement;
+        confirmDialog.hidden = false;
+        confirmSubmitBtn.focus();
+    }
+
+    function closeConfirm() {
+        confirmDialog.hidden = true;
+        if (lastFocused && typeof lastFocused.focus === "function") {
+            lastFocused.focus();
+        }
+    }
+
+    async function submitCancellation() {
+        closeConfirm();
         clearMessage();
 
         const reserveId = document.getElementById("reserve_id").value;
@@ -108,6 +172,24 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (err) {
             showMessage("An error occurred. Please try again.", "error");
             console.error(err);
+        }
+    }
+
+    cancelForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        openConfirm();
+    });
+
+    confirmSubmitBtn.addEventListener("click", submitCancellation);
+    confirmDismissBtn.addEventListener("click", closeConfirm);
+
+    confirmDialog.addEventListener("click", (e) => {
+        if (e.target === confirmDialog) closeConfirm();
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (!confirmDialog.hidden && e.key === "Escape") {
+            closeConfirm();
         }
     });
 });

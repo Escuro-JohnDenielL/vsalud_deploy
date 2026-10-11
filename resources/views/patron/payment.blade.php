@@ -112,12 +112,14 @@
 
                 <div class="receipt-upload">
                     <form id="receiptForm">
-                        <label for="receiptUpload">Upload Receipt (JPG, PNG, PDF):</label>
-                        <input type="file" id="receiptUpload" accept="image/*">
+                        <label for="receiptUpload">Upload Receipt (JPG or PNG):</label>
+                        <input type="file" id="receiptUpload" accept="image/jpeg,image/png">
                         <span id="receiptError" class="input-error">Please upload your payment receipt.</span>
-                        <button type="submit" id="submitReceipt" class="btn-submit">Submit Receipt</button>
+                        <div class="receipt-actions">
+                            <button type="button" id="backButton" class="btn-submit payment-back-button">Back</button>
+                            <button type="submit" id="submitReceipt" class="btn-submit">Submit Receipt</button>
+                        </div>
                     </form>
-                    <button type="button" id="backButton" class="btn-submit payment-back-button">Back</button>
                     <div class="loader">
                         <div class="loader-spinner"></div>
                     </div>

@@ -12,61 +12,8 @@
 }
 
 /* --- Page header --- */
-.vs-layout--admin .vs-page-header {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: start;
-  gap: var(--vs-space-4);
-  margin-bottom: var(--vs-space-6);
-}
-
-.vs-layout--admin .vs-page-header__title-wrap {
-  grid-column: 2;
-  text-align: center;
-}
-
-.vs-layout--admin .vs-page-header__title {
-  margin: 0;
-  color: var(--vs-color-deep-green);
-  font-family: var(--vs-font-display);
-  font-size: clamp(26px, 3vw, 34px);
-  font-weight: var(--vs-weight-bold);
-  line-height: var(--vs-leading-tight);
-}
-
-.vs-layout--admin .vs-page-header__sub {
-  margin: var(--vs-space-1) 0 0;
-  color: var(--vs-color-text-secondary);
-  font-size: var(--vs-text-body-min);
-  line-height: var(--vs-leading-normal);
-  text-wrap: balance;
-}
-
-.vs-layout--admin .vs-page-header__action {
-  grid-column: 3;
-  justify-self: end;
-  align-self: center;
-}
-
-@media (max-width: 767.98px) {
-  .vs-layout--admin .vs-page-header {
-    grid-template-columns: 1fr;
-    gap: var(--vs-space-3);
-  }
-
-  .vs-layout--admin .vs-page-header__title-wrap,
-  .vs-layout--admin .vs-page-header__action {
-    grid-column: 1;
-  }
-
-  .vs-layout--admin .vs-page-header__action {
-    justify-self: stretch;
-  }
-
-  .vs-layout--admin .vs-page-header__action > * {
-    width: 100%;
-  }
-}
+/* Styling is shared with the patron side in resources/css/app.css under the
+   common .vs-page-header selector. Add only admin-specific overrides here. */
 
 /* --- Data table: extends the existing app.css .vs-table (cream header) --- */
 .vs-layout--admin .vs-table-frame {

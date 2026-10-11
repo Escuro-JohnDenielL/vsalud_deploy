@@ -48,13 +48,27 @@
 
     <div class="contact-info">
       <h2>Visit Us</h2>
-      <p><strong>Address:</strong> #229 MLQ St., Purok 3, New Lower Bicutan, Taguig City, Metro Manila, Philippines</p>
-      <p><strong>Email:</strong> <a href="mailto:villasaludcateringservices@gmail.com">villasaludcateringservices@gmail.com</a></p>
-      <p><strong>Facebook:</strong> <a href="https://www.facebook.com/villasaludcatering" target="_blank">Villa Salud Catering Services</a></p>
-      <p><strong>Instagram:</strong> <a href="https://www.instagram.com/villasaludcatering?igsh=aDQ0bGQ4eW9pczlv" target="_blank">@villasaludcatering</a></p>
-      <p><strong>Office Tel:</strong> 8837-68-01 / 8776-68-67</p>
-      <p><strong>Tele-fax:</strong> 8856-21-81</p>
-      <p><strong>Mobile:</strong> 0928-492-5493 / 0906-223-6120</p>
+      @if (config('villasalud.contact.address'))
+        <p><strong>Address:</strong> {{ config('villasalud.contact.address') }}</p>
+      @endif
+      @if (config('villasalud.contact.email'))
+        <p><strong>Email:</strong> <a href="mailto:{{ config('villasalud.contact.email') }}">{{ config('villasalud.contact.email') }}</a></p>
+      @endif
+      @if (config('villasalud.social.facebook'))
+        <p><strong>Facebook:</strong> <a href="{{ config('villasalud.social.facebook') }}" target="_blank" rel="noopener">Villa Salud Catering Services</a></p>
+      @endif
+      @if (config('villasalud.social.instagram'))
+        <p><strong>Instagram:</strong> <a href="{{ config('villasalud.social.instagram') }}" target="_blank" rel="noopener">@villasaludcatering</a></p>
+      @endif
+      @if (config('villasalud.contact.phone'))
+        <p><strong>Office Tel:</strong> {{ config('villasalud.contact.phone') }}</p>
+      @endif
+      @if (config('villasalud.contact.fax'))
+        <p><strong>Tele-fax:</strong> {{ config('villasalud.contact.fax') }}</p>
+      @endif
+      @if (config('villasalud.contact.mobile'))
+        <p><strong>Mobile:</strong> {{ config('villasalud.contact.mobile') }}</p>
+      @endif
     </div>
   </div>
 

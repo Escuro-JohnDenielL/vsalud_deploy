@@ -1,21 +1,18 @@
-/* === Banner Section === */
-.banner-container {
-  display: flex;
-  justify-content: center;
-  padding: 20px 0;
-}
-
 /* === Packages Section === */
 .packages {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 28px;
   padding: 30px;
 }
 
+.packages-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
 .package-card {
-  width: 280px;
   background: var(--color-surface);
   border-radius: var(--radius-lg);
   text-align: center;
@@ -32,15 +29,26 @@
   box-shadow: var(--shadow-xl);
 }
 
-.package-card img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  transition: transform var(--transition-slow);
-  flex-shrink: 0;
+.package-card__media {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
 }
 
-.package-card:hover img {
+.package-card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.package-card__media img.is-fallback {
+  object-fit: contain;
+  padding: 14px;
+  background: #f5f2df;
+}
+
+.package-card:hover .package-card__media img {
   transform: scale(1.03);
 }
 
@@ -86,12 +94,54 @@
   margin: 0;
 }
 
+.package-card__inclusions {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 10px;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.package-card__inclusions li {
+  position: relative;
+  padding-left: 16px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.package-card__inclusions li::before {
+  content: "";
+  position: absolute;
+  top: 7px;
+  left: 2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
+
 .package-card__price {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-top: auto;
+  color: var(--color-primary);
+}
+
+.package-card__price-label {
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.package-card__price strong {
   font-size: 20px;
   font-weight: 700;
-  color: var(--color-primary);
-  margin-top: auto;
 }
 
 .package-card .btn {
@@ -327,16 +377,6 @@
 /* === Responsive Design === */
 /* Navbar collapses to a hamburger menu — see resources/css/app.css */
 @media (max-width: 768px) {
-  .banner {
-    font-size: 14px;
-    padding: 10px;
-    width: 90%;
-  }
-
-  .package-card {
-    width: 100%;
-    max-width: 280px;
-  }
 
   .modal-content {
     width: 90%;
@@ -360,10 +400,6 @@
 }
 
 @media (max-width: 480px) {
-  .banner {
-    font-size: 13px;
-  }
-
   .package-card__title {
     font-size: 16px;
   }
@@ -374,11 +410,6 @@
 }
 
 @media (max-width: 320px) {
-  .banner {
-    font-size: 12px;
-    padding: 8px;
-  }
-
   .modal-content {
     padding: 15px;
   }
@@ -512,37 +543,27 @@
 }
 
 /* Shared patron surface styling */
-.vs-layout--patron .banner-container {
-  justify-content: stretch;
-  padding: var(--vs-space-5) 0;
-}
-
-.vs-layout--patron .banner {
-  width: 100%;
-  border: 1px solid var(--vs-color-dark-green);
-  border-radius: var(--vs-radius-card);
-  background: var(--vs-color-dark-green);
-  color: var(--vs-color-white);
-  font-family: var(--vs-font-ui);
-  font-size: var(--vs-text-body-min);
-  line-height: var(--vs-leading-normal);
-  box-shadow: none;
-}
-
 .vs-layout--patron .packages {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   align-items: stretch;
   gap: var(--vs-space-5);
   padding: var(--vs-space-4) 0;
 }
 
+.vs-layout--patron .vs-patron-packages {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--vs-space-4) var(--vs-space-4) 0;
+}
+
+.vs-layout--patron .vs-patron-packages .vs-page-header {
+  margin-top: var(--vs-space-6);
+}
+
 .vs-layout--patron .package-card {
-  width: min(100%, 280px);
-  flex: 0 1 280px;
   min-width: 0;
-  margin-inline: auto;
   border: 1px solid var(--vs-color-control-border);
   border-radius: var(--vs-radius-card);
   background: var(--vs-color-surface);
@@ -619,11 +640,7 @@
 
 @media (max-width: 600px) {
   .vs-layout--patron .packages {
-    justify-content: center;
-  }
-
-  .vs-layout--patron .package-card {
-    width: 100%;
+    grid-template-columns: 1fr;
   }
 }
 

@@ -1,5 +1,6 @@
 {{--
-    Shared admin page header.
+    Shared page header (admin and patron pages).
+    Base styling lives in resources/css/app.css under .vs-page-header.
     Usage:
         <x-ui.page-header title="View Inquiries" subtitle="View and manage customer inquiries.">
             <x-slot:action>

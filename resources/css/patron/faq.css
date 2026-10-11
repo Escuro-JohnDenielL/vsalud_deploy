@@ -185,8 +185,19 @@
   line-height: var(--vs-leading-normal);
 }
 
+.vs-layout--patron .faq-question {
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface-beige);
+}
+
 .vs-layout--patron .faq-question:hover {
   transform: none;
+  background: var(--vs-color-pale-green);
+  color: var(--vs-color-deep-green);
+}
+
+.vs-layout--patron .faq.active .faq-question {
+  background: var(--vs-color-pale-green);
   color: var(--vs-color-deep-green);
 }
 

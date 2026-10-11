@@ -145,6 +145,8 @@
         @yield('content')
     </main>
 
+    <x-site-footer class="vs-patron-footer" />
+
     @stack('scripts') {{-- Page-specific scripts --}}
 </body>
 

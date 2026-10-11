@@ -95,7 +95,7 @@ class PaymentController extends Controller
             'payment_method' => 'required|in:cash,gcash,bank',
             'email' => 'required|email',
             'reservation_code' => 'required|string|exists:inquiry,tracking_code',
-            'receipt' => 'required|mimes:jpg,jpeg,png,pdf|max:5120',
+            'receipt' => ['required', 'file', 'image', 'mimetypes:image/jpeg,image/png', 'max:5120'],
         ]);
 
         // Verify the reservation code belongs to the same email
@@ -112,12 +112,14 @@ class PaymentController extends Controller
         $trackingCode = 'VS-' . substr(time(), -6) . '-' . rand(1000, 9999);
 
         // Store the receipt on the Railway volume, which is mounted at
-        // /var/www/storage/app/public — the root of the "public" disk — so
-        // uploads survive redeploys. R2 (older cloud path) and the private
-        // local disk remain as fallbacks for environments without a volume.
+        // /var/www/storage/app/public (the root of the "public" disk), so
+        // uploads are fast (same server) and survive redeploys. R2 and the
+        // private local disk remain as fallbacks. Note: the public disk is
+        // served through the public/storage symlink, so a receipt there is
+        // fetchable by URL if the random file name leaks.
         //
         // NOTE: every disk here is configured with 'throw' => false, so a
-        // failed write RETURNS false instead of throwing — check the result
+        // failed write RETURNS false instead of throwing, check the result
         // and move to the next disk instead of trusting try/catch alone.
         $receiptPath = null;
         foreach (['public', 'r2', 'local'] as $diskName) {

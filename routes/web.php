@@ -216,7 +216,9 @@ Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.log
 
 Route::post('/fetch-reservation', [ReservationController::class, 'fetchReservation'])->middleware('throttle:20,1')->name('fetch.reservation');
 
-Route::post('/submit-payment', [PaymentController::class, 'store'])->name('payment.store');
+Route::post('/submit-payment', [PaymentController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('payment.store');
 
 Route::get('/calendar/availability', function () {
     $maxInquiries = config('availability.max_inquiries', 4);

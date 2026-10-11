@@ -33,7 +33,7 @@
 #lookupForm .form-group label {
     display: block;
     margin-bottom: 8px;
-    font-weight: bold;
+    font-weight: 600;
     color: #333;
 }
 
@@ -93,31 +93,6 @@
 
 .details-table td:last-child {
     color: var(--color-text);
-}
-
-/* === Divider between Details and Cancellation Form === */
-.cancel-section-divider {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin: 32px 0 24px;
-}
-
-.cancel-section-divider::before,
-.cancel-section-divider::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: var(--color-border);
-}
-
-.cancel-section-divider-label {
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--color-danger);
-    white-space: nowrap;
 }
 
 /* === Cancellation Form Card === */
@@ -332,10 +307,6 @@
         color: var(--vs-color-text-secondary);
     }
 
-    .vs-layout--patron .cancel-section-divider-label {
-        color: var(--vs-status-danger-text);
-    }
-
     .vs-layout--patron .btn-lookup,
     .vs-layout--patron .btn-submit-cancel {
         min-height: 40px;
@@ -397,3 +368,90 @@
             transition: none;
         }
     }
+
+/* === Confirmation dialog === */
+.cancel-confirm {
+    position: fixed;
+    inset: 0;
+    z-index: 1600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--vs-space-4);
+    background: rgba(0, 38, 28, .55);
+}
+
+.cancel-confirm[hidden] {
+    display: none;
+}
+
+.cancel-confirm__dialog {
+    width: min(100%, 430px);
+    padding: var(--vs-space-5);
+    border: 1px solid var(--vs-color-control-border);
+    border-radius: var(--vs-radius-card);
+    background: var(--vs-color-surface);
+    color: var(--vs-color-text);
+    box-shadow: var(--vs-shadow-card);
+    font-family: var(--vs-font-ui);
+}
+
+.cancel-confirm__dialog h3 {
+    margin: 0 0 var(--vs-space-2);
+    color: var(--vs-color-deep-green);
+    font-family: var(--vs-font-display);
+}
+
+.cancel-confirm__dialog p {
+    margin: 0 0 var(--vs-space-4);
+    color: var(--vs-color-text-secondary);
+    font-size: var(--vs-text-body-min);
+    line-height: var(--vs-leading-relaxed);
+}
+
+.cancel-confirm__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--vs-space-3);
+}
+
+.cancel-confirm__cancel,
+.cancel-confirm__confirm {
+    min-height: 40px;
+    padding: 0 var(--vs-space-4);
+    border-radius: var(--vs-radius-control);
+    font-family: var(--vs-font-ui);
+    font-size: var(--vs-text-control-min);
+    font-weight: var(--vs-weight-semibold);
+    cursor: pointer;
+}
+
+.cancel-confirm__cancel {
+    border: 1px solid var(--vs-button-secondary-border);
+    background: var(--vs-button-secondary-bg);
+    color: var(--vs-button-secondary-text);
+}
+
+.cancel-confirm__confirm {
+    border: 1px solid var(--vs-button-danger-border);
+    background: var(--vs-button-danger-bg);
+    color: var(--vs-button-danger-text);
+}
+
+.cancel-confirm__cancel:hover {
+    border-color: var(--vs-button-secondary-hover-border);
+    background: var(--vs-button-secondary-hover-bg);
+    color: var(--vs-button-secondary-hover-text);
+}
+
+.cancel-confirm__confirm:hover {
+    border-color: var(--vs-button-danger-hover-border);
+    background: var(--vs-button-danger-hover-bg);
+    color: var(--vs-button-danger-hover-text);
+}
+
+.cancel-confirm button:focus-visible {
+    outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+    outline-offset: var(--vs-focus-offset);
+}

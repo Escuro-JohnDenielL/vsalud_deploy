@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const mainImage = document.getElementById("pkgModalMainImage");
     const thumbsEl = document.getElementById("pkgModalThumbs");
     const inclusionsEl = document.getElementById("pkgModalInclusions");
-    const DEFAULT_IMAGE = "/images/default_package.jpg";
+    const DEFAULT_IMAGE = "/images/package_placeholder.svg";
 
     const formatPrice = function (price) {
         return `₱${Number(price || 0).toLocaleString("en-PH", {

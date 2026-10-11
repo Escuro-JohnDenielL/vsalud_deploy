@@ -88,17 +88,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         const file = receiptUpload.files[0];
-        const allowedTypes = [
-            "image/jpeg",
-            "image/jpg",
-            "image/png",
-            "application/pdf",
-        ];
+        const allowedTypes = ["image/jpeg", "image/png"];
         const maxSize = 5 * 1024 * 1024; // 5MB
 
         if (!allowedTypes.includes(file.type)) {
-            receiptError.textContent =
-                "Please upload a valid file (JPG, PNG, or PDF).";
+            receiptError.textContent = "Please upload a JPG or PNG file.";
             receiptError.style.display = "block";
             return false;
         }

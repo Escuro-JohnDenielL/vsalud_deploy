@@ -212,7 +212,7 @@ input.error, select.error {
   padding: 25px;
   background-color: #f5f9f7;
   border-radius: 8px;
-  border: 2px dashed #007b3d;
+  border: 1px solid #cfe3d8;
 }
 
 .receipt-upload h4 {
@@ -269,11 +269,24 @@ input[type="file"]::file-selector-button:hover {
 
 #backButton {
   background-color: #6c757d;
-  margin-top: 15px;
+  margin-top: 0;
+  flex: 1 1 120px;
 }
 
 #backButton:hover {
   background-color: #5a6268;
+}
+
+.receipt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.receipt-actions .btn-submit {
+  margin-top: 0;
+  flex: 1 1 160px;
 }
 
 .loader {
@@ -465,9 +478,10 @@ input[type="file"]::file-selector-button:hover {
 }
 
 .vs-layout--patron .payment-badge {
+  border: 1px solid var(--vs-status-info-border);
   border-radius: var(--vs-radius-pill);
-  background: var(--vs-color-dark-green);
-  color: var(--vs-color-white);
+  background: var(--vs-status-info-bg);
+  color: var(--vs-status-info-text);
 }
 
 .vs-layout--patron .reference-number {
@@ -482,7 +496,7 @@ input[type="file"]::file-selector-button:hover {
 }
 
 .vs-layout--patron .receipt-upload {
-  border-style: dashed;
+  border-style: solid;
 }
 
 .vs-layout--patron .success-message {
