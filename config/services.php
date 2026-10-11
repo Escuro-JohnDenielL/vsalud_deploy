@@ -28,6 +28,15 @@ return [
         'key' => env('RESEND_KEY'),
     ],
 
+    /*
+     * Temporary token for the batch 8 X-Forwarded-For diagnostic route. The
+     * value is read through config so it still works when the config is cached.
+     * Remove this entry together with the route.
+     */
+    'diag' => [
+        'token' => env('DIAG_TOKEN'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
