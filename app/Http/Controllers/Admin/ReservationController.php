@@ -199,28 +199,31 @@ class ReservationController extends Controller
                 }
             }
 
+            // Only the fields the brief needs are sent. Email, contact number,
+            // tracking code and the rest of the booking form are excluded.
             $context = [
-                'client_name'    => $reservation->patron->name ?? 'Not specified',
-                'client_email'   => $reservation->patron->email ?? '',
-                'client_contact' => $reservation->patron->contact_number ?? '',
-                'tracking_code'  => $inquiry->tracking_code ?? null,
-                'event_type'     => $eventType ?? '',
-                'venue'          => $venue ?? '',
-                'theme_motif'    => $theme ?? '',
-                'date'           => $reservation->date ? \Illuminate\Support\Carbon::parse($reservation->date)->format('F j, Y') : '',
-                'time'           => $reservation->time ?? '',
-                'status'         => $reservation->status ?? '',
-                'message'        => $reservation->message ?? '',
-                'form_data'      => $reservation->form_data ?? [],
+                'client_name'  => $reservation->patron->name ?? 'Not specified',
+                'event_type'   => $eventType ?? '',
+                'venue'        => $venue ?? '',
+                'theme_motif'  => $theme ?? '',
+                'date'         => $reservation->date ? \Illuminate\Support\Carbon::parse($reservation->date)->format('F j, Y') : '',
+                'time'         => $reservation->time ?? '',
+                'status'       => $reservation->status ?? '',
+                'message'      => $reservation->message ?? '',
             ];
 
             $brief = AiReplyService::generateEventBrief($context);
 
             return response()->json(['success' => true, 'brief' => $brief]);
         } catch (\Throwable $e) {
-            Log::error('AI event brief failed: '.$e->getMessage());
+            // Generic on purpose: a provider error can echo the prompt, which
+            // would put patron data in the log and in the response.
+            Log::error('AI event brief failed', ['type' => $e::class]);
 
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'The AI service is unavailable right now. Please try again.',
+            ], 500);
         }
     }
 }

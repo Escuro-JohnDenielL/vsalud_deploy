@@ -31,9 +31,8 @@ class AiReplyService
      * the coordinator team can prep for an event at a glance (who, what, when,
      * where, plus any special requests captured by the booking form).
      *
-     * @param  array  $context  Reservation + booking-form context (client_name, client_email,
-     *                          client_contact, tracking_code, event_type, venue, theme_motif,
-     *                          date, time, status, message, form_data)
+     * @param  array  $context  Reservation context (client_name, event_type, venue,
+     *                          theme_motif, date, time, status, message)
      * @return string
      *
      * @throws \RuntimeException when the API key is missing or the request fails
@@ -85,10 +84,15 @@ class AiReplyService
             $body = $response->json();
 
             if (! $response->successful() || empty($body['candidates'][0]['content']['parts'])) {
-                $error = $body['error']['message'] ?? $response->body();
-                Log::error("Gemini {$label} generation failed", ['error' => $error, 'status' => $response->status()]);
+                // The provider error can echo the prompt back, so only status and
+                // error codes are recorded. Nothing that could carry patron data
+                // is logged, and the caller gets a generic message.
+                Log::error("Gemini {$label} generation failed", [
+                    'status' => $response->status(),
+                    'error_code' => $body['error']['status'] ?? null,
+                ]);
 
-                throw new \RuntimeException('AI '.$label.' generation failed: '.$error);
+                throw new \RuntimeException('The AI service returned an error. Please try again.');
             }
 
             // The model may split its answer across multiple parts — join them all.
@@ -199,7 +203,7 @@ Rules:
 - Write ONE compact, plain-text Event Brief of 5 to 8 short lines (roughly 70 to 120 words total). No markdown, no bullet symbols, no headers, no subject line.
 - Organize each line as "Label: value" (for example "Event:", "Client:", "Date & time:", "Venue:", "Headcount:", "Theme/motif:", "Special requests:", "Notes:").
 - Start with the event type and the client's family/group name so staff instantly know what it is.
-- Pull headcount, food/AV/decor needs, and special requests ONLY from the booking-form data provided.
+- Pull needs and special requests ONLY from the client message provided.
 - Explicitly flag anything staff must prepare or confirm (coordinator needed, early setup, pool rental, late end time, December booking, free ghost-chair upgrade, etc.).
 - Never invent prices, packages, headcounts, requests, or contact details. If a detail is missing write "Not specified" — do not guess.
 - Keep it internal and neutral. This is NOT a message to the client.
@@ -213,11 +217,11 @@ PROMPT;
     {
         $details = [];
 
+        // Only these fields are sent. Event type, venue, theme, date, time and
+        // message are the explicit whitelist. Email, contact number, tracking
+        // code and the rest of the booking form are deliberately excluded.
         foreach ([
             'Client name'    => $context['client_name'] ?? null,
-            'Client email'   => $context['client_email'] ?? null,
-            'Client contact' => $context['client_contact'] ?? null,
-            'Tracking code'  => $context['tracking_code'] ?? null,
             'Event type'     => $context['event_type'] ?? null,
             'Venue'          => $context['venue'] ?? null,
             'Event date'     => $context['date'] ?? null,
@@ -231,25 +235,8 @@ PROMPT;
             }
         }
 
-        // Include the dynamic booking-form answers (if any).
-        $formData = $context['form_data'] ?? [];
-        if (is_string($formData)) {
-            $formData = json_decode($formData, true) ?: [];
-        }
-
-        if (is_array($formData)) {
-            foreach ($formData as $key => $value) {
-                if (is_array($value)) {
-                    $value = implode(', ', $value);
-                }
-                if ($value !== null && $value !== '') {
-                    $details[] = ucfirst(str_replace('_', ' ', (string) $key)).': '.$value;
-                }
-            }
-        }
-
         return "Write the internal Event Brief for the following reservation.\n\n"
             .implode("\n", $details)
-            ."\n\nUse only the reservation and booking-form details provided.";
+            ."\n\nUse only the reservation details provided.";
     }
 }

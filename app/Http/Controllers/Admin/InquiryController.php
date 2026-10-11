@@ -143,9 +143,14 @@ class InquiryController extends Controller
 
             return response()->json(['success' => true, 'draft' => $draft]);
         } catch (\Throwable $e) {
-            Log::error('AI draft reply failed: '.$e->getMessage());
+            // Generic on purpose: a provider error can echo the prompt, which
+            // would put patron data in the log and in the response.
+            Log::error('AI draft reply failed', ['type' => $e::class]);
 
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'The AI service is unavailable right now. Please try again.',
+            ], 500);
         }
     }
 
