@@ -147,6 +147,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
     // All activities of Admin in the reports tab
     Route::get('/dashboard-activities', [AdminActivityController::class, 'allActivities'])->name('activities.all');
 
+    // Everything the Report Dashboard needs in one request (KPIs + all charts).
+    // The per-chart routes below are kept for direct/API use, but the dashboard
+    // itself no longer calls them one by one.
+    Route::get('/report-data', [AdminHomeController::class, 'getReportData'])->name('report.data');
+
     // Inquiry Data on Report Tab
     Route::get('/inquiry-data', [AdminHomeController::class, 'getInquiryData'])->name('inquiry.data');
 

@@ -2,18 +2,30 @@
 // PROFESSIONAL DASHBOARD JAVASCRIPT
 // =============================================
 
+// Chart.js is imported from the bundled npm package (it is already a
+// package.json dependency). Previously it was pulled from a CDN with a plain
+// <script> tag, which could finish loading after the first dashboard render and
+// leave every chart blank until the user pressed "Refresh Data".
+import Chart from "chart.js/auto";
+
 class DashboardManager {
     constructor() {
         this.charts = {};
         this.isLoading = false;
         this.lastUpdated = null;
+        this.hasLoadedOnce = false;
         this.init();
     }
 
     init() {
         this.setupEventListeners();
-        this.hideLoadingOverlay();
         this.updateLastUpdatedTime();
+
+        // The overlay is dismissed once the first load settles (see
+        // loadAllData). Keep a failsafe so a hung request can never leave the
+        // page stuck behind the spinner.
+        setTimeout(() => this.hideLoadingOverlay(), 15000);
+
         this.loadAllData();
     }
 
@@ -33,13 +45,11 @@ class DashboardManager {
     }
 
     hideLoadingOverlay() {
-        setTimeout(() => {
-            const overlay = document.getElementById("loading-overlay");
-            if (overlay) {
-                overlay.classList.add("hidden");
-                setTimeout(() => overlay.remove(), 300);
-            }
-        }, 1000);
+        const overlay = document.getElementById("loading-overlay");
+        if (!overlay) return;
+
+        overlay.classList.add("hidden");
+        setTimeout(() => overlay.remove(), 300);
     }
 
     updateLastUpdatedTime() {
@@ -86,24 +96,50 @@ class DashboardManager {
     }
 
     async loadAllData(period = this.currentPeriod()) {
-        try {
-            this.isLoading = true;
+        // Never run two loads at once — a second one would fight the first over
+        // the same chart instances.
+        if (this.isLoading) return;
 
-            // Load all dashboard components for the selected period
-            await Promise.all([
-                this.fetchInquiryData(period),
-                this.loadReservationChart(period),
-                this.fetchThemeData(period),
-                this.loadInquiryTypeChart(period),
-                this.loadActivityLog(),
-                this.updateMetricsOverview(),
-            ]);
+        this.isLoading = true;
+
+        try {
+            // One request for the KPIs and all four charts. Each endpoint is
+            // cheap to query (a few ms) but expensive to bootstrap (~200ms of
+            // framework + session setup), and the dev server handles requests
+            // one at a time, so a single call is far faster than five.
+            const response = await fetch(
+                `/admin/report-data?period=${encodeURIComponent(period)}`
+            );
+
+            if (!response.ok) {
+                throw new Error(
+                    `Report data request failed (${response.status})`
+                );
+            }
+
+            const payload = await response.json();
+
+            // If the user picked another period while this was in flight, let
+            // that newer request win instead of overwriting it.
+            if (payload.period && payload.period !== this.currentPeriod()) {
+                return;
+            }
+
+            this.renderInquiry(payload.inquiries || {});
+            this.renderReservations(payload.reservations || {});
+            this.renderThemes(payload.themes || {});
+            this.renderEventTypes(payload.eventTypes || {});
 
             this.updateLastUpdatedTime();
-            this.isLoading = false;
         } catch (error) {
             console.error("Error loading dashboard data:", error);
             this.showNotification("Error loading dashboard data", "error");
+        } finally {
+            // Always clear the flag, even on failure, otherwise the Refresh
+            // Data button would silently stop responding.
+            this.isLoading = false;
+            this.hasLoadedOnce = true;
+            this.hideLoadingOverlay();
         }
     }
 
@@ -134,43 +170,30 @@ class DashboardManager {
         }
     }
 
-    async fetchInquiryData(timeRange) {
-        console.log("Fetching inquiry data...");
+    renderInquiry(data) {
+        // Draw the inquiry chart
+        this.updateInquiryChart({
+            labels: data.labels,
+            data: data.data,
+        });
 
-        try {
-            const response = await fetch(
-                `/admin/inquiry-data?period=${timeRange}`
-            );
-            const data = await response.json();
-            console.log("Inquiry data response:", data);
+        // Update inquiry summary (if used)
+        this.updateInquirySummary({
+            summary: {
+                total: data.total,
+                pending: 0, // Optional: add if available
+                completed: 0, // Optional: add if available
+            },
+        });
 
-            // Draw the inquiry chart
-            this.updateInquiryChart({
-                labels: data.labels,
-                data: data.data,
-            });
+        // Update metric card
+        this.updateMetricsOverview(data.total, data.change_percentage);
 
-            // Update inquiry summary (if used)
-            this.updateInquirySummary({
-                summary: {
-                    total: data.total,
-                    pending: 0, // Optional: add if available
-                    completed: 0, // Optional: add if available
-                },
-            });
-
-            // Update metric card
-            this.updateMetricsOverview(data.total, data.change_percentage);
-
-            // Add these two lines to update the graph card stats
-            document.getElementById(
-                "inquiry-avg-daily"
-            ).textContent = `${data.average_per_day} / day`;
-            document.getElementById("inquiry-peak-day").textContent =
-                data.peak_day;
-        } catch (error) {
-            console.error("Inquiry data fetch failed:", error);
-        }
+        // Update the graph card stats
+        const avgEl = document.getElementById("inquiry-avg-daily");
+        const peakEl = document.getElementById("inquiry-peak-day");
+        if (avgEl) avgEl.textContent = `${data.average_per_day} / day`;
+        if (peakEl) peakEl.textContent = data.peak_day;
     }
 
     chartHasData(data) {
@@ -282,62 +305,53 @@ class DashboardManager {
         }
     }
 
-    async loadReservationChart(timeRange) {
-        try {
-            const response = await fetch(
-                `/admin/reservation-data?period=${timeRange}`
-            );
-            const data = await response.json();
+    renderReservations(data) {
+        // Update chart
+        this.updateReservationChart({
+            labels: data.labels,
+            data: data.data,
+        });
 
-            console.log("Reservation data response:", data);
+        // Update top card metric
+        const totalEl = document.getElementById(
+            "total-reservations-overview"
+        );
+        if (totalEl) totalEl.textContent = data.total || 0;
 
-            if (data.error) {
-                throw new Error(data.error);
-            }
+        // Update bottom chart stats
+        const bestEl = document.getElementById("reservation-best-month");
+        const growthEl = document.getElementById("reservation-growth");
+        if (bestEl) bestEl.textContent = data.best_period;
+        if (growthEl) growthEl.textContent = `${data.growth_rate}%`;
 
-            // Update chart
-            this.updateReservationChart({
-                labels: data.labels,
-                data: data.data,
-            });
+        // "Best Month"/"Best Week" follows the selected period.
+        const bestLabelEl = document.getElementById(
+            "reservation-best-month-label"
+        );
+        if (bestLabelEl) {
+            bestLabelEl.textContent =
+                (data.best_period_label || "Best period") + ":";
+        }
 
-            // Update top card metric
-            const totalEl = document.getElementById(
-                "total-reservations-overview"
-            );
-            if (totalEl) totalEl.textContent = data.total || 0;
-
-            // Update bottom chart stats
-            const bestEl = document.getElementById("reservation-best-month");
-            const growthEl = document.getElementById("reservation-growth");
-            if (bestEl) bestEl.textContent = data.best_period;
-            if (growthEl) growthEl.textContent = `${data.growth_rate}%`;
-
-            // "Best Month"/"Best Week" follows the selected period.
-            const bestLabelEl = document.getElementById("reservation-best-month-label");
-            if (bestLabelEl) {
-                bestLabelEl.textContent = (data.best_period_label || "Best period") + ":";
-            }
-
-            // Reservations KPI trend (danger + down arrow when negative).
-            const resChangeBox = document.getElementById("reservation-change");
-            const resChangeText = document.querySelector("#reservation-change span");
-            if (resChangeText) {
-                const value = Number(data.growth_rate) || 0;
-                resChangeText.textContent = `${value > 0 ? "+" : ""}${value}% vs previous period`;
-                if (resChangeBox) {
-                    resChangeBox.classList.toggle("positive", value >= 0);
-                    resChangeBox.classList.toggle("negative", value < 0);
-                    const icon = resChangeBox.querySelector("i");
-                    if (icon) {
-                        icon.classList.toggle("bx-trending-up", value >= 0);
-                        icon.classList.toggle("bx-trending-down", value < 0);
-                    }
+        // Reservations KPI trend (danger + down arrow when negative).
+        const resChangeBox = document.getElementById("reservation-change");
+        const resChangeText = document.querySelector(
+            "#reservation-change span"
+        );
+        if (resChangeText) {
+            const value = Number(data.growth_rate) || 0;
+            resChangeText.textContent = `${
+                value > 0 ? "+" : ""
+            }${value}% vs previous period`;
+            if (resChangeBox) {
+                resChangeBox.classList.toggle("positive", value >= 0);
+                resChangeBox.classList.toggle("negative", value < 0);
+                const icon = resChangeBox.querySelector("i");
+                if (icon) {
+                    icon.classList.toggle("bx-trending-up", value >= 0);
+                    icon.classList.toggle("bx-trending-down", value < 0);
                 }
             }
-        } catch (error) {
-            console.error("Reservation data fetch failed:", error);
-            this.showNotification("Failed to load reservation data", "error");
         }
     }
 
@@ -400,32 +414,18 @@ class DashboardManager {
         });
     }
 
-    async fetchThemeData(timeRange) {
-        console.log("Fetching theme data...");
+    renderThemes(data) {
+        // Update chart
+        this.updateThemeChart({
+            labels: data.labels,
+            data: data.data,
+        });
 
-        try {
-            const response = await fetch(
-                `/admin/theme-data?period=${timeRange}`
-            );
-            const data = await response.json();
+        const mostEl = document.getElementById("most-popular-theme");
+        const totalEl = document.getElementById("total-themes");
 
-            console.log("Theme data response:", data);
-
-            // Update chart
-            this.updateThemeChart({
-                labels: data.labels,
-                data: data.data,
-            });
-
-            const mostEl = document.getElementById("most-popular-theme");
-            const totalEl = document.getElementById("total-themes");
-
-            if (mostEl) mostEl.textContent = data.most_popular;
-            if (totalEl) totalEl.textContent = data.total_themes;
-        } catch (error) {
-            console.error("Theme data fetch failed:", error);
-            this.showNotification("Failed to load theme data", "error");
-        }
+        if (mostEl) mostEl.textContent = data.most_popular;
+        if (totalEl) totalEl.textContent = data.total_themes;
     }
 
     updateThemeChart(data) {
@@ -485,33 +485,18 @@ class DashboardManager {
         });
     }
 
-    async loadInquiryTypeChart(timeRange) {
-        try {
-            const response = await fetch(
-                `/admin/event-type-data?period=${timeRange}`
-            );
-            const data = await response.json();
+    renderEventTypes(data) {
+        // Draw chart
+        this.updateInquiryTypeChart(data);
 
-            if (data.error) {
-                throw new Error(data.error);
-            }
+        // Fix the element IDs to match Blade
+        const commonEl = document.getElementById("top-inquiry-category");
+        const responseRateEl = document.getElementById(
+            "inquiry-response-rate"
+        );
 
-            // Draw chart
-            this.updateInquiryTypeChart(data);
-
-            // Fix the element IDs to match Blade
-            const commonEl = document.getElementById("top-inquiry-category");
-            const responseRateEl = document.getElementById(
-                "inquiry-response-rate"
-            );
-
-            if (commonEl) commonEl.textContent = data.most_common;
-            if (responseRateEl)
-                responseRateEl.textContent = `${data.total_types}`;
-        } catch (error) {
-            console.error("Error loading inquiry type chart:", error);
-            this.showNotification("Failed to load inquiry type data", "error");
-        }
+        if (commonEl) commonEl.textContent = data.most_common;
+        if (responseRateEl) responseRateEl.textContent = `${data.total_types}`;
     }
 
     updateInquiryTypeChart(data) {
@@ -574,87 +559,11 @@ class DashboardManager {
         });
     }
 
-    async loadActivityLog() {
-        try {
-            const response = await fetch("/admin/dashboard-activities");
-            const data = await response.json();
-
-            if (data.error) {
-                throw new Error(data.error);
-            }
-
-            this.updateActivityLog(data.activities || []);
-        } catch (error) {
-            console.error("Error loading activity log:", error);
-            this.showNotification("Failed to load activity log", "error");
-        }
-    }
-
-    updateActivityLog(activities) {
-        const logContainer = document.getElementById("activity-log");
-        if (!logContainer) return;
-
-        if (activities.length === 0) {
-            logContainer.innerHTML =
-                '<div class="no-activities">No recent activities</div>';
+    async refreshDashboard() {
+        if (this.isLoading) {
+            this.showNotification("Dashboard is still loading...", "info");
             return;
         }
-
-        const activityHtml = activities
-            .map(
-                (activity) => `
-            <div class="activity-item">
-                <div class="activity-icon">
-                    <i class='bx ${this.getActivityIcon(activity.type)}'></i>
-                </div>
-                <div class="activity-content">
-                    <div class="activity-text">${activity.description}</div>
-                    <div class="activity-time">${this.formatTime(
-                        activity.timestamp
-                    )}</div>
-                </div>
-            </div>
-        `
-            )
-            .join("");
-
-        logContainer.innerHTML = activityHtml;
-    }
-
-    getActivityIcon(type) {
-        const icons = {
-            inquiry: "bx-message-detail",
-            reservation: "bx-calendar-check",
-            user: "bx-user",
-            system: "bx-cog",
-            default: "bx-info-circle",
-        };
-        return icons[type] || icons.default;
-    }
-
-    formatTime(timestamp) {
-        const date = new Date(timestamp);
-        const now = new Date();
-        const diff = now - date;
-
-        if (diff < 60000) {
-            // Less than 1 minute
-            return "Just now";
-        } else if (diff < 3600000) {
-            // Less than 1 hour
-            const minutes = Math.floor(diff / 60000);
-            return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
-        } else if (diff < 86400000) {
-            // Less than 1 day
-            const hours = Math.floor(diff / 3600000);
-            return `${hours} hour${hours > 1 ? "s" : ""} ago`;
-        } else {
-            return date.toLocaleDateString();
-        }
-    }
-
-    async refreshDashboard() {
-        if (this.isLoading) return;
 
         try {
             this.showNotification("Refreshing dashboard...", "info");
@@ -686,15 +595,26 @@ class DashboardManager {
     }
 }
 
-// Initialize dashboard when DOM is loaded
-document.addEventListener("DOMContentLoaded", () => {
+// Initialize dashboard once the DOM is available. Module scripts are deferred,
+// so DOMContentLoaded is normally still pending — but if the document has
+// already finished parsing we bootstrap immediately instead of waiting for an
+// event that will never fire again.
+function initDashboard() {
+    if (window.dashboardManager) return;
+
     window.dashboardManager = new DashboardManager();
 
     // Handle window resize for responsive charts
     window.addEventListener("resize", () => {
         window.dashboardManager.handleResize();
     });
-});
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initDashboard);
+} else {
+    initDashboard();
+}
 
 // Cleanup on page unload
 window.addEventListener("beforeunload", () => {

@@ -97,31 +97,6 @@
         @endforeach
     </div>
 
-    <!-- Activity Feed -->
-    <div class="activity-section">
-        <div class="activity-panel">
-            <div class="panel-header">
-                <div class="panel-title">
-                    <h3>Recent Activity</h3>
-                    <p>Latest administrative actions and system events</p>
-                </div>
-                <div class="panel-controls">
-                    <button class="icon-btn" onclick="window.dashboardManager.loadActivityLog()" title="Refresh Activity">
-                        <i class='bx bx-refresh'></i>
-                    </button>
-                </div>
-            </div>
-            <div class="activity-content" id="activity-log">
-                <div class="activity-loading">
-                    <div class="loading-dots">
-                        <span></span><span></span><span></span>
-                    </div>
-                    <p>Loading recent activity...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Dummy hidden elements for compatibility -->
     <span id="total-inquiries" style="display:none;"></span>
     <span id="total-reservations" style="display:none;"></span>
@@ -130,8 +105,8 @@
 
 @endsection
 
+{{-- Chart.js is bundled through Vite (it is already a package.json dependency),
+     so the dashboard never depends on an external CDN being reachable. --}}
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 @vite('resources/js/admin/report.js')
 @endpush
