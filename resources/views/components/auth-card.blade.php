@@ -2,6 +2,7 @@
     Shared split card for the admin auth pages (login + MFA challenge).
     Form/content goes in the default slot; the event photo panel is decorative
     and hides below 900px. Styles live in resources/css/login.css.
+    The panel uses the same photo as the landing page hero.
 --}}
 <div class="auth-shell">
     <div class="auth-card">
@@ -15,9 +16,6 @@
         </div>
 
         <div class="auth-media" aria-hidden="true">
-            <img class="auth-media__img" src="{{ asset('images/wedding1.jpg') }}" alt="">
-            <img class="auth-media__img" src="{{ asset('images/debut1.jpg') }}" alt="">
-            <img class="auth-media__img" src="{{ asset('images/baptismal1.jpg') }}" alt="">
             <img class="auth-media__img" src="{{ asset('images/background_picture.jpeg') }}" alt="">
         </div>
     </div>

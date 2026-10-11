@@ -7,11 +7,7 @@
 
 <x-ui.page-header
     title="Packages"
-    subtitle="Create and manage the packages shown to patrons.">
-    <x-slot:action>
-        <button type="button" id="addPackageBtn" class="admin-btn admin-btn-primary" data-bs-toggle="modal" data-bs-target="#addPackageModal">+ Add New Package</button>
-    </x-slot:action>
-</x-ui.page-header>
+    subtitle="Create and manage the packages shown to patrons." />
 
 {{-- Package Cards --}}
 <section class="packages-grid vs-admin-dashboard__packages-grid" id="packagesContainer">
@@ -41,6 +37,11 @@
     </div>
     @endforelse
 </section>
+
+{{-- Add New Package Button (below the packages, centered) --}}
+<div class="vs-admin-dashboard__add-package">
+    <button type="button" id="addPackageBtn" class="admin-btn admin-btn-primary" data-bs-toggle="modal" data-bs-target="#addPackageModal">+ Add New Package</button>
+</div>
 
 {{-- View Package Modal --}}
 <div class="modal fade" id="packageModal" tabindex="-1" aria-labelledby="packageModalLabel" aria-hidden="true">

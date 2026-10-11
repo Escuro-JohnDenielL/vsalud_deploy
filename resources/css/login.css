@@ -405,12 +405,9 @@
   text-align: center;
 }
 
-/* --- Media (event photo collage) --- */
+/* --- Media (single event photo, same as the landing page hero) --- */
 .vs-layout--admin-auth .auth-media {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 6px;
+  display: block;
   background: var(--vs-color-dark-green);
 }
 

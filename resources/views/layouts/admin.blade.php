@@ -63,8 +63,8 @@
             @endif
 
             {{-- Reservations Dropdown --}}
-            @if($canAccess('reservations') || $canAccess('cancellations') || $canAccess('waitlist') || $canAccess('payment-logs'))
-            <li class="nav-dropdown {{ $isActive(['admin/reserve', 'admin/cancellations', 'admin/waitlist', 'admin/payment-logs']) ? 'active' : '' }}">
+            @if($canAccess('reservations') || $canAccess('inquiries') || $canAccess('reserve-logs') || $canAccess('payment-logs') || $canAccess('cancellations') || $canAccess('waitlist'))
+            <li class="nav-dropdown {{ $isActive(['admin/reserve', 'admin/inquiry', 'admin/reserve-logs', 'admin/payment-logs', 'admin/cancellations', 'admin/waitlist']) ? 'active' : '' }}">
                 <a class="nav-dropdown-toggle" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                     Reservations
@@ -75,7 +75,30 @@
                     <li>
                         <a href="{{ route('admin.reserve.create') }}"
                             class="{{ request()->is('admin/reserve') ? 'active' : '' }}">
+                            Reservation Calendar
+                        </a>
+                    </li>
+                    @endif
+                    @if($canAccess('inquiries'))
+                    <li>
+                        <a href="{{ route('admin.inquiry') }}" class="{{ request()->is('admin/inquiry') ? 'active' : '' }}">
+                            Inquiries
+                        </a>
+                    </li>
+                    @endif
+                    @if($canAccess('reserve-logs'))
+                    <li>
+                        <a href="{{ route('admin.reserve-logs') }}"
+                            class="{{ request()->is('admin/reserve-logs') ? 'active' : '' }}">
                             Reservations
+                        </a>
+                    </li>
+                    @endif
+                    @if($canAccess('payment-logs'))
+                    <li>
+                        <a href="{{ route('admin.payment-logs') }}"
+                            class="{{ request()->is('admin/payment-logs') ? 'active' : '' }}">
+                            Payments
                         </a>
                     </li>
                     @endif
@@ -95,14 +118,6 @@
                         </a>
                     </li>
                     @endif
-                    @if($canAccess('payment-logs'))
-                    <li>
-                        <a href="{{ route('admin.payment-logs') }}"
-                            class="{{ request()->is('admin/payment-logs') ? 'active' : '' }}">
-                            Payment Logs
-                        </a>
-                    </li>
-                    @endif
                 </ul>
             </li>
             @endif
@@ -117,47 +132,19 @@
             </li>
             @endif
 
-            {{-- Customers Dropdown --}}
-            @if($canAccess('inquiries') || $canAccess('feedback'))
-            <li class="nav-dropdown {{ $isActive(['admin/inquiry', 'admin/feedback']) ? 'active' : '' }}">
-                <a class="nav-dropdown-toggle" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                    <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    Customers
-                    <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                </a>
-                <ul class="nav-dropdown-menu">
-                    @if($canAccess('inquiries'))
-                    <li>
-                        <a href="{{ route('admin.inquiry') }}" class="{{ request()->is('admin/inquiry') ? 'active' : '' }}">
-                            Inquiries
-                        </a>
-                    </li>
-                    @endif
-                    @if($canAccess('feedback'))
-                    <li>
-                        <a href="{{ route('admin.feedback') }}" class="{{ request()->is('admin/feedback') ? 'active' : '' }}">
-                            Feedback
-                        </a>
-                    </li>
-                    @endif
-                </ul>
-            </li>
-            @endif
-
             {{-- Records Dropdown --}}
-            @if($canAccess('reserve-logs') || $canAccess('audit-logs') || $canAccess('incident-logs'))
-            <li class="nav-dropdown {{ $isActive(['admin/reserve-logs', 'admin/audit-logs', 'admin/incident-logs']) ? 'active' : '' }}">
+            @if($canAccess('feedback') || $canAccess('audit-logs') || $canAccess('incident-logs'))
+            <li class="nav-dropdown {{ $isActive(['admin/feedback', 'admin/audit-logs', 'admin/incident-logs']) ? 'active' : '' }}">
                 <a class="nav-dropdown-toggle" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="5" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
                     Records
                     <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                 </a>
                 <ul class="nav-dropdown-menu">
-                    @if($canAccess('reserve-logs'))
+                    @if($canAccess('feedback'))
                     <li>
-                        <a href="{{ route('admin.reserve-logs') }}"
-                            class="{{ request()->is('admin/reserve-logs') ? 'active' : '' }}">
-                            Reservation Logs
+                        <a href="{{ route('admin.feedback') }}" class="{{ request()->is('admin/feedback') ? 'active' : '' }}">
+                            Feedback
                         </a>
                     </li>
                     @endif

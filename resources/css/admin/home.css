@@ -11,6 +11,13 @@
   padding: var(--vs-space-4) 0;
 }
 
+/* "Add New Package" action sits below the package grid, centered. */
+.vs-admin-dashboard .vs-admin-dashboard__add-package {
+  display: flex;
+  justify-content: center;
+  margin: var(--vs-space-5) 0 var(--vs-space-2);
+}
+
 .vs-admin-dashboard .package-card {
   display: flex;
   width: 100%;

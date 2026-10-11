@@ -14,7 +14,9 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
 body.landing-page { margin: 0; overflow-x: hidden; background: var(--landing-beige); color: var(--landing-deep); font-family: var(--landing-sans); }
 .landing-page *, .landing-page *::before, .landing-page *::after { box-sizing: border-box; }
 .landing-toast { position: fixed; top: 18px; right: 18px; z-index: 20; max-width: min(420px, calc(100% - 36px)); padding: 12px 18px; border-radius: 10px; background: var(--landing-deep); color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
-.landing-hero { position: relative; min-height: 720px; height: 100svh; max-height: 1050px; overflow: hidden; isolation: isolate; background: var(--landing-deep); }
+/* min() caps the floor at the viewport height so short laptops (~640-720px tall)
+   never push the portal card below the fold. See the short-viewport block below. */
+.landing-hero { position: relative; min-height: min(720px, 100svh); height: 100svh; max-height: 1050px; overflow: hidden; isolation: isolate; background: var(--landing-deep); }
 .landing-hero__background { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 48%; }
 .landing-hero__overlay { position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, rgba(0,76,58,.58), rgba(0,107,83,.34) 58%, rgba(0,0,0,.14)); }
 .landing-nav { position: absolute; top: 0; left: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 82px; padding: 12px clamp(20px, 4vw, 64px); transition: background .2s ease, box-shadow .2s ease, padding .2s ease; }
@@ -93,8 +95,18 @@ body.landing-page { margin: 0; overflow-x: hidden; background: var(--landing-bei
 .landing-admin-link { color: rgba(245,242,223,.56); font-size: 10px; text-decoration: underline; text-underline-offset: 3px; }
 .landing-admin-link:hover { color: var(--landing-beige); }
 
+/* Short laptop viewports: tighten the hero so the heading and the portal card
+   (the "Choose your portal" button) always fit without being cut off. */
+@media (min-width: 768px) and (max-height: 860px) {
+  .landing-hero__content { top: 42%; }
+  .landing-hero__content h1 { font-size: clamp(50px, 6.4vw, 84px); }
+  .landing-eyebrow { margin-bottom: 10px; }
+  .landing-hero__subtitle { margin-top: 16px; }
+  .portal-card { bottom: 22px; }
+}
+
 @media (max-width: 767.98px) {
-  .landing-hero { min-height: 760px; height: 100svh; max-height: 900px; background-position: 55% center; }
+  .landing-hero { min-height: min(760px, 100svh); height: 100svh; max-height: 900px; background-position: 55% center; }
   .landing-hero__background { object-position: 55% center; }
   .landing-hero__overlay { background: linear-gradient(180deg, rgba(0,76,58,.54), rgba(0,76,58,.42)); }
   .landing-nav { width: 100%; min-height: 72px; padding: 10px 5%; }

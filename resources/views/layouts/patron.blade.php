@@ -85,9 +85,6 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ url('/') }}#contact">Contact Us</a>
-                    </li>
-                    <li>
                         <a href="{{ route('patron.feedback') }}"
                             class="{{ request()->routeIs('patron.feedback') ? 'active' : '' }}">
                             Feedback

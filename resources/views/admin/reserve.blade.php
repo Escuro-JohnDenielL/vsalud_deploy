@@ -8,7 +8,7 @@
 
 @section('content')
     <div class="vs-page vs-admin-reservation">
-    <x-ui.page-header title="Reservations" subtitle="Create a new reservation and manage date availability." />
+    <x-ui.page-header title="Reservation Calendar" subtitle="Create a new reservation and manage date availability." />
     <div class="container vs-admin-reservation__layout">
         <div class="reservation-container">
             <h2>Let's bring your vision to life. Just fill out the form.</h2>
