@@ -23,6 +23,7 @@ class CheckPagePermission
         'admin.report'         => 'reports',
         'admin.feedback'       => 'feedback',
         'admin.feedback.destroy' => 'feedback',
+        'admin.feedback.bulk-destroy' => 'feedback',
         // Package CRUD
         'admin.packages.destroy' => 'packages',
         'admin.packages.store'   => 'packages',

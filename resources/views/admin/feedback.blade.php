@@ -201,7 +201,8 @@
         }
 
         // ---- Bulk select + "Delete selected" ----
-        // Reuses the existing per-item DELETE forms and CSRF token (no new route).
+        // One request to the bulk route, carrying only the selected IDs.
+        const bulkDeleteUrl = @json(route('admin.feedback.bulk-destroy'));
         const selectAll = document.getElementById('feedbackSelectAll');
         const deleteBtn = document.getElementById('deleteSelectedBtn');
         const boxes = () => Array.from(document.querySelectorAll('.feedback-select'));
@@ -238,18 +239,19 @@
                     const tokenInput = document.querySelector('#delete-feedback-form-' + ids[0] + ' input[name="_token"]');
                     const token = tokenInput ? tokenInput.value : '';
 
-                    Promise.all(ids.map(function (id) {
-                        const form = document.getElementById('delete-feedback-form-' + id);
-                        if (!form) return Promise.resolve();
-                        return fetch(form.action, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': token,
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            },
-                            body: '_method=DELETE&_token=' + encodeURIComponent(token)
-                        });
-                    })).finally(function () {
+                    const body = new URLSearchParams();
+                    body.append('_method', 'DELETE');
+                    body.append('_token', token);
+                    ids.forEach(function (id) { body.append('ids[]', id); });
+
+                    fetch(bulkDeleteUrl, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': token,
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: body.toString()
+                    }).finally(function () {
                         window.location.reload();
                     });
                 });

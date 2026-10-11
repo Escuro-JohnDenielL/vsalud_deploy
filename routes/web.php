@@ -118,6 +118,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
 
     // Feedback
     Route::get('/feedback', [AdminFeedbackController::class, 'index'])->name('feedback');
+    Route::delete('/feedback', [AdminFeedbackController::class, 'bulkDestroy'])->name('feedback.bulk-destroy');
     Route::delete('/feedback/{id}', [AdminFeedbackController::class, 'destroy'])->name('feedback.destroy');
 
     // Availability for the calendar on admin making inquiry/reservation
