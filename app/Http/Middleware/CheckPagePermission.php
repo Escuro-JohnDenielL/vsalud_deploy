@@ -91,6 +91,88 @@ class CheckPagePermission
         'admin.audit-logs.show'   => 'audit-logs',
     ];
 
+    /**
+     * Landing pages in sidebar order. The first one an admin may open is where
+     * they land after login, and where a denied page sends them.
+     */
+    public const LANDING_ORDER = [
+        'reports'       => 'admin.report',
+        'reservations'  => 'admin.reserve.create',
+        'cancellations' => 'admin.cancellations',
+        'waitlist'      => 'admin.waitlist',
+        'payment-logs'  => 'admin.payment-logs',
+        'packages'      => 'admin.home',
+        'inquiries'     => 'admin.inquiry',
+        'feedback'      => 'admin.feedback',
+        'reserve-logs'  => 'admin.reserve-logs',
+        'audit-logs'    => 'admin.audit-logs',
+        'incident-logs' => 'admin.incident-logs',
+    ];
+
+    /**
+     * True when the admin holds the page slug. Super admin holds everything.
+     */
+    public static function adminHas($admin, string $slug): bool
+    {
+        if ($admin && $admin->role === 'super_admin') {
+            return true;
+        }
+
+        return $admin
+            ? \App\Models\AdminPagePermission::where('admin_id', $admin->admin_id)
+                ->where('page_slug', $slug)
+                ->exists()
+            : false;
+    }
+
+    /**
+     * The first page this admin may open, or the profile when they hold none.
+     */
+    public static function landingUrl($admin): string
+    {
+        foreach (self::LANDING_ORDER as $slug => $routeName) {
+            if (self::adminHas($admin, $slug)) {
+                return route($routeName);
+            }
+        }
+
+        return route('admin.profile');
+    }
+
+    /**
+     * Post-login destination. The intended URL is used only when it resolves to
+     * a route the admin is permitted to see, and the answer is rebuilt from the
+     * route, so a tampered intended value is never followed as a URL.
+     */
+    public static function postLoginUrl($admin, ?string $intended): string
+    {
+        if ($intended) {
+            try {
+                $route = \Illuminate\Support\Facades\Route::getRoutes()->match(
+                    \Illuminate\Http\Request::create($intended)
+                );
+            } catch (\Throwable $e) {
+                $route = null;
+            }
+
+            if ($route && count($route->parameterNames()) === 0) {
+                $name = $route->getName();
+
+                if ($name && in_array($name, self::SELF_SERVICE_ROUTES, true)) {
+                    return route($name);
+                }
+
+                $slug = $name ? (self::ROUTE_PAGE_MAP[$name] ?? null) : null;
+
+                if ($slug && self::adminHas($admin, $slug)) {
+                    return route($name);
+                }
+            }
+        }
+
+        return self::landingUrl($admin);
+    }
+
     public function handle(Request $request, Closure $next): Response
     {
         $admin = $request->user('admin');
@@ -146,7 +228,9 @@ class CheckPagePermission
                 ], 403);
             }
 
-            return redirect()->route('admin.profile')
+            // Send them to the first page they may open instead of a page they
+            // cannot, so a denied landing page is not a dead end.
+            return redirect()->to(self::landingUrl($admin))
                 ->with('error', 'You do not have permission to access that page.');
         }
 
