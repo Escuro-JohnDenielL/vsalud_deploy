@@ -52,8 +52,8 @@ class AdminPagePermission extends Model
                 'pages' => ['packages', 'reservations', 'availability', 'inquiries', 'reserve-logs', 'payment-logs', 'payment-settings', 'cancellations', 'waitlist', 'incident-logs', 'audit-logs', 'reports', 'feedback'],
             ],
             'view-only' => [
-                'label' => 'View Only',
-                'description' => 'Read monitoring — inquiries, logs, payment logs, feedback, reports',
+                'label' => 'Records Access',
+                'description' => 'Open inquiries, logs, payment logs, feedback and reports, and use the actions on those pages',
                 'pages' => ['inquiries', 'reserve-logs', 'payment-logs', 'feedback', 'reports'],
             ],
             'reports-only' => [
