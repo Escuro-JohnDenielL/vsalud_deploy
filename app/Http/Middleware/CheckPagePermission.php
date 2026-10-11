@@ -116,11 +116,19 @@ class CheckPagePermission
 
         // Look up the page slug for this route
         $routeName = $request->route()?->getName();
+        // Self-service routes are always available to the signed-in admin.
+        if (in_array($routeName, self::SELF_SERVICE_ROUTES, true)) {
+            return $next($request);
+        }
+
         $pageSlug = self::ROUTE_PAGE_MAP[$routeName] ?? null;
 
-        if (!$pageSlug) {
-            // Route not in the map — allow (or log warning)
-            return $next($request);
+        // Deny by default. An unmapped protected route used to be allowed, which
+        // left every unlisted admin route open to all admins. Falling through to
+        // the check below refuses it, and the route coverage test guarantees no
+        // legitimate route lands here.
+        if (! $pageSlug) {
+            $pageSlug = $routeName ?: 'unmapped';
         }
 
         // Check if this admin has explicit permission for this page
