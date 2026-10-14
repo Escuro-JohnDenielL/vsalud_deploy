@@ -7,6 +7,7 @@ use App\Models\Inquiry;
 use App\Models\Reservation;
 use App\Models\CancellationRequest;
 use App\Support\IdentityMatch;
+use App\Support\PatronAudit;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -158,6 +159,15 @@ class CancellationController extends Controller
                 'reason'       => $validated['reason'] ?? null,
                 'status'       => 'pending',
             ]);
+
+            PatronAudit::log(
+                'Patron Cancellation Requested',
+                $request,
+                $inquiry->tracking_code,
+                'cancellation request submitted for reservation #' . $reservation->reserve_id,
+                $inquiry->inquiry_id,
+                $reservation->reserve_id
+            );
 
             return response()->json([
                 'success' => true,

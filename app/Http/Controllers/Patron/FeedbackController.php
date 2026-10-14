@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Patron;
 use App\Http\Controllers\Controller;
 use App\Models\Feedback;
 use App\Support\FeedbackInput;
+use App\Support\PatronAudit;
 use App\Support\SecurityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -63,6 +64,16 @@ class FeedbackController extends Controller
             'email' => $validated['email'],
             'message' => $validated['message'],
         ]);
+
+        // Feedback carries no tracking code, so the entry is identified by the
+        // action and the IP only. Honeypot and stale-form submissions are
+        // refused above and stay in the security log instead.
+        PatronAudit::log(
+            'Patron Feedback Submitted',
+            $request,
+            null,
+            'feedback submitted'
+        );
 
         return redirect()->back()->with('success', 'Thank you for your feedback!');
     }

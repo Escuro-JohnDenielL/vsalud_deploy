@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\WaitlistService;
+use App\Support\PatronAudit;
 use Illuminate\Http\Request;
 
 class WaitlistController extends Controller
@@ -42,6 +43,17 @@ class WaitlistController extends Controller
             $validated['patron_email'],
             $validated['date']
         );
+
+        // Only a real join is audited; a rejected duplicate or an expired
+        // re-join attempt stays out of the audit trail.
+        if (($result['success'] ?? false) === true) {
+            PatronAudit::log(
+                'Patron Waitlist Joined',
+                $request,
+                null,
+                'joined the waitlist for ' . $validated['date']
+            );
+        }
 
         return response()->json($result);
     }

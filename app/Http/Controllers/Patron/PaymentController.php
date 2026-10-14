@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Patron;
 use App\Http\Controllers\Controller;
 use App\Support\FeedbackInput;
 use App\Support\IdentityMatch;
+use App\Support\PatronAudit;
 use App\Support\TrackingCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -202,6 +203,17 @@ class PaymentController extends Controller
             'email' => $validated['email'],
             'status' => 'pending',
         ]);
+
+        // Audit the upload without recording anything about the money: no
+        // amount, no method, no receipt path. Failed verifications and throttled
+        // attempts never reach this point.
+        PatronAudit::log(
+            'Patron Receipt Uploaded',
+            $request,
+            $inquiry->tracking_code,
+            'payment receipt uploaded for reservation #' . $inquiry->inquiry_id,
+            $inquiry->inquiry_id
+        );
 
         return response()->json([
             'success' => true,

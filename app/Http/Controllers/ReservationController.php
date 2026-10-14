@@ -14,6 +14,7 @@ use App\Services\AvailabilityService;
 use App\Services\VenueOccupancyService;
 use App\Services\WaitlistService;
 use App\Support\BookingRules;
+use App\Support\PatronAudit;
 use App\Support\VenueSlot;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -171,13 +172,37 @@ class ReservationController extends Controller
             ]);
 
             // If the patron was on the waitlist (notified status), mark as claimed
+            $claimedWaitlistSlot = false;
+
             try {
                 $inquiryDate = $hardcodedData['date'] ?? $formData['date'] ?? null;
                 if ($inquiryDate) {
-                    app(WaitlistService::class)->markAsClaimed($patron->email, $inquiryDate);
+                    $claimedWaitlistSlot = app(WaitlistService::class)->markAsClaimed($patron->email, $inquiryDate);
                 }
             } catch (\Exception $e) {
                 Log::error('Failed to update waitlist claim: ' . $e->getMessage());
+            }
+
+            // Patron-initiated bookings get an audit entry of their own. Admin
+            // bookings are already covered by the admin trail.
+            if (! $isAdminSubmission) {
+                PatronAudit::log(
+                    'Patron Inquiry Submitted',
+                    $request,
+                    $inquiry->tracking_code,
+                    'booking inquiry submitted',
+                    $inquiry->inquiry_id
+                );
+
+                if ($claimedWaitlistSlot) {
+                    PatronAudit::log(
+                        'Patron Waitlist Claimed',
+                        $request,
+                        $inquiry->tracking_code,
+                        'waitlist offer claimed by submitting a booking',
+                        $inquiry->inquiry_id
+                    );
+                }
             }
 
             // Send reservation confirmation email via Laravel mail system
