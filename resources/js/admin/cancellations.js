@@ -41,12 +41,21 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // Mirrors App\Support\AuditNote::MIN_LENGTH. A decision needs a reason.
+    const MIN_REASON_LENGTH = 5;
+
     // Approve form
     document.getElementById("approveForm").addEventListener("submit", async (e) => {
         e.preventDefault();
         const requestId = document.getElementById("approveRequestId").value;
         const adminNote = document.getElementById("approveNote").value.trim();
         const csrf = document.querySelector('input[name="_token"]').value;
+
+        if (adminNote.length < MIN_REASON_LENGTH) {
+            window.showAdminToast(`Add a reason of at least ${MIN_REASON_LENGTH} characters.`, 'error');
+            document.getElementById("approveNote").focus();
+            return;
+        }
 
         try {
             const response = await fetch(`/admin/cancellations/${requestId}/approve`, {
@@ -81,6 +90,12 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         const requestId = document.getElementById("denyRequestId").value;
         const adminNote = document.getElementById("denyNote").value.trim();
+
+        if (adminNote.length < MIN_REASON_LENGTH) {
+            window.showAdminToast(`Add a reason of at least ${MIN_REASON_LENGTH} characters.`, 'error');
+            document.getElementById("denyNote").focus();
+            return;
+        }
         const csrf = document.querySelector('input[name="_token"]').value;
 
         try {

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CancellationApproved;
 use App\Mail\CancellationDenied;
+use App\Support\AuditNote;
 use App\Services\WaitlistService;
 use Illuminate\Support\Facades\Log;
 
@@ -34,8 +35,10 @@ class CancellationController extends Controller
      */
     public function approve(Request $request, $id)
     {
-        $request->validate([
-            'admin_note' => 'nullable|string|max:1000',
+        // A decision about somebody else's booking has to carry a reason: the
+        // note is what the patron and the audit trail are told.
+        $validated = $request->validate([
+            'admin_note' => AuditNote::requiredRules(),
         ]);
 
         $cancelRequest = CancellationRequest::with('reservation.inquiry')->findOrFail($id);
@@ -94,7 +97,8 @@ class CancellationController extends Controller
             ActivityLog::create([
                 'admin_id'      => $admin->admin_id,
                 'activity_type' => 'Cancellation Approved',
-                'description'   => "Admin {$admin->f_name} {$admin->l_name} approved cancellation request #{$cancelRequest->id} for reservation #{$reservation->reserve_id}",
+                'description'   => "Admin {$admin->f_name} {$admin->l_name} approved cancellation request #{$cancelRequest->id} for reservation #{$reservation->reserve_id}"
+                    . AuditNote::describe($validated['admin_note']),
                 'reserve_id'    => $reservation ? $reservation->reserve_id : null,
                 'inquiry_id'    => $inquiry ? $inquiry->inquiry_id : null,
             ]);
@@ -143,8 +147,10 @@ class CancellationController extends Controller
      */
     public function deny(Request $request, $id)
     {
-        $request->validate([
-            'admin_note' => 'nullable|string|max:1000',
+        // Same rule as approval: a refusal without a recorded reason is not
+        // something the office can stand behind later.
+        $validated = $request->validate([
+            'admin_note' => AuditNote::requiredRules(),
         ]);
 
         $cancelRequest = CancellationRequest::with('reservation.inquiry')->findOrFail($id);
@@ -173,7 +179,8 @@ class CancellationController extends Controller
             ActivityLog::create([
                 'admin_id'      => $admin->admin_id,
                 'activity_type' => 'Cancellation Denied',
-                'description'   => "Admin {$admin->f_name} {$admin->l_name} denied cancellation request #{$cancelRequest->id} for reservation #{$reservation->reserve_id}",
+                'description'   => "Admin {$admin->f_name} {$admin->l_name} denied cancellation request #{$cancelRequest->id} for reservation #{$reservation->reserve_id}"
+                    . AuditNote::describe($validated['admin_note']),
                 'reserve_id'    => $reservation ? $reservation->reserve_id : null,
                 'inquiry_id'    => $inquiry ? $inquiry->inquiry_id : null,
             ]);

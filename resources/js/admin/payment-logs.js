@@ -155,12 +155,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Payment Status Update
     // Approved, rejected, and refunded go through a confirm modal first.
-    // Rejected also allows an optional note. Pending saves directly with no
+    // Rejected and refunded need a reason; pending saves directly with no
     // email and no modal.
     const statusModal = document.getElementById('statusModal');
     const statusModalMessage = document.getElementById('statusModalMessage');
     const statusModalNoteWrapper = document.getElementById('statusModalNoteWrapper');
     const statusModalNote = document.getElementById('statusModalNote');
+
+    // Mirrors App\Support\AuditNote::MIN_LENGTH.
+    const MIN_STATUS_REASON_LENGTH = 5;
     const confirmStatusBtn = document.getElementById('confirmStatusModal');
     const cancelStatusBtn = document.getElementById('cancelStatusModal');
     const closeStatusBtn = document.getElementById('closeStatusModal');
@@ -207,8 +210,9 @@ document.addEventListener('DOMContentLoaded', function () {
         pendingStatus = newStatus;
 
         if (statusModalNoteWrapper) {
-            // The note field only appears for rejected.
-            statusModalNoteWrapper.hidden = newStatus !== 'rejected';
+            // The note is required for rejected and refunded; both are email
+            // notifications the patron reads and both need a stated reason.
+            statusModalNoteWrapper.hidden = !["rejected", "refunded"].includes(newStatus);
         }
         if (statusModalNote) {
             statusModalNote.value = '';
@@ -269,9 +273,19 @@ document.addEventListener('DOMContentLoaded', function () {
             const select = pendingSelect;
             const paymentId = pendingPaymentId;
             const newStatus = pendingStatus;
-            const adminNote = newStatus === 'rejected' && statusModalNote
+            const needsNote = newStatus === "rejected" || newStatus === "refunded";
+            const adminNote = needsNote && statusModalNote
                 ? statusModalNote.value.trim()
                 : null;
+
+            // Mirrors App\Support\AuditNote: a refund has to be explained.
+            if (newStatus === "refunded" && (adminNote || "").length < MIN_STATUS_REASON_LENGTH) {
+                if (statusModalMessage) {
+                    statusModalMessage.textContent = `A reason of at least ${MIN_STATUS_REASON_LENGTH} characters is required to mark this payment as refunded.`;
+                }
+                statusModalNote?.focus();
+                return;
+            }
 
             closeStatusModal(false);
             sendStatusUpdate(select, paymentId, newStatus, adminNote);

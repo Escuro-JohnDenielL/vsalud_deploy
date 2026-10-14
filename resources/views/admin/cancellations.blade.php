@@ -109,8 +109,8 @@
                 @csrf
                 <input type="hidden" id="approveRequestId" name="request_id" />
                 <div class="form-group">
-                    <label for="approveNote">Admin Note (optional, included in email):</label>
-                    <textarea id="approveNote" name="admin_note" rows="3" placeholder="Add a note..."></textarea>
+                    <label for="approveNote">Admin Note (required, included in email):</label>
+                    <textarea id="approveNote" name="admin_note" rows="3" placeholder="Why is this cancellation being approved?" required minlength="5"></textarea>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="admin-btn admin-btn-ghost" onclick="closeModal('approveModal')">Cancel</button>
@@ -130,8 +130,8 @@
                 @csrf
                 <input type="hidden" id="denyRequestId" name="request_id" />
                 <div class="form-group">
-                    <label for="denyNote">Reason for Denial (optional, included in email):</label>
-                    <textarea id="denyNote" name="admin_note" rows="3" placeholder="Explain why the request was denied..."></textarea>
+                    <label for="denyNote">Reason for Denial (required, included in email):</label>
+                    <textarea id="denyNote" name="admin_note" rows="3" placeholder="Explain why the request was denied..." required minlength="5"></textarea>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="admin-btn admin-btn-ghost" onclick="closeModal('denyModal')">Cancel</button>

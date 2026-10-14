@@ -252,8 +252,8 @@
             <h2 id="statusModalTitle">Confirm Status Change</h2>
             <p id="statusModalMessage" class="vs-admin-payment-logs__status-message"></p>
             <div id="statusModalNoteWrapper" class="vs-admin-payment-logs__status-note" hidden>
-                <label for="statusModalNote" class="vs-admin-payment-logs__status-note-label">Reason (optional, included in the email):</label>
-                <textarea id="statusModalNote" class="vs-admin-payment-logs__status-note-input" rows="3" placeholder="Explain why the payment was rejected..."></textarea>
+                <label for="statusModalNote" class="vs-admin-payment-logs__status-note-label">Reason (required for a refund, included in the email):</label>
+                <textarea id="statusModalNote" class="vs-admin-payment-logs__status-note-input" rows="3" placeholder="Explain the decision..."></textarea>
             </div>
             <div class="modal-footer">
                 <button type="button" class="admin-btn admin-btn-ghost" id="cancelStatusModal">Cancel</button>

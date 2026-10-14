@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Mail\PaymentApproved;
 use App\Mail\PaymentRefunded;
 use App\Mail\PaymentRejected;
+use App\Models\ActivityLog;
 use App\Models\Payment;
 use App\Models\Reservation;
+use App\Support\AuditNote;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -17,9 +20,15 @@ class PaymentStatusController extends Controller
 {
     public function update(Request $request, Payment $payment)
     {
+        // Refunding money is the one status change that always needs a written
+        // reason. Approving or rejecting keeps the note optional, as before.
+        $isRefund = $request->input('status') === 'refunded';
+
         $validated = $request->validate([
             'status' => 'required|in:pending,approved,rejected,refunded',
-            'admin_note' => 'nullable|string|max:1000',
+            'admin_note' => $isRefund
+                ? AuditNote::requiredRules()
+                : AuditNote::optionalRules(),
         ]);
 
         $newStatus = $validated['status'];
@@ -71,6 +80,28 @@ class PaymentStatusController extends Controller
 
             $payment = $result['payment'];
             $previousStatus = $result['previous_status'];
+
+            // Record the change with its reason. Writing the entry here, instead
+            // of leaving the generic request entry from the middleware to stand,
+            // is what puts the refund reason in the audit trail.
+            if ($previousStatus !== $newStatus) {
+                $admin = Auth::guard('admin')->user();
+                $name = trim((string) ($admin->f_name ?? '') . ' ' . (string) ($admin->l_name ?? ''))
+                    ?: (string) ($admin->email ?? 'Admin');
+
+                ActivityLog::create([
+                    'admin_id'      => $admin?->getAuthIdentifier() ?? 0,
+                    'activity_type' => 'Payment ' . ucfirst($newStatus),
+                    'category'      => 'data',
+                    'route_name'    => 'admin.payments.status',
+                    'http_method'   => $request->method(),
+                    'subject'       => 'Payment #' . $payment->getKey(),
+                    'description'   => "Admin {$name} set payment #{$payment->getKey()} to {$newStatus} (was {$previousStatus})."
+                        . AuditNote::describe($validated['admin_note'] ?? null),
+                    'ip_address'    => $request->ip(),
+                    'user_agent'    => substr((string) $request->userAgent(), 0, 500),
+                ]);
+            }
 
             // Only notify the patron on a real change to a notifiable status.
             $notifiable = ['approved', 'rejected', 'refunded'];
