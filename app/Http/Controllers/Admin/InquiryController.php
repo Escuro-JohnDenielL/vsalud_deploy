@@ -11,7 +11,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationConfirmed;
 use App\Services\AiReplyService;
+use App\Services\AvailabilityService;
 use App\Services\VenueOccupancyService;
+use App\Support\BookingRules;
 use App\Support\VenueSlot;
 
 
@@ -269,6 +271,24 @@ class InquiryController extends Controller
         ]);
 
         try {
+            // A closed date is refused for everyone, admins included. Past dates
+            // are allowed here: an admin recording an event that already
+            // happened must not be blocked.
+            if (app(AvailabilityService::class)->isClosed($validated['date'])) {
+                return $this->rejectInquiry($request, BookingRules::CLOSED_MESSAGE);
+            }
+
+            // Same courtesy occupancy check as the Make Reservation form. An
+            // inquiry does not occupy a venue, but a venue that is already
+            // booked is refused early with the same message.
+            $period = VenueSlot::normalizePeriod($request->input('period'))
+                ?? VenueSlot::periodFromTimeText($validated['time']);
+
+            if (VenueSlot::isTrackable($validated['venue']) && $period !== null
+                && app(VenueOccupancyService::class)->isOccupied($validated['venue'], $validated['date'], $period)) {
+                return $this->rejectInquiry($request, VenueSlot::CONFLICT_MESSAGE);
+            }
+
             // Create or update the patron
             $patron = Patron::updateOrCreate(
                 ['email' => $validated['email']],
@@ -308,5 +328,21 @@ class InquiryController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to store inquiry. Error: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Rejects an inquiry without writing a row. AJAX callers get HTTP 409 with
+     * the message; form posts return to the form with the input preserved.
+     */
+    private function rejectInquiry(Request $request, string $message)
+    {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => $message,
+            ], 409);
+        }
+
+        return redirect()->back()->withInput()->with('error', $message);
     }
 }

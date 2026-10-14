@@ -10,8 +10,10 @@ use App\Models\Form;
 use App\Models\FormField;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationSubmitted;
+use App\Services\AvailabilityService;
 use App\Services\VenueOccupancyService;
 use App\Services\WaitlistService;
+use App\Support\BookingRules;
 use App\Support\VenueSlot;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -122,7 +124,7 @@ class ReservationController extends Controller
             }
         }
 
-        // Non-locking occupied check. Only active reservations occupy a venue
+        // Non-locking booking gates. Only active reservations occupy a venue
         // (pending inquiries never do), so a request for a venue that is
         // already booked is refused here with the same message the guarded
         // conversion uses. This is a courtesy check: the authoritative check
@@ -132,21 +134,24 @@ class ReservationController extends Controller
         $requestedPeriod = VenueSlot::normalizePeriod($formData['period'] ?? null)
             ?? VenueSlot::periodFromTimeText($hardcodedData['time'] ?? $validated['time'] ?? null);
 
-        if ($requestedDate && VenueSlot::isTrackable($requestedVenue) && $requestedPeriod !== null
-            && app(VenueOccupancyService::class)->isOccupied((string) $requestedVenue, (string) $requestedDate, $requestedPeriod)) {
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => VenueSlot::CONFLICT_MESSAGE,
-                ], 409);
+        $isAdminSubmission = $request->is('admin/*');
+
+        if ($requestedDate) {
+            // A closed date is refused for everyone, admins included.
+            if (app(AvailabilityService::class)->isClosed((string) $requestedDate)) {
+                return $this->rejectSubmission($request, $isAdminSubmission, BookingRules::CLOSED_MESSAGE);
             }
 
-            $redirect = $request->is('admin/*') ? 'admin.reserve.create' : 'patron.mreserve';
+            // Past dates are refused for patron submissions only. Admins may
+            // still record an event that already happened.
+            if (! $isAdminSubmission && BookingRules::isPastDate((string) $requestedDate)) {
+                return $this->rejectSubmission($request, $isAdminSubmission, BookingRules::PAST_DATE_MESSAGE);
+            }
+        }
 
-            return redirect()->route($redirect, [
-                'toast' => 'error',
-                'toast_msg' => VenueSlot::CONFLICT_MESSAGE,
-            ]);
+        if ($requestedDate && VenueSlot::isTrackable($requestedVenue) && $requestedPeriod !== null
+            && app(VenueOccupancyService::class)->isOccupied((string) $requestedVenue, (string) $requestedDate, $requestedPeriod)) {
+            return $this->rejectSubmission($request, $isAdminSubmission, VenueSlot::CONFLICT_MESSAGE);
         }
 
         try {
@@ -217,6 +222,29 @@ class ReservationController extends Controller
 
             return redirect()->route('patron.home', ['toast' => 'error', 'toast_msg' => 'Failed to create inquiry. Please try again.']);
         }
+    }
+
+    /**
+     * Rejects a booking request without writing a row.
+     *
+     * AJAX callers get HTTP 409 with the message. Form posts go back to the form
+     * with an error toast, which is how this page already reports failures.
+     */
+    private function rejectSubmission(Request $request, bool $isAdminSubmission, string $message)
+    {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => $message,
+            ], 409);
+        }
+
+        $route = $isAdminSubmission ? 'admin.reserve.create' : 'patron.mreserve';
+
+        return redirect()->route($route, [
+            'toast' => 'error',
+            'toast_msg' => $message,
+        ]);
     }
 
     public function sendReply(Request $request)
