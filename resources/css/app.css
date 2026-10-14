@@ -2623,3 +2623,39 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
 .vs-layout--admin .vs-admin-incident-logs .incident-stat-card.resolved { border-top-color: var(--vs-status-success-border); }
 .vs-layout--admin .vs-admin-incident-logs .incident-stat-card.critical { border-top-color: var(--vs-status-danger-border); }
 .vs-layout--admin .vs-admin-incident-logs .incident-stat-card.total { border-top-color: var(--vs-color-dark-green); }
+
+/* ============================================================
+   Coarse pointer (touch) tap targets
+   ------------------------------------------------------------
+   On a touch screen a 40px control is a coin toss for a thumb, so every
+   interactive control gets a 44px floor. Component rules across a dozen
+   files set 40px to 42px, and each of those files loads after this one, so
+   the floor is stated once here with !important rather than repeated in
+   every component. Scoped to (pointer: coarse): a mouse still gets the
+   compact 40px controls.
+   Checkboxes and radios are excluded; only their label row grows.
+   ============================================================ */
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]),
+  select,
+  textarea,
+  .admin-btn,
+  .vs-btn,
+  .vs-input,
+  .status-dropdown,
+  .calendar-day {
+    min-height: 44px !important;
+  }
+
+  button,
+  [role="button"],
+  .close-btn,
+  .calendar-header button,
+  .action-buttons button,
+  .audit-view-btn,
+  .payment-info-button {
+    min-width: 44px !important;
+  }
+}
