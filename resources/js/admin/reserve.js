@@ -66,16 +66,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // Date validation - no past dates
-            const selectedDate = new Date(date);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            if (selectedDate < today) {
-                alert("Please select a date from today onwards.");
-                event.preventDefault();
-                return;
-            }
+            // Past dates are deliberately not blocked here. Admins may record an
+            // event that already happened; the server applies that rule.
 
             // Show loading state
             const submitBtn = form.querySelector('button[type="submit"]');
