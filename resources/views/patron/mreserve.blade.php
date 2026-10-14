@@ -3,7 +3,7 @@
 @section('title', 'Manual Reservation')
 
 @push('styles')
-    @vite('resources/css/patron/mreserve.css')
+    @vite(['resources/css/patron/mreserve.css', 'resources/css/venue-panel.css'])
 @endpush
 
 @section('content')
@@ -160,6 +160,21 @@
                     <p><span class="vs-calendar__legend-swatch vs-calendar-day--danger"></span> 4/4 Full</p>
                     <p><span class="vs-calendar__legend-swatch vs-calendar-day--neutral"></span> Closed</p>
                 </div>
+
+                {{-- Venue availability for the picked date. Filled by
+                     resources/js/venue-availability.js. Public data only:
+                     venue name, period and an occupied flag. --}}
+                <section id="venueAvailability"
+                         class="vs-venue-panel"
+                         data-endpoint="{{ route('venue.availability') }}"
+                         aria-labelledby="venueAvailabilityTitle"
+                         hidden>
+                    <h3 class="vs-venue-panel__title" id="venueAvailabilityTitle" data-vs-venue-title>Venues</h3>
+                    <p class="vs-venue-panel__status" data-vs-venue-status role="status" aria-live="polite" hidden></p>
+                    <button type="button" class="vs-venue-panel__retry" data-vs-venue-retry hidden>Retry</button>
+                    <p class="vs-venue-panel__message" data-vs-venue-message hidden></p>
+                    <ul class="vs-venue-panel__list" data-vs-venue-list></ul>
+                </section>
             </div>
         </div>
     </div>

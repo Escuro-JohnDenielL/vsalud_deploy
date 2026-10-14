@@ -224,6 +224,12 @@ Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.log
 
 Route::post('/fetch-reservation', [ReservationController::class, 'fetchReservation'])->middleware('throttle:20,1')->name('fetch.reservation');
 
+// Public venue availability for the "Venues on <date>" panel on the patron and
+// admin Make Reservation pages. Venue name, period and occupied flag only.
+Route::get('/venue-availability', [\App\Http\Controllers\VenueAvailabilityController::class, 'index'])
+    ->middleware('throttle:venue-availability')
+    ->name('venue.availability');
+
 Route::post('/submit-payment', [PaymentController::class, 'store'])
     ->middleware('throttle:5,1')
     ->name('payment.store');

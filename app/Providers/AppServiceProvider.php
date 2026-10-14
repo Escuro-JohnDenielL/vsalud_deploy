@@ -55,5 +55,12 @@ class AppServiceProvider extends ServiceProvider
                 Limit::perDay(20)->by('feedback-daily:' . $ip)->response($reject),
             ];
         });
+
+        // Public venue availability feed for the "Venues on <date>" panel. The
+        // panel is refreshed on every date or period change, so the ceiling is
+        // generous but still bounded per IP.
+        RateLimiter::for('venue-availability', function (Request $request) {
+            return Limit::perMinute(60)->by('venue-availability:' . (string) $request->ip());
+        });
     }
 }

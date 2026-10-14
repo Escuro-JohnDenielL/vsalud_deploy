@@ -1,6 +1,7 @@
 // resources/js/patron/mreserve.js
 
 import "../bootstrap";
+import { initVenueAvailability } from "../venue-availability";
 
 document.addEventListener("DOMContentLoaded", function () {
     const venueSelect = document.getElementById("field_venue");
@@ -123,6 +124,15 @@ document.addEventListener("DOMContentLoaded", function () {
             timeSlotWrapper.style.display = "none";
             timeSlotSelect.disabled = true;
         }
+    });
+
+    // "Venues on <date>" panel below the calendar. Refreshes with the date and
+    // the period, and keeps occupied venues out of the Venue dropdown.
+    initVenueAvailability({
+        dateInput,
+        periodSelect,
+        venueSelect,
+        panel: document.getElementById("venueAvailability"),
     });
 
     // Agreement Modal Logic

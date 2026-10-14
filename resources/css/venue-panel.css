@@ -1,0 +1,173 @@
+/* "Venues on <date>" panel, shared by the patron and admin Make Reservation
+   pages. Sits directly below the calendar and lists every venue as Available or
+   Occupied for the selected date and period.
+
+   Selectors are deliberately a step more specific than the layout button
+   baseline in app.css, which otherwise paints every patron/admin button as a
+   solid primary button. */
+
+.vs-venue-panel {
+  margin-top: var(--vs-space-4);
+  padding: var(--vs-space-4);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+}
+
+.vs-venue-panel[hidden] {
+  display: none;
+}
+
+.vs-venue-panel .vs-venue-panel__title {
+  margin: 0 0 var(--vs-space-3);
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-bold);
+  line-height: var(--vs-leading-tight);
+}
+
+.vs-venue-panel .vs-venue-panel__status {
+  margin: 0 0 var(--vs-space-2);
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-secondary-min);
+  line-height: var(--vs-leading-normal);
+}
+
+.vs-venue-panel .vs-venue-panel__status[hidden] {
+  display: none;
+}
+
+.vs-venue-panel .vs-venue-panel__status--error {
+  color: var(--vs-status-danger-text);
+  font-weight: var(--vs-weight-semibold);
+}
+
+.vs-venue-panel button.vs-venue-panel__retry {
+  min-height: 0;
+  margin-left: var(--vs-space-2);
+  padding: var(--vs-space-1) var(--vs-space-2);
+  border: 1px solid var(--vs-status-danger-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-status-danger-bg);
+  color: var(--vs-status-danger-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-secondary-min);
+  font-weight: var(--vs-weight-semibold);
+  cursor: pointer;
+}
+
+.vs-venue-panel button.vs-venue-panel__retry:hover {
+  border-color: var(--vs-status-danger-text);
+  background: var(--vs-status-danger-bg);
+  color: var(--vs-status-danger-text);
+}
+
+.vs-venue-panel .vs-venue-panel__message {
+  margin: var(--vs-space-2) 0 0;
+  padding: var(--vs-space-2) var(--vs-space-3);
+  border: 1px solid var(--vs-status-warning-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-status-warning-bg);
+  color: var(--vs-status-warning-text);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-semibold);
+  line-height: var(--vs-leading-normal);
+}
+
+.vs-venue-panel .vs-venue-panel__message[hidden] {
+  display: none;
+}
+
+.vs-venue-panel .vs-venue-panel__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--vs-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vs-venue-panel .vs-venue-panel__item {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vs-venue-panel button.vs-venue-panel__venue {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--vs-space-3);
+  width: 100%;
+  padding: var(--vs-space-2) var(--vs-space-3);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-regular);
+  line-height: var(--vs-leading-normal);
+  text-align: left;
+  cursor: pointer;
+}
+
+.vs-venue-panel button.vs-venue-panel__venue:hover:not(:disabled) {
+  border-color: var(--vs-color-dark-green);
+  background: var(--vs-color-surface-pale-green);
+  color: var(--vs-color-text);
+}
+
+.vs-venue-panel button.vs-venue-panel__venue:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.vs-venue-panel button.vs-venue-panel__venue[aria-pressed="true"] {
+  border-color: var(--vs-status-success-border);
+  background: var(--vs-status-success-bg);
+}
+
+.vs-venue-panel button.vs-venue-panel__venue:disabled {
+  border-color: var(--vs-button-danger-disabled-border);
+  border-style: var(--vs-button-danger-disabled-border-style);
+  background: var(--vs-button-danger-disabled-bg);
+  color: var(--vs-button-danger-disabled-text);
+  cursor: var(--vs-button-danger-disabled-cursor);
+}
+
+.vs-venue-panel .vs-venue-panel__name {
+  font-weight: var(--vs-weight-semibold);
+}
+
+.vs-venue-panel .vs-venue-panel__state {
+  flex: 0 0 auto;
+  font-size: var(--vs-text-secondary-min);
+  font-weight: var(--vs-weight-bold);
+}
+
+.vs-venue-panel .vs-venue-panel__state--available {
+  color: var(--vs-status-success-text);
+}
+
+.vs-venue-panel .vs-venue-panel__state--occupied {
+  color: var(--vs-status-danger-text);
+}
+
+/* Narrow phones: the panel stacks under the calendar and each venue takes a
+   full row with the status on its own line. */
+@media (max-width: 480px) {
+  .vs-venue-panel .vs-venue-panel__list {
+    grid-template-columns: 1fr;
+  }
+
+  .vs-venue-panel button.vs-venue-panel__venue {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--vs-space-1);
+  }
+}

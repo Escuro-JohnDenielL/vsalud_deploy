@@ -84,6 +84,40 @@ document.addEventListener("DOMContentLoaded", function () {
         if (e.target === viewInquiryModal) closeViewInquiryModalFn();
     });
 
+    // Period picker. Only used when a reservation cannot be created because the
+    // inquiry carries no AM/PM period.
+    const periodModal = document.getElementById("periodModal");
+    const periodModalSelect = document.getElementById("periodModalSelect");
+    const confirmPeriodBtn = document.getElementById("confirmPeriodBtn");
+    const cancelPeriodBtn = document.getElementById("cancelPeriodBtn");
+
+    if (periodModal) {
+        let resolvePeriod = null;
+
+        openPeriodModal = () =>
+            new Promise((resolve) => {
+                resolvePeriod = resolve;
+                if (periodModalSelect) periodModalSelect.value = "AM";
+                openModal(periodModal);
+            });
+
+        const finishPeriod = (value) => {
+            closeModal(periodModal);
+            const resolve = resolvePeriod;
+            resolvePeriod = null;
+            if (resolve) resolve(value);
+        };
+
+        confirmPeriodBtn?.addEventListener("click", () => {
+            const value = (periodModalSelect?.value || "").trim().toUpperCase();
+            finishPeriod(value === "AM" || value === "PM" ? value : null);
+        });
+        cancelPeriodBtn?.addEventListener("click", () => finishPeriod(null));
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && resolvePeriod) finishPeriod(null);
+        });
+    }
+
     document.querySelectorAll(".view-inquiry-btn").forEach((button) => {
         button.addEventListener("click", function () {
             openViewInquiryModal(this);
@@ -193,11 +227,22 @@ document.addEventListener("DOMContentLoaded", function () {
 function applyStatusColors() {
     document.querySelectorAll(".vs-status-select").forEach((select) => {
         updateStatusColor(select);
+        // Last value the server accepted, used to put the dropdown back when a
+        // change is rejected.
+        select.dataset.vsLastValue = select.value;
+
         select.addEventListener("change", function () {
             updateStatusColor(this);
             saveStatusToDatabase(this, this.value);
         });
     });
+}
+
+let openPeriodModal = null;
+
+// Resolves with "AM", "PM" or null. Wired up when the modal exists on the page.
+function askForPeriod() {
+    return openPeriodModal ? openPeriodModal() : Promise.resolve(null);
 }
 
 function updateStatusColor(select) {
@@ -229,46 +274,92 @@ function updateStatusColor(select) {
     }
 }
 
-function saveStatusToDatabase(selectElement, newStatus) {
-    const inquiryId = selectElement
-        .closest("tr")
-        .getAttribute("data-inquiry-id");
+function revertStatus(selectElement, status) {
+    if (!selectElement) return;
+    selectElement.value = status || "";
+    updateStatusColor(selectElement);
+}
 
-    fetch(`/admin/inquiries/${inquiryId}/update-status`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            "X-CSRF-TOKEN": document
-                .querySelector('meta[name="csrf-token"]')
-                .getAttribute("content"),
-        },
-        body: JSON.stringify({
-            status: newStatus,
-        }),
-    })
+function saveStatusToDatabase(selectElement, newStatus) {
+    const row = selectElement.closest("tr");
+    const inquiryId = row ? row.getAttribute("data-inquiry-id") : null;
+
+    if (!inquiryId) return;
+
+    // The value the server last accepted. A rejected change is rolled back to
+    // this so the dropdown never claims a status the database does not have.
+    const previousStatus = selectElement.dataset.vsLastValue || "";
+
+    const send = (period) => {
+        const body = { status: newStatus };
+        if (period) body.period = period;
+
+        return fetch(`/admin/inquiries/${inquiryId}/update-status`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                "X-CSRF-TOKEN": document
+                    .querySelector('meta[name="csrf-token"]')
+                    .getAttribute("content"),
+            },
+            body: JSON.stringify(body),
+        });
+    };
+
+    const accept = (data) => {
+        selectElement.dataset.vsLastValue = newStatus;
+
+        if (data && data.mail_sent === false) {
+            window.showAdminToast('Status saved, but the email to the patron failed to send.', 'warning');
+        }
+    };
+
+    const reject = (data) => {
+        revertStatus(selectElement, previousStatus);
+        window.showAdminToast(
+            (data && data.message) || 'Failed to update status.',
+            'error'
+        );
+    };
+
+    send()
         .then(async (response) => {
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(
-                    `Server error ${response.status}: ${errorText}`
-                );
-            }
-            return response.json();
-        })
-        .then((data) => {
-            if (data.success) {
-                if (data.mail_sent === false) {
-                    window.showAdminToast('Status saved, but the email to the patron failed to send.', 'warning');
-                } else {
-                    console.log("Status updated successfully.");
+            const data = await response.json().catch(() => ({}));
+
+            // 422 with needs_period: the inquiry has no period, so the venue
+            // cannot be reserved until the admin picks one.
+            if (response.status === 422 && data.needs_period) {
+                const period = await askForPeriod();
+
+                if (!period) {
+                    revertStatus(selectElement, previousStatus);
+                    return;
                 }
-            } else {
-                console.error("Failed to update status:", data.message);
-                window.showAdminToast(data.message || 'Failed to update status.', 'error');
+
+                const retry = await send(period);
+                const retryData = await retry.json().catch(() => ({}));
+
+                if (!retry.ok || !retryData.success) {
+                    reject(retryData);
+                    return;
+                }
+
+                accept(retryData);
+                return;
             }
+
+            // 409 when the venue was taken, 503 when the slot could not be
+            // secured. Either way the status was not saved.
+            if (!response.ok || !data.success) {
+                reject(data);
+                return;
+            }
+
+            accept(data);
         })
         .catch((error) => {
             console.error("Error:", error.message);
+            reject(null);
         });
 }

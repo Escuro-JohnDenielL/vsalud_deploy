@@ -26,4 +26,22 @@ return [
         'instagram' => 'https://www.instagram.com/villasaludcatering',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Bookable venues
+    |--------------------------------------------------------------------------
+    |
+    | Fallback list only. The reservation form field ("venue") is the source of
+    | truth for the venue dropdown and the availability panel; these names are
+    | used when that field is missing (for example before the form is seeded).
+    |
+    */
+
+    'venues' => [
+        'Villa I',
+        'Villa II',
+        'Elizabeth Hall',
+        'Private Pool',
+    ],
+
 ];

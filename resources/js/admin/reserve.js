@@ -1,3 +1,5 @@
+import { initVenueAvailability } from "../venue-availability";
+
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.querySelector("form");
 
@@ -424,6 +426,15 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+
+    // "Venues on <date>" panel below the calendar. Refreshes with the date and
+    // the period, and keeps occupied venues out of the Venue dropdown.
+    initVenueAvailability({
+        dateInput: document.getElementById("field_date"),
+        periodSelect,
+        venueSelect: document.getElementById("field_venue"),
+        panel: document.getElementById("venueAvailability"),
+    });
 
     // Load availability data from backend
     function loadAvailabilityData() {

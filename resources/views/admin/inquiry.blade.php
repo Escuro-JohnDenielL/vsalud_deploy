@@ -180,6 +180,28 @@
         </div>
     </div>
 
+    {{-- Shown only when the inquiry has no AM/PM period, so the venue slot
+         cannot be reserved until the admin chooses one. --}}
+    <div id="periodModal" class="modal vs-modal" role="dialog" aria-modal="true" aria-labelledby="periodModalTitle">
+        <div class="modal-content vs-modal__dialog">
+            <h2 id="periodModalTitle">Select a Period</h2>
+            <p class="vs-inquiry-copy">This inquiry has no AM or PM period, so the venue cannot be reserved yet. Choose the period for this booking.</p>
+
+            <div class="detail-section">
+                <div class="detail-section-title">Period</div>
+                <select id="periodModalSelect" class="vs-form-control">
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                </select>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="cancelPeriodBtn" class="admin-btn admin-btn-ghost">Cancel</button>
+                <button type="button" id="confirmPeriodBtn" class="admin-btn admin-btn-primary">Confirm Reservation</button>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @push('scripts')
