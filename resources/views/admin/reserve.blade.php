@@ -100,6 +100,27 @@
                 <option value="Full">Full</option>
                 <option value="Closed">Closed</option>
             </select>
+
+            {{-- Shown only when the chosen status is refused (422) or when
+                 closing a date that still holds reservations. --}}
+            <p id="statusModalNotice" class="vs-admin-reservation__notice" role="alert" hidden></p>
+
+            {{-- Reason is required only when closing a date that still has
+                 reservations; it is stored in the audit log. --}}
+            <div class="form-group" id="statusReasonGroup" hidden>
+                <label for="statusReason">Reason for closing this date</label>
+                <textarea id="statusReason" rows="3" maxlength="255" placeholder="Recorded in the audit log"></textarea>
+            </div>
+
+            {{-- Explicit confirmation, only for closing a date that still
+                 holds reservations. Closing never cancels them. --}}
+            <div class="form-group status-modal__confirm" id="statusConfirmGroup" hidden>
+                <label for="statusConfirmCheck">
+                    <input type="checkbox" id="statusConfirmCheck" />
+                    <span id="statusConfirmLabel"></span>
+                </label>
+            </div>
+
             <div class="modal-footer">
                 <button type="button" id="undoStatus" class="admin-btn admin-btn-danger">Undo Status</button>
                 <button type="button" id="closeModal" class="admin-btn admin-btn-ghost">Cancel</button>

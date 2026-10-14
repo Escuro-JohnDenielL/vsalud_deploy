@@ -97,6 +97,57 @@ document.addEventListener("DOMContentLoaded", function () {
     const closeModalBtn = document.getElementById("closeModal");
     const statusSelect = document.getElementById("statusSelect");
     const undoStatusBtn = document.getElementById("undoStatus");
+    const statusModalNotice = document.getElementById("statusModalNotice");
+    const statusReasonGroup = document.getElementById("statusReasonGroup");
+    const statusReasonInput = document.getElementById("statusReason");
+    const statusConfirmGroup = document.getElementById("statusConfirmGroup");
+    const statusConfirmCheck = document.getElementById("statusConfirmCheck");
+    const statusConfirmLabel = document.getElementById("statusConfirmLabel");
+
+    // Mirrors App\Support\AvailabilityOverrideRule::MIN_REASON_LENGTH.
+    const MIN_CLOSE_REASON_LENGTH = 5;
+
+    function showStatusNotice(message) {
+        if (!statusModalNotice) return;
+        statusModalNotice.textContent = message;
+        statusModalNotice.hidden = false;
+    }
+
+    function clearStatusNotice() {
+        if (!statusModalNotice) return;
+        statusModalNotice.textContent = "";
+        statusModalNotice.hidden = true;
+    }
+
+    // Closing a date that still holds reservations has to be deliberate: the
+    // admin sees the number of reservations being kept, writes a reason, and
+    // ticks the confirmation box. The server enforces the same three things.
+    function syncCloseFields() {
+        const closingWithBookings =
+            statusSelect?.value === "Closed" &&
+            selectedDate !== null &&
+            (dateStatuses[selectedDate]?.booked ?? 0) > 0;
+
+        if (statusReasonGroup) statusReasonGroup.hidden = !closingWithBookings;
+        if (statusConfirmGroup) statusConfirmGroup.hidden = !closingWithBookings;
+
+        if (!closingWithBookings) {
+            if (statusReasonInput) statusReasonInput.value = "";
+            if (statusConfirmCheck) statusConfirmCheck.checked = false;
+            clearStatusNotice();
+            return;
+        }
+
+        const count = dateStatuses[selectedDate]?.booked ?? 0;
+
+        if (statusConfirmLabel) {
+            statusConfirmLabel.textContent = `I understand this date holds ${count} active reservation(s) and closing it will not cancel them.`;
+        }
+
+        showStatusNotice(
+            `This date holds ${count} active reservation(s). Closing it stops new bookings only. Add a reason and confirm to continue.`
+        );
+    }
 
     const calendarContainer = document.querySelector(
         ".vs-admin-reservation .calendar-container"
@@ -224,6 +275,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (statusSelect) {
                     statusSelect.value = dateStatuses[dateKey]?.state || "";
                 }
+                syncCloseFields();
                 if (modal) {
                     window.vsModalPrepareOpen(modal);
                     modal.style.display = "flex";
@@ -270,36 +322,72 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Modal event handlers
+    if (statusSelect) {
+        statusSelect.addEventListener("change", syncCloseFields);
+    }
+
+    // Repaints one day cell from the local state map.
+    function refreshDayCell(dateKey, entry) {
+        document.querySelectorAll(".calendar-day[data-date]").forEach((cell) => {
+            if (cell.getAttribute("data-date") === dateKey) {
+                applyStatusStyle(cell, entry || null);
+            }
+        });
+    }
+
     if (saveStatusBtn) {
         saveStatusBtn.addEventListener("click", function () {
-            if (selectedDate && statusSelect) {
-                const selectedStatus = statusSelect.value;
+            if (!selectedDate || !statusSelect) {
+                return;
+            }
 
-                if (selectedStatus) {
-                    dateStatuses[selectedDate] = {
-                        state: selectedStatus,
-                        booked: dateStatuses[selectedDate]?.booked ?? 0,
-                    };
-                    saveStatusToBackend(selectedDate, selectedStatus);
-                } else {
-                    delete dateStatuses[selectedDate];
-                    deleteStatusFromBackend(selectedDate);
-                }
+            clearStatusNotice();
 
-                // Update the visual appearance
-                const dayCells = document.querySelectorAll(
-                    ".calendar-day[data-date]"
-                );
-                dayCells.forEach((cell) => {
-                    if (cell.getAttribute("data-date") === selectedDate) {
-                        applyStatusStyle(cell, dateStatuses[selectedDate] || null);
-                    }
-                });
+            const selectedStatus = statusSelect.value;
+
+            // Empty selection means "no status": the override row is removed.
+            if (!selectedStatus) {
+                delete dateStatuses[selectedDate];
+                refreshDayCell(selectedDate, null);
+                deleteStatusFromBackend(selectedDate);
 
                 if (modal) {
                     closeStatusModal();
                 }
+
+                return;
             }
+
+            const booked = dateStatuses[selectedDate]?.booked ?? 0;
+            const closingWithBookings = selectedStatus === "Closed" && booked > 0;
+
+            if (closingWithBookings) {
+                const reason = (statusReasonInput?.value || "").trim();
+
+                if (reason.length < MIN_CLOSE_REASON_LENGTH) {
+                    showStatusNotice(
+                        `A reason of at least ${MIN_CLOSE_REASON_LENGTH} characters is required to close a date that still has reservations.`
+                    );
+                    statusReasonInput?.focus();
+                    return;
+                }
+
+                if (statusConfirmCheck && !statusConfirmCheck.checked) {
+                    showStatusNotice(
+                        `Tick the confirmation box to close this date. It holds ${booked} active reservation(s).`
+                    );
+                    statusConfirmCheck.focus();
+                    return;
+                }
+            }
+
+            // The cell is only repainted once the server accepts the override,
+            // so a refused save cannot leave the calendar showing a state the
+            // database does not have.
+            saveStatusToBackend(selectedDate, selectedStatus, {
+                reason: closingWithBookings ? (statusReasonInput?.value || "").trim() : null,
+                confirmedCount: closingWithBookings ? booked : null,
+            });
         });
     }
 
@@ -443,9 +531,21 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    // Save status to backend
-    function saveStatusToBackend(date, status) {
-        fetch("/admin/availability", {
+    // Save status to backend. Every save is an override, so `override` is
+    // always sent: the date then follows the admin's choice instead of the
+    // computed slot count, until the override is removed.
+    function saveStatusToBackend(date, status, options = {}) {
+        const payload = { date: date, status: status, override: true };
+
+        if (options.reason) {
+            payload.reason = options.reason;
+        }
+
+        if (options.confirmedCount !== null && options.confirmedCount !== undefined) {
+            payload.confirmed_count = options.confirmedCount;
+        }
+
+        return fetch("/admin/availability", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -455,24 +555,36 @@ document.addEventListener("DOMContentLoaded", function () {
                         ?.getAttribute("content") ||
                     document.querySelector('input[name="_token"]')?.value,
             },
-            body: JSON.stringify({
-                date: date,
-                status: status,
-            }),
+            body: JSON.stringify(payload),
         })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+            .then((response) =>
+                response.json().then((data) => ({ ok: response.ok, data }))
+            )
+            .then(({ ok, data }) => {
+                if (!ok || !data?.success) {
+                    // The modal stays open with the server's explanation so the
+                    // admin can fix the reason or the confirmation.
+                    showStatusNotice(
+                        data?.message || "The override could not be saved."
+                    );
+                    return;
                 }
-                return response.json();
-            })
-            .then((data) => {
-                console.log("Status saved:", data);
+
+                dateStatuses[date] = {
+                    state: status,
+                    booked: data.booked ?? dateStatuses[date]?.booked ?? 0,
+                };
+                refreshDayCell(date, dateStatuses[date]);
+
                 showNotification("Status updated successfully", "success");
+
+                if (modal) {
+                    closeStatusModal();
+                }
             })
             .catch((error) => {
                 console.error("Error saving status:", error);
-                showNotification("Error updating status", "error");
+                showStatusNotice("Error updating status. Please try again.");
             });
     }
 
