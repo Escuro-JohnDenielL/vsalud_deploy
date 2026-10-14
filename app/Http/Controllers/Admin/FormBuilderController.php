@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Form;
 use App\Models\FormField;
+use App\Support\FormFieldUsage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -140,9 +142,20 @@ class FormBuilderController extends Controller
     }
 
     /**
-     * Delete a field from the form.
+     * Deactivate a field.
+     *
+     * This used to delete the row. Every submission that used the field already
+     * carries its value in the form_data JSON blob, so deleting the definition
+     * only orphaned those values: the record still held them, but the builder
+     * could no longer explain what they were. Deactivating instead keeps the
+     * definition, removes the field from the form the patron sees (validation
+     * and rendering both read activeFields()), and leaves every stored value
+     * readable exactly as it was.
+     *
+     * The first call reports how many saved records still hold the field and
+     * asks for confirmation; the confirmed call does the work.
      */
-    public function deleteField(Form $form, FormField $field)
+    public function deleteField(Request $request, Form $form, FormField $field)
     {
         if ($field->form_id !== $form->id) {
             abort(404);
@@ -151,25 +164,51 @@ class FormBuilderController extends Controller
         if ($field->is_fixed) {
             return response()->json([
                 'success' => false,
-                'message' => 'Fixed fields cannot be deleted.',
+                'message' => 'Fixed fields cannot be deactivated.',
             ], 422);
         }
 
         $label = $field->label;
-        $field->delete();
+        $storedRecords = $this->countRecordsContainingField($field->name);
 
-        // Re-index order
-        $remaining = FormField::where('form_id', $form->id)->orderBy('order')->get();
-        foreach ($remaining as $i => $f) {
-            $f->update(['order' => $i]);
+        if ($storedRecords > 0 && ! $request->boolean('confirmed')) {
+            return response()->json([
+                'success' => false,
+                'requires_confirmation' => true,
+                'count' => $storedRecords,
+                'message' => "{$storedRecords} saved record(s) still contain a value for '{$label}'. "
+                    . 'The field will be deactivated, not deleted, so those values are kept. Confirm to continue.',
+            ], 409);
         }
 
+        $field->update(['is_active' => false]);
+
+        // Unpublishing keeps the change behind an explicit publish step.
         $form->update(['is_published' => false]);
 
         return response()->json([
             'success' => true,
-            'message' => "Field '{$label}' removed.",
+            'deactivated' => true,
+            'count' => $storedRecords,
+            'message' => $storedRecords > 0
+                ? "Field '{$label}' deactivated. {$storedRecords} saved record(s) keep their values."
+                : "Field '{$label}' deactivated.",
         ]);
+    }
+
+    /**
+     * How many saved records still carry a value for this field name.
+     *
+     * form_data is a JSON blob and is read here as text: the point is only to
+     * tell the admin what a delete would have orphaned. The name is escaped so
+     * an underscore in a machine name cannot act as a LIKE wildcard.
+     */
+    private function countRecordsContainingField(string $name): int
+    {
+        $needle = FormFieldUsage::jsonKeyPattern($name);
+
+        return DB::table('inquiry')->where('form_data', 'like', $needle)->count()
+            + DB::table('reservation')->where('form_data', 'like', $needle)->count();
     }
 
     /**

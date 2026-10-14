@@ -126,7 +126,7 @@
                         <div class="field-actions">
                             <button class="btn-edit-field" onclick="openEditModal({{ $field->id }})">Edit</button>
                             @if(!$field->is_fixed)
-                                <button class="btn-del-field" onclick="deleteField({{ $field->id }})">Del</button>
+                                <button class="btn-del-field" onclick="deleteField({{ $field->id }})">Disable</button>
                             @endif
                         </div>
                     </div>
@@ -330,16 +330,33 @@
         }).catch(() => showToast('Network error', true));
     });
 
-    // ===== Delete Field =====
-    function deleteField(fieldId) {
-        if (!confirm('Delete this field? Existing submitted data will not be affected.')) return;
-        fetch(`/admin/forms/${formId}/fields/${fieldId}`, {
+    // ===== Deactivate Field =====
+    // Deactivating keeps the definition: every saved submission already holds
+    // this field's value in its stored form data. The server answers 409 with
+    // the number of records that still contain it and only acts on the second,
+    // confirmed call.
+    function deleteField(fieldId, confirmed = false) {
+        const url = `/admin/forms/${formId}/fields/${fieldId}` + (confirmed ? '?confirmed=1' : '');
+
+        fetch(url, {
             method: 'DELETE',
             headers: { 'X-CSRF-TOKEN': csrfToken, 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-        }).then(r => r.json()).then(d => {
-            if (d.success) { showToast(d.message); setTimeout(() => location.reload(), 800); }
-            else showToast(d.message || 'Error', true);
-        });
+        }).then(r => r.json().then(d => ({ status: r.status, data: d }))).then(({ status, data }) => {
+            if (data.success) {
+                showToast(data.message);
+                setTimeout(() => location.reload(), 800);
+                return;
+            }
+
+            if (status === 409 && data.requires_confirmation) {
+                if (window.confirm(data.message)) {
+                    deleteField(fieldId, true);
+                }
+                return;
+            }
+
+            showToast(data.message || 'Error', true);
+        }).catch(() => showToast('Network error', true));
     }
 
     // ===== Edit Field Modal =====
