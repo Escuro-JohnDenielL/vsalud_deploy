@@ -242,6 +242,11 @@ Route::post('/submit-payment', [PaymentController::class, 'store'])
     ->name('payment.store');
 
 Route::get('/calendar/availability', function () {
+    // The scheduler that would run the waitlist expiry every minute is not
+    // started by the deploy scripts, so the calendars also drive the sweep.
+    // WaitlistService holds it to one run per five minutes.
+    app(\App\Services\WaitlistService::class)->sweepExpiredNotifications();
+
     return response()->json(app(\App\Services\AvailabilityService::class)->calendarPayload());
 });
 

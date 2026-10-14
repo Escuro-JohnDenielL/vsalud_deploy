@@ -19,6 +19,10 @@ class WaitlistController extends Controller
      */
     public function join(Request $request)
     {
+        // Retire any expired offer for this date before deciding, so a patron
+        // holding a lapsed offer is not told they are already queued.
+        $this->waitlistService->sweepExpiredNotifications();
+
         $validated = $request->validate([
             'patron_name'  => 'required|string|max:255',
             'patron_email' => 'required|email|max:255',

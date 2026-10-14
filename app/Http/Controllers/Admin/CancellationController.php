@@ -72,10 +72,13 @@ class CancellationController extends Controller
                 $inquiry->save();
             }
 
-            // Notify the next person on the waitlist (slot freed up)
+            // Notify the next person on the waitlist (slot freed up). Expired
+            // offers are retired first so the freed slot goes to a patron who
+            // can still act on it, not to a lapsed one.
             if ($reservation && $reservation->date) {
                 try {
                     $waitlistService = app(WaitlistService::class);
+                    $waitlistService->sweepExpiredNotifications();
                     $waitlistResult = $waitlistService->notifyNextForDate($reservation->date);
 
                     if (($waitlistResult['mail_sent'] ?? true) === false) {

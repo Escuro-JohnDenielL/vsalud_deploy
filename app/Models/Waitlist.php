@@ -35,12 +35,17 @@ class Waitlist extends Model
 
     /**
      * Get the oldest waiting entry for a given date (FCFS).
+     *
+     * Ordered by creation time and then by id: two entries created inside the
+     * same second still come out in the order they were inserted, so "first
+     * come, first served" is stable instead of depending on storage order.
      */
     public static function nextWaitingForDate($date)
     {
         return static::forDate($date)
             ->byStatus('waiting')
             ->orderBy('created_at', 'asc')
+            ->orderBy('id', 'asc')
             ->first();
     }
 

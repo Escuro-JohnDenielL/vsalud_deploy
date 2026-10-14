@@ -151,7 +151,24 @@ class ReservationController extends Controller
     {
         try {
             $reservation = \App\Models\Reservation::findOrFail($id);
+
+            // A deleted active reservation frees its slot exactly like an
+            // approved cancellation does, so the waitlist has to be offered it.
+            $freedDate = null;
+
+            if ($reservation->status === 'active' && $reservation->date) {
+                $freedDate = \Illuminate\Support\Carbon::parse($reservation->date)->format('Y-m-d');
+            }
+
             $reservation->delete();
+
+            if ($freedDate !== null) {
+                try {
+                    app(\App\Services\WaitlistService::class)->notifyNextForDate($freedDate);
+                } catch (\Throwable $waitlistError) {
+                    Log::error('Failed to offer the freed slot to the waitlist: ' . $waitlistError->getMessage());
+                }
+            }
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
