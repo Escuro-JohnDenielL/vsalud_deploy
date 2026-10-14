@@ -98,10 +98,15 @@ class AdminProfileController extends Controller
             // Generate a 6-digit code
             $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
-            // Save code and expiration (10 minutes from now)
+            // Save code and expiration (10 minutes from now). The code column
+            // holds 6 characters, so the code is stored as sent rather than
+            // hashed; a hash would need a wider column (proposal, not code).
             $admin->password_reset_code = $code;
-            $admin->password_reset_code_expires_at = now()->addMinutes(10);
+            $admin->password_reset_code_expires_at = now()->addMinutes(self::CODE_TTL_MINUTES);
             $admin->save();
+
+            // A brand new code starts with a clean set of guesses.
+            $this->clearFailedCodeAttempts($admin->admin_id);
 
             // Send email with the code
             Mail::to($admin->email)->send(new PasswordResetCode([
@@ -173,6 +178,26 @@ class AdminProfileController extends Controller
             }
 
             if ($admin->password_reset_code !== $validated['reset_code']) {
+                // Count the miss in the cache, and burn the code once the
+                // guesses run out so a stolen session cannot keep grinding
+                // through a six-digit space for the whole ten minutes.
+                $attempts = $this->registerFailedCodeAttempt($admin->admin_id);
+
+                if ($attempts >= self::MAX_CODE_ATTEMPTS) {
+                    $admin->password_reset_code = null;
+                    $admin->password_reset_code_expires_at = null;
+                    $admin->save();
+
+                    $this->clearFailedCodeAttempts($admin->admin_id);
+
+                    Log::warning('Admin password reset code invalidated after repeated wrong guesses: ' . $admin->email);
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Too many incorrect codes. The code has been invalidated. Please request a new one.',
+                    ], 422);
+                }
+
                 return response()->json([
                     'success' => false,
                     'message' => 'The verification code you entered is incorrect.'
@@ -191,6 +216,8 @@ class AdminProfileController extends Controller
             $admin->password_reset_code = null;
             $admin->password_reset_code_expires_at = null;
             $admin->save();
+
+            $this->clearFailedCodeAttempts($admin->admin_id);
 
             // Invalidate other active sessions
             Auth::guard('admin')->logoutOtherDevices($validated['new_password']);
@@ -216,5 +243,38 @@ class AdminProfileController extends Controller
                 'message' => 'An error occurred while changing password. Please try again.'
             ], 500);
         }
+    }
+
+    /**
+     * Record one wrong code against an admin and return the running total.
+     *
+     * The counter lives in the cache rather than the database: the code it
+     * guards only lives for ten minutes, and adding a column for it would be a
+     * schema change.
+     */
+    private function registerFailedCodeAttempt(int $adminId): int
+    {
+        $key = $this->codeAttemptsKey($adminId);
+
+        // Seed the key so the first increment has something to count on.
+        Cache::add($key, 0, now()->addMinutes(self::ATTEMPT_WINDOW_MINUTES));
+
+        return (int) Cache::increment($key);
+    }
+
+    /**
+     * Forget the wrong-code count for an admin.
+     */
+    private function clearFailedCodeAttempts(int $adminId): void
+    {
+        Cache::forget($this->codeAttemptsKey($adminId));
+    }
+
+    /**
+     * Cache key for the wrong-code counter of one admin.
+     */
+    private function codeAttemptsKey(int $adminId): string
+    {
+        return 'admin-password-code-attempts:' . $adminId;
     }
 }

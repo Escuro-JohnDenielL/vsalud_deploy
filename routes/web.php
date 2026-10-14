@@ -146,10 +146,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
     Route::post('profile/update', [AdminProfileController::class, 'update'])->name('profile.update');
 
     // For change password (step 1: send email code)
-    Route::post('profile/send-reset-code', [AdminProfileController::class, 'sendPasswordResetCode'])->name('password.send-code')->middleware('auth.session');
+    Route::post('profile/send-reset-code', [AdminProfileController::class, 'sendPasswordResetCode'])
+        ->name('password.send-code')
+        ->middleware(['auth.session', 'throttle:admin-password-code']);
 
     // For change password (step 2: verify code & update)
-    Route::post('profile/change-password', [AdminProfileController::class, 'changePassword'])->name('password.change')->middleware('auth.session');
+    Route::post('profile/change-password', [AdminProfileController::class, 'changePassword'])
+        ->name('password.change')
+        ->middleware(['auth.session', 'throttle:admin-password-change']);
 
     // All activities of Admin in the reports tab
     Route::get('/dashboard-activities', [AdminActivityController::class, 'allActivities'])->name('activities.all');

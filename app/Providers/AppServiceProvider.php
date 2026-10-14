@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Support\SecurityLog;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
@@ -85,5 +86,35 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('payment-submit', function (Request $request) {
             return Limit::perHour(10)->by('payment-submit:' . (string) $request->ip());
         });
+
+        // Admin password reset. Both steps are already authenticated, so the
+        // bucket is keyed on the admin id as well as the IP: three code
+        // requests per ten minutes, ten change attempts per ten minutes. The
+        // 429 body is JSON because the profile page reads it as JSON.
+        RateLimiter::for('admin-password-code', function (Request $request) {
+            return Limit::perMinutes(10, 3)
+                ->by('admin-password-code:' . self::actorKey($request))
+                ->response(fn (Request $request, array $headers) => response()->json([
+                    'success' => false,
+                    'message' => 'Too many verification codes requested. Please wait a few minutes and try again.',
+                ], 429)->withHeaders($headers));
+        });
+
+        RateLimiter::for('admin-password-change', function (Request $request) {
+            return Limit::perMinutes(10, 10)
+                ->by('admin-password-change:' . self::actorKey($request))
+                ->response(fn (Request $request, array $headers) => response()->json([
+                    'success' => false,
+                    'message' => 'Too many password change attempts. Please wait a few minutes and try again.',
+                ], 429)->withHeaders($headers));
+        });
+    }
+
+    /**
+     * "admin id + IP" for the authenticated-admin limiters.
+     */
+    private static function actorKey(Request $request): string
+    {
+        return (string) (Auth::guard('admin')->id() ?? 'guest') . ':' . (string) $request->ip();
     }
 }
