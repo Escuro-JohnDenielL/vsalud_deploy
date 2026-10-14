@@ -13,8 +13,21 @@
  *
  *   php tests/manual/venue-slot-probe.php --cleanup "Probe Venue X" 2099-12-31
  *
- * Refuses to run unless APP_ENV is "local" AND the database host is localhost or
- * 127.0.0.1, so it cannot be pointed at a shared database by accident.
+ * Two conditions are enforced before anything runs:
+ *
+ *   1. APP_ENV must be "local" AND the database host must be localhost or
+ *      127.0.0.1. This cannot be pointed at a shared database by accident.
+ *   2. Run it with CACHE_STORE=database, and against a local COPY of the
+ *      database that already has the cache and cache_locks tables. Only then
+ *      does the lock exercise VenueOccupancyService the same way a single
+ *      production container does: acquire an entry in cache_locks, recheck
+ *      inside the transaction, release after the commit. With the default
+ *      "file" store the lock is a file lock instead and cache_locks is never
+ *      touched, so the run would not prove the cache_locks path. The store in
+ *      use is always printed, and a warning is printed when it is not
+ *      "database".
+ *
+ *   CACHE_STORE=database php tests/manual/venue-slot-probe.php "Probe Venue X" 2099-12-31 AM
  */
 
 require __DIR__ . '/../../vendor/autoload.php';
@@ -46,17 +59,42 @@ function assertLocalEnvironment(): void
         exit(1);
     }
 
-    fwrite(STDOUT, "environment check: APP_ENV={$env} db_connection={$connection} db_host={$host}\n");
+    fwrite(STDOUT, "environment check: APP_ENV={$env} db_connection={$connection} db_host={$host} cache_store=" . cacheStoreName() . "\n");
+}
+
+/**
+ * The cache store in use. "database" means the lock writes to cache_locks.
+ */
+function cacheStoreName(): string
+{
+    return (string) config('cache.default');
+}
+
+/**
+ * Says so when the store is not the database one, because then the run does not
+ * exercise the cache_locks path.
+ */
+function warnUnlessDatabaseCache(): void
+{
+    $store = cacheStoreName();
+
+    if ($store !== 'database') {
+        fwrite(STDERR, "WARNING: cache store is '{$store}', not 'database'.\n");
+        fwrite(STDERR, "         Re-run with CACHE_STORE=database against a local copy that has the cache and cache_locks tables,\n");
+        fwrite(STDERR, "         otherwise the parallel run proves the file lock only.\n");
+    }
 }
 
 $args = array_slice($argv, 1);
 
 if (($args[0] ?? '') === '--check') {
     assertLocalEnvironment();
+    warnUnlessDatabaseCache();
     exit(0);
 }
 
 assertLocalEnvironment();
+warnUnlessDatabaseCache();
 
 if (($args[0] ?? '') === '--cleanup') {
     $venue = $args[1] ?? 'Probe Venue X';
@@ -100,10 +138,11 @@ $elapsed = (int) round((microtime(true) - $started) * 1000);
 $rows = Reservation::where('venue', $venue)->whereDate('date', $date)->where('status', 'active')->count();
 
 fwrite(STDOUT, sprintf(
-    "pid=%d started=%.4f elapsed_ms=%d outcome=%s active_rows=%d\n",
+    "pid=%d started=%.4f elapsed_ms=%d outcome=%s active_rows=%d cache_store=%s\n",
     getmypid(),
     $started,
     $elapsed,
     $result,
-    $rows
+    $rows,
+    cacheStoreName()
 ));

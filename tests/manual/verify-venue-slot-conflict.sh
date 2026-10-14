@@ -4,13 +4,21 @@
 # showing that only one of them creates a reservation. Both processes go through
 # VenueOccupancyService::guard(), the same lock the admin conversion path uses.
 #
-# The probe refuses to run unless APP_ENV is "local" and the database host is
-# localhost or 127.0.0.1. It inserts probe rows under a probe venue name and
-# removes them again at the end.
+# Requirements:
+#   * APP_ENV must be "local" and the database host must be localhost or
+#     127.0.0.1. The probe refuses to run otherwise.
+#   * Run it with CACHE_STORE=database, against a local COPY of the database that
+#     already has the cache and cache_locks tables. That is the only way the run
+#     exercises the cache_locks path: with the default "file" store the lock is a
+#     file lock and cache_locks is never touched. The store in use is printed,
+#     and a warning is printed when it is not "database".
+#
+# It inserts probe rows under a probe venue name and removes them again at the
+# end.
 #
 # Usage:
-#   bash tests/manual/verify-venue-slot-conflict.sh
-#   bash tests/manual/verify-venue-slot-conflict.sh "Probe Venue X" 2099-12-31 AM
+#   CACHE_STORE=database bash tests/manual/verify-venue-slot-conflict.sh
+#   CACHE_STORE=database bash tests/manual/verify-venue-slot-conflict.sh "Probe Venue X" 2099-12-31 AM
 
 set -u
 
@@ -21,7 +29,7 @@ PROBE="tests/manual/venue-slot-probe.php"
 
 cd "$(dirname "$0")/../.." || exit 1
 
-echo "Checking environment..."
+echo "Checking environment (set CACHE_STORE=database to exercise cache_locks)..."
 if ! php "${PROBE}" --check; then
     echo "Aborting: this script only runs locally."
     exit 1
