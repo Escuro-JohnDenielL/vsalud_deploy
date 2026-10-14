@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Patron;
 
 use App\Http\Controllers\Controller;
+use App\Support\FeedbackInput;
 use App\Support\IdentityMatch;
+use App\Support\TrackingCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 use App\Models\PaymentSetting;
 use App\Models\Inquiry;
@@ -14,6 +17,16 @@ use App\Models\Payment;
 
 class PaymentController extends Controller
 {
+    /**
+     * One answer for every verification failure (unknown code, wrong email,
+     * cancelled reservation, nothing left to pay). Saying which check failed
+     * would let the endpoint be used to test whether a code exists.
+     */
+    private const GENERIC_FAILURE = 'We could not match that reservation code and email address to a reservation waiting for payment. Please check both and try again.';
+
+    /** Failed upload attempts allowed per code plus IP, per hour. */
+    private const FAILED_ATTEMPTS_PER_HOUR = 5;
+
     public function index()
     {
         return view('patron.payment');
@@ -90,28 +103,61 @@ class PaymentController extends Controller
 
     public function store(Request $request)
     {
+        // Clean before validating: control characters are stripped from the
+        // name first, so they cannot be used to pad a value past the length
+        // limit or to hide a blank name inside a "present" string.
+        $request->merge([
+            'full_name' => FeedbackInput::cleanLine((string) $request->input('full_name')),
+        ]);
+
         $validated = $request->validate([
-            'full_name' => 'required|string|min:2',
+            'full_name' => 'required|string|min:2|max:120',
             'payment_type' => 'required|in:full,half',
             'payment_method' => 'required|in:cash,gcash,bank',
-            'email' => 'required|email',
-            'reservation_code' => 'required|string|exists:inquiry,tracking_code',
+            'email' => 'required|email|max:255',
+            'reservation_code' => 'required|string|max:32',
             'receipt' => ['required', 'file', 'image', 'mimetypes:image/jpeg,image/png', 'max:5120'],
         ]);
 
-        // The reservation code and the email must identify the same reservation.
-        // A code that matches nothing is refused here rather than stored as an
-        // orphan payment, and the email match is trimmed and case-insensitive.
-        $inquiry = Inquiry::with('patron')->where('tracking_code', trim((string) $validated['reservation_code']))->first();
+        // Failed uploads are counted per code + IP, not per IP alone: a patron
+        // who mistypes their own code cannot lock out everyone behind the same
+        // NAT, while probing one code for a matching address still runs out.
+        $failedKey = $this->failedAttemptKey($validated['reservation_code'], $request);
 
-        if (! $inquiry || ! IdentityMatch::emailMatches($inquiry->patron->email ?? null, $validated['email'])) {
+        if (RateLimiter::tooManyAttempts($failedKey, self::FAILED_ATTEMPTS_PER_HOUR)) {
             return response()->json([
                 'success' => false,
-                'message' => 'The reservation code does not match the provided email address.',
+                'message' => 'Too many failed attempts for this reservation code. Please try again later.',
+            ], 429);
+        }
+
+        // The code must resolve to a reservation that is still active and still
+        // waiting for payment, and the submitted email must be the booking
+        // email. Every one of those failures answers with the same sentence, so
+        // the endpoint cannot be used to tell "code unknown" from "email wrong".
+        $code = trim($validated['reservation_code']);
+        $inquiry = Inquiry::with('patron')->where('tracking_code', $code)->first();
+        $reservation = Reservation::where('inquiry_id', $inquiry->inquiry_id ?? 0)->first();
+
+        $emailMatches = IdentityMatch::emailMatches($inquiry->patron->email ?? null, $validated['email']);
+        $awaitingPayment = $reservation !== null
+            && $reservation->status === 'active'
+            && ! Payment::where('inquiry_id', $inquiry->inquiry_id)
+                ->where('status', 'approved')
+                ->exists();
+
+        if (! $inquiry || ! $reservation || ! $emailMatches || ! $awaitingPayment) {
+            RateLimiter::hit($failedKey, 3600);
+
+            return response()->json([
+                'success' => false,
+                'message' => self::GENERIC_FAILURE,
             ], 422);
         }
 
-        $trackingCode = 'VS-' . substr(time(), -6) . '-' . rand(1000, 9999);
+        $trackingCode = TrackingCode::unique(
+            fn (string $code) => Payment::query()->where('tracking_code', $code)->exists()
+        );
 
         // Store the receipt on the Railway volume, which is mounted at
         // /var/www/storage/app/public (the root of the "public" disk), so
@@ -151,7 +197,7 @@ class PaymentController extends Controller
             'payment_method' => $validated['payment_method'],
             'tracking_code' => $trackingCode,
             'reservation_code' => $validated['reservation_code'],
-            'inquiry_id' => $inquiry?->inquiry_id,
+            'inquiry_id' => $inquiry->inquiry_id,
             'receipt_path' => $receiptPath,
             'email' => $validated['email'],
             'status' => 'pending',
@@ -161,5 +207,13 @@ class PaymentController extends Controller
             'success' => true,
             'tracking_code' => $trackingCode,
         ]);
+    }
+
+    /**
+     * Rate limit key for failed uploads: one bucket per code and IP.
+     */
+    private function failedAttemptKey(string $code, Request $request): string
+    {
+        return 'payment-submit-failed:' . sha1(mb_strtolower(trim($code)) . '|' . (string) $request->ip());
     }
 }

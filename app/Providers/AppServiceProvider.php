@@ -78,5 +78,12 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('waitlist-join', function (Request $request) {
             return Limit::perHour(5)->by('waitlist-join:' . (string) $request->ip());
         });
+
+        // Receipt uploads. The endpoint is bounded per IP, and the controller
+        // adds a second bucket per "code + IP" that only counts failed
+        // verifications (see Patron\PaymentController::store).
+        RateLimiter::for('payment-submit', function (Request $request) {
+            return Limit::perHour(10)->by('payment-submit:' . (string) $request->ip());
+        });
     }
 }

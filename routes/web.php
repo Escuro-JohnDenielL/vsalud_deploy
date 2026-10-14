@@ -238,7 +238,7 @@ Route::get('/venue-availability', [\App\Http\Controllers\VenueAvailabilityContro
     ->name('venue.availability');
 
 Route::post('/submit-payment', [PaymentController::class, 'store'])
-    ->middleware('throttle:5,1')
+    ->middleware('throttle:payment-submit')
     ->name('payment.store');
 
 Route::get('/calendar/availability', function () {

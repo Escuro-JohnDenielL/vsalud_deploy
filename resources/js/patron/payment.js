@@ -241,6 +241,9 @@ document.addEventListener("DOMContentLoaded", function () {
             fetch("/submit-payment", {
                 method: "POST",
                 headers: {
+                    // Ask for JSON errors so a validation failure comes back as
+                    // a parsed body instead of a redirect.
+                    Accept: "application/json",
                     "X-CSRF-TOKEN": document
                         .querySelector('meta[name="csrf-token"]')
                         .getAttribute("content"),
@@ -258,7 +261,9 @@ document.addEventListener("DOMContentLoaded", function () {
                                 (span.textContent = fullNameInput.value.trim())
                         );
                     } else {
-                        alert("Failed to submit payment.");
+                        alert(
+                            data.message || "Failed to submit payment."
+                        );
                     }
                 })
                 .catch(() => alert("An error occurred."))
