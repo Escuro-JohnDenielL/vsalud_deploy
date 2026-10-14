@@ -90,6 +90,9 @@ class InquiryController extends Controller
      */
     private function convertToReservation(Inquiry $inquiry, ?string $requestedPeriod): array
     {
+        // Guarded with the raw inquiry value on purpose. The "Others" option is
+        // free text, so it stays exempt from the conflict check; the row itself
+        // records the text the patron typed, see reservationVenue().
         $venue = (string) ($inquiry->venue ?? '');
         $date = $inquiry->date ? $inquiry->date->format('Y-m-d') : null;
 
@@ -166,13 +169,31 @@ class InquiryController extends Controller
             'patron_id'          => $inquiry->patron_id,
             'date'               => $inquiry->date,
             'time'               => $inquiry->time,
-            'venue'              => $inquiry->venue,
+            'venue'              => $this->reservationVenue($inquiry),
             'event_type'         => $inquiry->event_type,
             'theme_motif'        => $inquiry->theme_motif,
             'message'            => $inquiry->message,
             'status'             => 'active',
             'form_data'          => $inquiry->form_data, // carry forward dynamic data
         ]);
+    }
+
+    /**
+     * Venue recorded on the reservation.
+     *
+     * When the inquiry picked the free-text "Others" option, the text the patron
+     * typed is copied across so the reservation no longer just says "Others".
+     * New conversions only; existing rows are left alone.
+     */
+    private function reservationVenue(Inquiry $inquiry): ?string
+    {
+        $venue = $inquiry->venue;
+
+        if (VenueSlot::normalize($venue) === 'others') {
+            return $inquiry->other_venue ?: $venue;
+        }
+
+        return $venue;
     }
 
     /**
