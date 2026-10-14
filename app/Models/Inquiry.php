@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ActivityLog;
 use App\Models\Admin;
+use App\Support\TrackingCode;
 
 class Inquiry extends Model
 {
@@ -43,10 +44,14 @@ class Inquiry extends Model
     {
         parent::boot();
 
-        // Auto-generate tracking code
+        // Auto-generate tracking code. Same "VS-XXXXXX" format as the codes
+        // already in the table, but drawn from random_bytes so the value is not
+        // derivable from the clock, and checked against existing rows first.
         static::creating(function ($inquiry) {
             if (empty($inquiry->tracking_code)) {
-                $inquiry->tracking_code = 'VS-' . strtoupper(substr(uniqid(), -6));
+                $inquiry->tracking_code = TrackingCode::unique(
+                    fn (string $code) => static::query()->where('tracking_code', $code)->exists()
+                );
             }
         });
 

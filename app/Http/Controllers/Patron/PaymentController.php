@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Patron;
 
 use App\Http\Controllers\Controller;
+use App\Support\IdentityMatch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -98,15 +99,16 @@ class PaymentController extends Controller
             'receipt' => ['required', 'file', 'image', 'mimetypes:image/jpeg,image/png', 'max:5120'],
         ]);
 
-        // Verify the reservation code belongs to the same email
-        $inquiry = Inquiry::where('tracking_code', $validated['reservation_code'])->first();
-        if ($inquiry && $inquiry->patron) {
-            if (strtolower($inquiry->patron->email) !== strtolower($validated['email'])) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'The reservation code does not match the provided email address.',
-                ], 422);
-            }
+        // The reservation code and the email must identify the same reservation.
+        // A code that matches nothing is refused here rather than stored as an
+        // orphan payment, and the email match is trimmed and case-insensitive.
+        $inquiry = Inquiry::with('patron')->where('tracking_code', trim((string) $validated['reservation_code']))->first();
+
+        if (! $inquiry || ! IdentityMatch::emailMatches($inquiry->patron->email ?? null, $validated['email'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The reservation code does not match the provided email address.',
+            ], 422);
         }
 
         $trackingCode = 'VS-' . substr(time(), -6) . '-' . rand(1000, 9999);

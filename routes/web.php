@@ -63,12 +63,19 @@ Route::name('patron.')->group(function () {
     Route::get('/cancel-reservation', [CancellationController::class, 'index'])->name('cancel-reservation');
 });
 
-// Patron cancellation (public routes, no auth required — uses tracking code lookup)
-Route::post('/cancel-reservation/lookup', [CancellationController::class, 'lookup'])->name('cancel-reservation.lookup');
-Route::post('/cancel-reservation/submit', [CancellationController::class, 'submit'])->name('cancel-reservation.submit');
+// Patron cancellation (public routes, no auth required — ownership is proved by
+// tracking code plus the booking email on every call, not by a numeric id)
+Route::post('/cancel-reservation/lookup', [CancellationController::class, 'lookup'])
+    ->middleware('throttle:cancel-lookup')
+    ->name('cancel-reservation.lookup');
+Route::post('/cancel-reservation/submit', [CancellationController::class, 'submit'])
+    ->middleware('throttle:cancel-submit')
+    ->name('cancel-reservation.submit');
 
 // Waitlist (patron-facing)
-Route::post('/waitlist/join', [WaitlistController::class, 'join'])->name('waitlist.join');
+Route::post('/waitlist/join', [WaitlistController::class, 'join'])
+    ->middleware('throttle:waitlist-join')
+    ->name('waitlist.join');
 
 // Admin Authentication Routes (NO MIDDLEWARE - accessible to non-authenticated users)
 Route::prefix('admin')->name('admin.')->group(function () {

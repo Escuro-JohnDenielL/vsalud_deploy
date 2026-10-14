@@ -9,7 +9,7 @@
 @section('content')
     <div class="cancel-reservation-container">
         <h2>Request Cancellation</h2>
-        <p>Enter your reservation code to look up your reservation and submit a cancellation request.</p>
+        <p>Enter your reservation code and the email address used to book it, so we can look up your reservation and submit a cancellation request.</p>
 
         {{-- Step 1: Lookup --}}
         <form id="lookupForm">
@@ -17,6 +17,10 @@
             <div class="form-group">
                 <label for="tracking_code">Reservation Code:</label>
                 <input type="text" id="tracking_code" name="tracking_code" placeholder="e.g. VS-ABCDEF" required />
+            </div>
+            <div class="form-group">
+                <label for="lookup_email">Email Address:</label>
+                <input type="email" id="lookup_email" name="email" placeholder="The email used to book" required />
             </div>
             <button type="submit" class="btn-lookup">Look Up Reservation</button>
         </form>
@@ -34,8 +38,6 @@
             <div class="cancel-form-card">
                 <form id="cancelForm">
                     @csrf
-                    <input type="hidden" id="reserve_id" name="reserve_id" />
-                    <input type="hidden" id="patron_email" name="patron_email" />
 
                     <div class="form-group">
                         <label for="reason">Reason for Cancellation (optional):</label>

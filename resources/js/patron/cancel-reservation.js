@@ -59,14 +59,19 @@ document.addEventListener("DOMContentLoaded", () => {
         return parts.map(formatTimeToken).join(" to ");
     }
 
-    // Step 1: Look up reservation by tracking code
+    // Step 1: Look up reservation by tracking code plus booking email
     lookupForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         clearMessage();
 
         const code = document.getElementById("tracking_code").value.trim();
+        const email = document.getElementById("lookup_email").value.trim();
         if (!code) {
             showMessage("Please enter a reservation code.", "error");
+            return;
+        }
+        if (!email) {
+            showMessage("Please enter the email address you used to book.", "error");
             return;
         }
 
@@ -79,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     "Content-Type": "application/json",
                     "X-CSRF-TOKEN": csrf,
                 },
-                body: JSON.stringify({ tracking_code: code }),
+                body: JSON.stringify({ tracking_code: code, email: email }),
             });
 
             const data = await response.json();
@@ -90,24 +95,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Populate reservation details
+            // Only these four fields are returned; the page never receives the
+            // patron's name or email address back from the server.
             const r = data.reservation;
             detailsContent.innerHTML = `
                 <table class="details-table">
-                    <tr><td><strong>Code:</strong></td><td>${escapeHtml(r.tracking_code)}</td></tr>
-                    <tr><td><strong>Name:</strong></td><td>${escapeHtml(r.patron_name)}</td></tr>
-                    <tr><td><strong>Email:</strong></td><td>${escapeHtml(r.patron_email)}</td></tr>
                     <tr><td><strong>Date:</strong></td><td>${escapeHtml(formatDate(r.date))}</td></tr>
-                    <tr><td><strong>Time:</strong></td><td>${escapeHtml(formatTime(r.time))}</td></tr>
                     <tr><td><strong>Venue:</strong></td><td>${escapeHtml(r.venue)}</td></tr>
-                    <tr><td><strong>Package:</strong></td><td>${escapeHtml(r.event_type)}</td></tr>
-                    <tr><td><strong>Theme/Motif:</strong></td><td>${escapeHtml(r.theme_motif)}</td></tr>
+                    <tr><td><strong>Package:</strong></td><td>${escapeHtml(r.package)}</td></tr>
+                    <tr><td><strong>Status:</strong></td><td>${escapeHtml(r.status)}</td></tr>
                 </table>
             `;
-
-            // Set hidden fields
-            document.getElementById("reserve_id").value = r.reserve_id;
-            document.getElementById("patron_email").value = r.patron_email;
 
             detailsDiv.style.display = "block";
             showMessage("Reservation found. Fill in the reason below to submit your cancellation request.", "success");
@@ -140,8 +138,8 @@ document.addEventListener("DOMContentLoaded", () => {
         closeConfirm();
         clearMessage();
 
-        const reserveId = document.getElementById("reserve_id").value;
-        const patronEmail = document.getElementById("patron_email").value;
+        const reserveCode = document.getElementById("tracking_code").value.trim();
+        const patronEmail = document.getElementById("lookup_email").value.trim();
         const reason = document.getElementById("reason").value.trim();
         const csrf = document.querySelector('input[name="_token"]').value;
 
@@ -153,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     "X-CSRF-TOKEN": csrf,
                 },
                 body: JSON.stringify({
-                    reserve_id: reserveId,
+                    tracking_code: reserveCode,
                     patron_email: patronEmail,
                     reason: reason,
                 }),

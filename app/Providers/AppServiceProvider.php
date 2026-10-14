@@ -62,5 +62,21 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('venue-availability', function (Request $request) {
             return Limit::perMinute(60)->by('venue-availability:' . (string) $request->ip());
         });
+
+        // Patron self-service pages that take a tracking code. Guessing a code
+        // has to stay unattractive: the lookup is capped per IP, and the
+        // controller adds its own per "code + IP" bucket that only counts
+        // failed attempts (see CancellationController).
+        RateLimiter::for('cancel-lookup', function (Request $request) {
+            return Limit::perMinute(20)->by('cancel-lookup:' . (string) $request->ip());
+        });
+
+        RateLimiter::for('cancel-submit', function (Request $request) {
+            return Limit::perMinute(20)->by('cancel-submit:' . (string) $request->ip());
+        });
+
+        RateLimiter::for('waitlist-join', function (Request $request) {
+            return Limit::perHour(5)->by('waitlist-join:' . (string) $request->ip());
+        });
     }
 }
