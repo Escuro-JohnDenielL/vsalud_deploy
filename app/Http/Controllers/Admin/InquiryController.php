@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationConfirmed;
 use App\Services\AiReplyService;
+use App\Services\VenueOccupancyService;
+use App\Support\VenueSlot;
 
 
 class InquiryController extends Controller
@@ -38,6 +40,9 @@ class InquiryController extends Controller
     {
         $request->validate([
             'status' => 'required|string|in:Pending,In Progress,Completed,Cancelled',
+            // Optional: only needed when the inquiry carries no period and the
+            // admin has to choose one before the slot can be reserved.
+            'period' => 'sometimes|nullable|string|max:4',
         ]);
 
         $inquiry = Inquiry::with('patron')->find($id);
@@ -46,70 +51,163 @@ class InquiryController extends Controller
         }
 
         $newStatus = $request->input('status');
-        $inquiry->status = $newStatus;
-        $inquiry->save();
-
         $mailSent = true;
 
-        // ✅ If marked as Completed, convert to reservation
+        // Marking an inquiry Completed converts it to a reservation. The venue
+        // slot is checked and reserved BEFORE the status is stored, so a
+        // rejected conversion leaves the inquiry as it was and the admin UI can
+        // safely revert the dropdown.
         if ($newStatus === 'Completed') {
             $existing = \App\Models\Reservation::where('inquiry_id', $inquiry->inquiry_id)->first();
 
             if (!$existing) {
-                // 🔍 Log the inquiry data for inspection
-                Log::info('Attempting to create reservation from inquiry:', $inquiry->toArray());
+                $conversion = $this->convertToReservation($inquiry, $request->input('period'));
 
-                try {
-                    \App\Models\Reservation::create([
-                        'inquiry_id'         => $inquiry->inquiry_id,
-                        'patron_id'          => $inquiry->patron_id,
-                        'date'               => $inquiry->date,
-                        'time'               => $inquiry->time,
-                        'venue'              => $inquiry->venue,
-                        'event_type'         => $inquiry->event_type,
-                        'theme_motif'        => $inquiry->theme_motif,
-                        'message'            => $inquiry->message,
-                        'status'             => 'active',
-                        'form_data'          => $inquiry->form_data, // carry forward dynamic data
-                    ]);
-
-                    // Send confirmation email to patron
-                    if ($inquiry->relationLoaded('patron') && $inquiry->patron) {
-                        $emailData = [
-                            'name'              => $inquiry->patron->name,
-                            'tracking_code'     => $inquiry->tracking_code,
-                            'date'              => $inquiry->date ? $inquiry->date->format('Y-m-d') : 'N/A',
-                            'time'              => $inquiry->time ?? 'N/A',
-                            'venue'             => $inquiry->venue ?? 'N/A',
-                            'other_venue'       => $inquiry->other_venue ?? '',
-                            'event_type'        => $inquiry->event_type ?? 'N/A',
-                            'other_event_type'  => $inquiry->other_event_type ?? '',
-                            'theme_motif'       => $inquiry->theme_motif ?? 'N/A',
-                            'other_theme_motif' => $inquiry->other_theme_motif ?? '',
-                            'message'           => $inquiry->message ?? '',
-                        ];
-
-                        try {
-                            Mail::to($inquiry->patron->email)->send(new ReservationConfirmed($emailData));
-                            Log::info('Confirmation email sent to ' . $inquiry->patron->email . ' for inquiry #' . $inquiry->inquiry_id);
-                        } catch (\Exception $mailError) {
-                            Log::error('Failed to send confirmation email for inquiry #' . $inquiry->inquiry_id . ': ' . $mailError->getMessage());
-                            $mailSent = false;
-                        }
-                    }
-                } catch (\Exception $e) {
-                    // ❌ Log the exception with full message
-                    Log::error('Failed to create reservation: ' . $e->getMessage());
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Reservation creation failed: ' . $e->getMessage()
-                    ], 500);
+                if ($conversion['response'] !== null) {
+                    return $conversion['response'];
                 }
+
+                $mailSent = $conversion['mail_sent'];
             }
         }
 
+        $inquiry->status = $newStatus;
+        $inquiry->save();
 
         return response()->json(['success' => true, 'mail_sent' => $mailSent]);
+    }
+
+    /**
+     * Convert an inquiry into an active reservation.
+     *
+     * The venue + date + period slot is locked, rechecked inside a transaction,
+     * and only then written, so two simultaneous conversions for the same slot
+     * create exactly one reservation. A conflict returns 409 and writes nothing.
+     *
+     * @return array{response: \Illuminate\Http\JsonResponse|null, mail_sent: bool}
+     */
+    private function convertToReservation(Inquiry $inquiry, ?string $requestedPeriod): array
+    {
+        $venue = (string) ($inquiry->venue ?? '');
+        $date = $inquiry->date ? $inquiry->date->format('Y-m-d') : null;
+
+        $period = VenueSlot::normalizePeriod($requestedPeriod)
+            ?? VenueSlot::periodFromFormData($inquiry->form_data)
+            ?? VenueSlot::periodFromTimeText($inquiry->time);
+
+        // A bookable venue with no determinable period cannot be locked, so ask
+        // the admin for one instead of guessing.
+        if ($date !== null && VenueSlot::isTrackable($venue) && $period === null) {
+            return [
+                'response' => response()->json([
+                    'success' => false,
+                    'needs_period' => true,
+                    'message' => VenueSlot::PERIOD_REQUIRED_MESSAGE,
+                ], 422),
+                'mail_sent' => true,
+            ];
+        }
+
+        Log::info('Attempting to create reservation from inquiry:', $inquiry->toArray());
+
+        $mailSent = true;
+
+        try {
+            $outcome = app(VenueOccupancyService::class)->guard(
+                $venue,
+                (string) $date,
+                (string) $period,
+                function () use ($inquiry, &$mailSent) {
+                    $reservation = $this->createReservationRow($inquiry);
+                    $mailSent = $this->sendConfirmationEmail($inquiry, $reservation);
+                }
+            );
+        } catch (\Throwable $e) {
+            Log::error('Failed to create reservation: ' . $e->getMessage());
+
+            return [
+                'response' => response()->json([
+                    'success' => false,
+                    'message' => 'Reservation creation failed. Please try again.',
+                ], 500),
+                'mail_sent' => true,
+            ];
+        }
+
+        if ($outcome === VenueOccupancyService::RESULT_CONFLICT) {
+            return [
+                'response' => response()->json([
+                    'success' => false,
+                    'message' => VenueSlot::CONFLICT_MESSAGE,
+                ], 409),
+                'mail_sent' => true,
+            ];
+        }
+
+        if ($outcome === VenueOccupancyService::RESULT_BUSY) {
+            return [
+                'response' => response()->json([
+                    'success' => false,
+                    'message' => VenueSlot::TRY_AGAIN_MESSAGE,
+                ], 503),
+                'mail_sent' => true,
+            ];
+        }
+
+        return ['response' => null, 'mail_sent' => $mailSent];
+    }
+
+    private function createReservationRow(Inquiry $inquiry): \App\Models\Reservation
+    {
+        return \App\Models\Reservation::create([
+            'inquiry_id'         => $inquiry->inquiry_id,
+            'patron_id'          => $inquiry->patron_id,
+            'date'               => $inquiry->date,
+            'time'               => $inquiry->time,
+            'venue'              => $inquiry->venue,
+            'event_type'         => $inquiry->event_type,
+            'theme_motif'        => $inquiry->theme_motif,
+            'message'            => $inquiry->message,
+            'status'             => 'active',
+            'form_data'          => $inquiry->form_data, // carry forward dynamic data
+        ]);
+    }
+
+    /**
+     * Returns false when the mail could not be handed to the mailer. The
+     * reservation is already committed at this point, so the caller reports the
+     * partial success instead of failing the whole conversion.
+     */
+    private function sendConfirmationEmail(Inquiry $inquiry, \App\Models\Reservation $reservation): bool
+    {
+        if (!$inquiry->relationLoaded('patron') || !$inquiry->patron) {
+            return true;
+        }
+
+        $emailData = [
+            'name'              => $inquiry->patron->name,
+            'tracking_code'     => $inquiry->tracking_code,
+            'date'              => $inquiry->date ? $inquiry->date->format('Y-m-d') : 'N/A',
+            'time'              => $inquiry->time ?? 'N/A',
+            'venue'             => $inquiry->venue ?? 'N/A',
+            'other_venue'       => $inquiry->other_venue ?? '',
+            'event_type'        => $inquiry->event_type ?? 'N/A',
+            'other_event_type'  => $inquiry->other_event_type ?? '',
+            'theme_motif'       => $inquiry->theme_motif ?? 'N/A',
+            'other_theme_motif' => $inquiry->other_theme_motif ?? '',
+            'message'           => $inquiry->message ?? '',
+        ];
+
+        try {
+            Mail::to($inquiry->patron->email)->send(new ReservationConfirmed($emailData));
+            Log::info('Confirmation email sent to ' . $inquiry->patron->email . ' for inquiry #' . $inquiry->inquiry_id);
+
+            return true;
+        } catch (\Exception $mailError) {
+            Log::error('Failed to send confirmation email for inquiry #' . $inquiry->inquiry_id . ': ' . $mailError->getMessage());
+
+            return false;
+        }
     }
 
     /**

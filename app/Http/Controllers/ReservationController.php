@@ -10,7 +10,9 @@ use App\Models\Form;
 use App\Models\FormField;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationSubmitted;
+use App\Services\VenueOccupancyService;
 use App\Services\WaitlistService;
+use App\Support\VenueSlot;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
@@ -118,6 +120,33 @@ class ReservationController extends Controller
                     $hardcodedData[$fieldName] = $fieldValue;
                 }
             }
+        }
+
+        // Non-locking occupied check. Only active reservations occupy a venue
+        // (pending inquiries never do), so a request for a venue that is
+        // already booked is refused here with the same message the guarded
+        // conversion uses. This is a courtesy check: the authoritative check
+        // runs again, under a lock, when the inquiry is confirmed.
+        $requestedVenue = $hardcodedData['venue'] ?? $validated['venue'] ?? null;
+        $requestedDate = $hardcodedData['date'] ?? $validated['date'] ?? null;
+        $requestedPeriod = VenueSlot::normalizePeriod($formData['period'] ?? null)
+            ?? VenueSlot::periodFromTimeText($hardcodedData['time'] ?? $validated['time'] ?? null);
+
+        if ($requestedDate && VenueSlot::isTrackable($requestedVenue) && $requestedPeriod !== null
+            && app(VenueOccupancyService::class)->isOccupied((string) $requestedVenue, (string) $requestedDate, $requestedPeriod)) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => VenueSlot::CONFLICT_MESSAGE,
+                ], 409);
+            }
+
+            $redirect = $request->is('admin/*') ? 'admin.reserve.create' : 'patron.mreserve';
+
+            return redirect()->route($redirect, [
+                'toast' => 'error',
+                'toast_msg' => VenueSlot::CONFLICT_MESSAGE,
+            ]);
         }
 
         try {
