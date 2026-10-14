@@ -86,17 +86,23 @@ class WaitlistService
     /**
      * Check if a date is currently full (per the availability system).
      *
+     * A date is full when every venue-period slot is occupied, or when an admin
+     * marked it Closed.
+     *
      * @param string $date Y-m-d format
      * @return bool
      */
     public function isDateFull(string $date): bool
     {
-        $maxInquiries = config('availability.max_inquiries', 4);
-        $count = Inquiry::where('date', $date)
-            ->where('status', '!=', 'Cancelled')
-            ->count();
+        $availability = app(\App\Services\AvailabilityService::class);
 
-        return $count >= $maxInquiries;
+        if ($availability->isClosed($date)) {
+            return true;
+        }
+
+        $total = $availability->totalSlots();
+
+        return $total > 0 && $availability->bookedSlots($date) >= $total;
     }
 
     /**

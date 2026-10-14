@@ -7,6 +7,12 @@
 @endpush
 
 @section('content')
+    @php
+        // Slot total drives the calendar scale and the legend
+        // (config/availability.php). One slot is one venue for one period.
+        $availabilitySlots = \App\Support\AvailabilityScale::totalSlots();
+    @endphp
+
     <div class="vs-page vs-admin-reservation">
     <x-ui.page-header title="Reservation Calendar" subtitle="Create a new reservation and manage date availability." />
     <div class="container vs-admin-reservation__layout">
@@ -37,7 +43,7 @@
              visitor's browser clock. --}}
         <div class="calendar-container"
              data-today="{{ \Carbon\Carbon::now('Asia/Manila')->toDateString() }}"
-             data-max-slots="{{ (int) config('availability.max_inquiries', 4) }}">
+             data-max-slots="{{ $availabilitySlots }}">
             <div class="calendar-header">
                 <button type="button" id="prevMonth">◀</button>
                 <span id="month-year"></span>
@@ -45,22 +51,24 @@
             </div>
             <div id="calendar"></div>
 
+            @php
+                // Legend wording comes from config/availability.php; only the
+                // admin panel's box colours are local to this page.
+                $legendRows = collect(\App\Support\AvailabilityScale::legendRows($availabilitySlots))->keyBy('state');
+                $legendBoxExtras = [
+                    'Available' => 'legend-green vs-admin-reservation__legend-box vs-admin-reservation__legend-box--success',
+                    'Half' => 'legend-yellow vs-admin-reservation__legend-box vs-admin-reservation__legend-box--warning',
+                    'Nearly' => 'legend-orange vs-admin-reservation__legend-box vs-admin-reservation__legend-box--warning',
+                    'Full' => 'legend-red vs-admin-reservation__legend-box vs-admin-reservation__legend-box--danger',
+                    'Closed' => 'legend-gray vs-admin-reservation__legend-box vs-admin-reservation__legend-box--neutral',
+                ];
+            @endphp
             <div class="calendar-legend">
-                <div class="legend-item">
-                    <div class="legend-box legend-green vs-admin-reservation__legend-box vs-admin-reservation__legend-box--success vs-calendar__legend-swatch vs-calendar-day--success"></div> 0/4 to 1/4 Available
-                </div>
-                <div class="legend-item">
-                    <div class="legend-box legend-yellow vs-admin-reservation__legend-box vs-admin-reservation__legend-box--warning vs-calendar__legend-swatch vs-calendar-day--half"></div> 2/4 Limited
-                </div>
-                <div class="legend-item">
-                    <div class="legend-box legend-orange vs-admin-reservation__legend-box vs-admin-reservation__legend-box--warning vs-calendar__legend-swatch vs-calendar-day--nearly"></div> 3/4 Nearly Full
-                </div>
-                <div class="legend-item">
-                    <div class="legend-box legend-red vs-admin-reservation__legend-box vs-admin-reservation__legend-box--danger vs-calendar__legend-swatch vs-calendar-day--danger"></div> 4/4 Full
-                </div>
-                <div class="legend-item">
-                    <div class="legend-box legend-gray vs-admin-reservation__legend-box vs-admin-reservation__legend-box--neutral vs-calendar__legend-swatch vs-calendar-day--neutral"></div> Closed
-                </div>
+                @foreach ($legendRows as $state => $legendRow)
+                    <div class="legend-item">
+                        <div class="legend-box {{ $legendBoxExtras[$state] ?? '' }} vs-calendar__legend-swatch {{ $legendRow['className'] }}"></div> {{ $legendRow['text'] }}
+                    </div>
+                @endforeach
             </div>
 
             {{-- Venue availability for the picked date. Filled by

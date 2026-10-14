@@ -7,6 +7,12 @@
 @endpush
 
 @section('content')
+    @php
+        // Slot total drives the calendar scale and the legend
+        // (config/availability.php). One slot is one venue for one period.
+        $availabilitySlots = \App\Support\AvailabilityScale::totalSlots();
+    @endphp
+
     <!-- Agreement Modal -->
     <div id="agreementModal" class="modal agreement-modal">
         <div class="guidelines-content" id="agreementContent">
@@ -145,7 +151,7 @@
                  visitor's browser clock. --}}
             <div class="calendar-container vs-calendar"
                  data-today="{{ \Carbon\Carbon::now('Asia/Manila')->toDateString() }}"
-                 data-max-slots="{{ (int) config('availability.max_inquiries', 4) }}">
+                 data-max-slots="{{ $availabilitySlots }}">
                 <div class="calendar-header">
                     <button id="prevMonth" class="vs-calendar-btn">◀</button>
                     <span id="month-year"></span>
@@ -154,11 +160,9 @@
                 <div id="calendar"></div>
 
                 <div class="calendar-legend">
-                    <p><span class="vs-calendar__legend-swatch vs-calendar-day--success"></span> 0/4 to 1/4 Available</p>
-                    <p><span class="vs-calendar__legend-swatch vs-calendar-day--half"></span> 2/4 Limited</p>
-                    <p><span class="vs-calendar__legend-swatch vs-calendar-day--nearly"></span> 3/4 Nearly Full</p>
-                    <p><span class="vs-calendar__legend-swatch vs-calendar-day--danger"></span> 4/4 Full</p>
-                    <p><span class="vs-calendar__legend-swatch vs-calendar-day--neutral"></span> Closed</p>
+                    @foreach (\App\Support\AvailabilityScale::legendRows($availabilitySlots) as $legendRow)
+                        <p><span class="vs-calendar__legend-swatch {{ $legendRow['className'] }}"></span> {{ $legendRow['text'] }}</p>
+                    @endforeach
                 </div>
 
                 {{-- Venue availability for the picked date. Filled by

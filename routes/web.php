@@ -235,61 +235,7 @@ Route::post('/submit-payment', [PaymentController::class, 'store'])
     ->name('payment.store');
 
 Route::get('/calendar/availability', function () {
-    $maxInquiries = config('availability.max_inquiries', 4);
-
-    // 1. Collect all dates that have admin overrides
-    $overrides = \App\Models\Availability::where('is_override', true)
-        ->get()
-        ->keyBy(fn ($item) => $item->date->format('Y-m-d'));
-
-    // 2. Count inquiries per date for auto-calculation (exclude cancelled)
-    $inquiries = Inquiry::selectRaw('date, COUNT(*) as total')
-        ->where('status', '!=', 'Cancelled')
-        ->groupBy('date')
-        ->get();
-
-    // 3. Gather all unique dates from both sources (all as strings)
-    $allDates = collect();
-    foreach ($overrides as $date => $_) {
-        $allDates->push($date);
-    }
-    foreach ($inquiries as $inquiry) {
-        $allDates->push($inquiry->date instanceof \Carbon\Carbon ? $inquiry->date->format('Y-m-d') : $inquiry->date);
-    }
-    $allDates = $allDates->unique()->sort();
-
-    $availability = [];
-
-    // Build a lookup for inquiry counts keyed by string date
-    $inquiryCounts = [];
-    foreach ($inquiries as $inquiry) {
-        $dateStr = $inquiry->date instanceof \Carbon\Carbon ? $inquiry->date->format('Y-m-d') : $inquiry->date;
-        $inquiryCounts[$dateStr] = $inquiry->total;
-    }
-
-    foreach ($allDates as $date) {
-        // Check override first — admin's manual status takes priority
-        if (isset($overrides[$date])) {
-            $availability[$date] = $overrides[$date]->status;
-            continue;
-        }
-
-        // Otherwise auto-calculate from inquiry count
-        $count = $inquiryCounts[$date] ?? 0;
-
-        if ($count >= $maxInquiries) {
-            $availability[$date] = 'Full';
-        } elseif ($count === 3) {
-            $availability[$date] = 'Nearly';
-        } elseif ($count === 2) {
-            $availability[$date] = 'Half';
-        } elseif ($count >= 1) {
-            $availability[$date] = 'Available';
-        }
-        // If count is 0 and no inquiry exists, skip (no data to send)
-    }
-
-    return response()->json($availability);
+    return response()->json(app(\App\Services\AvailabilityService::class)->calendarPayload());
 });
 
 // Landing Page

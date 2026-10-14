@@ -40,54 +40,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const dateStatuses = {};
 
-    // Availability states: the color class, the text cue shown under the day
-    // number, and the word used in the accessible label. 0/4 and 1/4 are both
-    // "Available" (green); "Half" (2 booked) is the 2/4 Limited range.
-    const AVAILABILITY_STATES = {
-        Available: {
-            className: "vs-calendar-day--success",
-            cue: "1/4",
-            label: "available",
-            booked: 1,
-        },
-        Half: {
-            className: "vs-calendar-day--half",
-            cue: "2/4",
-            label: "limited",
-            booked: 2,
-        },
-        Nearly: {
-            className: "vs-calendar-day--nearly",
-            cue: "3/4",
-            label: "nearly full",
-            booked: 3,
-        },
-        Full: {
-            className: "vs-calendar-day--danger",
-            cue: "Full",
-            label: "full",
-            booked: 4,
-        },
-        Closed: {
-            className: "vs-calendar-day--neutral",
-            cue: "Closed",
-            label: "closed",
-            booked: 0,
-        },
+    // Availability states: only the colour class lives here. Every word (the
+    // state labels, the cue words) and the slot total come from the server, so
+    // config/availability.php stays the single source of truth.
+    const AVAILABILITY_STATE_CLASSES = {
+        Available: "vs-calendar-day--success",
+        Half: "vs-calendar-day--half",
+        Nearly: "vs-calendar-day--nearly",
+        Full: "vs-calendar-day--danger",
+        Closed: "vs-calendar-day--neutral",
     };
-    const FREE_STATE = {
-        className: "vs-calendar-day--success",
-        cue: "",
-        label: "available",
-        booked: 0,
+    const AVAILABILITY_CLASSES = Object.values(AVAILABILITY_STATE_CLASSES);
+
+    // Defaults, replaced by the /calendar/availability payload.
+    let slotTotal = 0;
+    let slotLabels = {
+        Available: "available",
+        Half: "limited",
+        Nearly: "nearly full",
+        Full: "full",
+        Closed: "closed",
     };
-    const AVAILABILITY_CLASSES = [
-        "vs-calendar-day--success",
-        "vs-calendar-day--half",
-        "vs-calendar-day--nearly",
-        "vs-calendar-day--danger",
-        "vs-calendar-day--neutral",
-    ];
+    let cueWords = { Full: "Full", Closed: "Closed" };
 
     function toggleOtherInput(selectEl, inputEl) {
         if (!selectEl || !inputEl) return;
@@ -222,6 +196,9 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     const maxSlots =
         Number.parseInt(calendarContainer?.dataset.maxSlots, 10) || 4;
+    // First paint uses the slot total the server already rendered; the payload
+    // refreshes it in case the venue list changed.
+    slotTotal = maxSlots;
     // "Today" comes from the server (computed for Manila on this page) so it
     // never follows the visitor's browser clock. The browser value is only a
     // fallback for the unlikely case where the attribute is missing.
@@ -285,7 +262,7 @@ document.addEventListener("DOMContentLoaded", function () {
             number.textContent = day;
             cell.appendChild(number);
 
-            const status = dateStatuses[dateKey];
+            const entry = dateStatuses[dateKey];
             const longDate = formatLongDate(dateKey);
 
             if (dateKey < todayKey) {
@@ -302,11 +279,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     cell.classList.add("vs-calendar-day--today");
                 }
 
-                const state = applyStatusStyle(cell, status);
+                const state = applyStatusStyle(cell, entry);
 
-                let accessibleLabel = `${longDate}, ${state.label}`;
-                if (status && status !== "Closed") {
-                    accessibleLabel += `, ${state.booked} of ${maxSlots} slots booked`;
+                let accessibleLabel = `${longDate}, ${slotLabels[state] || state}`;
+                if (state !== "Closed") {
+                    accessibleLabel += `, ${entry?.booked ?? 0} of ${slotTotal} slots booked`;
                 }
                 cell.setAttribute("aria-label", accessibleLabel);
 
@@ -334,24 +311,39 @@ document.addEventListener("DOMContentLoaded", function () {
         dateInput.dispatchEvent(new Event("change", { bubbles: true }));
     });
 
-    // Applies the availability color and the text cue, and returns the state so
-    // the caller can build the accessible label. Days with no data are 0/4.
-    function applyStatusStyle(cell, status) {
+    // Applies the availability colour and the text cue, and returns the state
+    // name so the caller can build the accessible label. A day with no entry is
+    // 0 booked and therefore Available.
+    function applyStatusStyle(cell, entry) {
         cell.classList.remove(...AVAILABILITY_CLASSES);
         cell.querySelector(".calendar-day__cue")?.remove();
 
-        const state = AVAILABILITY_STATES[status] || FREE_STATE;
-        cell.classList.add(state.className);
+        const state = AVAILABILITY_STATE_CLASSES[entry?.state]
+            ? entry.state
+            : "Available";
+        cell.classList.add(AVAILABILITY_STATE_CLASSES[state]);
 
-        if (state.cue) {
-            const cue = document.createElement("span");
-            cue.className = "calendar-day__cue";
-            cue.setAttribute("aria-hidden", "true");
-            cue.textContent = state.cue;
-            cell.appendChild(cue);
+        const cue = cueText(state, entry?.booked ?? 0);
+        if (cue) {
+            const cueEl = document.createElement("span");
+            cueEl.className = "calendar-day__cue";
+            cueEl.setAttribute("aria-hidden", "true");
+            cueEl.textContent = cue;
+            cell.appendChild(cueEl);
         }
 
         return state;
+    }
+
+    // Full and Closed show a word; every other state shows how many of the
+    // venue-period slots are taken. Days with nothing booked stay unlabelled so
+    // the calendar is not covered in "0/8".
+    function cueText(state, booked) {
+        if (state === "Full" || state === "Closed") {
+            return cueWords[state] || state;
+        }
+
+        return booked > 0 ? `${booked}/${slotTotal}` : "";
     }
 
     prevMonthBtn?.addEventListener("click", () => {
@@ -365,11 +357,17 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function loadAvailabilityData() {
-        fetch("/calendar/availability")
+        fetch("/calendar/availability", { headers: { Accept: "application/json" } })
             .then((res) => res.json())
             .then((data) => {
-                Object.entries(data).forEach(([date, status]) => {
-                    dateStatuses[date] = status;
+                if (Number.isFinite(data?.slots_total)) slotTotal = data.slots_total;
+                if (data?.labels) slotLabels = data.labels;
+                if (data?.cue_words) cueWords = data.cue_words;
+
+                // Replace, so a slot that frees up stops showing as occupied.
+                Object.keys(dateStatuses).forEach((date) => delete dateStatuses[date]);
+                Object.entries(data?.dates || {}).forEach(([date, entry]) => {
+                    dateStatuses[date] = entry;
                 });
                 renderCalendar();
             })
@@ -392,16 +390,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     dateInput?.addEventListener("change", () => {
         const selected = dateInput.value;
-        const status = dateStatuses[selected];
+        const state = dateStatuses[selected]?.state;
 
-        if (status === "Full" || status === "Closed") {
+        if (state === "Full" || state === "Closed") {
             selectedUnavailableDate = selected;
 
             const title = document.getElementById("unavailableTitle");
             const message = document.getElementById("unavailableMessage");
             const waitlistOption = document.getElementById("waitlistOption");
 
-            if (status === "Closed") {
+            if (state === "Closed") {
                 title.textContent = "Date Closed";
                 message.textContent = "Sorry, this date is closed. Please choose another available date.";
                 waitlistOption.style.display = "none";

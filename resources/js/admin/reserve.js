@@ -77,18 +77,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // Check if selected date is available
-            if (
-                dateStatuses[date] === "full" ||
-                dateStatuses[date] === "closed"
-            ) {
-                alert(
-                    "The selected date is not available. Please choose another date."
-                );
-                event.preventDefault();
-                return;
-            }
-
             // Show loading state
             const submitBtn = form.querySelector('button[type="submit"]');
             if (submitBtn) {
@@ -131,52 +119,32 @@ document.addEventListener("DOMContentLoaded", function () {
     let selectedDate = null;
     let dateStatuses = {};
 
-    // Availability states. Kept identical to resources/js/patron/mreserve.js.
-    const AVAILABILITY_STATES = {
-        Available: {
-            className: "vs-calendar-day--success",
-            cue: "1/4",
-            label: "available",
-            booked: 1,
-        },
-        Half: {
-            className: "vs-calendar-day--half",
-            cue: "2/4",
-            label: "limited",
-            booked: 2,
-        },
-        Nearly: {
-            className: "vs-calendar-day--nearly",
-            cue: "3/4",
-            label: "nearly full",
-            booked: 3,
-        },
-        Full: {
-            className: "vs-calendar-day--danger",
-            cue: "Full",
-            label: "full",
-            booked: 4,
-        },
-        Closed: {
-            className: "vs-calendar-day--neutral",
-            cue: "Closed",
-            label: "closed",
-            booked: 0,
-        },
+    // Availability states: only the colour class lives here. Every word (the
+    // state labels, the cue words) and the slot total come from the server, so
+    // config/availability.php stays the single source of truth.
+    const AVAILABILITY_STATE_CLASSES = {
+        Available: "vs-calendar-day--success",
+        Half: "vs-calendar-day--half",
+        Nearly: "vs-calendar-day--nearly",
+        Full: "vs-calendar-day--danger",
+        Closed: "vs-calendar-day--neutral",
     };
-    const FREE_STATE = {
-        className: "vs-calendar-day--success",
-        cue: "",
-        label: "available",
-        booked: 0,
+    const AVAILABILITY_CLASSES = Object.values(AVAILABILITY_STATE_CLASSES);
+
+    // Defaults, replaced by the /calendar/availability payload.
+    let slotTotal = 0;
+    let slotLabels = {
+        Available: "available",
+        Half: "limited",
+        Nearly: "nearly full",
+        Full: "full",
+        Closed: "closed",
     };
-    const AVAILABILITY_CLASSES = [
-        "vs-calendar-day--success",
-        "vs-calendar-day--half",
-        "vs-calendar-day--nearly",
-        "vs-calendar-day--danger",
-        "vs-calendar-day--neutral",
-    ];
+    let cueWords = { Full: "Full", Closed: "Closed" };
+
+    // First paint uses the slot total the server already rendered; the payload
+    // refreshes it in case the venue list changed.
+    slotTotal = maxSlots;
 
     function formatLongDate(dateKey) {
         const [year, month, day] = dateKey.split("-").map(Number);
@@ -245,13 +213,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 dayCell.classList.add("is-past");
             }
 
-            // Apply status (0/4 when there is none) plus the text cue.
-            const status = dateStatuses[dateKey];
-            const state = applyStatusStyle(dayCell, status);
+            // Apply status (0 booked when there is none) plus the text cue.
+            const entry = dateStatuses[dateKey];
+            const state = applyStatusStyle(dayCell, entry);
             const longDate = formatLongDate(dateKey);
-            let accessibleLabel = `${longDate}, ${state.label}`;
-            if (status && status !== "Closed") {
-                accessibleLabel += `, ${state.booked} of ${maxSlots} slots booked`;
+            let accessibleLabel = `${longDate}, ${slotLabels[state] || state}`;
+            if (state !== "Closed") {
+                accessibleLabel += `, ${entry?.booked ?? 0} of ${slotTotal} slots booked`;
             }
             dayCell.setAttribute("aria-label", accessibleLabel);
 
@@ -262,7 +230,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 calendar.querySelectorAll(".vs-calendar-day--selected").forEach((cell) => cell.classList.remove("vs-calendar-day--selected"));
                 dayCell.classList.add("vs-calendar-day--selected");
                 if (statusSelect) {
-                    statusSelect.value = dateStatuses[dateKey] || "";
+                    statusSelect.value = dateStatuses[dateKey]?.state || "";
                 }
                 if (modal) {
                     window.vsModalPrepareOpen(modal);
@@ -274,24 +242,39 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Applies the availability color and the text cue, and returns the state so
-    // the caller can build the accessible label. Days with no data are 0/4.
-    function applyStatusStyle(cell, status) {
+    // Applies the availability colour and the text cue, and returns the state
+    // name so the caller can build the accessible label. A day with no entry is
+    // 0 booked and therefore Available.
+    function applyStatusStyle(cell, entry) {
         cell.classList.remove(...AVAILABILITY_CLASSES);
         cell.querySelector(".calendar-day__cue")?.remove();
 
-        const state = AVAILABILITY_STATES[status] || FREE_STATE;
-        cell.classList.add(state.className);
+        const state = AVAILABILITY_STATE_CLASSES[entry?.state]
+            ? entry.state
+            : "Available";
+        cell.classList.add(AVAILABILITY_STATE_CLASSES[state]);
 
-        if (state.cue) {
-            const cue = document.createElement("span");
-            cue.className = "calendar-day__cue";
-            cue.setAttribute("aria-hidden", "true");
-            cue.textContent = state.cue;
-            cell.appendChild(cue);
+        const cue = cueText(state, entry?.booked ?? 0);
+        if (cue) {
+            const cueEl = document.createElement("span");
+            cueEl.className = "calendar-day__cue";
+            cueEl.setAttribute("aria-hidden", "true");
+            cueEl.textContent = cue;
+            cell.appendChild(cueEl);
         }
 
         return state;
+    }
+
+    // Full and Closed show a word; every other state shows how many of the
+    // venue-period slots are taken. Days with nothing booked stay unlabelled so
+    // the calendar is not covered in "0/8".
+    function cueText(state, booked) {
+        if (state === "Full" || state === "Closed") {
+            return cueWords[state] || state;
+        }
+
+        return booked > 0 ? `${booked}/${slotTotal}` : "";
     }
 
     // Modal event handlers
@@ -301,7 +284,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 const selectedStatus = statusSelect.value;
 
                 if (selectedStatus) {
-                    dateStatuses[selectedDate] = selectedStatus;
+                    dateStatuses[selectedDate] = {
+                        state: selectedStatus,
+                        booked: dateStatuses[selectedDate]?.booked ?? 0,
+                    };
                     saveStatusToBackend(selectedDate, selectedStatus);
                 } else {
                     delete dateStatuses[selectedDate];
@@ -314,7 +300,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
                 dayCells.forEach((cell) => {
                     if (cell.getAttribute("data-date") === selectedDate) {
-                        applyStatusStyle(cell, selectedStatus);
+                        applyStatusStyle(cell, dateStatuses[selectedDate] || null);
                     }
                 });
 
@@ -445,13 +431,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 return response.json();
             })
-            .then((dateStatusMap) => {
-                if (dateStatusMap && typeof dateStatusMap === "object") {
-                    Object.entries(dateStatusMap).forEach(([date, status]) => {
-                        console.log(date, status);
-                        dateStatuses[date] = status;
-                    });
-                }
+            .then((data) => {
+                if (Number.isFinite(data?.slots_total)) slotTotal = data.slots_total;
+                if (data?.labels) slotLabels = data.labels;
+                if (data?.cue_words) cueWords = data.cue_words;
+
+                // Replace, so a slot that frees up stops showing as occupied.
+                Object.keys(dateStatuses).forEach((date) => delete dateStatuses[date]);
+                Object.entries(data?.dates || {}).forEach(([date, entry]) => {
+                    dateStatuses[date] = entry;
+                });
+
                 renderCalendar();
             })
             .catch((error) => {
@@ -595,8 +585,8 @@ document.addEventListener("DOMContentLoaded", function () {
     dateInput?.addEventListener("change", () => {
         const selected = dateInput.value;
         if (
-            dateStatuses[selected] === "Full" ||
-            dateStatuses[selected] === "Closed"
+            dateStatuses[selected]?.state === "Full" ||
+            dateStatuses[selected]?.state === "Closed"
         ) {
             // alert("This date is not available. Please choose another.");
             window.vsModalPrepareOpen(dateUnavailableModal);
