@@ -71,6 +71,7 @@ class ReservationController extends Controller
     {
         $validated = $request->validate([
             'total_amount' => ['required', 'string', 'regex:/^\\d{1,8}(?:\\.\\d{1,2})?$/'],
+            'confirm' => ['sometimes', 'boolean'],
         ]);
 
         $total = bcadd($validated['total_amount'], '0', 2);
@@ -78,23 +79,32 @@ class ReservationController extends Controller
             return response()->json(['success' => false, 'message' => 'Reservation total must be positive.'], 422);
         }
 
-        $result = DB::transaction(function () use ($id, $total) {
+        $confirmed = $request->boolean('confirm');
+
+        $result = DB::transaction(function () use ($id, $total, $confirmed) {
             $reservation = Reservation::whereKey($id)->lockForUpdate()->firstOrFail();
 
             // Approved receipts recorded before a total was agreed carry no
-            // amount (there was nothing to measure them against). Give them
-            // their value now, so a late total still reconciles against what
-            // the office has already accepted.
+            // amount (there was nothing to measure them against). Their value
+            // is only a suggestion until the admin confirms it: never write it
+            // silently.
             $unvalued = Payment::where('inquiry_id', $reservation->inquiry_id)
                 ->where('status', 'approved')
                 ->whereNull('amount')
                 ->get();
 
+            $preview = [];
             $derived = '0.00';
+
             foreach ($unvalued as $payment) {
                 $amount = PaymentAmount::forType($payment->payment_type, $total);
 
                 if ($amount !== null) {
+                    $preview[] = [
+                        'payment_id' => $payment->payment_id,
+                        'payment_type' => $payment->payment_type,
+                        'amount' => $amount,
+                    ];
                     $derived = bcadd($derived, $amount, 2);
                 }
             }
@@ -103,6 +113,14 @@ class ReservationController extends Controller
 
             if (bccomp($total, $paid, 2) < 0) {
                 return ['blocked' => true];
+            }
+
+            if ($preview !== [] && ! $confirmed) {
+                return [
+                    'needs_confirmation' => true,
+                    'affected_count' => count($preview),
+                    'amounts' => $preview,
+                ];
             }
 
             foreach ($unvalued as $payment) {
@@ -120,11 +138,22 @@ class ReservationController extends Controller
             return ['blocked' => false];
         });
 
-        if ($result['blocked']) {
+        if ($result['blocked'] ?? false) {
             return response()->json([
                 'success' => false,
                 'message' => 'Reservation total cannot be less than approved payments.',
             ], 422);
+        }
+
+        if ($result['needs_confirmation'] ?? false) {
+            return response()->json([
+                'success' => false,
+                'needs_confirmation' => true,
+                'affected_count' => $result['affected_count'],
+                'amounts' => $result['amounts'],
+                'message' => $result['affected_count']
+                    . ' approved payment(s) have no recorded amount. Confirm to record them.',
+            ], 409);
         }
 
         return response()->json([

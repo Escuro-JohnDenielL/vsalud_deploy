@@ -226,18 +226,45 @@ function viewReservation(id) {
                 const formData = new FormData(reservationTotalForm);
                 const message = document.getElementById("reservationTotalMessage");
                 const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
+                const totalAmount = formData.get("total_amount");
 
-                try {
-                    const response = await fetch(`/admin/reservations/${Number(data.id)}/total`, {
+                const send = (confirm) =>
+                    fetch(`/admin/reservations/${Number(data.id)}/total`, {
                         method: "PATCH",
                         headers: {
                             Accept: "application/json",
                             "Content-Type": "application/json",
                             ...(csrf && { "X-CSRF-TOKEN": csrf }),
                         },
-                        body: JSON.stringify({ total_amount: formData.get("total_amount") }),
+                        body: JSON.stringify({ total_amount: totalAmount, confirm }),
                     });
-                    const result = await response.json();
+
+                try {
+                    let response = await send(false);
+                    let result = await response.json();
+
+                    // Approved receipts from before a total existed have no
+                    // amount. The server returns the suggested amounts and
+                    // writes nothing until the admin confirms.
+                    if (result.needs_confirmation) {
+                        const lines = (result.amounts || [])
+                            .map((entry) => `#${entry.payment_id} (${entry.payment_type}): ₱${entry.amount}`)
+                            .join("\n");
+                        const accepted = window.confirm(
+                            `${result.affected_count} approved payment(s) have no recorded amount:\n\n` +
+                                `${lines}\n\nRecord these amounts and save the total?`
+                        );
+
+                        if (!accepted) {
+                            message.textContent = "No changes were saved.";
+                            window.showAdminToast("No changes were saved.", "warning");
+                            return;
+                        }
+
+                        response = await send(true);
+                        result = await response.json();
+                    }
+
                     if (!response.ok || !result.success) {
                         throw new Error(result.message || "Could not save reservation total.");
                     }

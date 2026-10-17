@@ -473,6 +473,16 @@ it('reconciles an approved payment when the total is set afterwards', function (
 
     journeyActingAsAdmin($admin)
         ->patchJson("/admin/reservations/{$reservation->reserve_id}/total", ['total_amount' => '30000'])
+        ->assertStatus(409)
+        ->assertJson(['needs_confirmation' => true, 'affected_count' => 1]);
+
+    expect($payment->fresh()->amount)->toBeNull();
+
+    journeyActingAsAdmin($admin)
+        ->patchJson("/admin/reservations/{$reservation->reserve_id}/total", [
+            'total_amount' => '30000',
+            'confirm' => true,
+        ])
         ->assertOk()->assertJson(['success' => true]);
 
     expect($payment->fresh()->amount)->toBe('30000.00');
