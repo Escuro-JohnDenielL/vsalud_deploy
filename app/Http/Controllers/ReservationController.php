@@ -244,7 +244,12 @@ class ReservationController extends Controller
                 return redirect()->route('admin.home', ['toast' => 'success', 'toast_msg' => 'Inquiry successfully created!']);
             }
 
-            return redirect()->route('patron.home', ['toast' => 'success', 'toast_msg' => 'Inquiry successfully created!']);
+            // The tracking code is required to track, pay or cancel, so the
+            // patron sees it once on the next page. It is flashed for a single
+            // view and never placed in the URL.
+            $request->session()->flash('tracking_code', $inquiry->tracking_code);
+
+            return redirect()->route('patron.home');
         } catch (\Throwable $th) {
             Log::error('Failed to insert inquiry: ' . $th->getMessage());
 

@@ -74,8 +74,85 @@
             </div>
         </div>
     </div>
+
+    {{-- Tracking code confirmation — shown once after a patron submits an inquiry.
+         The code comes from a one-view session flash, never from the URL. --}}
+    @if (session('tracking_code'))
+        <div id="trackingCodeModal" class="privacy-overlay" role="dialog" aria-modal="true"
+            aria-labelledby="trackingCodeTitle" style="z-index:2100;">
+            <div class="privacy-modal">
+                <h2 id="trackingCodeTitle">Inquiry submitted</h2>
+                <p class="privacy-modal__subtitle">Your reservation request has been received.</p>
+
+                <div style="margin:20px 0; padding:16px; border:1px dashed #006b53; border-radius:10px; background:#f5f2df; text-align:center;">
+                    <span id="trackingCodeValue"
+                        style="font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:22px; font-weight:700; letter-spacing:2px; color:#004c3a; user-select:all;">{{ session('tracking_code') }}</span>
+                </div>
+
+                <p class="privacy-modal__body-text" style="text-align:center;">
+                    Save this code. You need it with your email to track, pay or cancel.
+                </p>
+
+                <div class="privacy-modal__actions">
+                    <button type="button" class="privacy-btn" id="copyTrackingCode">Copy code</button>
+                    <button type="button" class="privacy-btn" id="closeTrackingCode"
+                        style="background:#ffffff; color:#006b53; border:1px solid #006b53;">Done</button>
+                </div>
+            </div>
+        </div>
+    @endif
 @endsection
 
 @push('scripts')
     @vite('resources/js/patron/home.js')
+    @if (session('tracking_code'))
+        <script>
+            (function () {
+                var modal = document.getElementById('trackingCodeModal');
+                var copyBtn = document.getElementById('copyTrackingCode');
+                var doneBtn = document.getElementById('closeTrackingCode');
+                var value = document.getElementById('trackingCodeValue');
+                if (!modal || !copyBtn || !doneBtn || !value) return;
+
+                function close() {
+                    modal.style.display = 'none';
+                }
+
+                function copyCode() {
+                    var code = value.textContent.trim();
+                    var done = function () {
+                        copyBtn.textContent = 'Copied';
+                        setTimeout(function () { copyBtn.textContent = 'Copy code'; }, 2000);
+                    };
+
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(code).then(done).catch(fallback);
+                    } else {
+                        fallback();
+                    }
+
+                    function fallback() {
+                        var field = document.createElement('textarea');
+                        field.value = code;
+                        field.setAttribute('readonly', '');
+                        field.style.position = 'fixed';
+                        field.style.opacity = '0';
+                        document.body.appendChild(field);
+                        field.select();
+                        try { document.execCommand('copy'); done(); } catch (e) {}
+                        document.body.removeChild(field);
+                    }
+                }
+
+                copyBtn.addEventListener('click', copyCode);
+                doneBtn.addEventListener('click', close);
+                modal.addEventListener('click', function (event) {
+                    if (event.target === modal) close();
+                });
+                document.addEventListener('keydown', function (event) {
+                    if (event.key === 'Escape' && modal.style.display !== 'none') close();
+                });
+            })();
+        </script>
+    @endif
 @endpush
