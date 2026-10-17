@@ -79,7 +79,7 @@
          The code comes from a one-view session flash, never from the URL. --}}
     @if (session('tracking_code'))
         <div id="trackingCodeModal" class="privacy-overlay" role="dialog" aria-modal="true"
-            aria-labelledby="trackingCodeTitle" style="z-index:2100;">
+            aria-labelledby="trackingCodeTitle" style="z-index:2100; display:flex;">
             <div class="privacy-modal">
                 <h2 id="trackingCodeTitle">Inquiry submitted</h2>
                 <p class="privacy-modal__subtitle">Your reservation request has been received.</p>

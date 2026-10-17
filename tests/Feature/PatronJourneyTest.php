@@ -319,6 +319,35 @@ it('leaves the reservation active when an admin denies the request', function ()
 |--------------------------------------------------------------------------
 */
 
+it('shows the tracking code once after an inquiry is submitted', function () {
+    Mail::fake();
+    journeyReservationForm();
+
+    $this->post('/mreserve', [
+        'name' => 'Ana Cruz',
+        'email' => 'ana@example.test',
+        'contact_number' => '09179876543',
+        'date' => now()->addDays(45)->format('Y-m-d'),
+        'time' => '10:00 AM',
+        'period' => 'AM',
+        'venue' => 'Villa I',
+        'event_type' => 'Wedding Package',
+        'theme_motif' => 'Floral',
+        'message' => 'Please call me',
+    ])->assertRedirect(route('patron.home'));
+
+    $inquiry = Inquiry::firstOrFail();
+
+    $this->get(route('patron.home'))
+        ->assertOk()
+        ->assertSee('trackingCodeModal', false)
+        ->assertSee('display:flex', false)
+        ->assertSee($inquiry->tracking_code);
+
+    // The flash lasts one view, so a later visit no longer shows the code.
+    $this->get(route('patron.home'))->assertDontSee($inquiry->tracking_code);
+});
+
 it('runs a full inquiry to completed reservation journey', function () {
     Mail::fake();
     Storage::fake('public');
