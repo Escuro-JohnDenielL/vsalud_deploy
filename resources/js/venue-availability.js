@@ -36,8 +36,10 @@ function formatLongDate(dateKey) {
  * @param {HTMLSelectElement} [options.periodSelect] Period field (#field_period)
  * @param {HTMLSelectElement} [options.venueSelect]  Venue field (#field_venue)
  * @param {HTMLElement} options.panel            Panel container
+ * @param {() => object|null} [options.getSnapshot] Latest /calendar/availability
+ *        payload. When present, the panel renders from it without a request.
  */
-export function initVenueAvailability({ dateInput, periodSelect, venueSelect, panel }) {
+export function initVenueAvailability({ dateInput, periodSelect, venueSelect, panel, getSnapshot }) {
     if (!dateInput || !panel) return;
 
     const endpoint = panel.dataset.endpoint;
@@ -230,6 +232,17 @@ export function initVenueAvailability({ dateInput, periodSelect, venueSelect, pa
             return;
         }
 
+        const snapshotEntry = entryFromSnapshot();
+
+        if (snapshotEntry) {
+            // Cancel any in-flight fallback request; the payload is newer.
+            requestId++;
+            panel.hidden = false;
+            setMessage("");
+            applyEntry(snapshotEntry);
+            return;
+        }
+
         const id = ++requestId;
         panel.hidden = false;
         setMessage("");
@@ -283,12 +296,62 @@ export function initVenueAvailability({ dateInput, periodSelect, venueSelect, pa
         timer = window.setTimeout(load, 150);
     }
 
+    // The calendar payload already carries the per-day state, the venue list
+    // and the AM/PM occupancy flags, so the panel can render synchronously
+    // when a date or the period changes.
+    function entryFromSnapshot() {
+        const snapshot = getSnapshot?.();
+        if (!snapshot) return null;
+
+        const date = (dateInput.value || "").trim();
+        const day = snapshot.dates?.[date];
+        const names = Array.isArray(snapshot.venues) ? snapshot.venues : [];
+        const occupancy = day?.occupancy || {};
+
+        return {
+            closed: Boolean(day?.closed),
+            count: Number(day?.booked) || 0,
+            dailyCap: Number(snapshot.daily_cap) || 0,
+            venues: names.map((name) => {
+                const periods = occupancy[normalise(name)] || {};
+                return {
+                    name,
+                    occupied: {
+                        AM: Boolean(periods.AM),
+                        PM: Boolean(periods.PM),
+                    },
+                };
+            }),
+        };
+    }
+
+    function applyEntry(entry) {
+        venues = entry.venues;
+        closed = entry.closed;
+        eventCount = entry.count;
+        dailyCap = entry.dailyCap;
+
+        setStatus("");
+        setRetryVisible(false);
+        syncVenueSelect();
+        render();
+    }
+
     dateInput.addEventListener("change", schedule);
     dateInput.addEventListener("input", schedule);
     periodSelect?.addEventListener("change", schedule);
     retryBtn?.addEventListener("click", load);
 
     load();
+
+    return {
+        // Re-render after the calendar payload arrives (or is refreshed).
+        refresh() {
+            if ((dateInput.value || "").trim()) {
+                load();
+            }
+        },
+    };
 }
 
 export default initVenueAvailability;

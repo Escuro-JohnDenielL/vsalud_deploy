@@ -3,12 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Availability;
-use App\Services\AvailabilityService;
 use App\Services\VenueOccupancyService;
 use App\Support\AvailabilityScale;
-use App\Support\VenueCatalog;
 use App\Support\VenueSlot;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 /**
  * Public venue availability for the "Venues on <date>" panel.
@@ -31,40 +30,30 @@ class VenueAvailabilityController extends Controller
 
         $date = (string) $validated['date'];
 
-        $occupancy = app(VenueOccupancyService::class)->occupiedPeriodsByVenue($date);
-        $eventCount = app(AvailabilityService::class)->activeEventCount($date);
-        $dailyCap = AvailabilityScale::cap();
+        $occupancyService = app(VenueOccupancyService::class);
+
+        // One bookings query feeds both the event count and the venue flags.
+        $reservations = $occupancyService->activeForDate($date);
 
         // A date the admin marked Closed blocks every venue.
         $closed = Availability::query()
             ->where('date', '>=', $date)
-            ->where('date', '<', \Illuminate\Support\Carbon::parse($date)->addDay()->toDateString())
+            ->where('date', '<', Carbon::parse($date)->addDay()->toDateString())
             ->where('is_override', true)
             ->where('status', 'Closed')
             ->exists();
 
-        $venues = [];
-
-        foreach (VenueCatalog::names() as $name) {
-            $key = VenueSlot::normalize($name);
-
-            $venues[] = [
-                'name' => $name,
-                'occupied' => [
-                    'AM' => (bool) ($occupancy[$key]['AM'] ?? false),
-                    'PM' => (bool) ($occupancy[$key]['PM'] ?? false),
-                ],
-            ];
-        }
+        $panel = $occupancyService->panelPayload($closed, $reservations);
+        $dailyCap = AvailabilityScale::cap();
 
         return response()->json([
             'date' => $date,
-            'closed' => $closed,
-            'count' => $eventCount,
+            'closed' => $panel['closed'],
+            'count' => $panel['count'],
             'daily_cap' => $dailyCap,
-            'at_capacity' => $eventCount >= $dailyCap,
+            'at_capacity' => $panel['count'] >= $dailyCap,
             'period' => VenueSlot::normalizePeriod($validated['period'] ?? null),
-            'venues' => $venues,
+            'venues' => $panel['venues'],
         ]);
     }
 }

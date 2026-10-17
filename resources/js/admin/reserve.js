@@ -162,6 +162,9 @@ document.addEventListener("DOMContentLoaded", function () {
     let selectedDate = null;
     let dateStatuses = {};
 
+    // Latest /calendar/availability payload, used by the venue panel.
+    let availabilitySnapshot = null;
+
     // Availability states: only the colour class lives here. Every word (the
     // state labels, the cue words) and the daily cap come from the server, so
     // config/availability.php stays the single source of truth.
@@ -200,8 +203,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function renderCalendar() {
         if (!calendar || !monthYear) return;
-
-        console.log(dateStatuses);
 
         const month = currentDate.getMonth();
         const year = currentDate.getFullYear();
@@ -494,12 +495,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // "Venues on <date>" panel below the calendar. Refreshes with the date and
-    // the period, and keeps occupied venues out of the Venue dropdown.
-    initVenueAvailability({
+    // the period, and keeps occupied venues out of the Venue dropdown. It
+    // renders from the calendar payload when that has loaded; otherwise it
+    // falls back to the venue-availability endpoint.
+    const venuePanel = initVenueAvailability({
         dateInput: document.getElementById("field_date"),
         periodSelect,
         venueSelect: document.getElementById("field_venue"),
         panel: document.getElementById("venueAvailability"),
+        getSnapshot: () => availabilitySnapshot,
     });
 
     // Load availability data from backend
@@ -522,6 +526,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     dateStatuses[date] = entry;
                 });
 
+                availabilitySnapshot = data;
+                venuePanel?.refresh();
                 renderCalendar();
             })
             .catch((error) => {

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Availability;
 use App\Models\Reservation;
 use App\Support\AvailabilityScale;
+use App\Support\VenueCatalog;
 use Illuminate\Support\Carbon;
 
 /**
@@ -99,16 +100,15 @@ class AvailabilityService
      */
     public function calendarPayload(): array
     {
-        // Two queries in total. The previous version ran stateFor() for every
-        // date in the calendar, i.e. two extra queries per booked date, on an
-        // endpoint that is fetched on every Make Reservation page load.
-        $bookedByDate = Reservation::query()
+        // One query for every active booking, grouped in PHP, so the same rows
+        // feed both the per-day state and the per-venue flags that the
+        // "Venues on <date>" panel needs. With this payload the panel renders
+        // without a second request when the date or period changes.
+        $bookingsByDate = Reservation::query()
             ->where('status', 'active')
             ->whereNotNull('date')
-            ->select('date')
-            ->selectRaw('COUNT(*) as total')
-            ->groupBy('date')
-            ->pluck('total', 'date');
+            ->get(['reserve_id', 'date', 'venue', 'time', 'form_data'])
+            ->groupBy(fn (Reservation $reservation) => Carbon::parse($reservation->date)->format('Y-m-d'));
 
         $overrides = Availability::query()
             ->where('is_override', true)
@@ -116,23 +116,30 @@ class AvailabilityService
             ->get()
             ->keyBy(fn (Availability $override) => $override->date->format('Y-m-d'));
 
+        $occupancy = app(VenueOccupancyService::class);
         $states = [];
 
         foreach ($overrides as $date => $override) {
+            $reservations = $bookingsByDate->get($date, collect());
+
             $states[$date] = [
                 'state' => (string) $override->status,
-                'booked' => (int) ($bookedByDate[$date] ?? 0),
+                'booked' => $reservations->count(),
+                'closed' => (string) $override->status === 'Closed',
+                'occupancy' => $occupancy->occupancyFor($reservations),
             ];
         }
 
-        foreach ($bookedByDate as $date => $booked) {
+        foreach ($bookingsByDate as $date => $reservations) {
             if (isset($states[$date])) {
                 continue;
             }
 
             $states[$date] = [
-                'state' => AvailabilityScale::stateFor((int) $booked),
-                'booked' => (int) $booked,
+                'state' => AvailabilityScale::stateFor($reservations->count()),
+                'booked' => $reservations->count(),
+                'closed' => false,
+                'occupancy' => $occupancy->occupancyFor($reservations),
             ];
         }
 
@@ -142,6 +149,7 @@ class AvailabilityService
             'daily_cap' => $this->cap(),
             'labels' => AvailabilityScale::labels(),
             'cue_words' => AvailabilityScale::cueWords(),
+            'venues' => VenueCatalog::names(),
             'dates' => $states,
         ];
     }

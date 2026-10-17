@@ -40,6 +40,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const dateStatuses = {};
 
+    // Latest /calendar/availability payload. The venue panel reads it so a
+    // date or period change renders without another request.
+    let availabilitySnapshot = null;
+
     // Availability states: only the colour class lives here. Every word (the
     // state labels, the cue words) and the daily cap come from the server, so
     // config/availability.php stays the single source of truth.
@@ -101,12 +105,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // "Venues on <date>" panel below the calendar. Refreshes with the date and
-    // the period, and keeps occupied venues out of the Venue dropdown.
-    initVenueAvailability({
+    // the period, and keeps occupied venues out of the Venue dropdown. It
+    // renders from the calendar payload when that has loaded; otherwise it
+    // falls back to the venue-availability endpoint.
+    const venuePanel = initVenueAvailability({
         dateInput,
         periodSelect,
         venueSelect,
         panel: document.getElementById("venueAvailability"),
+        getSnapshot: () => availabilitySnapshot,
     });
 
     // Agreement Modal Logic
@@ -369,6 +376,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 Object.entries(data?.dates || {}).forEach(([date, entry]) => {
                     dateStatuses[date] = entry;
                 });
+
+                availabilitySnapshot = data;
+                venuePanel?.refresh();
                 renderCalendar();
             })
             .catch((err) => {

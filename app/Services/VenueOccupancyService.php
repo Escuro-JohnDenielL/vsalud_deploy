@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Reservation;
+use App\Support\VenueCatalog;
 use App\Support\VenueSlot;
 use Closure;
 use Illuminate\Contracts\Cache\LockTimeoutException;
@@ -99,9 +100,24 @@ class VenueOccupancyService
      */
     public function occupiedPeriodsByVenue(?string $date): array
     {
+        return $this->occupancyFor($this->activeForDate($date));
+    }
+
+    /**
+     * Occupied periods per normalised venue name for a set of reservations.
+     *
+     * Takes the rows as an argument so callers that already fetched the day's
+     * reservations (the calendar prefetch, the panel endpoint) do not query
+     * again.
+     *
+     * @param  Collection<int, Reservation>  $reservations
+     * @return array<string, array<string, bool>>
+     */
+    public function occupancyFor(Collection $reservations): array
+    {
         $map = [];
 
-        foreach ($this->activeForDate($date) as $reservation) {
+        foreach ($reservations as $reservation) {
             $key = VenueSlot::normalize($reservation->venue);
 
             if ($key === '') {
@@ -119,6 +135,38 @@ class VenueOccupancyService
         }
 
         return $map;
+    }
+
+    /**
+     * The complete "Venues on &lt;date&gt;" payload: every bookable venue with its
+     * AM/PM occupied flags.
+     *
+     * @param  Collection<int, Reservation>  $reservations  Active reservations for the date.
+     * @return array{closed: bool, count: int, venues: array<int, array{name: string, occupied: array{AM: bool, PM: bool}}>}
+     */
+    public function panelPayload(bool $closed, Collection $reservations): array
+    {
+        $occupancy = $this->occupancyFor($reservations);
+
+        $venues = [];
+
+        foreach (VenueCatalog::names() as $name) {
+            $key = VenueSlot::normalize($name);
+
+            $venues[] = [
+                'name' => $name,
+                'occupied' => [
+                    'AM' => (bool) ($occupancy[$key]['AM'] ?? false),
+                    'PM' => (bool) ($occupancy[$key]['PM'] ?? false),
+                ],
+            ];
+        }
+
+        return [
+            'closed' => $closed,
+            'count' => $reservations->count(),
+            'venues' => $venues,
+        ];
     }
 
     /**
