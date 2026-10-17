@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Availability;
 use App\Models\Reservation;
 use App\Support\AvailabilityScale;
+use Illuminate\Support\Carbon;
 
 /**
  * Calendar availability for a date, counted in events.
@@ -38,7 +39,8 @@ class AvailabilityService
 
         return (int) Reservation::query()
             ->where('status', 'active')
-            ->whereDate('date', $date)
+            ->where('date', '>=', $date)
+            ->where('date', '<', Carbon::parse($date)->addDay()->toDateString())
             ->count();
     }
 
@@ -60,7 +62,8 @@ class AvailabilityService
         }
 
         return Availability::query()
-            ->whereDate('date', $date)
+            ->where('date', '>=', $date)
+            ->where('date', '<', Carbon::parse($date)->addDay()->toDateString())
             ->where('is_override', true)
             ->where('status', 'Closed')
             ->exists();
@@ -76,7 +79,8 @@ class AvailabilityService
         $booked = $this->activeEventCount($date);
 
         $override = Availability::query()
-            ->whereDate('date', $date)
+            ->where('date', '>=', $date)
+            ->where('date', '<', Carbon::parse($date)->addDay()->toDateString())
             ->where('is_override', true)
             ->first();
 
@@ -95,35 +99,44 @@ class AvailabilityService
      */
     public function calendarPayload(): array
     {
-        $dates = [];
-
-        foreach (Availability::query()->where('is_override', true)->get() as $override) {
-            if ($override->date !== null) {
-                $dates[$override->date->format('Y-m-d')] = null;
-            }
-        }
-
-        $reservationDates = Reservation::query()
+        // Two queries in total. The previous version ran stateFor() for every
+        // date in the calendar, i.e. two extra queries per booked date, on an
+        // endpoint that is fetched on every Make Reservation page load.
+        $bookedByDate = Reservation::query()
             ->where('status', 'active')
             ->whereNotNull('date')
-            ->distinct()
-            ->pluck('date');
+            ->select('date')
+            ->selectRaw('COUNT(*) as total')
+            ->groupBy('date')
+            ->pluck('total', 'date');
 
-        foreach ($reservationDates as $date) {
-            $key = $date instanceof \DateTimeInterface ? $date->format('Y-m-d') : (string) $date;
-
-            if ($key !== '') {
-                $dates[$key] = null;
-            }
-        }
-
-        ksort($dates);
+        $overrides = Availability::query()
+            ->where('is_override', true)
+            ->whereNotNull('date')
+            ->get()
+            ->keyBy(fn (Availability $override) => $override->date->format('Y-m-d'));
 
         $states = [];
 
-        foreach (array_keys($dates) as $date) {
-            $states[$date] = $this->stateFor($date);
+        foreach ($overrides as $date => $override) {
+            $states[$date] = [
+                'state' => (string) $override->status,
+                'booked' => (int) ($bookedByDate[$date] ?? 0),
+            ];
         }
+
+        foreach ($bookedByDate as $date => $booked) {
+            if (isset($states[$date])) {
+                continue;
+            }
+
+            $states[$date] = [
+                'state' => AvailabilityScale::stateFor((int) $booked),
+                'booked' => (int) $booked,
+            ];
+        }
+
+        ksort($states);
 
         return [
             'daily_cap' => $this->cap(),

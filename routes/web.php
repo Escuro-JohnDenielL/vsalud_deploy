@@ -248,13 +248,17 @@ Route::post('/submit-payment', [PaymentController::class, 'store'])
 Route::get('/calendar/availability', function () {
     // The scheduler that would run the waitlist expiry every minute is not
     // started by the deploy scripts, so the calendars also drive the sweep.
-    // WaitlistService holds it to one run every five minutes. A cache or mail
-    // failure must never take the calendar down with it.
-    try {
-        app(\App\Services\WaitlistService::class)->sweepExpiredNotifications();
-    } catch (\Throwable $e) {
-        Log::warning('Waitlist: calendar sweep skipped: ' . $e->getMessage());
-    }
+    // WaitlistService holds it to one run every five minutes. Run it AFTER the
+    // response is flushed: the sweep can send mail over HTTPS, and the calendar
+    // must not wait for it. A cache or mail failure must never take the
+    // calendar down with it.
+    defer(function () {
+        try {
+            app(\App\Services\WaitlistService::class)->sweepExpiredNotifications();
+        } catch (\Throwable $e) {
+            Log::warning('Waitlist: calendar sweep skipped: ' . $e->getMessage());
+        }
+    });
 
     return response()->json(app(\App\Services\AvailabilityService::class)->calendarPayload());
 });

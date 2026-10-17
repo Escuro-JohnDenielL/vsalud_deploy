@@ -6,6 +6,7 @@ use App\Models\Reservation;
 use App\Support\VenueSlot;
 use Closure;
 use Illuminate\Contracts\Cache\LockTimeoutException;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -56,7 +57,8 @@ class VenueOccupancyService
 
         return (int) Reservation::query()
             ->where('status', 'active')
-            ->whereDate('date', $date)
+            ->where('date', '>=', $date)
+            ->where('date', '<', Carbon::parse($date)->addDay()->toDateString())
             ->count();
     }
 
@@ -84,7 +86,8 @@ class VenueOccupancyService
 
         return Reservation::query()
             ->where('status', 'active')
-            ->whereDate('date', $date)
+            ->where('date', '>=', $date)
+            ->where('date', '<', Carbon::parse($date)->addDay()->toDateString())
             ->get(['reserve_id', 'venue', 'time', 'form_data']);
     }
 

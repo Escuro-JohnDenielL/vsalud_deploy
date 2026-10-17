@@ -4,7 +4,11 @@ vendor
 
 # Environment & config files
 .env
-.env.*  # optional: covers .env.local, .env.testing, etc.
+.env.*
+
+# Vite dev-server marker: must never ship (it points @vite at localhost:5173)
+public/hot
+public/build/hot
 
 # Logs & debug output
 *.log

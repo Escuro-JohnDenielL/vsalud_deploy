@@ -37,7 +37,8 @@ class VenueAvailabilityController extends Controller
 
         // A date the admin marked Closed blocks every venue.
         $closed = Availability::query()
-            ->whereDate('date', $date)
+            ->where('date', '>=', $date)
+            ->where('date', '<', \Illuminate\Support\Carbon::parse($date)->addDay()->toDateString())
             ->where('is_override', true)
             ->where('status', 'Closed')
             ->exists();
