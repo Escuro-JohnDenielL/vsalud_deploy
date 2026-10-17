@@ -37,8 +37,8 @@ class AvailabilityController extends Controller
      * the date stops following the computed slot count until the override is
      * removed. Two overrides are refused outright:
      *
-     *   - Available on a date that already holds at least the daily cap worth of
-     *     active bookings, because advertising it as free would be untrue;
+     *   - Available on a date that already holds at least the daily cap worth
+     *     of active events, because advertising it as free would be untrue;
      *   - Closed on a date that still holds reservations, unless the admin sends
      *     a reason and confirms the exact number of reservations being kept.
      *
@@ -56,7 +56,7 @@ class AvailabilityController extends Controller
 
         $date = $validated['date'];
         $booked = app(AvailabilityService::class)->activeEventCount($date);
-        $cap = AvailabilityScale::availableMax();
+        $cap = AvailabilityScale::cap();
 
         $decision = AvailabilityOverrideRule::evaluate(
             $validated['status'],

@@ -35,7 +35,7 @@ final class AvailabilityOverrideRule
      *
      * @param  string  $status             one of AvailabilityScale::STATES
      * @param  int     $activeReservations active (non-cancelled) bookings on the date
-     * @param  int     $dailyCap           the configured "still Available" ceiling
+     * @param  int     $dailyCap           the configured per-day event cap
      * @param  string|null  $reason        text the admin typed for the audit log
      * @param  int|null $confirmedCount    the count the admin confirmed on screen
      * @return string one of the constants above
