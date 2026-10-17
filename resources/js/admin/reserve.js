@@ -16,14 +16,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Check required fields
             if (!name || !email || !contact || !message || !date || !period) {
-                alert("Please fill in all required fields.");
+                window.vsNotify("Please fill in all required fields.", "warning");
                 event.preventDefault();
                 return;
             }
 
             // Check if time slot is required and selected
             if (period && !timeSlot) {
-                alert("Please select a time slot.");
+                window.vsNotify("Please select a time slot.", "warning");
                 event.preventDefault();
                 return;
             }
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (
                 !venueSelect?.value
             ) {
-                alert("Please specify the venue.");
+                window.vsNotify("Please specify the venue.", "warning");
                 event.preventDefault();
                 return;
             }
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (
                 !eventTypeSelect?.value
             ) {
-                alert("Please specify the event type.");
+                window.vsNotify("Please specify the event type.", "warning");
                 event.preventDefault();
                 return;
             }
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (
                 !themeMotifSelect?.value
             ) {
-                alert("Please specify the theme/motif.");
+                window.vsNotify("Please specify the theme/motif.", "warning");
                 event.preventDefault();
                 return;
             }
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // Email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                alert("Please enter a valid email address.");
+                window.vsNotify("Please enter a valid email address.", "warning");
                 event.preventDefault();
                 return;
             }
@@ -642,21 +642,9 @@ document.addEventListener("DOMContentLoaded", function () {
     //      UTILITY FUNCTIONS      //
     // ---------------------------- //
 
-    // Show notification function
+    // Show notification function (shared confirmation modal)
     function showNotification(message, type = "info") {
-        const notification = document.createElement("div");
-        notification.className = `notification notification-${type}`;
-        notification.textContent = message;
-
-        // Add to body
-        document.body.appendChild(notification);
-
-        // Auto-remove after 3 seconds
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 3000);
+        window.vsNotify(message, type);
     }
 
     // Date formatting utility

@@ -13,7 +13,6 @@
 html { scroll-behavior: smooth; scroll-padding-top: 72px; }
 body.landing-page { margin: 0; overflow-x: hidden; background: var(--landing-beige); color: var(--landing-deep); font-family: var(--landing-sans); }
 .landing-page *, .landing-page *::before, .landing-page *::after { box-sizing: border-box; }
-.landing-toast { position: fixed; top: 18px; right: 18px; z-index: 20; max-width: min(420px, calc(100% - 36px)); padding: 12px 18px; border-radius: 10px; background: var(--landing-deep); color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
 /* min() caps the floor at the viewport height so short laptops (~640-720px tall)
    never push the portal card below the fold. See the short-viewport block below. */
 .landing-hero { position: relative; min-height: min(720px, 100svh); height: 100svh; max-height: 1050px; overflow: hidden; isolation: isolate; background: var(--landing-deep); }

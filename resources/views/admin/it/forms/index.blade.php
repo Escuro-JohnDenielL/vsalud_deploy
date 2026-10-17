@@ -22,10 +22,6 @@
     <h1 class="fb-title">Form Builder</h1>
     <p class="fb-subtitle">Manage dynamic form structures. Changes only affect published forms.</p>
 
-    @if (session('success'))
-         <div class="alert alert-success it-success-alert">{{ session('success') }}</div>
-    @endif
-
     @forelse ($forms as $form)
         <div class="form-card">
             <div class="info">

@@ -44,10 +44,6 @@
         </x-slot:action>
     </x-ui.page-header>
 
-    @if (session('success'))
-        <div class="alert alert-success" id="page-success">{{ session('success') }}</div>
-    @endif
-
     <div class="vs-stat-grid">
         <x-ui.stat-card :value="$activeAdminCount" label="Active Admins" dot="success" />
         <x-ui.stat-card :value="$deletedAdminCount" label="Deactivated" dot="danger" />
@@ -147,9 +143,6 @@
             <form method="POST" action="{{ route('admin.it.store') }}">
                 @csrf
                 <div class="modal-body">
-                    @if (session('error'))
-                        <div class="alert alert-error it-alert">{{ session('error') }}</div>
-                    @endif
                     @if ($errors->any())
                         <div class="alert alert-error it-alert">{{ $errors->first() }}</div>
                     @endif

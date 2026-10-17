@@ -22,10 +22,6 @@
             <x-ui.stat-card :value="$stats['total']" label="Total Incidents" stat="total" />
         </div>
 
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-
         {{-- Table --}}
         <div class="vs-table-frame">
             <div class="vs-table-wrap" role="region" tabindex="0" aria-label="Incident logs table">

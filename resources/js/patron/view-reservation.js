@@ -92,7 +92,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const code = document.getElementById("reservation_code").value.trim();
         const email = document.getElementById("email").value.trim();
 
-        if (!code || !email) return alert("Please enter both your reservation code and email address.");
+        if (!code || !email) {
+            window.vsNotify("Please enter both your reservation code and email address.", "warning");
+            return;
+        }
 
         const csrf = document.querySelector('input[name="_token"]').value;
 
@@ -109,13 +112,14 @@ document.addEventListener("DOMContentLoaded", () => {
             // Rate limited by throttle:20,1 on the lookup route. The throttle
             // response is not JSON, so check the status before parsing.
             if (response.status === 429) {
-                return alert("Too many attempts. Please wait a minute and try again.");
+                window.vsNotify("Too many attempts. Please wait a minute and try again.", "warning");
+                return;
             }
 
             const data = await response.json();
 
             if (!data.success) {
-                alert(data.message || "Reservation not found.");
+                window.vsNotify(data.message || "Reservation not found.", "error");
                 return;
             }
 
@@ -205,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
             window.vsModalPrepareOpen(modal);
             modal.style.display = "block";
         } catch (err) {
-            alert("An error occurred while fetching the reservation.");
+            window.vsNotify("An error occurred while fetching the reservation.", "error");
             console.error(err);
         }
     });

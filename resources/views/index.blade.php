@@ -9,12 +9,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
-    @vite(['resources/css/index.css', 'resources/js/index.js'])
+    @vite(['resources/css/index.css', 'resources/css/notify.css', 'resources/js/index.js', 'resources/js/notify.js'])
 </head>
 <body class="landing-page">
-    @if (session('success'))
-        <div class="landing-toast" role="status">{{ session('success') }}</div>
-    @endif
     <nav class="landing-nav" aria-label="Main navigation">
         <a href="#home" class="landing-logo" aria-label="Villa Salud home">
             <span class="landing-logo__mark">VS</span>
@@ -103,5 +100,7 @@
     <x-site-footer class="landing-footer">
         <a class="landing-admin-link" href="{{ route('admin.login') }}">Admin</a>
     </x-site-footer>
+
+    <x-ui.notification-modal />
 </body>
 </html>

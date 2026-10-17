@@ -141,7 +141,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     sendReplyBtn.addEventListener("click", () => {
         const message = replyMessage.value.trim();
-        if (!message) return alert("Please enter a message.");
+        if (!message) {
+            window.vsNotify("Please enter a message.", "warning");
+            return;
+        }
 
         fetch("/admin/send-reply", {
             method: "POST",
@@ -312,7 +315,10 @@ function saveStatusToDatabase(selectElement, newStatus) {
 
         if (data && data.mail_sent === false) {
             window.showAdminToast('Status saved, but the email to the patron failed to send.', 'warning');
+            return;
         }
+
+        window.showAdminToast('Inquiry status updated.', 'success');
     };
 
     const reject = (data) => {

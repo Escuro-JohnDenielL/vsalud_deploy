@@ -8,12 +8,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-    @vite('resources/css/login.css')
+    @vite(['resources/css/login.css', 'resources/css/notify.css', 'resources/js/notify.js'])
 </head>
 
 <body class="vs-layout--admin-auth">
-    <a href="{{ url('/') }}" class="site-home-btn" title="Back to Homepage" aria-label="Back to homepage">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <a href="{{ url('/') }}" class="auth-home-link" title="Back to the Villa Salud website">
+        <svg class="auth-home-link__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span class="auth-home-link__label">Back to website</span>
     </a>
 
     <x-auth-card>
@@ -21,10 +22,6 @@
             <h1 class="auth-title">Admin sign in</h1>
             <p class="auth-sub">Sign in to manage reservations and events.</p>
         </div>
-
-        @if (session('success'))
-            <div class="auth-alert auth-alert--success" role="status" aria-live="polite">{{ session('success') }}</div>
-        @endif
 
         @if ($errors->any())
             <div class="auth-alert auth-alert--error" role="alert" aria-live="assertive">{{ $errors->first() }}</div>
@@ -61,6 +58,8 @@
 
         <p class="auth-note">Account registration is managed by IT administration.</p>
     </x-auth-card>
+
+    <x-ui.notification-modal />
 
     @vite('resources/js/login.js')
 

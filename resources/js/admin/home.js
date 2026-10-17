@@ -113,29 +113,10 @@ document.addEventListener("DOMContentLoaded", function () {
         successModal.show();
     }
 
-    // Reuse the shared admin toast (#toast, rendered by layouts/admin.blade.php)
-    // so failures match the notification pattern used on the other admin pages
-    // instead of a native browser alert().
-    let toastHideTimer = null;
+    // Notifications are confirmation modals (resources/js/notify.js) so every
+    // success/error message can be acknowledged on desktop and mobile.
     function showToast(message, type = "error") {
-        const toast = document.getElementById("toast");
-        if (!toast) {
-            console.error(message);
-            return;
-        }
-
-        clearTimeout(toastHideTimer);
-        toast.textContent = message;
-        toast.className = `toast-notification toast-${type}`;
-        // Force a reflow so the entrance transition restarts on repeated toasts
-        void toast.offsetWidth;
-        toast.classList.add("show");
-
-        toastHideTimer = setTimeout(() => {
-            toast.classList.remove("show");
-            toast.textContent = "";
-            toast.className = "toast-notification";
-        }, 4500);
+        window.vsNotify(message, type);
     }
 
     // Laravel replies to a 422 with { message, errors: { field: [msg] } }.

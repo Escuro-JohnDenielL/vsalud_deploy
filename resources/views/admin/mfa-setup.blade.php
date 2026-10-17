@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    @vite('resources/css/app.css')
+    @vite(['resources/css/app.css', 'resources/css/notify.css', 'resources/js/notify.js'])
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -162,12 +162,6 @@
             </div>
         @endif
 
-        @if(session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-
         <div class="alert alert-info">
             <strong>Why is this required?</strong> As part of our security policy, all administrators must set up two-factor authentication before accessing the system.
         </div>
@@ -310,5 +304,7 @@
             }
         });
     </script>
+
+    <x-ui.notification-modal />
 </body>
 </html>

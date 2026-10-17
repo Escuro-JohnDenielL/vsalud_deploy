@@ -3,21 +3,9 @@
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-    // --- Toast helper ---
-    let toastHideTimer = null;
+    // --- Notification helper (shared confirmation modal) ---
     function showToast(message, type) {
-        const toast = document.getElementById('toast');
-        if (!toast) return;
-        clearTimeout(toastHideTimer);
-        toast.textContent = message;
-        toast.className = 'toast-notification toast-' + type;
-        // Force reflow so the entrance animation restarts on repeated toasts
-        void toast.offsetWidth;
-        toast.classList.add('show');
-        toastHideTimer = setTimeout(() => {
-            toast.classList.remove('show');
-            toast.textContent = '';
-        }, 4000);
+        window.vsNotify(message, type || 'info');
     }
 
     // --- Modal helpers ---

@@ -1,0 +1,196 @@
+/* === Shared notification confirmation modal ===
+   Used everywhere a success/error/warning message is shown. It intentionally
+   replaces the old bottom-right toast, which auto-hid and had
+   pointer-events: none (so it could not be tapped or confirmed on any device). */
+
+.vs-notify {
+  position: fixed;
+  inset: 0;
+  z-index: 10060;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.vs-notify[hidden] {
+  display: none;
+}
+
+.vs-notify__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 23, 18, 0.56);
+  animation: vsNotifyFadeIn 0.16s ease-out;
+}
+
+.vs-notify__dialog {
+  position: relative;
+  width: min(440px, 100%);
+  max-height: min(85vh, 640px);
+  overflow-y: auto;
+  padding: 30px 24px 20px;
+  border: 1px solid #e5ebe7;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.24);
+  text-align: center;
+  font-family: 'Inter', var(--vs-font-ui, system-ui, -apple-system, 'Segoe UI', sans-serif);
+  animation: vsNotifyPopIn 0.18s ease-out;
+}
+
+.vs-notify__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.vs-notify__title {
+  margin: 0 0 8px;
+  color: #1f2937;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.vs-notify__message {
+  margin: 0;
+  color: #475569;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.vs-notify__actions {
+  margin-top: 22px;
+}
+
+.vs-notify__ok {
+  min-width: 132px;
+  min-height: 44px;
+  padding: 11px 28px;
+  border: 0;
+  border-radius: 10px;
+  background: #0d7a3e;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.vs-notify__ok:hover {
+  background: #0a5e2f;
+}
+
+.vs-notify__ok:active {
+  transform: translateY(1px);
+}
+
+.vs-notify__ok:focus-visible {
+  outline: 3px solid rgba(13, 122, 62, 0.35);
+  outline-offset: 2px;
+}
+
+/* Type accents */
+.vs-notify--success .vs-notify__icon {
+  background: #e8f5e9;
+  color: #0d7a3e;
+}
+
+.vs-notify--error .vs-notify__icon {
+  background: #fdecec;
+  color: #c62828;
+}
+
+.vs-notify--warning .vs-notify__icon {
+  background: #fff4d6;
+  color: #a16207;
+}
+
+.vs-notify--info .vs-notify__icon {
+  background: #e8f1fd;
+  color: #1d4ed8;
+}
+
+.vs-notify--success .vs-notify__ok {
+  background: #0d7a3e;
+}
+
+.vs-notify--error .vs-notify__ok {
+  background: #b91c1c;
+}
+
+.vs-notify--error .vs-notify__ok:hover {
+  background: #991b1b;
+}
+
+.vs-notify--warning .vs-notify__ok {
+  background: #a16207;
+}
+
+.vs-notify--warning .vs-notify__ok:hover {
+  background: #854d0e;
+}
+
+.vs-notify--info .vs-notify__ok {
+  background: #1d4ed8;
+}
+
+.vs-notify--info .vs-notify__ok:hover {
+  background: #1e40af;
+}
+
+@keyframes vsNotifyFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes vsNotifyPopIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .vs-notify {
+    padding: 12px;
+  }
+
+  .vs-notify__dialog {
+    width: 100%;
+    max-height: calc(100vh - 24px);
+    padding: 26px 18px 16px;
+    border-radius: 14px;
+  }
+
+  .vs-notify__ok {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-notify__backdrop,
+  .vs-notify__dialog {
+    animation: none;
+  }
+
+  .vs-notify__ok {
+    transition: none;
+  }
+}

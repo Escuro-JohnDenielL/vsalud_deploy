@@ -30,11 +30,6 @@
         <div class="alert alert-error" role="alert">Too many messages were sent from this connection. Please wait a while, then try again.</div>
         @endif
 
-        {{-- Success message --}}
-        @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-
         {{-- Full Name --}}
         <label for="name">Full Name</label>
         <input type="text" id="name" name="name" placeholder="John Doe" value="{{ old('name') }}" required>

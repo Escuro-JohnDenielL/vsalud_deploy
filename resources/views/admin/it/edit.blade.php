@@ -31,13 +31,6 @@
         <a href="{{ route('admin.it.dashboard') }}" class="back-link">&larr; Back to IT Dashboard</a>
         <h1>Edit Admin Account</h1>
 
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-        @if (session('error'))
-            <div class="alert alert-error">{{ session('error') }}</div>
-        @endif
-
         <form method="POST" action="{{ route('admin.it.update', $admin->admin_id) }}">
             @csrf
 

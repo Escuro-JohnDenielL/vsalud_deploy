@@ -68,26 +68,7 @@ class DashboardManager {
     }
 
     showNotification(message, type = "info") {
-        // Create notification element
-        const notification = document.createElement("div");
-        notification.className = `notification ${type}`;
-        notification.innerHTML = `
-            <i class='bx bx-${
-                type === "success"
-                    ? "check-circle"
-                    : type === "error"
-                    ? "error-circle"
-                    : "info-circle"
-            }'></i>
-            <span>${message}</span>
-        `;
-
-        document.body.appendChild(notification);
-
-        // Auto remove after 3 seconds
-        setTimeout(() => {
-            notification.remove();
-        }, 3000);
+        window.vsNotify(message, type);
     }
 
     currentPeriod() {

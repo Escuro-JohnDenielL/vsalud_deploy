@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/css/notify.css', 'resources/js/app.js', 'resources/js/notify.js'])
     @stack('styles')
 </head>
 
@@ -113,30 +113,8 @@
         </button>
     </nav>
 
-    {{-- Toast notification --}}
-    <div id="toast" class="toast-notification" role="status" aria-live="polite"></div>
-    <script>
-    (function() {
-        var t = document.getElementById('toast');
-        if (!t) return;
-        var type = new URLSearchParams(window.location.search).get('toast');
-        var msg = new URLSearchParams(window.location.search).get('toast_msg');
-        if (msg && type) {
-            t.textContent = decodeURIComponent(msg);
-            t.className = 'toast-notification toast-' + type + ' show';
-            setTimeout(function(){
-                t.classList.remove('show');
-                t.textContent = '';
-                t.className = 'toast-notification';
-            }, 4500);
-            // Clean URL without reloading
-            if (history.replaceState) {
-                var url = window.location.protocol + '//' + window.location.host + window.location.pathname;
-                history.replaceState(null, '', url);
-            }
-        }
-    })();
-    </script>
+    {{-- Site-wide notification confirmation modal (handles ?toast= redirects and flash messages) --}}
+    <x-ui.notification-modal />
 
     <main class="patron-content">
         @yield('content')

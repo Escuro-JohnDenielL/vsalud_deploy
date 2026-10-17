@@ -24,6 +24,76 @@
   box-sizing: border-box;
 }
 
+/* --- Back to website (quiet, top-left) ---
+   Deliberately NOT a filled green circle: a white surface with a 1px dark-green
+   border keeps the icon/text legible (6.51:1) and reads as a secondary control.
+   The selector outranks `.vs-layout--admin-auth a` (0,1,1) so the link color
+   can no longer be overridden by the shared anchor rule. */
+.vs-layout--admin-auth .auth-home-link {
+  position: fixed;
+  top: var(--vs-space-5);
+  left: var(--vs-space-5);
+  z-index: 40;
+  display: inline-flex;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 var(--vs-space-4) 0 var(--vs-space-3);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-pill);
+  background: var(--vs-color-surface);
+  color: var(--vs-color-dark-green);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-secondary-min);
+  font-weight: var(--vs-weight-semibold);
+  letter-spacing: 0.01em;
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: background-color var(--vs-duration-fast) ease,
+    box-shadow var(--vs-duration-fast) ease;
+}
+
+.vs-layout--admin-auth .auth-home-link:hover {
+  background: var(--vs-color-surface-pale-green);
+  color: var(--vs-color-dark-green);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.vs-layout--admin-auth .auth-home-link:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.vs-layout--admin-auth .auth-home-link__icon {
+  flex: none;
+  display: block;
+}
+
+/* Narrow screens: collapse to a 34px icon-only control, but keep the text
+   available to screen readers instead of removing it. */
+@media (max-width: 600px) {
+  .vs-layout--admin-auth .auth-home-link {
+    top: var(--vs-space-3);
+    left: var(--vs-space-3);
+    width: 34px;
+    padding: 0;
+  }
+
+  .vs-layout--admin-auth .auth-home-link__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
 /* --- Shell + card --- */
 .vs-layout--admin-auth .auth-shell {
   width: 100%;

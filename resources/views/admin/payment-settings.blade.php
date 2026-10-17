@@ -7,12 +7,6 @@
     <h1 style="font-family: var(--font-heading); font-size: 28px; color: var(--color-primary); margin: 0 0 6px;">Payment Settings</h1>
     <p style="color: #6b7280; margin: 0 0 24px;">Manage payment instructions shown to patrons. Changes take effect immediately.</p>
 
-    @if (session('success'))
-        <div style="background:#e8f5e9;border:1px solid #c8e6c9;color:#2e7d32;padding:12px 16px;border-radius:12px;margin-bottom:20px;">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <form method="POST" enctype="multipart/form-data" action="{{ route('admin.payment-settings.update') }}" style="background:#fff;border-radius:16px;border:1px solid #e5e7eb;box-shadow:0 1px 3px rgba(0,0,0,0.05);padding:28px;">
         @csrf
 

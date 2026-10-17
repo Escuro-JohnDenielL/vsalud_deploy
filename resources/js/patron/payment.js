@@ -265,13 +265,18 @@ document.addEventListener("DOMContentLoaded", function () {
                             (span) =>
                                 (span.textContent = fullNameInput.value.trim())
                         );
+                        window.vsNotify(
+                            "Your receipt has been submitted and is under review.",
+                            "success"
+                        );
                     } else {
-                        alert(
-                            data.message || "Failed to submit payment."
+                        window.vsNotify(
+                            data.message || "Failed to submit payment.",
+                            "error"
                         );
                     }
                 })
-                .catch(() => alert("An error occurred."))
+                .catch(() => window.vsNotify("An error occurred.", "error"))
                 .finally(() => {
                     loader.style.display = "none";
                     submitReceiptBtn.disabled = false;

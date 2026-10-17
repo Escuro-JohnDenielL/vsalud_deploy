@@ -199,12 +199,9 @@
     border-radius: 3px;
 }
 
-/* NOTE: the toast (#toast / .toast-notification) is styled globally in
-   resources/css/index.css. Do NOT re-declare its positioning here: this file
-   is loaded after app.css, so a partial override (bottom/right only, without
-   resetting top/left) made the toast stretch from top:20px to bottom:24px and
-   from left:50% to right:24px — a giant overlay across the right half of the
-   screen. Anything extra the toast needs belongs in index.css. */
+/* NOTE: notifications now use the shared confirmation modal
+   (resources/css/notify.css and resources/js/notify.js). Do NOT re-declare a
+   local toast style here; incident-logs.js calls window.vsNotify(). */
 
 /* Highlight for the row created/updated in place by incident-logs.js */
 .incident-table tbody tr.row-flash {

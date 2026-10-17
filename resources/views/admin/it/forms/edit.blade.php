@@ -80,9 +80,7 @@
     .add-opt-btn { background: none; border: 1px dashed #d1d5db; border-radius: 6px; padding: 6px 12px; font-size: 12px; color: #6b7280; cursor: pointer; width: 100%; margin-top: 4px; }
     .add-opt-btn:hover { background: #f9fafb; }
 
-    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--color-primary); color: #fff; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,0.15); z-index: 2000; opacity: 0; transform: translateY(20px); transition: all 0.3s; pointer-events: none; }
-    .toast.show { opacity: 1; transform: translateY(0); }
-    .toast.error { background: #dc3545; }
+    /* Notifications are handled by the shared confirmation modal (resources/css/notify.css). */
 </style>
 @endpush
 
@@ -255,8 +253,6 @@
         </form>
     </div>
 </div>
-
-<div class="toast" id="toast"></div>
 
 @push('scripts')
 <script>
@@ -486,13 +482,9 @@
         });
     }
 
-    // ===== Toast =====
+    // ===== Notification =====
     function showToast(msg, isError = false) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.className = 'toast' + (isError ? ' error' : '');
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
+        window.vsNotify(msg, isError ? 'error' : 'success');
     }
 </script>
 @endpush

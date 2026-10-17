@@ -10,10 +10,6 @@
     <div class="vs-page vs-admin-feedback">
         <x-ui.page-header title="Customer Feedback" subtitle="View and manage feedback submitted by patrons." />
 
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-
         <div class="vs-toolbar">
             <div class="vs-field">
                 <label class="vs-label" for="feedbackSearch">Search</label>
