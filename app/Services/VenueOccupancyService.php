@@ -332,7 +332,9 @@ class VenueOccupancyService
 
         try {
             $result = DB::transaction(function () use ($venue, $dateKey, $period, $cap, $create, $ignoreInquiryId) {
-                if ($this->activeCountForDate($dateKey) >= $cap) {
+                // The inquiry being confirmed already counts as one booking, so
+                // it is excluded before comparing the day to the cap.
+                if (app(\App\Services\AvailabilityService::class)->bookedEventCount($dateKey, $ignoreInquiryId) >= $cap) {
                     return self::RESULT_CAPACITY;
                 }
 

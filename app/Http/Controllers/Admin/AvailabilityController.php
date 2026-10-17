@@ -38,9 +38,9 @@ class AvailabilityController extends Controller
      * removed. Two overrides are refused outright:
      *
      *   - Available on a date that already holds at least the daily cap worth
-     *     of active events, because advertising it as free would be untrue;
-     *   - Closed on a date that still holds reservations, unless the admin sends
-     *     a reason and confirms the exact number of reservations being kept.
+     *     of bookings, because advertising it as free would be untrue;
+     *   - Closed on a date that still holds bookings, unless the admin sends
+     *     a reason and confirms the exact number of bookings being kept.
      *
      * Closing never cancels anything: it only stops new bookings on that date.
      */
@@ -55,7 +55,8 @@ class AvailabilityController extends Controller
         ]);
 
         $date = $validated['date'];
-        $booked = app(AvailabilityService::class)->activeEventCount($date);
+        // Open inquiries already hold a slot, so they count as bookings here.
+        $booked = app(AvailabilityService::class)->bookedEventCount($date);
         $cap = AvailabilityScale::cap();
 
         $decision = AvailabilityOverrideRule::evaluate(
@@ -105,7 +106,7 @@ class AvailabilityController extends Controller
                 'route_name' => 'admin.availability.toggle',
                 'http_method' => $request->method(),
                 'subject' => 'Closed ' . $dateLabel,
-                'description' => "Admin {$name} closed {$dateLabel} with {$booked} active reservation(s), which were not cancelled. Reason: "
+                'description' => "Admin {$name} closed {$dateLabel} with {$booked} booking(s), which were not cancelled. Reason: "
                     . trim((string) $validated['reason']),
                 'ip_address' => $request->ip(),
                 'user_agent' => substr((string) $request->userAgent(), 0, 500),

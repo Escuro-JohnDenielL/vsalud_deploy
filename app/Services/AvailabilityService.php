@@ -19,9 +19,10 @@ use Illuminate\Support\Carbon;
  * booking frees its place. A booking that was confirmed appears in both tables
  * and is counted once.
  *
- * Venue occupancy (AM/PM flags) counts active reservations plus open inquiries,
- * so a submitted request holds its venue + period until it is cancelled. The
- * daily cap is still derived from ACTIVE reservations only.
+ * Venue occupancy (AM/PM flags) and the daily cap use the same booking count:
+ * active reservations plus open inquiries, counted once per booking, so a
+ * submitted request holds its venue + period and consumes a day slot until it
+ * is cancelled.
  *
  * An admin override on the date always wins over the computed count.
  */
@@ -53,11 +54,41 @@ class AvailabilityService
     }
 
     /**
-     * True when the date has reached the daily cap.
+     * Bookings on a date: active reservations plus open inquiries, counted once
+     * per booking.
+     *
+     * A confirmed booking has both an inquiry and a reservation, so the larger
+     * of the two counts is the number of bookings, never the sum. Pass an
+     * inquiry id to exclude the row currently being confirmed.
      */
-    public function isAtCapacity(?string $date): bool
+    public function bookedEventCount(?string $date, ?int $ignoreInquiryId = null): int
     {
-        return $this->activeEventCount($date) >= $this->cap();
+        if (blank($date)) {
+            return 0;
+        }
+
+        $reservations = $this->activeEventCount($date);
+
+        $inquiries = (int) Inquiry::query()
+            ->where('date', '>=', $date)
+            ->where('date', '<', Carbon::parse($date)->addDay()->toDateString())
+            ->where(function ($query) {
+                $query->where('status', '!=', 'Cancelled')
+                    ->orWhereHas('reservation', fn ($reservation) => $reservation->where('status', 'active'));
+            })
+            ->when($ignoreInquiryId !== null, fn ($query) => $query->where('inquiry_id', '!=', $ignoreInquiryId))
+            ->count();
+
+        return max($reservations, $inquiries);
+    }
+
+    /**
+     * True when the date has reached the daily cap. Pending inquiries count,
+     * because they already hold a venue slot.
+     */
+    public function isAtCapacity(?string $date, ?int $ignoreInquiryId = null): bool
+    {
+        return $this->bookedEventCount($date, $ignoreInquiryId) >= $this->cap();
     }
 
     /**
@@ -84,7 +115,7 @@ class AvailabilityService
      */
     public function stateFor(string $date): array
     {
-        $booked = $this->activeEventCount($date);
+        $booked = $this->bookedEventCount($date);
 
         $override = Availability::query()
             ->where('date', '>=', $date)
