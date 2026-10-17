@@ -3,13 +3,13 @@
 namespace App\Support;
 
 /**
- * The per-day event scale: how many bookings a date holds, and which of the
- * five calendar states that count falls into.
+ * The per-day event scale: how many confirmed reservations a date holds, and
+ * which of the five calendar states that count falls into.
  *
- * A booking is an active reservation or an open (Pending / In Progress)
- * inquiry. A confirmed booking appears in both tables and counts once. Every
- * number and every word here comes from config/availability.php, so the
- * legend, the day cue and the accessible labels cannot drift apart.
+ * The count is one event per ACTIVE reservation on the date, across every
+ * venue and period. Pending inquiries never count. Every number and every word
+ * here comes from config/availability.php, so the legend, the day cue and the
+ * accessible labels cannot drift apart.
  *
  * Pure and static on purpose: no database access, so the cutoffs can be unit
  * tested directly.

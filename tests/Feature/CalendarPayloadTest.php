@@ -7,10 +7,9 @@ use App\Services\AvailabilityService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /*
-| The calendar payload feeds both Make Reservation calendars. A booking is
-| submitted as an inquiry first, so a freshly submitted reservation has to show
-| up before an admin confirms it. Confirming adds a reservation row for the same
-| booking, which must not be counted twice.
+| The calendar payload feeds both Make Reservation calendars. Only confirmed
+| bookings (active reservations) appear; a pending inquiry does not. Confirming
+| adds a reservation row for the same booking, which must not be counted twice.
 */
 
 uses(RefreshDatabase::class);
@@ -44,17 +43,11 @@ function calendarPayloadDates(): array
     return app(AvailabilityService::class)->calendarPayload()['dates'];
 }
 
-it('shows a freshly submitted booking before it is confirmed', function () {
+it('does not show an unconfirmed inquiry on the calendar', function () {
     $date = now()->addDays(30)->format('Y-m-d');
     calendarPatronInquiry($date);
 
-    $dates = calendarPayloadDates();
-
-    expect($dates)->toHaveKey($date)
-        ->and($dates[$date]['booked'])->toBe(1)
-        ->and($dates[$date]['state'])->toBe('Available')
-        // An open inquiry holds its venue + period until it is cancelled.
-        ->and($dates[$date]['occupancy'])->toBe(['villa i' => ['AM' => true]]);
+    expect(calendarPayloadDates())->not->toHaveKey($date);
 });
 
 it('counts a confirmed booking once, not twice', function () {

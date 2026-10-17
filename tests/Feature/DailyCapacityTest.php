@@ -1,14 +1,12 @@
 <?php
 
 use App\Models\Admin;
-use App\Models\Availability;
 use App\Models\Form;
 use App\Models\FormField;
 use App\Models\Inquiry;
 use App\Models\Patron;
 use App\Models\Reservation;
 use App\Services\WaitlistService;
-use App\Support\AvailabilityOverrideRule;
 use App\Support\BookingRules;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
@@ -191,7 +189,7 @@ it('rejects inquiry creation when the date is at the cap', function () {
     expect(Inquiry::whereDate('date', $date)->count())->toBe(4);
 });
 
-it('counts open inquiries when enforcing the daily cap', function () {
+it('does not count open inquiries toward the daily cap', function () {
     Mail::fake();
     capacityReservationForm();
 
@@ -201,9 +199,9 @@ it('counts open inquiries when enforcing the daily cap', function () {
         capacityInquiry($date, $venue, '10:00 AM');
     }
 
-    // The fifth event asks for a different venue and period, so only the day
-    // cap can refuse it.
-    $this->postJson('/mreserve', [
+    // The fifth inquiry is a request, not a confirmed booking, so the cap of
+    // four confirmed events does not refuse it.
+    $this->post('/mreserve', [
         'name' => 'Fifth Patron',
         'email' => 'fifth-patron@example.test',
         'contact_number' => '09179876543',
@@ -214,29 +212,9 @@ it('counts open inquiries when enforcing the daily cap', function () {
         'event_type' => 'Wedding Package',
         'theme_motif' => 'Floral',
         'message' => 'Please call me',
-    ], ['Accept' => 'application/json'])
-        ->assertStatus(409)
-        ->assertJson(['success' => false, 'message' => BookingRules::FULL_MESSAGE]);
+    ])->assertRedirect();
 
-    expect(Inquiry::whereDate('date', $date)->count())->toBe(4);
-});
-
-it('refuses to mark a date Available when open inquiries fill it', function () {
-    $date = now()->addDays(26)->format('Y-m-d');
-
-    foreach (['Villa I', 'Villa II', 'Elizabeth Hall', 'Private Pool'] as $venue) {
-        capacityInquiry($date, $venue, '10:00 AM');
-    }
-
-    capacityActingAsAdmin(capacityAdmin())
-        ->postJson(route('admin.availability.toggle'), [
-            'date' => $date,
-            'status' => 'Available',
-        ])
-        ->assertStatus(422)
-        ->assertJson(['code' => AvailabilityOverrideRule::AVAILABLE_AT_CAP]);
-
-    expect(Availability::whereDate('date', $date)->where('status', 'Available')->exists())->toBeFalse();
+    expect(Inquiry::whereDate('date', $date)->count())->toBe(5);
 });
 
 it('treats a capped date as full for the waitlist gate', function () {

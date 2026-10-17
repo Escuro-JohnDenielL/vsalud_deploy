@@ -160,8 +160,7 @@ class InquiryController extends Controller
                 function () use ($inquiry, &$mailSent) {
                     $reservation = $this->createReservationRow($inquiry);
                     $mailSent = $this->sendConfirmationEmail($inquiry, $reservation);
-                },
-                $inquiry->inquiry_id
+                }
             );
         } catch (\Throwable $e) {
             Log::error('Failed to create reservation: ' . $e->getMessage());

@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         showStatusNotice(
-            `This date holds ${count} booking(s). Closing it stops new bookings only. Add a reason and confirm to continue.`
+            `This date holds ${count} active reservation(s). Closing it stops new bookings only. Add a reason and confirm to continue.`
         );
     }
 
@@ -367,7 +367,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (reason.length < MIN_CLOSE_REASON_LENGTH) {
                     showStatusNotice(
-                        `A reason of at least ${MIN_CLOSE_REASON_LENGTH} characters is required to close a date that still has bookings.`
+                        `A reason of at least ${MIN_CLOSE_REASON_LENGTH} characters is required to close a date that still has reservations.`
                     );
                     statusReasonInput?.focus();
                     return;

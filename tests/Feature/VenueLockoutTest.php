@@ -3,14 +3,15 @@
 use App\Models\Form;
 use App\Models\FormField;
 use App\Models\Inquiry;
+use App\Models\Reservation;
 use App\Support\VenueSlot;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 
 /*
-| An open inquiry holds its venue + date + period. A second patron cannot
-| submit the same slot, the venue panel reports the period as occupied, and
-| cancelling the inquiry releases it.
+| Only an admin-confirmed booking (an active reservation) occupies a venue
+| slot. Pending inquiries may repeat the same slot; a new inquiry is refused
+| only once a reservation exists for that venue + date + period.
 */
 
 uses(RefreshDatabase::class);
@@ -47,11 +48,11 @@ function lockoutReservationForm(): void
     }
 }
 
-function lockoutBooking(string $date, string $period = 'AM'): array
+function lockoutBooking(string $date, string $period = 'AM', string $email = 'slot@example.test'): array
 {
     return [
         'name' => 'Slot Patron',
-        'email' => 'slot-' . uniqid() . '@example.test',
+        'email' => $email,
         'contact_number' => '09179876543',
         'date' => $date,
         'time' => $period === 'AM' ? '10:00 AM' : '4:00 PM',
@@ -63,56 +64,83 @@ function lockoutBooking(string $date, string $period = 'AM'): array
     ];
 }
 
-it('blocks a second open inquiry for the same venue, date and period', function () {
+it('allows duplicate inquiries while none is confirmed', function () {
     Mail::fake();
     lockoutReservationForm();
 
     $date = now()->addDays(5)->format('Y-m-d');
 
-    $this->post('/mreserve', lockoutBooking($date, 'AM'))->assertRedirect();
+    $this->post('/mreserve', lockoutBooking($date, 'AM', 'first@example.test'))->assertRedirect();
+    $this->post('/mreserve', lockoutBooking($date, 'AM', 'second@example.test'))->assertRedirect();
 
-    $this->postJson('/mreserve', lockoutBooking($date, 'AM'), ['Accept' => 'application/json'])
+    expect(Inquiry::whereDate('date', $date)->count())->toBe(2);
+});
+
+it('reports venues as available while only inquiries exist', function () {
+    lockoutReservationForm();
+
+    $date = now()->addDays(6)->format('Y-m-d');
+    $this->post('/mreserve', lockoutBooking($date))->assertRedirect();
+
+    $response = $this->getJson('/venue-availability?date=' . $date)->assertOk();
+    $villa = collect($response->json('venues'))->firstWhere('name', 'Villa I');
+
+    expect($villa['occupied'])->toBe(['AM' => false, 'PM' => false]);
+});
+
+it('refuses a new inquiry once the slot has a confirmed reservation', function () {
+    Mail::fake();
+    lockoutReservationForm();
+
+    $date = now()->addDays(7)->format('Y-m-d');
+    $this->post('/mreserve', lockoutBooking($date, 'AM', 'confirmed@example.test'))->assertRedirect();
+
+    $inquiry = Inquiry::whereDate('date', $date)->firstOrFail();
+
+    Reservation::create([
+        'inquiry_id' => $inquiry->inquiry_id,
+        'patron_id' => $inquiry->patron_id,
+        'date' => $inquiry->date,
+        'time' => $inquiry->time,
+        'venue' => $inquiry->venue,
+        'event_type' => $inquiry->event_type,
+        'theme_motif' => $inquiry->theme_motif,
+        'message' => $inquiry->message,
+        'status' => 'active',
+        'form_data' => $inquiry->form_data,
+    ]);
+
+    $this->postJson('/mreserve', lockoutBooking($date, 'AM', 'late@example.test'), ['Accept' => 'application/json'])
         ->assertStatus(409)
         ->assertJson(['success' => false, 'message' => VenueSlot::CONFLICT_MESSAGE]);
 
     expect(Inquiry::whereDate('date', $date)->count())->toBe(1);
 });
 
-it('allows the other period on the same date', function () {
-    Mail::fake();
-    lockoutReservationForm();
-
-    $date = now()->addDays(6)->format('Y-m-d');
-
-    $this->post('/mreserve', lockoutBooking($date, 'AM'))->assertRedirect();
-    $this->post('/mreserve', lockoutBooking($date, 'PM'))->assertRedirect();
-
-    expect(Inquiry::whereDate('date', $date)->count())->toBe(2);
-});
-
-it('reports an open inquiry as occupying the venue for its period only', function () {
-    lockoutReservationForm();
-
-    $date = now()->addDays(7)->format('Y-m-d');
-    $this->post('/mreserve', lockoutBooking($date, 'AM'))->assertRedirect();
-
-    $response = $this->getJson('/venue-availability?date=' . $date)->assertOk();
-
-    $villa = collect($response->json('venues'))->firstWhere('name', 'Villa I');
-
-    expect($villa['occupied'])->toBe(['AM' => true, 'PM' => false]);
-});
-
-it('releases the slot when the inquiry is cancelled', function () {
+it('releases the slot when the confirmed reservation is cancelled', function () {
     Mail::fake();
     lockoutReservationForm();
 
     $date = now()->addDays(8)->format('Y-m-d');
-    $this->post('/mreserve', lockoutBooking($date, 'AM'))->assertRedirect();
+    $this->post('/mreserve', lockoutBooking($date, 'AM', 'cancel@example.test'))->assertRedirect();
 
-    Inquiry::whereDate('date', $date)->firstOrFail()->update(['status' => 'Cancelled']);
+    $inquiry = Inquiry::whereDate('date', $date)->firstOrFail();
+    $reservation = Reservation::create([
+        'inquiry_id' => $inquiry->inquiry_id,
+        'patron_id' => $inquiry->patron_id,
+        'date' => $inquiry->date,
+        'time' => $inquiry->time,
+        'venue' => $inquiry->venue,
+        'event_type' => $inquiry->event_type,
+        'theme_motif' => $inquiry->theme_motif,
+        'message' => $inquiry->message,
+        'status' => 'active',
+        'form_data' => $inquiry->form_data,
+    ]);
 
-    $this->post('/mreserve', lockoutBooking($date, 'AM'))->assertRedirect();
+    $reservation->update(['status' => 'cancelled']);
+
+    $this->post('/mreserve', lockoutBooking($date, 'AM', 'replacement@example.test'))->assertRedirect();
 
     expect(Inquiry::whereDate('date', $date)->count())->toBe(2);
 });

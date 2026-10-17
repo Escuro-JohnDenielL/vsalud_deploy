@@ -156,9 +156,9 @@ class WaitlistService
     /**
      * Check if a date is currently full (per the availability system).
      *
-     * A date is full when it holds at least the configured daily cap of
-     * bookings (active reservations plus open inquiries), or when an admin
-     * marked it Closed.
+     * A date is full when it holds at least the configured daily cap of active
+     * reservations, or when an admin marked it Closed. Pending inquiries do not
+     * count toward the cap.
      *
      * @param string $date Y-m-d format
      * @return bool

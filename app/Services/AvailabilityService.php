@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Availability;
-use App\Models\Inquiry;
 use App\Models\Reservation;
 use App\Support\AvailabilityScale;
 use App\Support\VenueCatalog;
@@ -12,17 +11,13 @@ use Illuminate\Support\Carbon;
 /**
  * Calendar availability for a date, counted in events.
  *
- * A day's count is the number of BOOKINGS on that date, across all venues and
- * periods. A booking is either a confirmed (active) reservation or an open
- * inquiry that is still waiting for confirmation, so a reservation submitted
- * from the booking form is visible on the calendar immediately. A cancelled
- * booking frees its place. A booking that was confirmed appears in both tables
- * and is counted once.
+ * A day's count is the number of CONFIRMED bookings on that date, across all
+ * venues and periods. Only an active reservation counts; a pending inquiry is
+ * a request and does not count until an admin confirms it. A cancelled
+ * reservation frees its place.
  *
- * Venue occupancy (AM/PM flags) and the daily cap use the same booking count:
- * active reservations plus open inquiries, counted once per booking, so a
- * submitted request holds its venue + period and consumes a day slot until it
- * is cancelled.
+ * Venue occupancy (AM/PM flags) and the daily cap use the same confirmed-only
+ * count.
  *
  * An admin override on the date always wins over the computed count.
  */
@@ -54,41 +49,12 @@ class AvailabilityService
     }
 
     /**
-     * Bookings on a date: active reservations plus open inquiries, counted once
-     * per booking.
-     *
-     * A confirmed booking has both an inquiry and a reservation, so the larger
-     * of the two counts is the number of bookings, never the sum. Pass an
-     * inquiry id to exclude the row currently being confirmed.
+     * True when the date has reached the daily cap. Pending inquiries do not
+     * count; only confirmed reservations do.
      */
-    public function bookedEventCount(?string $date, ?int $ignoreInquiryId = null): int
+    public function isAtCapacity(?string $date): bool
     {
-        if (blank($date)) {
-            return 0;
-        }
-
-        $reservations = $this->activeEventCount($date);
-
-        $inquiries = (int) Inquiry::query()
-            ->where('date', '>=', $date)
-            ->where('date', '<', Carbon::parse($date)->addDay()->toDateString())
-            ->where(function ($query) {
-                $query->where('status', '!=', 'Cancelled')
-                    ->orWhereHas('reservation', fn ($reservation) => $reservation->where('status', 'active'));
-            })
-            ->when($ignoreInquiryId !== null, fn ($query) => $query->where('inquiry_id', '!=', $ignoreInquiryId))
-            ->count();
-
-        return max($reservations, $inquiries);
-    }
-
-    /**
-     * True when the date has reached the daily cap. Pending inquiries count,
-     * because they already hold a venue slot.
-     */
-    public function isAtCapacity(?string $date, ?int $ignoreInquiryId = null): bool
-    {
-        return $this->bookedEventCount($date, $ignoreInquiryId) >= $this->cap();
+        return $this->activeEventCount($date) >= $this->cap();
     }
 
     /**
@@ -115,7 +81,7 @@ class AvailabilityService
      */
     public function stateFor(string $date): array
     {
-        $booked = $this->bookedEventCount($date);
+        $booked = $this->activeEventCount($date);
 
         $override = Availability::query()
             ->where('date', '>=', $date)
@@ -148,29 +114,6 @@ class AvailabilityService
             ->get(['reserve_id', 'date', 'venue', 'time', 'form_data'])
             ->groupBy(fn (Reservation $reservation) => Carbon::parse($reservation->date)->format('Y-m-d'));
 
-        // Every booking starts life as an inquiry. Pending and in-progress
-        // inquiries have no reservation row yet, so they are counted from the
-        // inquiry table; a confirmed booking has both rows and must not count
-        // twice (the two counts are max()ed per date, never added). A cancelled
-        // inquiry only counts if it still has an active reservation.
-        // The same rows feed the per-venue AM/PM flags: an open inquiry holds
-        // its slot even before it is confirmed.
-        $inquiryRows = Inquiry::query()
-            ->whereNotNull('date')
-            ->where(function ($query) {
-                $query->where('status', '!=', 'Cancelled')
-                    ->orWhereHas('reservation', fn ($reservation) => $reservation->where('status', 'active'));
-            })
-            ->get(['inquiry_id', 'date', 'venue', 'time', 'form_data', 'status']);
-
-        $bookingCounts = $inquiryRows
-            ->groupBy(fn (Inquiry $inquiry) => $inquiry->date->format('Y-m-d'))
-            ->map->count();
-
-        $openInquiriesByDate = $inquiryRows
-            ->whereIn('status', VenueOccupancyService::OPEN_INQUIRY_STATUSES)
-            ->groupBy(fn (Inquiry $inquiry) => $inquiry->date->format('Y-m-d'));
-
         $overrides = Availability::query()
             ->where('is_override', true)
             ->whereNotNull('date')
@@ -181,7 +124,6 @@ class AvailabilityService
         $states = [];
 
         $dates = $overrides->keys()
-            ->merge($bookingCounts->keys())
             ->merge($bookingsByDate->keys())
             ->unique();
 
@@ -189,17 +131,13 @@ class AvailabilityService
             $date = (string) $date;
             $override = $overrides->get($date);
             $reservations = $bookingsByDate->get($date, collect());
-            $openInquiries = $openInquiriesByDate->get($date, collect());
-
-            // A booking has one inquiry. A confirmed booking also has a
-            // reservation, so the larger of the two counts is the real number.
-            $booked = max($reservations->count(), (int) ($bookingCounts[$date] ?? 0));
+            $booked = $reservations->count();
 
             $states[$date] = [
                 'state' => $override ? (string) $override->status : AvailabilityScale::stateFor($booked),
                 'booked' => $booked,
                 'closed' => $override ? (string) $override->status === 'Closed' : false,
-                'occupancy' => $occupancy->occupancyFor($reservations->concat($openInquiries)),
+                'occupancy' => $occupancy->occupancyFor($reservations),
             ];
         }
 
