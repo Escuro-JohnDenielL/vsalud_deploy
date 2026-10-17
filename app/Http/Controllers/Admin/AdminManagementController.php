@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 class AdminManagementController extends Controller
 {
@@ -163,7 +166,23 @@ class AdminManagementController extends Controller
             return back()->with('error', 'Super admin accounts cannot be permanently deleted.');
         }
 
-        $admin->forceDelete();
+        try {
+            DB::transaction(function () use ($admin) {
+                // `reservation.admin_id` has a restrictive foreign key, so an admin
+                // who has handled reservations cannot be hard-deleted. Keep the
+                // reservation rows but detach the admin being removed (the column
+                // is nullable and `cancellation_requests.admin_id` already uses
+                // ON DELETE SET NULL for the same reason).
+                Reservation::where('admin_id', $admin->admin_id)
+                    ->update(['admin_id' => null]);
+
+                $admin->forceDelete();
+            });
+        } catch (\Throwable $e) {
+            Log::error('Failed to force-delete admin #' . $admin->admin_id . ': ' . $e->getMessage());
+
+            return back()->with('error', 'This admin account could not be permanently deleted. Please try again later.');
+        }
 
         return back()->with('success', 'Admin account has been permanently deleted.');
     }
