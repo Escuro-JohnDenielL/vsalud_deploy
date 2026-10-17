@@ -138,14 +138,16 @@ class WaitlistService
      */
     public function sweepExpiredNotifications(): int
     {
-        if (! Cache::add(self::EXPIRY_GUARD_KEY, now()->getTimestamp(), self::EXPIRY_GUARD_SECONDS)) {
-            return 0;
-        }
-
         try {
+            // The cache guard is part of the sweep: a cache outage must not
+            // break the page that happens to trigger it.
+            if (! Cache::add(self::EXPIRY_GUARD_KEY, now()->getTimestamp(), self::EXPIRY_GUARD_SECONDS)) {
+                return 0;
+            }
+
             return $this->processExpiredNotifications();
         } catch (\Throwable $e) {
-            Log::error('Waitlist: expiry sweep failed: ' . $e->getMessage());
+            Log::warning('Waitlist: expiry sweep skipped: ' . $e->getMessage());
 
             return 0;
         }

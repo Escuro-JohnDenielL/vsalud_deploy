@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\WaitlistService;
 use App\Support\PatronAudit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class WaitlistController extends Controller
 {
@@ -21,8 +22,13 @@ class WaitlistController extends Controller
     public function join(Request $request)
     {
         // Retire any expired offer for this date before deciding, so a patron
-        // holding a lapsed offer is not told they are already queued.
-        $this->waitlistService->sweepExpiredNotifications();
+        // holding a lapsed offer is not told they are already queued. A sweep
+        // failure (cache or mail) must not stop the join itself.
+        try {
+            $this->waitlistService->sweepExpiredNotifications();
+        } catch (\Throwable $e) {
+            Log::warning('Waitlist: join sweep skipped: ' . $e->getMessage());
+        }
 
         $validated = $request->validate([
             'patron_name'  => 'required|string|max:255',
