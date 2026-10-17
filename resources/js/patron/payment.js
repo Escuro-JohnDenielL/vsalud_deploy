@@ -13,6 +13,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const fullNameInput = document.getElementById("fullName");
     const emailInput = document.getElementById("email");
     const downpaymentTypeSelect = document.getElementById("downpaymentType");
+    const downpaymentPercent =
+        Number.parseInt(
+            downpaymentTypeSelect?.dataset.downpaymentPercent,
+            10
+        ) || 25;
     const paymentMethodSelect = document.getElementById("paymentMethod");
     const reservationCode = document.getElementById("reservation_code");
     const receiptUpload = document.getElementById("receiptUpload");
@@ -124,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Update payment badge
         let badgeText = "FULL PAYMENT";
         if (paymentType === "half") {
-            badgeText = "25% DOWNPAYMENT";
+            badgeText = `${downpaymentPercent}% DOWNPAYMENT`;
         }
         paymentBadge.textContent = badgeText;
 

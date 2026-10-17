@@ -5,15 +5,20 @@ namespace App\Support;
 /**
  * The money rules shared by the payment screens.
  *
- * A receipt says *what kind* of payment it is ("full" or the 25% downpayment),
- * while the reservation holds the agreed total. The amount a receipt is worth
- * is therefore derived from the two together, in one place, so the approval
- * endpoint and the payment log can never disagree.
+ * A receipt says *what kind* of payment it is ("full" or the configured
+ * downpayment), while the reservation holds the agreed total. The amount a
+ * receipt is worth is therefore derived from the two together, in one place,
+ * so the approval endpoint and the payment log can never disagree.
  */
 final class PaymentAmount
 {
-    /** The downpayment percentage the patron form offers. */
-    public const DOWNPAYMENT_PERCENT = 25;
+    /**
+     * The configured downpayment percentage (default 25).
+     */
+    public static function downpaymentPercent(): int
+    {
+        return (int) config('payments.downpayment_percent', 25);
+    }
 
     /**
      * Amount a payment of this type represents against a reservation total.
@@ -35,12 +40,12 @@ final class PaymentAmount
     }
 
     /**
-     * The default 25% downpayment for a total, rounded half-up to centavos.
+     * The configured downpayment for a total, rounded half-up to centavos.
      */
     public static function downpayment(string $total): string
     {
         $totalCentavos = bcmul(bcadd($total, '0', 2), '100', 0);
-        $numerator = bcmul($totalCentavos, (string) self::DOWNPAYMENT_PERCENT, 0);
+        $numerator = bcmul($totalCentavos, (string) self::downpaymentPercent(), 0);
         $downpaymentCentavos = bcdiv($numerator, '100', 0);
 
         if (bccomp(bcmod($numerator, '100'), '50', 0) >= 0) {

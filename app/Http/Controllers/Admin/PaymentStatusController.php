@@ -48,7 +48,7 @@ class PaymentStatusController extends Controller
 
                     if ($reservation && $reservation->total_amount !== null) {
                         // The receipt itself does not carry money: it carries
-                        // the type (full / 25% downpayment). The amount is
+                        // the type (full / configured downpayment). The amount is
                         // derived once, here, from the agreed total.
                         if ($lockedPayment->amount === null) {
                             $lockedPayment->amount = PaymentAmount::forType(

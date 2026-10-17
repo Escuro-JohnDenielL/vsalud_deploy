@@ -224,7 +224,7 @@
                 </div>
                 <div>
                     <dt>Confirmation</dt>
-                    <dd>Downpayment received means approved payments cover the default 25% downpayment. Fully paid means the remaining balance is zero.</dd>
+                    <dd>Downpayment received means approved payments cover the default {{ config('payments.downpayment_percent') }}% downpayment. Fully paid means the remaining balance is zero.</dd>
                 </div>
                 <div>
                     <dt>Pending</dt>

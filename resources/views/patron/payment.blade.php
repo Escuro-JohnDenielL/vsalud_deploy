@@ -35,9 +35,9 @@
 
                 <div class="form-group">
                     <label for="downpaymentType">Payment Type:</label>
-                    <select id="downpaymentType">
+                    <select id="downpaymentType" data-downpayment-percent="{{ config('payments.downpayment_percent') }}">
                         <option value="full">Full Payment</option>
-                        <option value="half">25% Downpayment</option>
+                        <option value="half">{{ config('payments.downpayment_percent') }}% Downpayment</option>
                     </select>
                 </div>
 
