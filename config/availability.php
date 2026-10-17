@@ -7,9 +7,14 @@ return [
     | Per-day event cap
     |--------------------------------------------------------------------------
     |
-    | A day's count is the number of ACTIVE reservations on that date across
-    | all venues and periods. Pending inquiries do not count. A reservation
-    | with an undetermined period still counts as one event.
+    | A day's count is the number of BOOKINGS on that date across all venues
+    | and periods: confirmed (active) reservations plus inquiries that are
+    | still waiting for confirmation. A confirmed booking counts once. A
+    | reservation with an undetermined period still counts as one event.
+    |
+    | The cap itself (enforced when an inquiry is confirmed and when a new
+    | inquiry is submitted) counts ACTIVE reservations only, so a pending
+    | inquiry is visible on the calendar without blocking a venue slot.
     |
     | The five calendar states derive from this cap (cap = 4 by default):
     |

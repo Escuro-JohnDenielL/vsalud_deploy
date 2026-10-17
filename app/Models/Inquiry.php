@@ -88,4 +88,12 @@ class Inquiry extends Model
     {
         return $this->hasMany(\App\Models\Payment::class, 'inquiry_id', 'inquiry_id');
     }
+
+    /**
+     * The reservation created when this inquiry was confirmed.
+     */
+    public function reservation()
+    {
+        return $this->hasOne(\App\Models\Reservation::class, 'inquiry_id', 'inquiry_id');
+    }
 }
