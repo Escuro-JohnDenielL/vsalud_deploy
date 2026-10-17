@@ -25,8 +25,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Audit trail: records every state-changing admin request that does not
         // already log a richer entry of its own. See App\Http\Middleware\LogAdminActivity.
+        // SecurityHeaders adds the baseline nosniff / frame / referrer headers.
         $middleware->web(append: [
             \App\Http\Middleware\LogAdminActivity::class,
+            \App\Http\Middleware\SecurityHeaders::class,
         ]);
 
         $middleware->alias([
