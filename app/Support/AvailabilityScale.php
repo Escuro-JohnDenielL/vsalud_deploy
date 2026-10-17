@@ -3,14 +3,13 @@
 namespace App\Support;
 
 /**
- * The calendar slot scale: how many venue-period slots a date has, and which
- * of the five states a booked count falls into.
+ * The per-day event scale: how many active reservations a date holds, and
+ * which of the five calendar states that count falls into.
  *
- * One slot is one venue for one period (AM or PM), so a date has
- * (venues x periods_per_venue) slots. The venue list is read at runtime, never
- * hardcoded. Every number and every word here comes from
- * config/availability.php so the day cue, the legend and the accessible labels
- * cannot drift apart.
+ * The count is one event per ACTIVE reservation on the date, across every
+ * venue and period. Pending inquiries never count. Every number and every word
+ * here comes from config/availability.php, so the legend, the day cue and the
+ * accessible labels cannot drift apart.
  *
  * Pure and static on purpose: no database access, so the cutoffs can be unit
  * tested directly.
@@ -28,41 +27,42 @@ final class AvailabilityScale
         'Closed' => 'vs-calendar-day--neutral',
     ];
 
-    /** Periods a single venue can be booked for. */
-    public static function periods(): array
+    /**
+     * The configured daily cap (max_events_per_day).
+     */
+    public static function cap(): int
     {
-        return VenueSlot::PERIODS;
+        return max(1, (int) config('availability.max_events_per_day', 4));
     }
 
     /**
-     * Slots for one date, from the number of bookable venues.
+     * Highest count still shown as Available (0 for a cap of 4).
      */
-    public static function slotCount(int $venueCount): int
+    public static function availableMax(?int $cap = null): int
     {
-        return max(0, $venueCount) * self::periodsPerVenue();
+        $cap = max(1, $cap ?? self::cap());
+
+        return max(0, $cap - 3);
     }
 
     /**
-     * Slots for one date using the venue catalog currently in the form field.
+     * First count shown as Limited (the internal state is still "Half").
      */
-    public static function totalSlots(): int
+    public static function limitedAt(?int $cap = null): int
     {
-        return self::slotCount(count(VenueCatalog::names()));
+        $cap = max(1, $cap ?? self::cap());
+
+        return max(self::availableMax($cap) + 1, $cap - 2);
     }
 
-    public static function periodsPerVenue(): int
+    /**
+     * First count shown as Nearly Full.
+     */
+    public static function nearlyAt(?int $cap = null): int
     {
-        return max(1, (int) config('availability.periods_per_venue', 2));
-    }
+        $cap = max(1, $cap ?? self::cap());
 
-    public static function availableMax(): int
-    {
-        return max(0, (int) config('availability.available_max', 2));
-    }
-
-    public static function halfMax(): int
-    {
-        return max(self::availableMax(), (int) config('availability.half_max', 4));
+        return max(self::limitedAt($cap) + 1, $cap - 1);
     }
 
     /**
@@ -98,27 +98,27 @@ final class AvailabilityScale
     }
 
     /**
-     * The state a booked count maps to.
+     * The state an event count maps to, from the configured daily cap.
      *
-     * Available 0 to available_max
-     * Half      available_max + 1 to half_max
-     * Nearly    half_max + 1 up to (total - 1)
-     * Full      every slot occupied
+     * Available 0 to cap - 3
+     * Half      cap - 2          (displayed as "Limited")
+     * Nearly    cap - 1          (displayed as "Nearly Full")
+     * Full      cap and above
      */
-    public static function stateFor(int $booked, int $totalSlots): string
+    public static function stateFor(int $events, ?int $cap = null): string
     {
-        $booked = max(0, $booked);
-        $total = max(0, $totalSlots);
+        $events = max(0, $events);
+        $cap = max(1, $cap ?? self::cap());
 
-        if ($total > 0 && $booked >= $total) {
+        if ($events >= $cap) {
             return 'Full';
         }
 
-        if ($booked > self::halfMax()) {
+        if ($events >= self::nearlyAt($cap)) {
             return 'Nearly';
         }
 
-        if ($booked > self::availableMax()) {
+        if ($events >= self::limitedAt($cap)) {
             return 'Half';
         }
 
@@ -130,48 +130,48 @@ final class AvailabilityScale
      *
      * @return array<int, array{state: string, className: string, text: string}>
      */
-    public static function legendRows(int $totalSlots): array
+    public static function legendRows(?int $cap = null): array
     {
-        $total = max(1, $totalSlots);
-        $available = min(self::availableMax(), $total);
-        $half = max($available, min(self::halfMax(), $total));
+        $cap = max(1, $cap ?? self::cap());
+        $labels = self::labels();
+        $available = self::availableMax($cap);
+        $limited = self::limitedAt($cap);
+        $nearly = self::nearlyAt($cap);
 
-        $rows = [
+        return [
             [
                 'state' => 'Available',
                 'className' => self::STATE_CLASSES['Available'],
-                'text' => "0/{$total} to {$available}/{$total} Available",
+                'text' => "0/{$cap} to {$available}/{$cap} " . self::word($labels, 'Available'),
             ],
-        ];
-
-        if ($half > $available) {
-            $rows[] = [
+            [
                 'state' => 'Half',
                 'className' => self::STATE_CLASSES['Half'],
-                'text' => ($available + 1) . "/{$total} to {$half}/{$total} Limited",
-            ];
-        }
-
-        if ($total - 1 > $half) {
-            $rows[] = [
+                'text' => "{$limited}/{$cap} " . self::word($labels, 'Half'),
+            ],
+            [
                 'state' => 'Nearly',
                 'className' => self::STATE_CLASSES['Nearly'],
-                'text' => ($half + 1) . "/{$total} to " . ($total - 1) . "/{$total} Nearly Full",
-            ];
-        }
-
-        $rows[] = [
-            'state' => 'Full',
-            'className' => self::STATE_CLASSES['Full'],
-            'text' => "{$total}/{$total} Full",
+                'text' => "{$nearly}/{$cap} " . self::word($labels, 'Nearly'),
+            ],
+            [
+                'state' => 'Full',
+                'className' => self::STATE_CLASSES['Full'],
+                'text' => "{$cap}/{$cap} " . self::word($labels, 'Full'),
+            ],
+            [
+                'state' => 'Closed',
+                'className' => self::STATE_CLASSES['Closed'],
+                'text' => self::word($labels, 'Closed'),
+            ],
         ];
+    }
 
-        $rows[] = [
-            'state' => 'Closed',
-            'className' => self::STATE_CLASSES['Closed'],
-            'text' => 'Closed',
-        ];
-
-        return $rows;
+    /**
+     * Capitalised display word for one state ("nearly full" => "Nearly Full").
+     */
+    private static function word(array $labels, string $state): string
+    {
+        return ucwords(strtolower((string) ($labels[$state] ?? $state)));
     }
 }

@@ -5,57 +5,49 @@ namespace App\Services;
 use App\Models\Availability;
 use App\Models\Reservation;
 use App\Support\AvailabilityScale;
-use App\Support\VenueCatalog;
-use App\Support\VenueSlot;
 
 /**
- * Calendar availability for a date, counted in venue-period slots.
+ * Calendar availability for a date, counted in events.
  *
- * A date has (venues x AM/PM) slots. A slot is occupied when an active
- * reservation holds that venue for that period. Only reservations with status
- * "active" count: cancelled frees the slot, completed is a past event, and
- * inquiries never occupy because they are still just a request.
+ * A day's count is the number of ACTIVE reservations on that date, across all
+ * venues and periods. Pending inquiries never count, and a cancelled
+ * reservation frees its place. The venue rule (one booking per venue + date +
+ * period) is enforced separately by VenueOccupancyService.
  *
  * An admin override on the date always wins over the computed count.
  */
 class AvailabilityService
 {
-    public function __construct(private VenueOccupancyService $occupancy)
+    /**
+     * The configured daily cap (max_events_per_day).
+     */
+    public function cap(): int
     {
+        return AvailabilityScale::cap();
     }
 
     /**
-     * Slots available on a date: bookable venues x periods per venue.
+     * Active reservations on a date. One reservation is one event, even when
+     * its period cannot be determined.
      */
-    public function totalSlots(): int
-    {
-        return AvailabilityScale::slotCount(count(VenueCatalog::names()));
-    }
-
-    /**
-     * Occupied slots on a date, counted over the bookable venues only so the
-     * count and the venue panel can never disagree.
-     */
-    public function bookedSlots(?string $date): int
+    public function activeEventCount(?string $date): int
     {
         if (blank($date)) {
             return 0;
         }
 
-        $occupancy = $this->occupancy->occupiedPeriodsByVenue((string) $date);
-        $booked = 0;
+        return (int) Reservation::query()
+            ->where('status', 'active')
+            ->whereDate('date', $date)
+            ->count();
+    }
 
-        foreach (VenueCatalog::names() as $name) {
-            $periods = $occupancy[VenueSlot::normalize($name)] ?? [];
-
-            foreach (AvailabilityScale::periods() as $period) {
-                if (! empty($periods[$period])) {
-                    $booked++;
-                }
-            }
-        }
-
-        return $booked;
+    /**
+     * True when the date has reached the daily cap.
+     */
+    public function isAtCapacity(?string $date): bool
+    {
+        return $this->activeEventCount($date) >= $this->cap();
     }
 
     /**
@@ -75,13 +67,13 @@ class AvailabilityService
     }
 
     /**
-     * The state and booked count for one date.
+     * The state and event count for one date.
      *
      * @return array{state: string, booked: int}
      */
     public function stateFor(string $date): array
     {
-        $booked = $this->bookedSlots($date);
+        $booked = $this->activeEventCount($date);
 
         $override = Availability::query()
             ->whereDate('date', $date)
@@ -89,7 +81,7 @@ class AvailabilityService
             ->first();
 
         return [
-            'state' => $override ? (string) $override->status : AvailabilityScale::stateFor($booked, $this->totalSlots()),
+            'state' => $override ? (string) $override->status : AvailabilityScale::stateFor($booked),
             'booked' => $booked,
         ];
     }
@@ -134,7 +126,7 @@ class AvailabilityService
         }
 
         return [
-            'slots_total' => $this->totalSlots(),
+            'daily_cap' => $this->cap(),
             'labels' => AvailabilityScale::labels(),
             'cue_words' => AvailabilityScale::cueWords(),
             'dates' => $states,

@@ -8,9 +8,9 @@
 
 @section('content')
     @php
-        // Slot total drives the calendar scale and the legend
-        // (config/availability.php). One slot is one venue for one period.
-        $availabilitySlots = \App\Support\AvailabilityScale::totalSlots();
+        // Daily event cap drives the calendar scale and the legend
+        // (config/availability.php).
+        $dailyCap = \App\Support\AvailabilityScale::cap();
     @endphp
 
     <!-- Agreement Modal -->
@@ -151,7 +151,7 @@
                  visitor's browser clock. --}}
             <div class="calendar-container vs-calendar"
                  data-today="{{ \Carbon\Carbon::now('Asia/Manila')->toDateString() }}"
-                 data-max-slots="{{ $availabilitySlots }}">
+                 data-max-events="{{ $dailyCap }}">
                 <div class="calendar-header">
                     <button id="prevMonth" class="vs-calendar-btn">◀</button>
                     <span id="month-year"></span>
@@ -160,7 +160,7 @@
                 <div id="calendar"></div>
 
                 <div class="calendar-legend">
-                    @foreach (\App\Support\AvailabilityScale::legendRows($availabilitySlots) as $legendRow)
+                    @foreach (\App\Support\AvailabilityScale::legendRows($dailyCap) as $legendRow)
                         <p><span class="vs-calendar__legend-swatch {{ $legendRow['className'] }}"></span> {{ $legendRow['text'] }}</p>
                     @endforeach
                 </div>

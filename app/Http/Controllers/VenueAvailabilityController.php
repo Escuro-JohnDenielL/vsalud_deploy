@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Availability;
+use App\Services\AvailabilityService;
 use App\Services\VenueOccupancyService;
+use App\Support\AvailabilityScale;
 use App\Support\VenueCatalog;
 use App\Support\VenueSlot;
 use Illuminate\Http\Request;
@@ -30,6 +32,8 @@ class VenueAvailabilityController extends Controller
         $date = (string) $validated['date'];
 
         $occupancy = app(VenueOccupancyService::class)->occupiedPeriodsByVenue($date);
+        $eventCount = app(AvailabilityService::class)->activeEventCount($date);
+        $dailyCap = AvailabilityScale::cap();
 
         // A date the admin marked Closed blocks every venue.
         $closed = Availability::query()
@@ -55,6 +59,9 @@ class VenueAvailabilityController extends Controller
         return response()->json([
             'date' => $date,
             'closed' => $closed,
+            'count' => $eventCount,
+            'daily_cap' => $dailyCap,
+            'at_capacity' => $eventCount >= $dailyCap,
             'period' => VenueSlot::normalizePeriod($validated['period'] ?? null),
             'venues' => $venues,
         ]);

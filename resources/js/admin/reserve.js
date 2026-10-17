@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const calendarContainer = document.querySelector(
         ".vs-admin-reservation .calendar-container"
     );
-    const maxSlots = Number.parseInt(calendarContainer?.dataset.maxSlots, 10) || 4;
+    const maxEvents = Number.parseInt(calendarContainer?.dataset.maxEvents, 10) || 4;
     // "Today" comes from the server (computed for Manila on this page) so past
     // dates are marked consistently without using the browser clock.
     const todayKey =
@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let dateStatuses = {};
 
     // Availability states: only the colour class lives here. Every word (the
-    // state labels, the cue words) and the slot total come from the server, so
+    // state labels, the cue words) and the daily cap come from the server, so
     // config/availability.php stays the single source of truth.
     const AVAILABILITY_STATE_CLASSES = {
         Available: "vs-calendar-day--success",
@@ -175,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const AVAILABILITY_CLASSES = Object.values(AVAILABILITY_STATE_CLASSES);
 
     // Defaults, replaced by the /calendar/availability payload.
-    let slotTotal = 0;
+    let dailyCap = 0;
     let slotLabels = {
         Available: "available",
         Half: "limited",
@@ -185,9 +185,9 @@ document.addEventListener("DOMContentLoaded", function () {
     };
     let cueWords = { Full: "Full", Closed: "Closed" };
 
-    // First paint uses the slot total the server already rendered; the payload
-    // refreshes it in case the venue list changed.
-    slotTotal = maxSlots;
+    // First paint uses the cap the server already rendered; the payload
+    // refreshes it in case config changed.
+    dailyCap = maxEvents;
 
     function formatLongDate(dateKey) {
         const [year, month, day] = dateKey.split("-").map(Number);
@@ -262,7 +262,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const longDate = formatLongDate(dateKey);
             let accessibleLabel = `${longDate}, ${slotLabels[state] || state}`;
             if (state !== "Closed") {
-                accessibleLabel += `, ${entry?.booked ?? 0} of ${slotTotal} slots booked`;
+                accessibleLabel += `, ${entry?.booked ?? 0} of ${dailyCap} events booked`;
             }
             dayCell.setAttribute("aria-label", accessibleLabel);
 
@@ -311,14 +311,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Full and Closed show a word; every other state shows how many of the
-    // venue-period slots are taken. Days with nothing booked stay unlabelled so
-    // the calendar is not covered in "0/8".
+    // day's events are taken. Days with nothing booked stay unlabelled so the
+    // calendar is not covered in "0/4".
     function cueText(state, booked) {
         if (state === "Full" || state === "Closed") {
             return cueWords[state] || state;
         }
 
-        return booked > 0 ? `${booked}/${slotTotal}` : "";
+        return booked > 0 ? `${booked}/${dailyCap}` : "";
     }
 
     // Modal event handlers
@@ -512,7 +512,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then((data) => {
-                if (Number.isFinite(data?.slots_total)) slotTotal = data.slots_total;
+                if (Number.isFinite(data?.daily_cap)) dailyCap = data.daily_cap;
                 if (data?.labels) slotLabels = data.labels;
                 if (data?.cue_words) cueWords = data.cue_words;
 

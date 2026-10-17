@@ -51,6 +51,8 @@ export function initVenueAvailability({ dateInput, periodSelect, venueSelect, pa
 
     let venues = [];
     let closed = false;
+    let eventCount = 0;
+    let dailyCap = 0;
     let requestId = 0;
     let timer = null;
 
@@ -76,6 +78,8 @@ export function initVenueAvailability({ dateInput, periodSelect, venueSelect, pa
     function reset() {
         venues = [];
         closed = false;
+        eventCount = 0;
+        dailyCap = 0;
         panel.hidden = true;
         setStatus("");
         setMessage("");
@@ -156,6 +160,8 @@ export function initVenueAvailability({ dateInput, periodSelect, venueSelect, pa
 
         if (closed) {
             setMessage(LABEL_CLOSED);
+        } else if (dailyCap > 0 && eventCount >= dailyCap) {
+            setMessage(LABEL_FULLY_BOOKED);
         } else if (venues.length === 0) {
             setMessage(LABEL_NO_VENUES);
         } else if (venues.every((venue) => isOccupied(venue, period))) {
@@ -250,6 +256,8 @@ export function initVenueAvailability({ dateInput, periodSelect, venueSelect, pa
 
             venues = Array.isArray(data.venues) ? data.venues : [];
             closed = Boolean(data.closed);
+            eventCount = Number(data.count) || 0;
+            dailyCap = Number(data.daily_cap) || 0;
 
             setStatus("");
             syncVenueSelect();
@@ -260,6 +268,8 @@ export function initVenueAvailability({ dateInput, periodSelect, venueSelect, pa
             console.error("Failed to load venue availability:", error);
             venues = [];
             closed = false;
+            eventCount = 0;
+            dailyCap = 0;
             panel.hidden = false;
             if (listEl) listEl.innerHTML = "";
             setMessage("");

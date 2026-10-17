@@ -8,9 +8,9 @@
 
 @section('content')
     @php
-        // Slot total drives the calendar scale and the legend
-        // (config/availability.php). One slot is one venue for one period.
-        $availabilitySlots = \App\Support\AvailabilityScale::totalSlots();
+        // Daily event cap drives the calendar scale and the legend
+        // (config/availability.php).
+        $dailyCap = \App\Support\AvailabilityScale::cap();
     @endphp
 
     <div class="vs-page vs-admin-reservation">
@@ -43,7 +43,7 @@
              visitor's browser clock. --}}
         <div class="calendar-container"
              data-today="{{ \Carbon\Carbon::now('Asia/Manila')->toDateString() }}"
-             data-max-slots="{{ $availabilitySlots }}">
+             data-max-events="{{ $dailyCap }}">
             <div class="calendar-header">
                 <button type="button" id="prevMonth">◀</button>
                 <span id="month-year"></span>
@@ -54,7 +54,7 @@
             @php
                 // Legend wording comes from config/availability.php; only the
                 // admin panel's box colours are local to this page.
-                $legendRows = collect(\App\Support\AvailabilityScale::legendRows($availabilitySlots))->keyBy('state');
+                $legendRows = collect(\App\Support\AvailabilityScale::legendRows($dailyCap))->keyBy('state');
                 $legendBoxExtras = [
                     'Available' => 'legend-green vs-admin-reservation__legend-box vs-admin-reservation__legend-box--success',
                     'Half' => 'legend-yellow vs-admin-reservation__legend-box vs-admin-reservation__legend-box--warning',

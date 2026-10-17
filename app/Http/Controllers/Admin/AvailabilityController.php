@@ -55,7 +55,7 @@ class AvailabilityController extends Controller
         ]);
 
         $date = $validated['date'];
-        $booked = app(AvailabilityService::class)->bookedSlots($date);
+        $booked = app(AvailabilityService::class)->activeEventCount($date);
         $cap = AvailabilityScale::availableMax();
 
         $decision = AvailabilityOverrideRule::evaluate(

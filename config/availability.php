@@ -4,34 +4,30 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Calendar slot scale
+    | Per-day event cap
     |--------------------------------------------------------------------------
     |
-    | One slot is one venue for one period (AM or PM), so a date has
-    | (venues x periods_per_venue) slots. The venue list is read at runtime from
-    | the reservation form field and is never hardcoded here.
+    | A day's count is the number of ACTIVE reservations on that date across
+    | all venues and periods. Pending inquiries do not count. A reservation
+    | with an undetermined period still counts as one event.
     |
-    | Booked slots on a date map to the five calendar states:
+    | The five calendar states derive from this cap (cap = 4 by default):
     |
-    |   Available  0 to available_max
-    |   Half       available_max + 1 to half_max
-    |   Nearly     half_max + 1 to (total - 1)
-    |   Full       every slot occupied
-    |   Closed     set by an admin override only, which always wins
+    |   Available  0 to cap - 3   (0/4 to 1/4)
+    |   Half       cap - 2        (2/4, displayed as "Limited")
+    |   Nearly     cap - 1        (3/4, displayed as "Nearly Full")
+    |   Full       cap and above  (4/4)
+    |   Closed     admin override, which always wins
     |
-    | These values and the words below drive the day cue, the legend and the
-    | accessible labels on both the patron and the admin calendar.
+    | The value is volatile: set AVAILABILITY_MAX_EVENTS_PER_DAY to change it.
     |
     */
 
-    'periods_per_venue' => (int) env('AVAILABILITY_PERIODS_PER_VENUE', 2),
-    'available_max' => (int) env('AVAILABILITY_AVAILABLE_MAX', 2),
-    'half_max' => (int) env('AVAILABILITY_HALF_MAX', 4),
+    'max_events_per_day' => (int) env('AVAILABILITY_MAX_EVENTS_PER_DAY', 4),
 
     /*
-    | Wording for the calendar states. "labels" goes into the accessible day
-    | labels; "cue_words" is used by the two states that show a word instead of
-    | a booked count.
+    | Wording for the calendar states. "labels" drives the legend, the day cue
+    | and the accessible day labels on both calendars.
     */
 
     'labels' => [
@@ -46,18 +42,5 @@ return [
         'Full' => 'Full',
         'Closed' => 'Closed',
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Legacy: maximum inquiries per day
-    |--------------------------------------------------------------------------
-    |
-    | Kept so an existing environment variable does not break, but nothing reads
-    | it any more. The calendar now counts occupied venue-period slots; see the
-    | slot scale above.
-    |
-    */
-
-    'max_inquiries' => env('AVAILABILITY_MAX_INQUIRIES', 4),
 
 ];
