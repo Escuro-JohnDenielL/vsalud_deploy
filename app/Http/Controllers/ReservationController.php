@@ -125,11 +125,10 @@ class ReservationController extends Controller
             }
         }
 
-        // Non-locking booking gates. Only active reservations occupy a venue
-        // (pending inquiries never do), so a request for a venue that is
-        // already booked is refused here with the same message the guarded
-        // conversion uses. This is a courtesy check: the authoritative check
-        // runs again, under a lock, when the inquiry is confirmed.
+        // Non-locking booking gates. An active reservation or an open inquiry
+        // holds the venue + date + period, so a duplicate request is refused
+        // here. This is a courtesy check: the authoritative check runs again,
+        // under a lock, when the inquiry is confirmed.
         $requestedVenue = $hardcodedData['venue'] ?? $validated['venue'] ?? null;
         $requestedDate = $hardcodedData['date'] ?? $validated['date'] ?? null;
         $requestedPeriod = VenueSlot::normalizePeriod($formData['period'] ?? null)

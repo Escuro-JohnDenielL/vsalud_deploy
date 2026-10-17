@@ -33,7 +33,9 @@ class VenueAvailabilityController extends Controller
         $occupancyService = app(VenueOccupancyService::class);
 
         // One bookings query feeds both the event count and the venue flags.
+        // Open inquiries hold their slot too, so the panel shows them at once.
         $reservations = $occupancyService->activeForDate($date);
+        $inquiries = $occupancyService->openInquiriesForDate($date);
 
         // A date the admin marked Closed blocks every venue.
         $closed = Availability::query()
@@ -43,7 +45,7 @@ class VenueAvailabilityController extends Controller
             ->where('status', 'Closed')
             ->exists();
 
-        $panel = $occupancyService->panelPayload($closed, $reservations);
+        $panel = $occupancyService->panelPayload($closed, $reservations, $inquiries);
         $dailyCap = AvailabilityScale::cap();
 
         return response()->json([

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Inquiry;
 use App\Models\Reservation;
 use App\Support\VenueCatalog;
 use App\Support\VenueSlot;
@@ -15,9 +16,11 @@ use Illuminate\Support\Facades\DB;
 /**
  * Venue occupancy: one booking per venue + date + period (AM or PM).
  *
- * Only reservations with status "active" occupy a slot. Cancelled frees the
- * slot, completed is a past event, and inquiries never occupy because they are
- * only a request at that point.
+ * An active reservation occupies its slot. An open inquiry (Pending or In
+ * Progress) also holds the slot, so a second patron cannot submit the same
+ * venue + date + period while the first is still waiting for confirmation.
+ * Cancelled frees the slot; Completed inquiries are covered by their
+ * reservation row, so they are not counted again.
  *
  * Every write path funnels through guard(), which takes a Cache::lock on the
  * slot BEFORE opening the transaction, rechecks inside it, then releases the
@@ -32,6 +35,9 @@ class VenueOccupancyService
 
     /** Seconds to wait for a competing request before giving up. */
     public const LOCK_WAIT_SECONDS = 2;
+
+    /** Inquiry statuses that still hold a venue slot. */
+    public const OPEN_INQUIRY_STATUSES = ['Pending', 'In Progress'];
 
     public const RESULT_CREATED = 'created';
     public const RESULT_CONFLICT = 'conflict';
@@ -93,6 +99,26 @@ class VenueOccupancyService
     }
 
     /**
+     * Open inquiries for a date, optionally ignoring one inquiry (the row being
+     * converted, which must not block itself).
+     *
+     * @return Collection<int, Inquiry>
+     */
+    public function openInquiriesForDate(?string $date, ?int $ignoreInquiryId = null): Collection
+    {
+        if (blank($date)) {
+            return collect();
+        }
+
+        return Inquiry::query()
+            ->whereIn('status', self::OPEN_INQUIRY_STATUSES)
+            ->where('date', '>=', $date)
+            ->where('date', '<', Carbon::parse($date)->addDay()->toDateString())
+            ->when($ignoreInquiryId !== null, fn ($query) => $query->where('inquiry_id', '!=', $ignoreInquiryId))
+            ->get(['inquiry_id', 'venue', 'time', 'form_data', 'date', 'status']);
+    }
+
+    /**
      * Occupied periods per normalised venue name for one date.
      * Unknown periods are reported for both AM and PM.
      *
@@ -100,7 +126,9 @@ class VenueOccupancyService
      */
     public function occupiedPeriodsByVenue(?string $date): array
     {
-        return $this->occupancyFor($this->activeForDate($date));
+        return $this->occupancyFor(
+            $this->activeForDate($date)->concat($this->openInquiriesForDate($date))
+        );
     }
 
     /**
@@ -110,14 +138,14 @@ class VenueOccupancyService
      * reservations (the calendar prefetch, the panel endpoint) do not query
      * again.
      *
-     * @param  Collection<int, Reservation>  $reservations
+     * @param  Collection<int, Reservation|Inquiry>  $rows
      * @return array<string, array<string, bool>>
      */
-    public function occupancyFor(Collection $reservations): array
+    public function occupancyFor(Collection $rows): array
     {
         $map = [];
 
-        foreach ($reservations as $reservation) {
+        foreach ($rows as $reservation) {
             $key = VenueSlot::normalize($reservation->venue);
 
             if ($key === '') {
@@ -144,9 +172,9 @@ class VenueOccupancyService
      * @param  Collection<int, Reservation>  $reservations  Active reservations for the date.
      * @return array{closed: bool, count: int, venues: array<int, array{name: string, occupied: array{AM: bool, PM: bool}}>}
      */
-    public function panelPayload(bool $closed, Collection $reservations): array
+    public function panelPayload(bool $closed, Collection $reservations, ?Collection $inquiries = null): array
     {
-        $occupancy = $this->occupancyFor($reservations);
+        $occupancy = $this->occupancyFor($reservations->concat($inquiries ?? collect()));
 
         $venues = [];
 
@@ -170,10 +198,15 @@ class VenueOccupancyService
     }
 
     /**
-     * Is the slot already taken by an active reservation?
+     * Is the slot already taken by an active reservation or an open inquiry?
      */
-    public function isOccupied(string $venue, string $date, string $period, ?int $ignoreReservationId = null): bool
-    {
+    public function isOccupied(
+        string $venue,
+        string $date,
+        string $period,
+        ?int $ignoreReservationId = null,
+        ?int $ignoreInquiryId = null
+    ): bool {
         if (! VenueSlot::isTrackable($venue)) {
             return false;
         }
@@ -186,22 +219,33 @@ class VenueOccupancyService
 
         $wanted = VenueSlot::normalize($venue);
 
-        return $this->activeForDate($date)->contains(function (Reservation $reservation) use ($wanted, $target, $ignoreReservationId) {
-            if ($ignoreReservationId !== null && (int) $reservation->reserve_id === $ignoreReservationId) {
-                return false;
-            }
-
-            if (VenueSlot::normalize($reservation->venue) !== $wanted) {
+        $matches = function ($row) use ($wanted, $target): bool {
+            if (VenueSlot::normalize($row->venue) !== $wanted) {
                 return false;
             }
 
             $periods = VenueSlot::occupiedPeriods(
-                VenueSlot::periodFromFormData($reservation->form_data),
-                $reservation->time
+                VenueSlot::periodFromFormData($row->form_data),
+                $row->time
             );
 
             return VenueSlot::occupies($periods, $target);
+        };
+
+        $reservationTaken = $this->activeForDate($date)->contains(function (Reservation $reservation) use ($matches, $ignoreReservationId) {
+            if ($ignoreReservationId !== null && (int) $reservation->reserve_id === $ignoreReservationId) {
+                return false;
+            }
+
+            return $matches($reservation);
         });
+
+        if ($reservationTaken) {
+            return true;
+        }
+
+        return $this->openInquiriesForDate($date, $ignoreInquiryId)
+            ->contains(fn (Inquiry $inquiry) => $matches($inquiry));
     }
 
     /**
@@ -210,7 +254,7 @@ class VenueOccupancyService
      * Returns one of the RESULT_* constants. The callback runs at most once and
      * only when the slot is still free, so a conflict never inserts a row.
      */
-    public function guard(string $venue, string $date, string $period, Closure $create): string
+    public function guard(string $venue, string $date, string $period, Closure $create, ?int $ignoreInquiryId = null): string
     {
         if (! VenueSlot::isTrackable($venue)) {
             $create();
@@ -233,8 +277,8 @@ class VenueOccupancyService
         }
 
         try {
-            $result = DB::transaction(function () use ($venue, $date, $period, $create) {
-                if ($this->isOccupied($venue, $date, $period)) {
+            $result = DB::transaction(function () use ($venue, $date, $period, $create, $ignoreInquiryId) {
+                if ($this->isOccupied($venue, $date, $period, null, $ignoreInquiryId)) {
                     return self::RESULT_CONFLICT;
                 }
 
@@ -260,7 +304,7 @@ class VenueOccupancyService
      *
      * @param  int  $dailyCap  maximum active events for the date
      */
-    public function guardBooking(?string $venue, ?string $date, ?string $period, int $dailyCap, Closure $create): string
+    public function guardBooking(?string $venue, ?string $date, ?string $period, int $dailyCap, Closure $create, ?int $ignoreInquiryId = null): string
     {
         $cap = max(1, $dailyCap);
         $dateKey = trim((string) $date);
@@ -287,7 +331,7 @@ class VenueOccupancyService
         }
 
         try {
-            $result = DB::transaction(function () use ($venue, $dateKey, $period, $cap, $create) {
+            $result = DB::transaction(function () use ($venue, $dateKey, $period, $cap, $create, $ignoreInquiryId) {
                 if ($this->activeCountForDate($dateKey) >= $cap) {
                     return self::RESULT_CAPACITY;
                 }
@@ -295,7 +339,7 @@ class VenueOccupancyService
                 $targetPeriod = VenueSlot::normalizePeriod($period);
 
                 if (VenueSlot::isTrackable($venue) && $targetPeriod !== null
-                    && $this->isOccupied((string) $venue, $dateKey, $targetPeriod)) {
+                    && $this->isOccupied((string) $venue, $dateKey, $targetPeriod, null, $ignoreInquiryId)) {
                     return self::RESULT_CONFLICT;
                 }
 

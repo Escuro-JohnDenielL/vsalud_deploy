@@ -53,7 +53,8 @@ it('shows a freshly submitted booking before it is confirmed', function () {
     expect($dates)->toHaveKey($date)
         ->and($dates[$date]['booked'])->toBe(1)
         ->and($dates[$date]['state'])->toBe('Available')
-        ->and($dates[$date]['occupancy'])->toBe([]);
+        // An open inquiry holds its venue + period until it is cancelled.
+        ->and($dates[$date]['occupancy'])->toBe(['villa i' => ['AM' => true]]);
 });
 
 it('counts a confirmed booking once, not twice', function () {
