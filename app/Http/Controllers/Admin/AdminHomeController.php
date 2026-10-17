@@ -16,6 +16,17 @@ class AdminHomeController extends Controller
      */
     public function index()
     {
+        // No scheduler process runs in production, so the daily reminders are
+        // also attempted from dashboard traffic, once per hour, after the
+        // response has been sent.
+        defer(function () {
+            try {
+                app(\App\Support\LazyScheduler::class)->runDueTasks();
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('Lazy scheduler: admin dashboard trigger skipped: ' . $e->getMessage());
+            }
+        });
+
         $packages = \App\Models\Package::all();
         return view('admin.home', compact('packages'));
     }

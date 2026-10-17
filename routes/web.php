@@ -260,6 +260,16 @@ Route::get('/calendar/availability', function () {
         }
     });
 
+    // Same reason as the waitlist sweep: no scheduler process is started by
+    // the deploy scripts. Each command is still held to one run per hour.
+    defer(function () {
+        try {
+            app(\App\Support\LazyScheduler::class)->runDueTasks();
+        } catch (\Throwable $e) {
+            Log::warning('Lazy scheduler: calendar trigger skipped: ' . $e->getMessage());
+        }
+    });
+
     return response()->json(app(\App\Services\AvailabilityService::class)->calendarPayload());
 });
 
