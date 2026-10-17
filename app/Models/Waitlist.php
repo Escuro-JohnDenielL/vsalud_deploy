@@ -23,6 +23,20 @@ class Waitlist extends Model
         'claimed_at' => 'datetime',
     ];
 
+    /**
+     * Store only the calendar date.
+     *
+     * The column is a DATE, so MySQL truncates automatically, but SQLite keeps
+     * the whole string. Writing "Y-m-d" keeps the unique per-day constraint and
+     * the date-scoped lookups working on both.
+     */
+    public function setRequestedDateAttribute($value): void
+    {
+        $this->attributes['requested_date'] = $value === null
+            ? null
+            : \Illuminate\Support\Carbon::parse($value)->format('Y-m-d');
+    }
+
     public function scopeForDate($query, $date)
     {
         return $query->where('requested_date', $date);

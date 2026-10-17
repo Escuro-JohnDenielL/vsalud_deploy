@@ -198,15 +198,7 @@ class PaymentLogsController extends Controller
 
     private function defaultDownpayment(string $total): string
     {
-        $totalCentavos = bcmul($total, '100', 0);
-        $quarterNumerator = bcmul($totalCentavos, '25', 0);
-        $downpaymentCentavos = bcdiv($quarterNumerator, '100', 0);
-
-        if (bccomp(bcmod($quarterNumerator, '100'), '50', 0) >= 0) {
-            $downpaymentCentavos = bcadd($downpaymentCentavos, '1', 0);
-        }
-
-        return bcdiv($downpaymentCentavos, '100', 2);
+        return \App\Support\PaymentAmount::downpayment($total);
     }
 
     private function formatMoney(string $amount): string

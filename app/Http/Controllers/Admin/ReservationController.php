@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Payment;
 use App\Models\Reservation;
+use App\Support\PaymentAmount;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Services\AiReplyService;
@@ -78,10 +80,38 @@ class ReservationController extends Controller
 
         $result = DB::transaction(function () use ($id, $total) {
             $reservation = Reservation::whereKey($id)->lockForUpdate()->firstOrFail();
-            $paid = $this->approvedPaidAmount($reservation->inquiry_id);
+
+            // Approved receipts recorded before a total was agreed carry no
+            // amount (there was nothing to measure them against). Give them
+            // their value now, so a late total still reconciles against what
+            // the office has already accepted.
+            $unvalued = Payment::where('inquiry_id', $reservation->inquiry_id)
+                ->where('status', 'approved')
+                ->whereNull('amount')
+                ->get();
+
+            $derived = '0.00';
+            foreach ($unvalued as $payment) {
+                $amount = PaymentAmount::forType($payment->payment_type, $total);
+
+                if ($amount !== null) {
+                    $derived = bcadd($derived, $amount, 2);
+                }
+            }
+
+            $paid = bcadd($this->approvedPaidAmount($reservation->inquiry_id), $derived, 2);
 
             if (bccomp($total, $paid, 2) < 0) {
                 return ['blocked' => true];
+            }
+
+            foreach ($unvalued as $payment) {
+                $amount = PaymentAmount::forType($payment->payment_type, $total);
+
+                if ($amount !== null) {
+                    $payment->amount = $amount;
+                    $payment->save();
+                }
             }
 
             $reservation->total_amount = $total;

@@ -2177,7 +2177,7 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
 }
 
 /* === Scoped baseline for legacy page elements === */
-.vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-row-actions__view):not(.vs-overflow__toggle):not(.vs-overflow__item):not(.preset-btn),
+.vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-row-actions__view):not(.vs-overflow__toggle):not(.vs-overflow__item):not(.preset-btn):not(.payment-group-toggle):not(.payment-group-details-toggle):not(.payment-info-button),
 .vs-layout--admin .btn,
 .vs-layout--patron button:where(:not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-calendar-btn):not(.faq-question):not(.btn-submit-cancel):not(.cancel-confirm__cancel):not(.cancel-confirm__confirm)),
 .vs-layout--patron .btn,
@@ -2195,7 +2195,7 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
   transition: background-color var(--vs-duration-fast), border-color var(--vs-duration-fast), box-shadow var(--vs-duration-fast), color var(--vs-duration-fast);
 }
 
-.vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-row-actions__view):not(.vs-overflow__toggle):not(.vs-overflow__item):not(.preset-btn):hover,
+.vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-row-actions__view):not(.vs-overflow__toggle):not(.vs-overflow__item):not(.preset-btn):not(.payment-group-toggle):not(.payment-group-details-toggle):not(.payment-info-button):hover,
 .vs-layout--admin .btn:hover,
 .vs-layout--patron button:where(:not(.close-btn):not(.btn-close):not(.btn-submit):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-calendar-btn):not(.faq-question):not(.btn-submit-cancel):not(.cancel-confirm__cancel):not(.cancel-confirm__confirm)):hover,
 .vs-layout--patron .btn:hover,

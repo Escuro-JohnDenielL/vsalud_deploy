@@ -22,9 +22,12 @@ return new class extends Migration
         // Convert ENUM columns to VARCHAR for future flexibility
         // These columns are still written to for backward compatibility,
         // but dynamic forms may introduce new values not in the ENUM list.
-        DB::statement("ALTER TABLE inquiry MODIFY venue VARCHAR(255) NULL");
-        DB::statement("ALTER TABLE inquiry MODIFY event_type VARCHAR(255) NULL");
-        DB::statement("ALTER TABLE inquiry MODIFY theme_motif VARCHAR(255) NULL");
+        // SQLite stores them as VARCHAR already and has no MODIFY syntax.
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE inquiry MODIFY venue VARCHAR(255) NULL");
+            DB::statement("ALTER TABLE inquiry MODIFY event_type VARCHAR(255) NULL");
+            DB::statement("ALTER TABLE inquiry MODIFY theme_motif VARCHAR(255) NULL");
+        }
     }
 
     public function down(): void
@@ -38,8 +41,10 @@ return new class extends Migration
         });
 
         // Restore ENUMs (only if rolling back)
-        DB::statement("ALTER TABLE inquiry MODIFY venue ENUM('Villa I', 'Villa II', 'Private Pool', 'Elizabeth Hall', 'Others') NULL");
-        DB::statement("ALTER TABLE inquiry MODIFY event_type ENUM('Baptismal Package', 'Birthday Package', 'Standard Package', 'Kiddie Package', 'Debut Package', 'Wedding Package', 'Others') NULL");
-        DB::statement("ALTER TABLE inquiry MODIFY theme_motif ENUM('Floral', 'Rustic', 'Beach', 'Modern', 'Elegant', 'Others') NULL");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE inquiry MODIFY venue ENUM('Villa I', 'Villa II', 'Private Pool', 'Elizabeth Hall', 'Others') NULL");
+            DB::statement("ALTER TABLE inquiry MODIFY event_type ENUM('Baptismal Package', 'Birthday Package', 'Standard Package', 'Kiddie Package', 'Debut Package', 'Wedding Package', 'Others') NULL");
+            DB::statement("ALTER TABLE inquiry MODIFY theme_motif ENUM('Floral', 'Rustic', 'Beach', 'Modern', 'Elegant', 'Others') NULL");
+        }
     }
 };

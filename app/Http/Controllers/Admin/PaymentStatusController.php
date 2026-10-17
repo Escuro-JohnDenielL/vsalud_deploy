@@ -10,6 +10,7 @@ use App\Models\ActivityLog;
 use App\Models\Payment;
 use App\Models\Reservation;
 use App\Support\AuditNote;
+use App\Support\PaymentAmount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -40,22 +41,34 @@ class PaymentStatusController extends Controller
                 $previousStatus = $lockedPayment->status;
 
                 if ($newStatus === 'approved' && $previousStatus !== 'approved'
-                    && $lockedPayment->inquiry_id && $lockedPayment->amount !== null) {
+                    && $lockedPayment->inquiry_id) {
                     $reservation = Reservation::where('inquiry_id', $lockedPayment->inquiry_id)
                         ->lockForUpdate()
                         ->first();
 
                     if ($reservation && $reservation->total_amount !== null) {
-                        $paid = Payment::where('inquiry_id', $lockedPayment->inquiry_id)
-                            ->where('status', 'approved')
-                            ->whereNotNull('amount')
-                            ->selectRaw('CAST(COALESCE(SUM(amount), 0) AS CHAR) AS approved_total')
-                            ->value('approved_total');
-                        $paid = bcadd((string) $paid, '0', 2);
-                        $nextPaid = bcadd($paid, (string) $lockedPayment->amount, 2);
+                        // The receipt itself does not carry money: it carries
+                        // the type (full / 25% downpayment). The amount is
+                        // derived once, here, from the agreed total.
+                        if ($lockedPayment->amount === null) {
+                            $lockedPayment->amount = PaymentAmount::forType(
+                                $lockedPayment->payment_type,
+                                (string) $reservation->total_amount
+                            );
+                        }
 
-                        if (bccomp($nextPaid, (string) $reservation->total_amount, 2) > 0) {
-                            return ['blocked' => true];
+                        if ($lockedPayment->amount !== null) {
+                            $paid = Payment::where('inquiry_id', $lockedPayment->inquiry_id)
+                                ->where('status', 'approved')
+                                ->whereNotNull('amount')
+                                ->selectRaw('CAST(COALESCE(SUM(amount), 0) AS CHAR) AS approved_total')
+                                ->value('approved_total');
+                            $paid = bcadd((string) $paid, '0', 2);
+                            $nextPaid = bcadd($paid, (string) $lockedPayment->amount, 2);
+
+                            if (bccomp($nextPaid, (string) $reservation->total_amount, 2) > 0) {
+                                return ['blocked' => true];
+                            }
                         }
                     }
                 }

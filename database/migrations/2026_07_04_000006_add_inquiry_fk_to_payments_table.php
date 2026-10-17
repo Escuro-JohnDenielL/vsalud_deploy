@@ -16,11 +16,15 @@ return new class extends Migration
 
         // Step 2: Backfill existing records — match reservation_code to inquiry.tracking_code
         // Use COLLATE to handle different column collations between tables
-        DB::statement("
+        // SQLite has neither UPDATE ... JOIN nor MySQL collations, so this
+        // backfill is MySQL-only.
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("
             UPDATE payments p
             JOIN inquiry i ON p.reservation_code = i.tracking_code COLLATE utf8mb4_unicode_ci
             SET p.inquiry_id = i.inquiry_id
         ");
+        }
 
         // Step 3: Add foreign key constraint
         Schema::table('payments', function (Blueprint $table) {

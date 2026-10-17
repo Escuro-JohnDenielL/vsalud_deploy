@@ -141,11 +141,32 @@ class PaymentController extends Controller
         $reservation = Reservation::where('inquiry_id', $inquiry->inquiry_id ?? 0)->first();
 
         $emailMatches = IdentityMatch::emailMatches($inquiry->patron->email ?? null, $validated['email']);
-        $awaitingPayment = $reservation !== null
-            && $reservation->status === 'active'
-            && ! Payment::where('inquiry_id', $inquiry->inquiry_id)
-                ->where('status', 'approved')
-                ->exists();
+
+        // A reservation is still waiting for money while anything remains
+        // unpaid. Once a total is agreed, a downpayment does not close the
+        // door on the balance; without a total only the first receipt can be
+        // taken, because there is nothing to measure a second one against.
+        $awaitingPayment = false;
+
+        if ($reservation !== null && $reservation->status === 'active') {
+            if ($reservation->total_amount === null) {
+                $awaitingPayment = ! Payment::where('inquiry_id', $inquiry->inquiry_id)
+                    ->where('status', 'approved')
+                    ->exists();
+            } else {
+                $approved = Payment::where('inquiry_id', $inquiry->inquiry_id)
+                    ->where('status', 'approved')
+                    ->whereNotNull('amount')
+                    ->selectRaw('CAST(COALESCE(SUM(amount), 0) AS CHAR) AS approved_total')
+                    ->value('approved_total');
+                $remaining = bcsub(
+                    bcadd((string) $reservation->total_amount, '0', 2),
+                    bcadd((string) $approved, '0', 2),
+                    2
+                );
+                $awaitingPayment = bccomp($remaining, '0.00', 2) > 0;
+            }
+        }
 
         if (! $inquiry || ! $reservation || ! $emailMatches || ! $awaitingPayment) {
             RateLimiter::hit($failedKey, 3600);
