@@ -177,6 +177,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
 
     // Reserve Logs - FIXED ROUTES
     Route::get('/reserve-logs', [AdminReservationController::class, 'showReservationLogs'])->name('reserve-logs');
+    Route::get('/reserve-logs/export', [AdminReservationController::class, 'exportLogs'])->name('reserve-logs.export');
 
     // API routes for reservation management (for AJAX calls)
     Route::get('/reservations/{id}', [AdminReservationController::class, 'getReservation'])->name('reservations.show');

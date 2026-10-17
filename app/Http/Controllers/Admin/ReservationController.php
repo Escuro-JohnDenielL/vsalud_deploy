@@ -4,12 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\ActivityLog;
 use App\Models\Payment;
 use App\Models\Reservation;
+use App\Support\Csv;
 use App\Support\PaymentAmount;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Services\AiReplyService;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReservationController extends Controller
 {
@@ -21,6 +25,68 @@ class ReservationController extends Controller
             ->paginate(10);
 
         return view('admin.reserve-logs', compact('reservations'));
+    }
+
+    /**
+     * Download every reservation log as CSV. Uses the same formula-safe writer
+     * as the audit-log export, and records the export in the audit trail.
+     */
+    public function exportLogs(): StreamedResponse
+    {
+        $filename = 'reservation-logs-' . now()->format('Y-m-d-His') . '.csv';
+
+        $admin = Auth::guard('admin')->user();
+        $name = trim((string) ($admin->f_name ?? '') . ' ' . (string) ($admin->l_name ?? ''))
+            ?: (string) ($admin->email ?? 'Admin');
+
+        ActivityLog::create([
+            'admin_id'      => $admin?->getAuthIdentifier() ?? 0,
+            'activity_type' => 'Reservation Logs Exported',
+            'category'      => 'data',
+            'route_name'    => 'admin.reserve-logs.export',
+            'http_method'   => 'GET',
+            'subject'       => 'Reservation logs CSV',
+            'description'   => "Admin {$name} exported the reservation logs as CSV.",
+            'ip_address'    => request()->ip(),
+            'user_agent'    => substr((string) request()->userAgent(), 0, 500),
+        ]);
+
+        return response()->streamDownload(function () {
+            $out = fopen('php://output', 'w');
+
+            // BOM so Excel opens the file as UTF-8.
+            fwrite($out, "\xEF\xBB\xBF");
+
+            $this->putCsvRow($out, [
+                'Tracking code', 'Name', 'Event date', 'Venue', 'Event type', 'Status', 'Total',
+            ]);
+
+            Reservation::with(['patron', 'inquiry'])
+                ->latest()
+                ->limit(10000)
+                ->cursor()
+                ->each(function (Reservation $reservation) use ($out) {
+                    $this->putCsvRow($out, [
+                        Csv::neutralize($reservation->inquiry?->tracking_code ?? 'None'),
+                        Csv::neutralize($reservation->patron->name ?? ''),
+                        Csv::neutralize($reservation->date),
+                        Csv::neutralize($reservation->venue),
+                        Csv::neutralize($reservation->event_type),
+                        Csv::neutralize($reservation->status),
+                        // Numeric column: never neutralized.
+                        $reservation->total_amount === null
+                            ? ''
+                            : number_format((float) $reservation->total_amount, 2, '.', ''),
+                    ]);
+                });
+
+            fclose($out);
+        }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
+    private function putCsvRow($handle, array $row): void
+    {
+        fputcsv($handle, $row, ',', '"', '');
     }
 
     public function getReservation($id)

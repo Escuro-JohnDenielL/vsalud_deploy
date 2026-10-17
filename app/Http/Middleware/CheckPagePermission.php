@@ -20,6 +20,7 @@ class CheckPagePermission
         'admin.reserve.store'  => 'reservations',
         'admin.inquiry'        => 'inquiries',
         'admin.reserve-logs'   => 'reserve-logs',
+        'admin.reserve-logs.export' => 'reserve-logs',
         'admin.report'         => 'reports',
         'admin.feedback'       => 'feedback',
         'admin.feedback.destroy' => 'feedback',

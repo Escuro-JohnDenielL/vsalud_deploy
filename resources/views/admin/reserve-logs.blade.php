@@ -9,8 +9,14 @@
 @section('content')
     <div class="container vs-admin-reservation-logs">
         <div class="page-header">
-            <h1>Reservation Logs</h1>
-            <p>Manage and track all reservation requests</p>
+            <div>
+                <h1>Reservation Logs</h1>
+                <p>Manage and track all reservation requests</p>
+            </div>
+            <a href="{{ route('admin.reserve-logs.export') }}" class="admin-btn admin-btn-primary"
+                style="margin-top:14px;">
+                Export CSV
+            </a>
         </div>
 
         <div class="table-container">
