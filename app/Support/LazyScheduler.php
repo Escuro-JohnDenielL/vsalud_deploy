@@ -28,6 +28,10 @@ class LazyScheduler
 
     public function runDueTasks(): void
     {
+        if (! config('reminders.lazy_enabled')) {
+            return;
+        }
+
         foreach (self::TASKS as $command) {
             try {
                 // add() returns false when another request already claimed

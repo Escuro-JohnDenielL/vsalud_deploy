@@ -46,6 +46,8 @@ to the log instead of delivered, and the UI still reports success.
 
 - `PAYMENT_DOWNPAYMENT_PERCENT` — share of the reservation total that a "half" receipt represents (default 25).
 - `AVAILABILITY_MAX_EVENTS_PER_DAY` — per-day event cap behind the calendar states (default 4).
+- `REMINDERS_SINCE` — remind only reservations created on or after this date (set it to the deployment date).
+- `REMINDERS_LAZY_ENABLED` — when true, the reminder commands are attempted from calendar and dashboard traffic, at most once per hour (default false).
 
 ### AI assistant
 
