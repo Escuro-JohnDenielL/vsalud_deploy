@@ -163,6 +163,21 @@
   background: var(--vs-color-surface-pale-green);
 }
 
+/* Grid paints before /calendar/availability answers; the pulse marks the
+   period where colours and counts are still loading. */
+.vs-admin-reservation #calendar.is-loading .calendar-day[data-date] {
+  animation: vs-admin-calendar-loading 1.2s ease-in-out infinite;
+}
+
+@keyframes vs-admin-calendar-loading {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-admin-reservation #calendar.is-loading .calendar-day[data-date] { animation: none; }
+}
+
 /* Weekday headers: plain muted text, never bordered or clickable. */
 .vs-admin-reservation .calendar-day.day-header {
   min-height: auto;

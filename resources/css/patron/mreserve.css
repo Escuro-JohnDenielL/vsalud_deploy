@@ -134,6 +134,22 @@
     padding-top: 10px;
 }
 
+/* The grid paints before /calendar/availability answers. The pulse says the
+   colours and "n/4" cues are still being fetched, so a slow connection never
+   looks like an empty calendar. */
+#calendar.is-loading .calendar-day[data-date] {
+    animation: vs-calendar-loading 1.2s ease-in-out infinite;
+}
+
+@keyframes vs-calendar-loading {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #calendar.is-loading .calendar-day[data-date] { animation: none; }
+}
+
 .calendar-day {
     padding: 10px 0;
     border: 1px solid #ddd;

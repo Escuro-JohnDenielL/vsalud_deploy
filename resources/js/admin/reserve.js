@@ -534,6 +534,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Error loading availability:", error);
                 // Still render calendar even if data loading fails
                 renderCalendar();
+            })
+            .finally(() => {
+                calendar?.classList.remove("is-loading");
+                calendar?.setAttribute("aria-busy", "false");
             });
     }
 
@@ -626,7 +630,12 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    // Initialize calendar
+    // Initialize calendar. Draw the grid at once so the page never shows an
+    // empty calendar while /calendar/availability is in flight; the payload
+    // repaints it with the real states as soon as it arrives.
+    calendar?.classList.add("is-loading");
+    calendar?.setAttribute("aria-busy", "true");
+    renderCalendar();
     loadAvailabilityData();
 
     // ---------------------------- //

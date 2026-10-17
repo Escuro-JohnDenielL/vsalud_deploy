@@ -363,6 +363,13 @@ document.addEventListener("DOMContentLoaded", function () {
         renderCalendar();
     });
 
+    // Paint the month grid immediately. The availability fetch below can take
+    // a while on a slow connection; without this the calendar stays a blank
+    // box until the JSON arrives. The grid is repainted when the data lands.
+    calendar?.classList.add("is-loading");
+    calendar?.setAttribute("aria-busy", "true");
+    renderCalendar();
+
     function loadAvailabilityData() {
         fetch("/calendar/availability", { headers: { Accept: "application/json" } })
             .then((res) => res.json())
@@ -384,6 +391,10 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch((err) => {
                 console.error("Failed to load availability:", err);
                 renderCalendar();
+            })
+            .finally(() => {
+                calendar?.classList.remove("is-loading");
+                calendar?.setAttribute("aria-busy", "false");
             });
     }
 
