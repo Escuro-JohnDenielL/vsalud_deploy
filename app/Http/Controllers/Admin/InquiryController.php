@@ -13,6 +13,7 @@ use App\Mail\ReservationConfirmed;
 use App\Services\AiReplyService;
 use App\Services\AvailabilityService;
 use App\Services\VenueOccupancyService;
+use App\Support\AvailabilityScale;
 use App\Support\BookingRules;
 use App\Support\VenueSlot;
 
@@ -82,9 +83,11 @@ class InquiryController extends Controller
     /**
      * Convert an inquiry into an active reservation.
      *
-     * The venue + date + period slot is locked, rechecked inside a transaction,
-     * and only then written, so two simultaneous conversions for the same slot
-     * create exactly one reservation. A conflict returns 409 and writes nothing.
+     * The date is locked first, then the day's event count and the venue +
+     * date + period slot are rechecked inside the transaction. A date at the
+     * daily cap returns 409 and writes nothing; a taken venue returns 409 too.
+     * The lock is released after the transaction commits (or rolls back), and
+     * a lock that cannot be acquired fails closed with 503.
      *
      * @return array{response: \Illuminate\Http\JsonResponse|null, mail_sent: bool}
      */
@@ -118,10 +121,11 @@ class InquiryController extends Controller
         $mailSent = true;
 
         try {
-            $outcome = app(VenueOccupancyService::class)->guard(
+            $outcome = app(VenueOccupancyService::class)->guardBooking(
                 $venue,
                 (string) $date,
                 (string) $period,
+                AvailabilityScale::cap(),
                 function () use ($inquiry, &$mailSent) {
                     $reservation = $this->createReservationRow($inquiry);
                     $mailSent = $this->sendConfirmationEmail($inquiry, $reservation);
@@ -135,6 +139,16 @@ class InquiryController extends Controller
                     'success' => false,
                     'message' => 'Reservation creation failed. Please try again.',
                 ], 500),
+                'mail_sent' => true,
+            ];
+        }
+
+        if ($outcome === VenueOccupancyService::RESULT_CAPACITY) {
+            return [
+                'response' => response()->json([
+                    'success' => false,
+                    'message' => BookingRules::FULL_MESSAGE,
+                ], 409),
                 'mail_sent' => true,
             ];
         }

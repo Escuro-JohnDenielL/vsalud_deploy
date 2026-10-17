@@ -34,6 +34,31 @@ class VenueOccupancyService
     public const RESULT_CREATED = 'created';
     public const RESULT_CONFLICT = 'conflict';
     public const RESULT_BUSY = 'busy';
+    public const RESULT_CAPACITY = 'capacity';
+
+    /**
+     * Cache key for one booking day. Conversions take this before their
+     * transaction so the day's event count cannot move underneath them.
+     */
+    public function dayLockKey(string $date): string
+    {
+        return 'day:' . $date;
+    }
+
+    /**
+     * Active reservations on a date, one per event (period irrelevant).
+     */
+    public function activeCountForDate(?string $date): int
+    {
+        if (blank($date)) {
+            return 0;
+        }
+
+        return (int) Reservation::query()
+            ->where('status', 'active')
+            ->whereDate('date', $date)
+            ->count();
+    }
 
     /**
      * Cache key for one slot. The venue is normalised so "Villa I", "villa i"
@@ -159,6 +184,67 @@ class VenueOccupancyService
         try {
             $result = DB::transaction(function () use ($venue, $date, $period, $create) {
                 if ($this->isOccupied($venue, $date, $period)) {
+                    return self::RESULT_CONFLICT;
+                }
+
+                $create();
+
+                return self::RESULT_CREATED;
+            });
+        } finally {
+            // Released after the transaction has committed (or rolled back).
+            $lock->release();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Lock the day, then recheck the daily cap and the venue slot inside the
+     * transaction before creating the reservation.
+     *
+     * The day lock is taken BEFORE the transaction and released after the
+     * commit (or rollback). If the lock cannot be acquired the result is
+     * RESULT_BUSY and nothing is written, so the caller fails closed.
+     *
+     * @param  int  $dailyCap  maximum active events for the date
+     */
+    public function guardBooking(?string $venue, ?string $date, ?string $period, int $dailyCap, Closure $create): string
+    {
+        $cap = max(1, $dailyCap);
+        $dateKey = trim((string) $date);
+
+        if ($dateKey === '') {
+            // No date: there is no day to lock or count. Legacy rows only.
+            $create();
+
+            return self::RESULT_CREATED;
+        }
+
+        $lock = Cache::lock($this->dayLockKey($dateKey), self::LOCK_SECONDS);
+        $acquired = false;
+
+        try {
+            $acquired = $lock->block(self::LOCK_WAIT_SECONDS);
+        } catch (LockTimeoutException) {
+            $acquired = false;
+        }
+
+        if (! $acquired) {
+            // Fail closed: the day may or may not have room.
+            return self::RESULT_BUSY;
+        }
+
+        try {
+            $result = DB::transaction(function () use ($venue, $dateKey, $period, $cap, $create) {
+                if ($this->activeCountForDate($dateKey) >= $cap) {
+                    return self::RESULT_CAPACITY;
+                }
+
+                $targetPeriod = VenueSlot::normalizePeriod($period);
+
+                if (VenueSlot::isTrackable($venue) && $targetPeriod !== null
+                    && $this->isOccupied((string) $venue, $dateKey, $targetPeriod)) {
                     return self::RESULT_CONFLICT;
                 }
 

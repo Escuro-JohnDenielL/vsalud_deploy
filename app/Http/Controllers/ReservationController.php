@@ -148,6 +148,13 @@ class ReservationController extends Controller
             if (! $isAdminSubmission && BookingRules::isPastDate((string) $requestedDate)) {
                 return $this->rejectSubmission($request, $isAdminSubmission, BookingRules::PAST_DATE_MESSAGE);
             }
+
+            // Non-locking courtesy check: a date already at the daily event cap
+            // cannot accept another inquiry. The authoritative check runs again
+            // under the day lock when the inquiry is converted.
+            if (app(AvailabilityService::class)->isAtCapacity((string) $requestedDate)) {
+                return $this->rejectSubmission($request, $isAdminSubmission, BookingRules::FULL_MESSAGE);
+            }
         }
 
         if ($requestedDate && VenueSlot::isTrackable($requestedVenue) && $requestedPeriod !== null

@@ -16,6 +16,9 @@ final class BookingRules
     /** A Closed date is refused for everyone, including admins. */
     public const CLOSED_MESSAGE = 'This date is closed. Please choose another available date.';
 
+    /** The day already holds the configured number of active events. */
+    public const FULL_MESSAGE = 'That date is fully booked. Please choose another.';
+
     /** Past dates are refused for patron submissions only. */
     public const PAST_DATE_MESSAGE = 'Please select a date from today onwards.';
 
