@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationConfirmed;
+use App\Mail\InquiryCancelled;
 use App\Services\AiReplyService;
 use App\Services\AvailabilityService;
 use App\Services\VenueOccupancyService;
@@ -33,8 +34,15 @@ class InquiryController extends Controller
         ]);
 
         $inquiry = Inquiry::with('patron')->find($id);
-        $inquiry->status = $request->input('status');
+        $previousStatus = $inquiry->status;
+        $newStatus = $request->input('status');
+
+        $inquiry->status = $newStatus;
         $inquiry->save();
+
+        if ($newStatus === 'Cancelled' && $previousStatus !== 'Cancelled') {
+            $this->sendInquiryCancelledEmail($inquiry);
+        }
 
         return redirect()->route('admin.inquiry')->with('success', 'Inquiry status updated.');
     }
@@ -54,6 +62,7 @@ class InquiryController extends Controller
         }
 
         $newStatus = $request->input('status');
+        $previousStatus = $inquiry->status;
         $mailSent = true;
 
         // Marking an inquiry Completed converts it to a reservation. The venue
@@ -76,6 +85,10 @@ class InquiryController extends Controller
 
         $inquiry->status = $newStatus;
         $inquiry->save();
+
+        if ($newStatus === 'Cancelled' && $previousStatus !== 'Cancelled') {
+            $mailSent = $this->sendInquiryCancelledEmail($inquiry) && $mailSent;
+        }
 
         return response()->json(['success' => true, 'mail_sent' => $mailSent]);
     }
@@ -215,6 +228,37 @@ class InquiryController extends Controller
      * reservation is already committed at this point, so the caller reports the
      * partial success instead of failing the whole conversion.
      */
+    /**
+     * Tell the patron their inquiry was cancelled. Internal notes are never
+     * included, and a mail failure is logged instead of blocking the change.
+     */
+    private function sendInquiryCancelledEmail(Inquiry $inquiry): bool
+    {
+        if (! $inquiry->patron || ! $inquiry->patron->email) {
+            return true;
+        }
+
+        try {
+            Mail::to($inquiry->patron->email)->send(new InquiryCancelled([
+                'name'          => $inquiry->patron->name,
+                'tracking_code' => $inquiry->tracking_code ?? 'N/A',
+                'date'          => $inquiry->date ? $inquiry->date->format('Y-m-d') : 'N/A',
+                'time'          => $inquiry->time ?? 'N/A',
+                'venue'         => $inquiry->venue ?? 'N/A',
+                'event_type'    => $inquiry->event_type ?? 'N/A',
+                'theme_motif'   => $inquiry->theme_motif ?? 'N/A',
+            ]));
+
+            Log::info('Inquiry cancellation email sent to ' . $inquiry->patron->email . ' for inquiry #' . $inquiry->inquiry_id);
+
+            return true;
+        } catch (\Throwable $mailError) {
+            Log::warning('Inquiry cancellation email failed for inquiry #' . $inquiry->inquiry_id . ': ' . $mailError->getMessage());
+
+            return false;
+        }
+    }
+
     private function sendConfirmationEmail(Inquiry $inquiry, \App\Models\Reservation $reservation): bool
     {
         if (!$inquiry->relationLoaded('patron') || !$inquiry->patron) {
