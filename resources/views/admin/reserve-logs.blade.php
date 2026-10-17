@@ -37,7 +37,13 @@
                             <tr class="vs-table__row">
                                 <td>{{ $reservation->patron->name ?? 'N/A' }}</td>
                                 <td>{{ $reservation->patron->email ?? '-' }}</td>
-                                <td><strong>{{ $reservation->inquiry->tracking_code ?? 'RSV-' . str_pad($reservation->reserve_id, 6, '0', STR_PAD_LEFT) }}</strong></td>
+                                <td>
+                                    @if ($reservation->inquiry?->tracking_code)
+                                        <strong>{{ $reservation->inquiry->tracking_code }}</strong>
+                                    @else
+                                        <span style="color:#6b7280;">None</span>
+                                    @endif
+                                </td>
                                 <td>{{ $reservation->date ?? '-' }}</td>
                                 <td>{{ $reservation->time ?? '-' }}</td>
                                 <td>{{ \Illuminate\Support\Str::limit($reservation->message, 50) ?? '-' }}</td>

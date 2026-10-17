@@ -135,7 +135,9 @@ function viewReservation(id) {
                 <div class="detail-section-card">
                     <div class="detail-row">
                         <span class="detail-label">Code</span>
-                        <span class="detail-value"><span class="code-chip">${escHtml(data.tracking_code || "N/A")}</span></span>
+                        <span class="detail-value">${data.tracking_code
+                            ? `<span class="code-chip">${escHtml(data.tracking_code)}</span>`
+                            : `<span style="color:#6b7280;">None</span>`}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Date</span>
