@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Mail\EventReminder;
 use App\Models\Reservation;
+use App\Support\ReminderPolicy;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
@@ -13,7 +14,7 @@ class SendEventReminders extends Command
     /**
      * The name and signature of the console command.
      */
-    protected $signature = 'app:send-event-reminders';
+    protected $signature = 'app:send-event-reminders {--dry-run : Only print how many reminders would be sent}';
 
     /**
      * The console command description.
@@ -25,15 +26,26 @@ class SendEventReminders extends Command
      */
     public function handle()
     {
-        $this->info('Checking for reservations 7 days away...');
-
         $targetDate = Carbon::today()->addDays(7)->toDateString();
+        $since = ReminderPolicy::since();
         $sentCount = 0;
 
         $reservations = Reservation::where('status', 'active')
             ->whereDate('date', $targetDate)
+            ->whereDate('date', '>', Carbon::today()->toDateString())
             ->whereNull('event_reminder_sent_at')
+            ->when($since, fn ($query) => $query->where('created_at', '>=', $since))
+            ->orderBy('reserve_id')
+            ->limit(ReminderPolicy::MAX_PER_RUN)
             ->get();
+
+        if ($this->option('dry-run')) {
+            $this->info('Would send ' . $reservations->count() . ' event reminder(s).');
+
+            return Command::SUCCESS;
+        }
+
+        $this->info('Checking for reservations 7 days away...');
 
         foreach ($reservations as $reservation) {
             $patron = $reservation->patron;

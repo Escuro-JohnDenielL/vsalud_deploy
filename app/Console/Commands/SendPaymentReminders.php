@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Mail\PaymentReminder;
 use App\Models\Reservation;
+use App\Support\ReminderPolicy;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -14,7 +15,7 @@ class SendPaymentReminders extends Command
     /**
      * The name and signature of the console command.
      */
-    protected $signature = 'app:send-payment-reminders';
+    protected $signature = 'app:send-payment-reminders {--dry-run : Only print how many reminders would be sent}';
 
     /**
      * The console command description.
@@ -26,20 +27,32 @@ class SendPaymentReminders extends Command
      */
     public function handle()
     {
-        $this->info('Checking for reservations with pending payment...');
-
         $cutoffDate = Carbon::now()->subDays(3);
+        $since = ReminderPolicy::since();
         $sentCount = 0;
 
         // Find active reservations created 3+ days ago that haven't been sent a
-        // payment reminder yet, and have no approved payment on file.
+        // payment reminder yet, have a future event, and have no approved
+        // payment on file.
         $reservations = Reservation::where('reservation.status', 'active')
             ->where('reservation.created_at', '<=', $cutoffDate)
+            ->whereDate('reservation.date', '>', Carbon::today()->toDateString())
             ->whereNull('reservation.payment_reminder_sent_at')
             ->whereDoesntHave('inquiry.payments', function ($query) {
                 $query->where('status', 'approved');
             })
+            ->when($since, fn ($query) => $query->where('reservation.created_at', '>=', $since))
+            ->orderBy('reservation.reserve_id')
+            ->limit(ReminderPolicy::MAX_PER_RUN)
             ->get();
+
+        if ($this->option('dry-run')) {
+            $this->info('Would send ' . $reservations->count() . ' payment reminder(s).');
+
+            return Command::SUCCESS;
+        }
+
+        $this->info('Checking for reservations with pending payment...');
 
         foreach ($reservations as $reservation) {
             $patron = $reservation->patron;
