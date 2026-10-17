@@ -10,6 +10,13 @@
     <div class="vs-page vs-admin-cancellations">
         <x-ui.page-header title="Cancellation Requests" subtitle="Review and manage patron cancellation requests." />
 
+        <x-ui.table-search
+            :action="route('admin.cancellations')"
+            :value="$search"
+            label="Search requests"
+            placeholder="Name, email, or reservation code"
+            input-id="cancellationSearch" />
+
         <div class="vs-table-frame">
             <div class="vs-table-wrap" role="region" tabindex="0" aria-label="Cancellation requests table">
                 <table class="vs-table">

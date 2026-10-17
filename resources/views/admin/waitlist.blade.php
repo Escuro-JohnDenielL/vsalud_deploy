@@ -111,6 +111,13 @@
     <div class="vs-page vs-admin-waitlist">
         <x-ui.page-header title="Waitlist" subtitle="Track patrons waiting for available dates. Entries are managed automatically." />
 
+        <x-ui.table-search
+            :action="route('admin.waitlist')"
+            :value="$search"
+            label="Search waitlist"
+            placeholder="Patron name or email"
+            input-id="waitlistSearch" />
+
         <div class="vs-stat-grid">
             <x-ui.stat-card :value="$stats['waiting']" label="Waiting" dot="warning" />
             <x-ui.stat-card :value="$stats['notified']" label="Notified" dot="info" />

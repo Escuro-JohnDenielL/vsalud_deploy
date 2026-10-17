@@ -119,19 +119,19 @@
 
 .vs-admin-payment-logs .payment-table {
     width: 100%;
-    min-width: 1080px;
+    min-width: 1200px;
     table-layout: fixed;
 }
 
 .vs-admin-payment-logs .payment-col-reservation { width: 19%; }
-.vs-admin-payment-logs .payment-col-email { width: 18%; }
+.vs-admin-payment-logs .payment-col-email { width: 15%; }
 .vs-admin-payment-logs .payment-col-money { width: 9%; }
-.vs-admin-payment-logs .payment-col-confirmation { width: 13%; }
-.vs-admin-payment-logs .payment-col-pending { width: 9%; }
-.vs-admin-payment-logs .payment-col-details { width: 16%; }
+.vs-admin-payment-logs .payment-col-confirmation { width: 12%; }
+.vs-admin-payment-logs .payment-col-pending { width: 7%; }
+.vs-admin-payment-logs .payment-col-details { width: 20%; }
 
 .vs-admin-payment-logs .reservation-group-row > td {
-    background: var(--vs-color-surface);
+    background: var(--vs-color-surface-beige);
     color: var(--vs-color-text);
 }
 
@@ -151,10 +151,11 @@
 
 .vs-admin-payment-logs .payment-group-toggle {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 10px;
     width: 100%;
-    padding: 4px;
+    min-height: 0;
+    padding: 0;
     border: 0;
     background: transparent;
     color: var(--vs-color-text);
@@ -166,21 +167,19 @@
 .vs-layout--admin .payment-logs-page.vs-admin-payment-logs button.payment-group-toggle:not(.admin-btn),
 .vs-layout--admin .payment-logs-page.vs-admin-payment-logs button.payment-group-toggle:not(.admin-btn):hover {
     min-height: 0;
-    padding: 8px 10px;
-    border: 1px solid var(--vs-color-control-border);
-    border-radius: var(--vs-radius-control);
-    background: var(--vs-color-surface-beige);
-    background-color: var(--vs-color-surface-beige);
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    background-color: transparent;
     background-image: none;
-    color: var(--vs-color-deep-green);
+    color: var(--vs-color-text);
     box-shadow: none;
     transform: none;
 }
 
-.vs-layout--admin .payment-logs-page.vs-admin-payment-logs button.payment-group-toggle:not(.admin-btn):hover {
-    border-color: var(--vs-color-dark-green);
-    background: var(--vs-color-pale-green);
-    background-color: var(--vs-color-pale-green);
+.vs-layout--admin .payment-logs-page.vs-admin-payment-logs button.payment-group-toggle:not(.admin-btn):hover .payment-group-identity strong {
+    text-decoration: underline;
 }
 
 .vs-layout--admin .payment-logs-page.vs-admin-payment-logs button.payment-group-toggle .payment-group-identity,
@@ -196,15 +195,17 @@
 
 .vs-admin-payment-logs .payment-group-indicator {
     display: inline-flex;
-    flex: 0 0 24px;
+    flex: 0 0 22px;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
-    border: 1px solid var(--vs-color-control-border);
+    width: 22px;
+    height: 22px;
+    border: 0;
     border-radius: 50%;
+    background: var(--vs-color-pale-green);
     color: var(--vs-color-deep-green);
     font-weight: var(--vs-weight-bold);
+    line-height: 1;
 }
 
 .vs-admin-payment-logs .payment-group-identity {
@@ -212,8 +213,7 @@
     gap: 3px;
 }
 
-.vs-admin-payment-logs .payment-group-identity small,
-.vs-admin-payment-logs .standalone-payment-identity > span {
+.vs-admin-payment-logs .payment-group-identity small {
     color: var(--vs-color-text-secondary);
     font-size: var(--vs-text-secondary-min);
 }
@@ -280,7 +280,6 @@
 }
 
 .vs-admin-payment-logs .standalone-payment-row > td {
-    padding: 14px 20px;
     background: var(--vs-color-surface);
 }
 
@@ -288,33 +287,27 @@
     background: var(--vs-color-surface-pale-green);
 }
 
-.vs-admin-payment-logs .standalone-payment-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-}
-
-.vs-admin-payment-logs .standalone-payment-identity {
-    display: grid;
-    gap: 3px;
-    min-width: 0;
+.vs-admin-payment-logs .standalone-payment-row td small {
+    font-size: var(--vs-text-secondary-min);
 }
 
 .vs-admin-payment-logs .standalone-payment-actions {
-    display: grid;
-    grid-template-columns: minmax(140px, 1fr) 152px;
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .vs-admin-payment-logs .standalone-payment-actions .payment-status-dropdown {
-    width: 140px;
+    width: 112px;
+    min-width: 112px;
 }
 
 .vs-admin-payment-logs .standalone-payment-actions .payment-details-open {
-    width: 152px;
+    min-height: 38px;
+    padding: 6px 10px;
     justify-content: center;
+    white-space: nowrap;
 }
 
 .vs-admin-payment-logs .payment-pagination {
@@ -525,15 +518,7 @@
         align-self: flex-start;
     }
 
-    .vs-admin-payment-logs .standalone-payment-card {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 14px;
-    }
-
     .vs-admin-payment-logs .standalone-payment-actions {
-        display: flex;
-        flex-wrap: wrap;
         justify-content: flex-start;
     }
 }

@@ -4,17 +4,29 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Waitlist;
+use Illuminate\Http\Request;
 
 class WaitlistController extends Controller
 {
     /**
      * Show the waitlist (read-only) grouped by date.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $entries = Waitlist::orderBy('requested_date', 'desc')
+        $search = trim((string) $request->query('search', ''));
+
+        $entries = Waitlist::when($search !== '', function ($query) use ($search) {
+            $like = '%' . $search . '%';
+
+            $query->where(function ($group) use ($like) {
+                $group->where('patron_name', 'like', $like)
+                    ->orWhere('patron_email', 'like', $like);
+            });
+        })
+            ->orderBy('requested_date', 'desc')
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
 
         // Group by date for easier reading
         $grouped = $entries->getCollection()->groupBy(function ($entry) {
@@ -31,6 +43,6 @@ class WaitlistController extends Controller
             'expired'  => $allEntries->where('status', 'expired')->count(),
         ];
 
-        return view('admin.waitlist', compact('entries', 'grouped', 'stats'));
+        return view('admin.waitlist', compact('entries', 'grouped', 'stats', 'search'));
     }
 }

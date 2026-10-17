@@ -133,29 +133,59 @@
                                     </td>
                                 </tr>
                             @else
-                                @php($payment_log = $group['payment'])
+                                @php
+                                    $payment_log = $group['payment'];
+                                    $confirmationVariant = match ($group['confirmation_label']) {
+                                        'Fully paid' => 'success',
+                                        'Downpayment received' => 'info',
+                                        default => 'neutral',
+                                    };
+                                @endphp
                                 <tr class="standalone-payment-row">
-                                    <td colspan="8">
-                                        <div class="standalone-payment-card">
-                                            <div class="standalone-payment-identity">
-                                                <strong>{{ $payment_log->full_name }}</strong>
-                                                <span>{{ $payment_log->reservation_code ?? 'No reservation code' }}</span>
-                                                <span>{{ $payment_log->email ?? 'No email recorded' }}</span>
-                                            </div>
-                                            <div class="standalone-payment-actions">
-                                                <select class="payment-status-dropdown vs-form-control" data-payment-id="{{ $payment_log->payment_id }}" aria-label="Payment status for {{ $payment_log->full_name }}">
-                                                    <option value="pending" {{ $payment_log->status === 'pending' ? 'selected' : '' }}>Pending</option>
-                                                    <option value="approved" {{ $payment_log->status === 'approved' ? 'selected' : '' }}>Approved</option>
-                                                    <option value="rejected" {{ $payment_log->status === 'rejected' ? 'selected' : '' }}>Rejected</option>
-                                                    <option value="refunded" {{ $payment_log->status === 'refunded' ? 'selected' : '' }}>Refunded</option>
-                                                </select>
-                                                <button type="button" class="payment-info-button payment-details-open"
-                                                    data-payment-info-target="paymentDetails{{ $payment_log->payment_id }}"
-                                                    aria-haspopup="dialog" aria-controls="paymentDetails{{ $payment_log->payment_id }}">
-                                                    <span class="payment-info-icon" aria-hidden="true">i</span>
-                                                    Payment info
-                                                </button>
-                                            </div>
+                                    <td>
+                                        <strong>{{ $group['name'] }}</strong>
+                                        <br><small class="vs-none">{{ $group['reservation_code'] ?? 'No reservation code' }}</small>
+                                    </td>
+                                    <td class="vs-cell-email">{{ $group['email'] }}</td>
+                                    <td>
+                                        @if ($group['total_display'] === '-')
+                                            <span class="vs-none">None</span>
+                                        @else
+                                            ₱{{ $group['total_display'] }}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($group['paid_display'] === '-')
+                                            <span class="vs-none">None</span>
+                                        @else
+                                            ₱{{ $group['paid_display'] }}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($group['remaining_display'] === '-')
+                                            <span class="vs-none">None</span>
+                                        @else
+                                            ₱{{ $group['remaining_display'] }}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <span class="vs-badge vs-badge--{{ $confirmationVariant }}">{{ $group['confirmation_label'] }}</span>
+                                    </td>
+                                    <td>{{ $group['pending_count'] }}</td>
+                                    <td>
+                                        <div class="standalone-payment-actions">
+                                            <select class="payment-status-dropdown vs-form-control" data-payment-id="{{ $payment_log->payment_id }}" aria-label="Payment status for {{ $group['name'] }}">
+                                                <option value="pending" {{ $payment_log->status === 'pending' ? 'selected' : '' }}>Pending</option>
+                                                <option value="approved" {{ $payment_log->status === 'approved' ? 'selected' : '' }}>Approved</option>
+                                                <option value="rejected" {{ $payment_log->status === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                                <option value="refunded" {{ $payment_log->status === 'refunded' ? 'selected' : '' }}>Refunded</option>
+                                            </select>
+                                            <button type="button" class="payment-info-button payment-details-open"
+                                                data-payment-info-target="paymentDetails{{ $payment_log->payment_id }}"
+                                                aria-haspopup="dialog" aria-controls="paymentDetails{{ $payment_log->payment_id }}">
+                                                <span class="payment-info-icon" aria-hidden="true">i</span>
+                                                Payment info
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -163,7 +193,7 @@
                         @empty
                             <tr>
                                 <td colspan="8" class="text-center">
-                                    {{ $search !== '' ? 'No reservations match your search.' : 'No payment records found.' }}
+                                    {{ $search !== '' ? 'No payment records match your search.' : 'No payment records found.' }}
                                 </td>
                             </tr>
                         @endforelse
@@ -229,6 +259,10 @@
                 <div>
                     <dt>Pending</dt>
                     <dd>The number of payment submissions waiting for admin review. Expand a reservation to review receipts and update individual payment statuses.</dd>
+                </div>
+                <div>
+                    <dt>Not tracked</dt>
+                    <dd>Payments that are not linked to a reservation total show "Not tracked" because paid and remaining amounts cannot be calculated.</dd>
                 </div>
             </dl>
         </div>

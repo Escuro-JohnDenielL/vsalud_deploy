@@ -10,6 +10,13 @@
     <div class="vs-page vs-admin-inquiry">
         <x-ui.page-header title="Inquiries" subtitle="View and manage customer inquiries." />
 
+        <x-ui.table-search
+            :action="route('admin.inquiry')"
+            :value="$search"
+            label="Search inquiries"
+            placeholder="Name, email, contact number, or tracking code"
+            input-id="inquirySearch" />
+
         <div class="vs-table-frame">
             <div class="vs-table-wrap" role="region" tabindex="0" aria-label="Inquiries table">
                 <table class="vs-table inquiry-table">

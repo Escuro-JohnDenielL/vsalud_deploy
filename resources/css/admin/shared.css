@@ -452,6 +452,27 @@
   outline-offset: var(--vs-focus-offset);
 }
 
+/* --- Table search (server-side ?search=) --- */
+.vs-layout--admin .vs-table-search {
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.vs-layout--admin .vs-table-search .vs-field {
+  flex: 1 1 280px;
+  max-width: 460px;
+}
+
+.vs-layout--admin .vs-table-search__input {
+  width: 100%;
+}
+
+.vs-layout--admin .vs-table-search__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vs-space-2);
+}
+
 .vs-layout--admin .vs-table .vs-cell-select {
   width: 44px;
   text-align: center;

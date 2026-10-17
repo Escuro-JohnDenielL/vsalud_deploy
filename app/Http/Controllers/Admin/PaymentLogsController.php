@@ -79,15 +79,24 @@ class PaymentLogsController extends Controller
                 ? null
                 : bcadd($approvedByInquiry[$payment->inquiry_id] ?? '0.00', '0', 2);
 
+            $remaining = $paid === null
+                ? null
+                : bcsub((string) $total, $paid, 2);
+
             $entries['payment:' . $payment->payment_id] = [
                 'kind' => 'standalone',
                 'sort_id' => $payment->payment_id,
                 'payment' => $payment,
+                'name' => $payment->full_name ?: 'Unknown patron',
+                'email' => $payment->email ?: '-',
+                'reservation_code' => $payment->reservation_code ?: null,
                 'total_display' => $total === null ? '-' : $this->formatMoney((string) $total),
                 'paid_display' => $paid === null ? '-' : $this->formatMoney($paid),
-                'remaining_display' => $paid === null
-                    ? '-'
-                    : $this->formatMoney(bcsub((string) $total, $paid, 2)),
+                'remaining_display' => $remaining === null ? '-' : $this->formatMoney($remaining),
+                'confirmation_label' => $total === null || $paid === null
+                    ? 'Not tracked'
+                    : $this->confirmationLabel((string) $total, $paid, $remaining),
+                'pending_count' => $payment->status === 'pending' ? 1 : 0,
             ];
         }
 

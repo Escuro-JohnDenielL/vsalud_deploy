@@ -33,3 +33,6 @@ THESIS_*.md
 /hide
 BUG_REPORT_TRACKER.csv
 SECURITY.md
+tests/manual/LiveQaFlowTest.php
+tests/Feature/AdminListSearchTest.php
+tests/Pest.php

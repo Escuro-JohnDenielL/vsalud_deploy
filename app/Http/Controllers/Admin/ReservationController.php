@@ -17,14 +17,29 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReservationController extends Controller
 {
-    public function showReservationLogs()
+    public function showReservationLogs(Request $request)
     {
+        $search = trim((string) $request->query('search', ''));
+
         $reservations = Reservation::with(['patron', 'inquiry'])
             ->select('*')
-            ->latest()
-            ->paginate(10);
+            ->when($search !== '', function ($query) use ($search) {
+                $like = '%' . $search . '%';
 
-        return view('admin.reserve-logs', compact('reservations'));
+                $query->where(function ($group) use ($like) {
+                    $group->whereHas('patron', function ($patron) use ($like) {
+                        $patron->where('name', 'like', $like)
+                            ->orWhere('email', 'like', $like);
+                    })->orWhereHas('inquiry', function ($inquiry) use ($like) {
+                        $inquiry->where('tracking_code', 'like', $like);
+                    });
+                });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('admin.reserve-logs', compact('reservations', 'search'));
     }
 
     /**

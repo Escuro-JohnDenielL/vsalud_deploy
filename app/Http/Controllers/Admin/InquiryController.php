@@ -21,10 +21,28 @@ use App\Support\VenueSlot;
 
 class InquiryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $inquiries = Inquiry::with('patron')->latest()->paginate(10);
-        return view('admin.inquiry', compact('inquiries'));
+        $search = trim((string) $request->query('search', ''));
+
+        $inquiries = Inquiry::with('patron')
+            ->when($search !== '', function ($query) use ($search) {
+                $like = '%' . $search . '%';
+
+                $query->where(function ($group) use ($like) {
+                    $group->where('tracking_code', 'like', $like)
+                        ->orWhereHas('patron', function ($patron) use ($like) {
+                            $patron->where('name', 'like', $like)
+                                ->orWhere('email', 'like', $like)
+                                ->orWhere('contact_number', 'like', $like);
+                        });
+                });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('admin.inquiry', compact('inquiries', 'search'));
     }
 
     public function updateStatus(Request $request, $id)

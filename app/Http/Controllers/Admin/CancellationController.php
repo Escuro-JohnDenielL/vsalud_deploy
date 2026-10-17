@@ -21,13 +21,30 @@ class CancellationController extends Controller
     /**
      * Show all cancellation requests.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $requests = CancellationRequest::with(['reservation.patron', 'reservation.inquiry', 'admin'])
-            ->latest()
-            ->paginate(10);
+        $search = trim((string) $request->query('search', ''));
 
-        return view('admin.cancellations', compact('requests'));
+        $requests = CancellationRequest::with(['reservation.patron', 'reservation.inquiry', 'admin'])
+            ->when($search !== '', function ($query) use ($search) {
+                $like = '%' . $search . '%';
+
+                $query->where(function ($group) use ($like) {
+                    $group->where('patron_email', 'like', $like)
+                        ->orWhereHas('reservation.patron', function ($patron) use ($like) {
+                            $patron->where('name', 'like', $like)
+                                ->orWhere('email', 'like', $like);
+                        })
+                        ->orWhereHas('reservation.inquiry', function ($inquiry) use ($like) {
+                            $inquiry->where('tracking_code', 'like', $like);
+                        });
+                });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('admin.cancellations', compact('requests', 'search'));
     }
 
     /**

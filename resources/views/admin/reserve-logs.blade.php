@@ -19,6 +19,13 @@
             </a>
         </div>
 
+        <x-ui.table-search
+            :action="route('admin.reserve-logs')"
+            :value="$search"
+            label="Search reservations"
+            placeholder="Name, email, or reservation code"
+            input-id="reservationLogSearch" />
+
         <div class="table-container">
             <div class="table-wrapper vs-table-wrap" role="region" tabindex="0" aria-label="Reservation logs table">
                 <table class="reservation-table vs-table">
