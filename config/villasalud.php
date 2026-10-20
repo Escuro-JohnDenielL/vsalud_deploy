@@ -28,6 +28,12 @@ return [
     ],
 
     /*
+    | Version recorded on the patron inquiry audit entry as proof of which
+    | notice was agreed to. Change this when the notice text changes.
+    */
+    'privacy_notice_version' => 'dpa-2026-10',
+
+    /*
     |--------------------------------------------------------------------------
     | Bookable venues
     |--------------------------------------------------------------------------

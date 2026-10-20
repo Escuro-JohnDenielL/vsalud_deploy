@@ -44,7 +44,9 @@ class PatronAudit
         ?string $trackingCode,
         string $summary,
         ?int $inquiryId = null,
-        ?int $reserveId = null
+        ?int $reserveId = null,
+        ?string $noticeVersion = null,
+        bool $includeRequestMeta = true
     ): void {
         try {
             $trackingCode = self::cleanTrackingCode($trackingCode);
@@ -56,11 +58,11 @@ class PatronAudit
                 'route_name'    => $request->route()?->getName(),
                 'http_method'   => $request->method(),
                 'subject'       => $trackingCode ? 'Tracking ' . $trackingCode : null,
-                'description'   => self::describe($summary, $trackingCode),
+                'description'   => self::describe($summary, $trackingCode, $noticeVersion),
                 'inquiry_id'    => $inquiryId,
                 'reserve_id'    => $reserveId,
-                'ip_address'    => $request->ip(),
-                'user_agent'    => substr((string) $request->userAgent(), 0, 500),
+                'ip_address'    => $includeRequestMeta ? $request->ip() : null,
+                'user_agent'    => $includeRequestMeta ? substr((string) $request->userAgent(), 0, 500) : null,
             ]);
         } catch (\Throwable $e) {
             Log::warning('Could not write patron audit entry: ' . $e->getMessage());
@@ -72,12 +74,20 @@ class PatronAudit
      * what happened, and the tracking code when there is one. Pure, so the
      * shape can be unit tested without a database.
      */
-    public static function describe(string $summary, ?string $trackingCode = null): string
+    public static function describe(string $summary, ?string $trackingCode = null, ?string $noticeVersion = null): string
     {
         $trackingCode = self::cleanTrackingCode($trackingCode);
 
-        return self::PREFIX . ' ' . trim($summary)
+        $description = self::PREFIX . ' ' . trim($summary)
             . ($trackingCode !== null ? ' [tracking ' . $trackingCode . ']' : '');
+
+        $noticeVersion = trim((string) $noticeVersion);
+
+        if ($noticeVersion !== '') {
+            $description .= ' [notice ' . $noticeVersion . ']';
+        }
+
+        return $description;
     }
 
     /**

@@ -212,7 +212,10 @@ class ReservationController extends Controller
                     $request,
                     $inquiry->tracking_code,
                     'booking inquiry submitted',
-                    $inquiry->inquiry_id
+                    $inquiry->inquiry_id,
+                    null,
+                    (string) config('villasalud.privacy_notice_version', ''),
+                    false
                 );
 
                 if ($claimedWaitlistSlot) {
