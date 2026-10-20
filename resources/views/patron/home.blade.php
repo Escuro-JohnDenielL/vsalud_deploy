@@ -36,7 +36,9 @@
             <button type="button" class="pkg-modal__close" id="pkgModalClose" aria-label="Close package details">&times;</button>
 
             <div class="pkg-modal__media">
-                <img id="pkgModalMainImage" class="pkg-modal__main-image" src="" alt="Package image">
+                <button type="button" class="pkg-modal__zoom" id="pkgModalZoom" aria-label="Enlarge package photo">
+                    <img id="pkgModalMainImage" class="pkg-modal__main-image" src="" alt="Package image">
+                </button>
                 <div class="pkg-modal__thumbs" id="pkgModalThumbs"></div>
             </div>
 
@@ -53,7 +55,15 @@
         </div>
     </div>
 
-    {{-- Data Privacy Act (RA 10173) notice -- auto-opens on every page load --}}
+    {{-- Enlarged package photo. Opens from the main photo in the package modal. --}}
+    <div id="pkgLightbox" class="pkg-lightbox" role="dialog" aria-modal="true" aria-label="Enlarged package photo" hidden>
+        <div class="pkg-lightbox__dialog">
+            <button type="button" class="pkg-lightbox__close" id="pkgLightboxClose">Close</button>
+            <button type="button" class="pkg-lightbox__nav pkg-lightbox__nav--prev" id="pkgLightboxPrev" aria-label="Previous photo">&#8249;</button>
+            <img id="pkgLightboxImage" class="pkg-lightbox__image" src="" alt="">
+            <button type="button" class="pkg-lightbox__nav pkg-lightbox__nav--next" id="pkgLightboxNext" aria-label="Next photo">&#8250;</button>
+        </div>
+    </div>
     <div id="privacyModal" class="privacy-overlay" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
         <div class="privacy-modal">
             <button type="button" class="privacy-modal__close" id="privacyClose" aria-label="Close privacy notice">&times;</button>

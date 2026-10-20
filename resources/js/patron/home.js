@@ -12,6 +12,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const mainImage = document.getElementById("pkgModalMainImage");
     const thumbsEl = document.getElementById("pkgModalThumbs");
     const inclusionsEl = document.getElementById("pkgModalInclusions");
+    const zoomBtn = document.getElementById("pkgModalZoom");
+    const lightbox = document.getElementById("pkgLightbox");
+    const lightboxImage = document.getElementById("pkgLightboxImage");
+    const lightboxClose = document.getElementById("pkgLightboxClose");
+    const lightboxPrev = document.getElementById("pkgLightboxPrev");
+    const lightboxNext = document.getElementById("pkgLightboxNext");
     const DEFAULT_IMAGE = "/images/package_placeholder.svg";
 
     const formatPrice = function (price) {
@@ -21,6 +27,45 @@ document.addEventListener("DOMContentLoaded", function () {
         })}`;
     };
 
+    let gallery = [];
+    let galleryIndex = 0;
+    let packageName = "Package";
+    let lightboxReturnFocus = null;
+
+    const showGalleryImage = function (index) {
+        if (!gallery.length) return;
+        galleryIndex = (index + gallery.length) % gallery.length;
+        mainImage.src = gallery[galleryIndex];
+        mainImage.alt = `${packageName} photo ${galleryIndex + 1} of ${gallery.length}`;
+    };
+
+    const updateLightbox = function () {
+        if (!lightboxImage) return;
+        lightboxImage.src = gallery[galleryIndex];
+        lightboxImage.alt = `${packageName} enlarged photo ${galleryIndex + 1} of ${gallery.length}`;
+        const multiple = gallery.length > 1;
+        if (lightboxPrev) lightboxPrev.hidden = !multiple;
+        if (lightboxNext) lightboxNext.hidden = !multiple;
+    };
+
+    const openLightbox = function () {
+        if (!lightbox || !gallery.length) return;
+        lightboxReturnFocus = document.activeElement;
+        lightbox.hidden = false;
+        updateLightbox();
+        document.body.style.overflow = "hidden";
+        lightboxClose?.focus();
+    };
+
+    const closeLightbox = function (restoreFocus) {
+        if (!lightbox || lightbox.hidden) return;
+        lightbox.hidden = true;
+        document.body.style.overflow = modal.style.display === "flex" ? "hidden" : "";
+        if (restoreFocus !== false && lightboxReturnFocus?.focus) {
+            lightboxReturnFocus.focus();
+        }
+    };
+
     const openModal = function () {
         window.vsModalPrepareOpen(modal);
         modal.style.display = "flex";
@@ -28,6 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     const closeModal = function () {
+        closeLightbox(false);
         window.vsModalCloseAfterFade(modal, () => {
             modal.style.display = "none";
             document.body.style.overflow = "";
@@ -48,6 +94,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 ? data.images
                 : [DEFAULT_IMAGE];
 
+            gallery = images;
+            packageName = data.name || "Package";
+
             titleEl.textContent = data.name || "Package";
             descEl.textContent = data.description || "No description available.";
             priceEl.textContent = formatPrice(data.price);
@@ -56,21 +105,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 this.onerror = null;
                 this.src = DEFAULT_IMAGE;
             };
-            mainImage.src = images[0];
-            mainImage.alt = (data.name || "Package") + " image";
+            showGalleryImage(0);
 
             // Thumbnails (only shown when the package has more than one photo)
             thumbsEl.innerHTML = "";
             if (images.length > 1) {
-                images.forEach(function (src) {
+                images.forEach(function (src, index) {
                     const thumb = document.createElement("img");
-                    thumb.alt = (data.name || "Package") + " photo";
+                    thumb.alt = (data.name || "Package") + " photo " + (index + 1);
                     thumb.onerror = function () {
                         this.remove();
                     };
                     thumb.src = src;
                     thumb.addEventListener("click", function () {
-                        mainImage.src = src;
+                        showGalleryImage(index);
                     });
                     thumbsEl.appendChild(thumb);
                 });
@@ -100,7 +148,52 @@ document.addEventListener("DOMContentLoaded", function () {
         if (event.target === modal) closeModal();
     });
 
+    // Enlarged photo. Click the main photo, then Escape, Close, arrows or swipe.
+    if (zoomBtn) zoomBtn.addEventListener("click", openLightbox);
+    if (lightboxClose) lightboxClose.addEventListener("click", function () { closeLightbox(true); });
+    if (lightboxPrev) lightboxPrev.addEventListener("click", function () {
+        showGalleryImage(galleryIndex - 1);
+        updateLightbox();
+    });
+    if (lightboxNext) lightboxNext.addEventListener("click", function () {
+        showGalleryImage(galleryIndex + 1);
+        updateLightbox();
+    });
+
+    lightbox?.addEventListener("click", function (event) {
+        if (event.target === lightbox) closeLightbox(true);
+    });
+
+    let touchStartX = null;
+    lightbox?.addEventListener("touchstart", function (event) {
+        touchStartX = event.changedTouches[0]?.clientX ?? null;
+    }, { passive: true });
+    lightbox?.addEventListener("touchend", function (event) {
+        if (touchStartX === null || gallery.length < 2) return;
+        const delta = (event.changedTouches[0]?.clientX ?? touchStartX) - touchStartX;
+        touchStartX = null;
+        if (Math.abs(delta) < 40) return;
+        showGalleryImage(galleryIndex + (delta < 0 ? 1 : -1));
+        updateLightbox();
+    }, { passive: true });
+
     document.addEventListener("keydown", function (event) {
+        if (lightbox && !lightbox.hidden) {
+            if (event.key === "Escape") {
+                event.preventDefault();
+                closeLightbox(true);
+            } else if (event.key === "ArrowLeft" && gallery.length > 1) {
+                event.preventDefault();
+                showGalleryImage(galleryIndex - 1);
+                updateLightbox();
+            } else if (event.key === "ArrowRight" && gallery.length > 1) {
+                event.preventDefault();
+                showGalleryImage(galleryIndex + 1);
+                updateLightbox();
+            }
+            return;
+        }
+
         if (event.key === "Escape" && modal.style.display === "flex") {
             closeModal();
         }
