@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Admin Dashboard')
+@section('title', 'Packages')
 
 @section('content')
 <div class="vs-page vs-admin-dashboard">

@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Feedback')
+@section('title', 'Customer Feedback')
 
 @push('styles')
     @vite('resources/css/admin/feedback.css')

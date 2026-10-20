@@ -90,7 +90,7 @@
                     <li>
                         <a href="{{ route('admin.reserve-logs') }}"
                             class="{{ request()->is('admin/reserve-logs') ? 'active' : '' }}">
-                            Reservations
+                            Reservation Logs
                         </a>
                     </li>
                     @endif
@@ -98,7 +98,7 @@
                     <li>
                         <a href="{{ route('admin.payment-logs') }}"
                             class="{{ request()->is('admin/payment-logs') ? 'active' : '' }}">
-                            Payments
+                            Payment Logs
                         </a>
                     </li>
                     @endif
@@ -144,7 +144,7 @@
                     @if($canAccess('feedback'))
                     <li>
                         <a href="{{ route('admin.feedback') }}" class="{{ request()->is('admin/feedback') ? 'active' : '' }}">
-                            Feedback
+                            Customer Feedback
                         </a>
                     </li>
                     @endif
@@ -158,7 +158,7 @@
                     @if($canAccess('incident-logs'))
                     <li>
                         <a href="{{ route('admin.incident-logs') }}" class="{{ request()->is('admin/incident-logs') ? 'active' : '' }}">
-                            Incidents
+                            Incident Logs
                         </a>
                     </li>
                     @endif

@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'IT Management - Villa Salud')
+@section('title', 'IT Management')
 
 @push('styles')
 <style>

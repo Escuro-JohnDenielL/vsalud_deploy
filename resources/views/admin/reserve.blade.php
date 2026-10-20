@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Make Reservation')
+@section('title', 'Reservation Calendar')
 
 @push('styles')
     @vite(['resources/css/admin/reserve.css', 'resources/css/venue-panel.css'])

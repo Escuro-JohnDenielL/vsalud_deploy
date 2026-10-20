@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'View Inquiries')
+@section('title', 'Inquiries')
 
 @push('styles')
     @vite('resources/css/admin/inquiry.css')
