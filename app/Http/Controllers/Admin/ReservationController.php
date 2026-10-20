@@ -150,8 +150,14 @@ class ReservationController extends Controller
 
     public function updateTotal(Request $request, $id)
     {
+        // Commas and spaces are formatting, not value. Strip them before the
+        // rule runs so "1,250.50" and " 1250.50 " are the same amount.
+        $request->merge([
+            'total_amount' => \App\Rules\ReservationTotalAmount::normalize($request->input('total_amount')),
+        ]);
+
         $validated = $request->validate([
-            'total_amount' => ['required', 'string', 'regex:/^\\d{1,8}(?:\\.\\d{1,2})?$/'],
+            'total_amount' => ['required', 'string', new \App\Rules\ReservationTotalAmount()],
             'confirm' => ['sometimes', 'boolean'],
         ]);
 

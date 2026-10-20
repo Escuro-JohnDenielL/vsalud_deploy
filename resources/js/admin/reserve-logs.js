@@ -196,6 +196,7 @@ function viewReservation(id) {
                     <label class="detail-label" for="reservationTotalAmount">Reservation total</label>
                     <div class="detail-row">
                         <input id="reservationTotalAmount" name="total_amount" type="text" inputmode="decimal" required
+                            autocomplete="off" maxlength="11" pattern="[0-9]*[.]?[0-9]{0,2}"
                             value="${escHtml(data.total_amount || "")}" aria-label="Reservation total amount">
                         <button class="admin-btn admin-btn-primary admin-btn-sm" type="submit">Save total</button>
                     </div>
@@ -223,6 +224,18 @@ function viewReservation(id) {
             const aiBriefOutput = document.getElementById("aiBriefOutput");
 
             const reservationTotalForm = document.getElementById("reservationTotalForm");
+
+            // Numbers only: strip letters and symbols, drop thousands commas,
+            // and cap the value at 8 whole digits plus 2 decimals.
+            const totalInput = document.getElementById("reservationTotalAmount");
+            totalInput?.addEventListener("input", () => {
+                const cleaned = totalInput.value.replace(/[^\d.,]/g, "").replace(/,/g, "");
+                const [whole, ...rest] = cleaned.split(".");
+                let next = whole.slice(0, 8);
+                if (rest.length) next += "." + rest.join("").slice(0, 2);
+                if (totalInput.value !== next) totalInput.value = next;
+            });
+
             reservationTotalForm?.addEventListener("submit", async (event) => {
                 event.preventDefault();
                 const formData = new FormData(reservationTotalForm);
