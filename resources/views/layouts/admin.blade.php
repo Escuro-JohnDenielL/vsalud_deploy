@@ -214,9 +214,9 @@
                     </li>
                     <li class="vs-account-menu__divider" role="separator"></li>
                     <li>
-                        <form method="POST" action="{{ route('admin.logout') }}">
+                        <form method="POST" action="{{ route('admin.logout') }}" id="adminLogoutForm">
                             @csrf
-                            <button type="submit" class="admin-logout-button">
+                            <button type="submit" class="admin-logout-button" id="adminLogoutButton">
                                 Logout
                             </button>
                         </form>
@@ -285,6 +285,19 @@
     }
     </style>
 
+    {{-- Logout confirmation. The form stays a POST with CSRF; this only asks first. --}}
+    <div id="logoutConfirmModal" class="modal" role="dialog" aria-modal="true"
+         aria-labelledby="logoutConfirmTitle" aria-describedby="logoutConfirmText">
+        <div class="modal-content modal-sm">
+            <h2 id="logoutConfirmTitle">Log out?</h2>
+            <p id="logoutConfirmText">Are you sure you want to log out?</p>
+            <div class="modal-footer">
+                <button type="button" class="admin-btn admin-btn-ghost" id="logoutCancel">Cancel</button>
+                <button type="button" class="admin-btn admin-btn-danger" id="logoutConfirm">Log out</button>
+            </div>
+        </div>
+    </div>
+
     @stack('scripts')
 
 <script>
@@ -339,6 +352,73 @@
     } else {
         initModals();
     }
+})();
+</script>
+
+<script>
+(function () {
+    var form = document.getElementById('adminLogoutForm');
+    var modal = document.getElementById('logoutConfirmModal');
+    if (!form || !modal) return;
+
+    var cancel = document.getElementById('logoutCancel');
+    var confirm = document.getElementById('logoutConfirm');
+    var trigger = document.getElementById('adminLogoutButton');
+    var submitting = false;
+
+    function open() {
+        window.vsModalPrepareOpen(modal);
+        modal.classList.add('open');
+        cancel.focus();
+    }
+
+    function close() {
+        window.vsModalCloseAfterFade(modal, function () {
+            modal.classList.remove('open');
+        });
+        if (trigger) trigger.focus();
+    }
+
+    form.addEventListener('submit', function (event) {
+        if (submitting) return;
+        event.preventDefault();
+        open();
+    });
+
+    cancel.addEventListener('click', close);
+    confirm.addEventListener('click', function () {
+        submitting = true;
+        window.vsModalCloseAfterFade(modal, function () {
+            form.submit();
+        });
+    });
+
+    modal.addEventListener('click', function (event) {
+        if (event.target === modal) {
+            event.stopPropagation();
+            close();
+        }
+    });
+
+    modal.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            event.stopPropagation();
+            close();
+            return;
+        }
+        if (event.key !== 'Tab') return;
+
+        var focusable = [cancel, confirm];
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+        }
+    });
 })();
 </script>
 
