@@ -120,6 +120,7 @@
     <script>
         window.guestAgreementAccepted = @json($agreementAccepted ?? false);
         window.agreeUrl = @json(route('patron.agree'));
+        window.vsBookingTimeSlots = @json(config('booking.time_slots'));
     </script>
 
     <div class="page-wrapper vs-patron-reservation">

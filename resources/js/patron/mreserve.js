@@ -33,10 +33,43 @@ document.addEventListener("DOMContentLoaded", function () {
     // The dynamic form wraps each field in a .form-group div
     const timeSlotWrapper = timeSlotSelect?.closest(".form-group");
 
-    const timeSlots = {
-        AM: ["9am–1pm", "10am–2pm", "11am–3pm"],
-        PM: ["4pm-8pm", "5pm–9pm", "6pm–10pm"],
+    // The period is not a visible choice: it is derived from the selected slot.
+    // config/booking.php is the single source of truth for the slot list.
+    const timeSlots = window.vsBookingTimeSlots || { AM: [], PM: [] };
+    const periodGroup = periodSelect?.closest(".form-group");
+    if (periodGroup) periodGroup.style.display = "none";
+    if (periodSelect) periodSelect.required = false;
+
+    const periodForSlot = function (slot) {
+        const match = String(slot || "").match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm|a\.m\.|p\.m\.)?/i);
+        if (!match) return "";
+        const meridiem = (match[3] || "").toLowerCase().replace(/\./g, "");
+        if (meridiem === "am") return "AM";
+        if (meridiem === "pm") return "PM";
+        return Number(match[1]) < 12 ? "AM" : "PM";
     };
+
+    if (timeSlotSelect) {
+        timeSlotSelect.innerHTML = '<option value="">Select a time slot</option>';
+        ["AM", "PM"].forEach((period) => {
+            (timeSlots[period] || []).forEach((slot) => {
+                const option = document.createElement("option");
+                option.value = slot;
+                option.textContent = slot;
+                timeSlotSelect.appendChild(option);
+            });
+        });
+        timeSlotWrapper.style.display = "block";
+        timeSlotSelect.disabled = false;
+        timeSlotSelect.required = true;
+
+        timeSlotSelect.addEventListener("change", function () {
+            if (!periodSelect) return;
+            periodSelect.value = periodForSlot(this.value);
+            // Keeps the shared venue panel in sync with the derived period.
+            periodSelect.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+    }
 
     const dateStatuses = {};
 
@@ -83,25 +116,6 @@ document.addEventListener("DOMContentLoaded", function () {
             toggleOtherInput(select, input)
         );
         toggleOtherInput(select, input);
-    });
-
-    periodSelect?.addEventListener("change", function () {
-        const selectedPeriod = this.value;
-        timeSlotSelect.innerHTML =
-            '<option value="">Select a time slot</option>';
-        if (timeSlots[selectedPeriod]) {
-            timeSlots[selectedPeriod].forEach((slot) => {
-                const option = document.createElement("option");
-                option.value = slot;
-                option.textContent = slot;
-                timeSlotSelect.appendChild(option);
-            });
-            timeSlotWrapper.style.display = "block";
-            timeSlotSelect.disabled = false;
-        } else {
-            timeSlotWrapper.style.display = "none";
-            timeSlotSelect.disabled = true;
-        }
     });
 
     // "Venues on <date>" panel below the calendar. Refreshes with the date and

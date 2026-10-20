@@ -129,5 +129,8 @@
 @endsection
 
 @push('scripts')
+    <script>
+        window.vsBookingTimeSlots = @json(config('booking.time_slots'));
+    </script>
     @vite('resources/js/admin/reserve.js')
 @endpush
