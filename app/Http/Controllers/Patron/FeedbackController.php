@@ -56,7 +56,7 @@ class FeedbackController extends Controller
         // names like O'Brien, Anne-Marie and Jose Maria passing.
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100', 'regex:' . FeedbackInput::NAME_PATTERN],
-            'email' => ['required', 'string', 'max:254', new EmailAddress()],
+            'email' => ['required', 'string', 'max:150', new EmailAddress()],
             'message' => ['required', 'string', 'max:2000'],
         ]);
 
