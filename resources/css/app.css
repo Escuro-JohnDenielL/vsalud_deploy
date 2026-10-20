@@ -1396,6 +1396,9 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
 .vs-layout--patron .vs-patron-nav .nav-links > li.nav-dropdown.active > a,
 .vs-layout--patron .vs-patron-nav .nav-links > li.nav-dropdown.active > a:hover {
   background: transparent;
+  /* The pill supplies the background. Without this the old active rule keeps
+     white text after the pill moves away, so the active label disappears. */
+  color: var(--vs-color-deep-green);
 }
 
 .vs-layout--patron .vs-patron-nav .nav-links > li > a.is-pill-target {
