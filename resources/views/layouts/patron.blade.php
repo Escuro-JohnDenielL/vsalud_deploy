@@ -29,6 +29,8 @@
             <span class="landing-logo__name"><small>VILLA</small><strong>SALUD</strong></span>
         </a>
 
+        <span class="vs-nav-pill" aria-hidden="true" hidden></span>
+
         <ul class="navbar nav-links" id="patronNavLinks">
             <li>
                 <a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">

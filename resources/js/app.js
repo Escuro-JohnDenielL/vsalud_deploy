@@ -122,6 +122,66 @@ document.addEventListener('DOMContentLoaded', () => {
     const links = nav.querySelector('.nav-links');
     if (!toggle) return;
 
+    /* Patron link pill: active by default, follows hover and keyboard focus,
+       then returns to the active item when the pointer or focus leaves. */
+    const patronNav = document.querySelector('.vs-patron-nav');
+    const patronLinks = patronNav?.querySelector('.nav-links');
+    const navPill = patronNav?.querySelector('.vs-nav-pill');
+
+    if (patronNav && patronLinks && navPill) {
+        const pillLinks = () => Array.from(patronLinks.querySelectorAll(':scope > li > a'));
+        const activeLink = () => pillLinks().find((link) => link.classList.contains('active'));
+        const isMobile = () => window.matchMedia('(max-width: 991.98px)').matches;
+
+        const setPillTarget = (link) => {
+            pillLinks().forEach((item) => {
+                item.classList.toggle('is-pill-target', item === link);
+            });
+        };
+
+        const movePill = (link) => {
+            if (!link || isMobile()) {
+                navPill.hidden = true;
+                setPillTarget(null);
+                return;
+            }
+
+            const navRect = patronNav.getBoundingClientRect();
+            const linkRect = link.getBoundingClientRect();
+
+            navPill.hidden = false;
+            navPill.style.transform =
+                `translate3d(${Math.round(linkRect.left - navRect.left)}px, ${Math.round(linkRect.top - navRect.top)}px, 0)`;
+            navPill.style.width = `${Math.round(linkRect.width)}px`;
+            navPill.style.height = `${Math.round(linkRect.height)}px`;
+            setPillTarget(link);
+        };
+
+        const resetPill = () => movePill(activeLink());
+
+        pillLinks().forEach((link) => {
+            link.addEventListener('mouseenter', () => movePill(link));
+            link.addEventListener('focus', () => movePill(link));
+        });
+
+        patronLinks.addEventListener('mouseleave', resetPill);
+        patronLinks.addEventListener('focusout', (event) => {
+            if (!patronLinks.contains(event.relatedTarget)) resetPill();
+        });
+
+        window.addEventListener('resize', () => {
+            if (isMobile()) {
+                navPill.hidden = true;
+                setPillTarget(null);
+            } else {
+                resetPill();
+            }
+        });
+
+        requestAnimationFrame(resetPill);
+        window.addEventListener('load', resetPill);
+    }
+
     const setOpen = (open) => {
         nav.classList.toggle('open', open);
         toggle.setAttribute('aria-expanded', open ? 'true' : 'false');

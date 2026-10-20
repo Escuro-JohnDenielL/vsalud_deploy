@@ -1358,43 +1358,64 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
   color: var(--vs-button-primary-hover-text);
 }
 
-/* Sliding active, hover and keyboard-focus indicator on the primary patron
-   links. Transform only, so nothing shifts layout. Hidden in the collapsed
+/* Sliding active pill on the primary patron links. The pill is absolute and
+   moves with transform, so nothing shifts layout. Hidden in the collapsed
    mobile panel and disabled under reduced motion. */
+.vs-layout--patron .vs-patron-nav {
+  overflow: visible;
+}
+
+.vs-layout--patron .vs-nav-pill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  border-radius: var(--vs-radius-pill);
+  background: var(--vs-color-dark-green);
+  pointer-events: none;
+  z-index: 0;
+  transition: transform var(--vs-duration-base) ease-out,
+              width var(--vs-duration-base) ease-out,
+              height var(--vs-duration-base) ease-out;
+}
+
+.vs-layout--patron .vs-nav-pill[hidden] {
+  display: none;
+}
+
 .vs-layout--patron .vs-patron-nav .nav-links > li > a {
   position: relative;
+  z-index: 1;
 }
 
-.vs-layout--patron .vs-patron-nav .nav-links > li > a::after {
-  content: "";
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 4px;
-  height: 2px;
-  border-radius: var(--vs-radius-pill);
-  background: var(--vs-color-emerald);
-  transform: scaleX(0);
-  transform-origin: center;
-  transition: transform var(--vs-duration-base) ease-out;
-  pointer-events: none;
+.vs-layout--patron .vs-patron-nav .nav-links > li > a,
+.vs-layout--patron .vs-patron-nav .nav-links > li > a:hover,
+.vs-layout--patron .vs-patron-nav .nav-links > li > a.active,
+.vs-layout--patron .vs-patron-nav .nav-links > li > a.active:hover,
+.vs-layout--patron .vs-patron-nav .nav-links > li.nav-dropdown.active > a,
+.vs-layout--patron .vs-patron-nav .nav-links > li.nav-dropdown.active > a:hover {
+  background: transparent;
 }
 
-.vs-layout--patron .vs-patron-nav .nav-links > li > a:hover::after,
-.vs-layout--patron .vs-patron-nav .nav-links > li > a:focus-visible::after,
-.vs-layout--patron .vs-patron-nav .nav-links > li > a.active::after,
-.vs-layout--patron .vs-patron-nav .nav-links > li.nav-dropdown.active > a::after {
-  transform: scaleX(1);
+.vs-layout--patron .vs-patron-nav .nav-links > li > a.is-pill-target {
+  color: var(--vs-color-white);
 }
 
 @media (max-width: 991.98px) {
-  .vs-layout--patron .vs-patron-nav .nav-links > li > a::after {
+  .vs-layout--patron .vs-nav-pill {
     display: none;
+  }
+
+  body.nav-js.vs-layout--patron .vs-patron-nav .nav-links > li > a.active,
+  body.nav-js.vs-layout--patron .vs-patron-nav .nav-links > li.nav-dropdown.active > a {
+    background: var(--vs-color-dark-green);
+    color: var(--vs-color-white);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .vs-layout--patron .vs-patron-nav .nav-links > li > a::after {
+  .vs-layout--patron .vs-nav-pill {
     transition: none;
   }
 }
