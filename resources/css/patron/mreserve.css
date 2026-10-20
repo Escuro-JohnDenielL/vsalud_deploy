@@ -423,6 +423,19 @@
     border-radius: var(--vs-radius-control);
 }
 
+.agreement-consent-error {
+    margin: 0 0 14px;
+    padding: 10px 14px;
+    border: 1px solid #f3c4c0;
+    border-radius: var(--radius-sm);
+    background: #fdf2f1;
+    color: #b42318;
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.5;
+    text-align: center;
+}
+
 /* Inline field error, e.g. the reservation email check */
 .vs-field-error {
     margin: 6px 0 0;

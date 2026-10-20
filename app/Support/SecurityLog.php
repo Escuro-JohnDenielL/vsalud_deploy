@@ -28,6 +28,18 @@ class SecurityLog
         self::write('Feedback form timestamp rejected', $route, $ip);
     }
 
+    /**
+     * A personal-data form was submitted without the consent flag. Only the
+     * route and time are recorded: no name, email, IP or form content.
+     */
+    public static function consentMissing(string $route): void
+    {
+        Log::channel('security')->warning('Consent flag missing', [
+            'route' => $route,
+            'timestamp' => now()->toIso8601String(),
+        ]);
+    }
+
     private static function write(string $event, string $route, ?string $ip): void
     {
         Log::channel('security')->warning($event, [

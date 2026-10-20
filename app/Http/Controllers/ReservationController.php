@@ -15,7 +15,9 @@ use App\Services\AvailabilityService;
 use App\Services\VenueOccupancyService;
 use App\Services\WaitlistService;
 use App\Support\BookingRules;
+use App\Support\ConsentGate;
 use App\Support\PatronAudit;
+use App\Support\SecurityLog;
 use App\Support\VenueSlot;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -40,8 +42,25 @@ class ReservationController extends Controller
 
     public function store(Request $request)
     {
+        $isAdminSubmission = $request->is('admin/*');
+
+        // Consent is checked before anything else, so a refused submission
+        // writes no row and never reaches the form-data log below.
+        if (ConsentGate::required($isAdminSubmission, $request->session()->get('guest_agreed', false))) {
+            SecurityLog::consentMissing($request->route()?->getName() ?? 'patron.mreserve.submit');
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => ConsentGate::MESSAGE,
+                ], 403);
+            }
+
+            return redirect()->route('patron.mreserve')
+                ->with('consent_error', ConsentGate::MESSAGE);
+        }
+
         error_log('[RESERVATION] Form submission received');
-        Log::warning('Reservation form submission', $request->all());
 
         // Load the published reservation form definition
         $form = Form::with('activeFields')->where('slug', 'reservation')->where('is_published', true)->first();
@@ -130,8 +149,6 @@ class ReservationController extends Controller
         $requestedDate = $hardcodedData['date'] ?? $validated['date'] ?? null;
         $requestedPeriod = VenueSlot::normalizePeriod($formData['period'] ?? null)
             ?? VenueSlot::periodFromTimeText($hardcodedData['time'] ?? $validated['time'] ?? null);
-
-        $isAdminSubmission = $request->is('admin/*');
 
         if ($requestedDate) {
             // A closed date is refused for everyone, admins included.
