@@ -119,6 +119,7 @@
                             <button type="button" id="backButton" class="btn-submit payment-back-button">Back</button>
                             <button type="submit" id="submitReceipt" class="btn-submit">Submit Receipt</button>
                         </div>
+                        <x-privacy-note />
                     </form>
                     <div class="loader">
                         <div class="loader-spinner"></div>

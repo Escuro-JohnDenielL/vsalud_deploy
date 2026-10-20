@@ -2545,3 +2545,24 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
     min-width: 44px !important;
   }
 }
+
+/* Informational privacy line on the public forms. No gate, no consent flag. */
+.vs-privacy-note {
+  margin: 14px 0 0;
+  color: var(--vs-color-text-secondary);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.vs-privacy-note a {
+  color: var(--vs-color-deep-green);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.vs-privacy-note a:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+  border-radius: var(--vs-radius-control);
+}

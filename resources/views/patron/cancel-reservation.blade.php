@@ -24,6 +24,7 @@
             </div>
             <button type="submit" class="btn-lookup">Look Up Reservation</button>
         </form>
+        <x-privacy-note />
 
         {{-- Messages (appear above details when a reservation is found) --}}
         <div id="messageContainer"></div>

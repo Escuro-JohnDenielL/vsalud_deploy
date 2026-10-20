@@ -52,6 +52,7 @@
         @enderror
 
         <button type="submit">Send Feedback</button>
+        <x-privacy-note />
       </form>
     </div>
 

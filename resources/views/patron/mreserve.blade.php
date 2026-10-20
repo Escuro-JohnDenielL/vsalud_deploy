@@ -207,6 +207,7 @@
                 <button id="joinWaitlistBtn" class="vs-inline-waitlist-button">
                     Join Waitlist
                 </button>
+                <x-privacy-note />
             </div>
         </div>
     </div>
