@@ -15,12 +15,18 @@
 
     <!-- Agreement Modal -->
     <div id="agreementModal" class="modal agreement-modal">
-        <div class="guidelines-content" id="agreementContent">
-            <h3>Reservation Guidelines</h3>
+        <div class="guidelines-content" id="agreementContent" tabindex="0" role="region" aria-label="Data Privacy Notice and Reservation Guidelines">
+            <h3>Data Privacy Notice and Reservation Guidelines</h3>
 
             @if (session('consent_error'))
                 <p class="agreement-consent-error" role="alert">{{ session('consent_error') }}</p>
             @endif
+
+            <section class="agreement-privacy">
+                <h3>Data Privacy Act Summary</h3>
+                <p>We collect your name, email, phone number, event details and payment receipts to process your booking and payments. Villa Salud administrators can see this information. It is kept as stated in the full notice.</p>
+                <p><a href="{{ route('patron.home') }}#privacy" target="_blank" rel="noopener noreferrer">Read the full Data Privacy Notice</a></p>
+            </section>
 
             <section>
                 <h3>Reservation & Payment Policy</h3>
@@ -121,6 +127,10 @@
             </div>
         </div>
     </div>
+
+    <button type="button" id="reopenAgreement" class="agreement-reopen" hidden>
+        Read the notice and agree to continue
+    </button>
 
     <script>
         window.guestAgreementAccepted = @json($agreementAccepted ?? false);

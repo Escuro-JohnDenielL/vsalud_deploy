@@ -436,6 +436,54 @@
     text-align: center;
 }
 
+.agreement-privacy {
+    padding: 12px 16px;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+}
+
+.agreement-privacy a {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.agreement-privacy a:focus-visible,
+.guidelines-content:focus-visible {
+    outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+    outline-offset: var(--vs-focus-offset);
+}
+
+.agreement-reopen {
+    display: block;
+    margin: 0 auto 18px;
+    min-height: 44px;
+    padding: 10px 20px;
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: var(--color-primary);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.agreement-reopen[hidden] {
+    display: none;
+}
+
+.agreement-reopen:hover {
+    background: var(--color-primary-light);
+}
+
+.agreement-reopen:focus-visible {
+    outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+    outline-offset: var(--vs-focus-offset);
+}
+
 /* Inline field error, e.g. the reservation email check */
 .vs-field-error {
     margin: 6px 0 0;

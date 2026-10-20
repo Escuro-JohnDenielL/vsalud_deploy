@@ -185,35 +185,101 @@ document.addEventListener("DOMContentLoaded", function () {
     const agreementModal = document.getElementById("agreementModal");
     const agreementContent = document.getElementById("agreementContent");
     const agreeButton = document.getElementById("agreeButton");
+    const reopenAgreement = document.getElementById("reopenAgreement");
     let hasScrolledToBottom = false;
+    let agreementOpen = false;
 
     if (agreementModal && agreementContent && agreeButton) {
+        const agreementFocusables = function () {
+            return Array.from(agreementModal.querySelectorAll(
+                'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            )).filter(function (el) {
+                return el.offsetParent !== null;
+            });
+        };
+
+        const onAgreementKeydown = function (event) {
+            if (!agreementOpen) return;
+
+            if (event.key === "Escape") {
+                event.preventDefault();
+                event.stopPropagation();
+                hideAgreement(false);
+                return;
+            }
+
+            if (event.key !== "Tab") return;
+
+            const items = agreementFocusables();
+            if (!items.length) return;
+            const first = items[0];
+            const last = items[items.length - 1];
+
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+
+        const showAgreement = function () {
+            window.vsModalPrepareOpen(agreementModal);
+            agreementModal.style.display = "flex";
+            agreementModal.classList.add("show");
+            form?.classList.add("form-disabled");
+            document.body.style.overflow = "hidden";
+            if (reopenAgreement) reopenAgreement.hidden = true;
+            agreementOpen = true;
+            document.addEventListener("keydown", onAgreementKeydown, true);
+            agreementContent.focus();
+        };
+
+        // Closing without consent never unlocks the form. It shows a button
+        // that reopens the notice, so the patron is never stuck.
+        const hideAgreement = function (consented) {
+            agreementOpen = false;
+            document.removeEventListener("keydown", onAgreementKeydown, true);
+
+            window.vsModalCloseAfterFade(agreementModal, function () {
+                agreementModal.style.display = "none";
+                agreementModal.classList.remove("show");
+                document.body.style.overflow = "auto";
+
+                if (consented) {
+                    form?.classList.remove("form-disabled");
+                    if (reopenAgreement) reopenAgreement.hidden = true;
+                } else {
+                    form?.classList.add("form-disabled");
+                    if (reopenAgreement) {
+                        reopenAgreement.hidden = false;
+                        reopenAgreement.focus();
+                    }
+                }
+            });
+        };
+
         const shouldShowAgreement = !window.guestAgreementAccepted;
 
         if (shouldShowAgreement) {
-            setTimeout(() => {
-                window.vsModalPrepareOpen(agreementModal);
-                agreementModal.style.display = "flex";
-                agreementModal.classList.add("show");
-                form?.classList.add("form-disabled");
-                document.body.style.overflow = "hidden";
-            }, 100);
+            setTimeout(showAgreement, 100);
         } else {
             agreementModal.style.display = "none";
             agreementModal.classList.remove("show");
             form?.classList.remove("form-disabled");
             document.body.style.overflow = "auto";
+            if (reopenAgreement) reopenAgreement.hidden = true;
         }
 
-        if (shouldShowAgreement) {
-            setTimeout(() => {
-                const { scrollHeight, clientHeight } = agreementContent;
-                if (scrollHeight <= clientHeight + 10) {
-                    hasScrolledToBottom = true;
-                    agreeButton.disabled = false;
-                }
-            }, 300);
-        }
+        setTimeout(() => {
+            if (!agreementOpen) return;
+            const { scrollHeight, clientHeight } = agreementContent;
+            if (scrollHeight <= clientHeight + 10) {
+                hasScrolledToBottom = true;
+                agreeButton.disabled = false;
+            }
+        }, 300);
 
         agreementContent.addEventListener("scroll", () => {
             const { scrollTop, scrollHeight, clientHeight } = agreementContent;
@@ -223,37 +289,38 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
+        agreementModal.addEventListener("click", function (event) {
+            if (event.target === agreementModal) hideAgreement(false);
+        });
+
+        reopenAgreement?.addEventListener("click", showAgreement);
+
         agreeButton.addEventListener("click", () => {
-            if (hasScrolledToBottom) {
-                fetch(window.agreeUrl, {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN":
-                            document
-                                .querySelector('meta[name="csrf-token"]')
-                                ?.getAttribute("content") || "",
-                        Accept: "application/json",
-                        "Content-Type": "application/json",
-                    },
-                    credentials: "same-origin",
-                    body: JSON.stringify({ accepted: true }),
+            if (!hasScrolledToBottom) return;
+
+            fetch(window.agreeUrl, {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN":
+                        document
+                            .querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute("content") || "",
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+                credentials: "same-origin",
+                body: JSON.stringify({ accepted: true }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        window.guestAgreementAccepted = true;
+                        hideAgreement(true);
+                    }
                 })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        if (data.success) {
-                            window.guestAgreementAccepted = true;
-                            window.vsModalCloseAfterFade(agreementModal, () => {
-                                agreementModal.style.display = "none";
-                                agreementModal.classList.remove("show");
-                                form?.classList.remove("form-disabled");
-                                document.body.style.overflow = "auto";
-                            });
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("Failed to save guest consent:", error);
-                    });
-            }
+                .catch((error) => {
+                    console.error("Failed to save guest consent:", error);
+                });
         });
     }
 

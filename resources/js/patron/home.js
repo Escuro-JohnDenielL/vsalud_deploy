@@ -230,8 +230,10 @@ document.addEventListener("DOMContentLoaded", function () {
         acknowledged = sessionStorage.getItem(ACK_KEY) === "1";
     } catch (e) { /* ignore */ }
 
-    // Only show on a real reload, or the first time the patron enters this tab.
-    if (navType !== "reload" && acknowledged) return;
+    // Only show on a real reload, the first time the patron enters this tab,
+    // or when the reservation form links here with #privacy.
+    const wantsFullNotice = window.location.hash === "#privacy";
+    if (!wantsFullNotice && navType !== "reload" && acknowledged) return;
 
     let lastFocus = null;
     let isOpen = false;
@@ -300,6 +302,11 @@ document.addEventListener("DOMContentLoaded", function () {
             if (settings.leave) {
                 window.location.assign(privacyModal.dataset.declineUrl || "/");
                 return;
+            }
+
+            // Drop the deep link so closing and reloading does not reopen it.
+            if (window.location.hash === "#privacy" && window.history.replaceState) {
+                window.history.replaceState(null, "", window.location.pathname + window.location.search);
             }
 
             const target = lastFocus && lastFocus !== document.body && lastFocus.focus
