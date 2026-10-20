@@ -208,6 +208,11 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ url('/') }}" target="_blank" rel="noopener noreferrer">
+                            View website
+                        </a>
+                    </li>
+                    <li>
                         <a href="#" id="reportIssueLink">
                             Report an Issue
                         </a>

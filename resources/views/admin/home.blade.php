@@ -7,7 +7,11 @@
 
 <x-ui.page-header
     title="Packages"
-    subtitle="Create and manage the packages shown to patrons." />
+    subtitle="Create and manage the packages shown to patrons.">
+    <x-slot:action>
+        <a href="{{ url('/') }}" class="admin-btn admin-btn-ghost" target="_blank" rel="noopener noreferrer">View website</a>
+    </x-slot:action>
+</x-ui.page-header>
 
 {{-- Package Cards --}}
 <section class="packages-grid vs-admin-dashboard__packages-grid" id="packagesContainer">
