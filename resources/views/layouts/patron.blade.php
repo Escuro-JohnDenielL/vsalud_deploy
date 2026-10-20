@@ -50,7 +50,7 @@
                     <li>
                         <a href="{{ route('patron.vreserve') }}"
                             class="{{ request()->routeIs('patron.vreserve') ? 'active' : '' }}">
-                            View Reservation
+                            Track Booking
                         </a>
                     </li>
                     <li>
@@ -91,12 +91,6 @@
                         </a>
                     </li>
                 </ul>
-            </li>
-            <li class="vs-nav-menu-only">
-                <a href="{{ route('patron.vreserve') }}"
-                    class="{{ request()->routeIs('patron.vreserve') ? 'active' : '' }}">
-                    Track Booking
-                </a>
             </li>
         </ul>
 

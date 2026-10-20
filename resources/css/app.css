@@ -1358,6 +1358,47 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
   color: var(--vs-button-primary-hover-text);
 }
 
+/* Sliding active, hover and keyboard-focus indicator on the primary patron
+   links. Transform only, so nothing shifts layout. Hidden in the collapsed
+   mobile panel and disabled under reduced motion. */
+.vs-layout--patron .vs-patron-nav .nav-links > li > a {
+  position: relative;
+}
+
+.vs-layout--patron .vs-patron-nav .nav-links > li > a::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 4px;
+  height: 2px;
+  border-radius: var(--vs-radius-pill);
+  background: var(--vs-color-emerald);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--vs-duration-base) ease-out;
+  pointer-events: none;
+}
+
+.vs-layout--patron .vs-patron-nav .nav-links > li > a:hover::after,
+.vs-layout--patron .vs-patron-nav .nav-links > li > a:focus-visible::after,
+.vs-layout--patron .vs-patron-nav .nav-links > li > a.active::after,
+.vs-layout--patron .vs-patron-nav .nav-links > li.nav-dropdown.active > a::after {
+  transform: scaleX(1);
+}
+
+@media (max-width: 991.98px) {
+  .vs-layout--patron .vs-patron-nav .nav-links > li > a::after {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-layout--patron .vs-patron-nav .nav-links > li > a::after {
+    transition: none;
+  }
+}
+
 /* Patron nav below 992px: dropdown groups expand inline in the panel. */
 @media (max-width: 991.98px) {
   body.nav-js.vs-layout--patron .vs-patron-nav {
