@@ -79,7 +79,7 @@
 
         <div style="margin-top:24px;">
             <button type="submit" class="admin-btn admin-btn-primary" style="padding:10px 28px;">Save Settings</button>
-            <a href="{{ route('admin.home') }}" style="color:#6b7280;font-size:14px;margin-left:16px;">&larr; Back to Dashboard</a>
+            <a href="{{ route('admin.report') }}" style="color:#6b7280;font-size:14px;margin-left:16px;">&larr; Back to Dashboard</a>
         </div>
     </form>
 </div>

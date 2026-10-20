@@ -40,7 +40,7 @@
     @endforelse
 
      <div class="it-modal-actions">
-         <a href="{{ route('admin.home') }}" class="it-muted-link">&larr; Back to Dashboard</a>
+         <a href="{{ route('admin.report') }}" class="it-muted-link">&larr; Back to Dashboard</a>
     </div>
 </div>
 @endsection
