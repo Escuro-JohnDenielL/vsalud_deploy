@@ -127,15 +127,21 @@
 
     // --- Row actions (delegated) ---
     // Rows are re-rendered in place after every change, so listeners live on the
-    // table body instead of on individual buttons.
-    document.getElementById('incidentRowsBody')?.addEventListener('click', function(e) {
-        const viewBtn = e.target.closest('.view-incident-btn');
+    // document instead of on individual buttons. The overflow menu is moved to
+    // document.body while it is open (shared.js), so a listener on the table body
+    // would never see Resolve or Delete clicks. View is in the row, but it uses
+    // the same handler for consistency.
+    document.addEventListener('click', function(e) {
+        const target = e.target instanceof Element ? e.target : null;
+        if (!target) return;
+
+        const viewBtn = target.closest('.view-incident-btn');
         if (viewBtn) { openIncidentDetail(viewBtn.dataset.id); return; }
 
-        const resolveBtn = e.target.closest('.resolve-incident-btn');
+        const resolveBtn = target.closest('.resolve-incident-btn');
         if (resolveBtn) { openResolveModal(resolveBtn.dataset.id); return; }
 
-        const deleteBtn = e.target.closest('.delete-incident-btn');
+        const deleteBtn = target.closest('.delete-incident-btn');
         if (deleteBtn) { openDeleteModal(deleteBtn.dataset.id, deleteBtn.dataset.title); return; }
     });
 
