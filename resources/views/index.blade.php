@@ -82,17 +82,6 @@
                     <h2>We'd love to hear <em>from you.</em></h2>
                     <p>Have questions about your event or reservation? Contact Villa Salud and we'll be happy to assist you.</p>
                 </div>
-                <div class="row g-3 landing-contact__details">
-                    @if (config('villasalud.contact.phone'))
-                        <div class="col-md-4"><div class="contact-detail"><strong>Phone</strong><p>{{ config('villasalud.contact.phone') }}</p></div></div>
-                    @endif
-                    @if (config('villasalud.contact.email'))
-                        <div class="col-md-4"><div class="contact-detail"><strong>Email</strong><p>{{ config('villasalud.contact.email') }}</p></div></div>
-                    @endif
-                    @if (config('villasalud.contact.address'))
-                        <div class="col-md-4"><div class="contact-detail"><strong>Location</strong><p>{{ config('villasalud.contact.address') }}</p></div></div>
-                    @endif
-                </div>
                 <a class="landing-outline-link landing-outline-link--light" href="#home">Back to Home</a>
             </div>
         </section>

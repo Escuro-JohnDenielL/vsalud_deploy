@@ -27,13 +27,14 @@
 
     $email = $contact['email'] ?? null;
     $address = $contact['address'] ?? null;
+    $hours = $contact['hours'] ?? null;
     $phones = $splitNumbers($contact['phone'] ?? null);
     $mobiles = $splitNumbers($contact['mobile'] ?? null);
     $faxes = $splitNumbers($contact['fax'] ?? null);
     $facebook = $social['facebook'] ?? null;
     $instagram = $social['instagram'] ?? null;
 
-    $hasContact = $address || $email || $phones || $mobiles || $faxes;
+    $hasContact = $address || $email || $hours || $phones || $mobiles || $faxes;
 @endphp
 
 <footer class="site-footer {{ $class }}">
@@ -69,6 +70,9 @@
                             <span>Tele-fax: </span>
                             @foreach ($faxes as $number)<a href="{{ $tel($number) }}">{{ $number }}</a>@if (! $loop->last)<span>, </span>@endif @endforeach
                         </li>
+                    @endif
+                    @if ($hours)
+                        <li>{{ $hours }}</li>
                     @endif
                 </ul>
             </div>

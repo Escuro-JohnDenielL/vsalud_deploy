@@ -19,6 +19,7 @@ return [
         'mobile' => '0928-492-5493 / 0906-223-6120',
         'fax' => '8856-21-81',
         'address' => '#229 MLQ St., Purok 3, New Lower Bicutan, Taguig City, Metro Manila',
+        'hours' => 'Open daily except holidays, 9:00 AM to 6:00 PM',
     ],
 
     'social' => [
