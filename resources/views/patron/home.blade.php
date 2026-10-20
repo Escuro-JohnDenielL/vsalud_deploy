@@ -64,10 +64,8 @@
             <button type="button" class="pkg-lightbox__nav pkg-lightbox__nav--next" id="pkgLightboxNext" aria-label="Next photo">&#8250;</button>
         </div>
     </div>
-    <div id="privacyModal" class="privacy-overlay" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
-        <div class="privacy-modal">
-            <button type="button" class="privacy-modal__close" id="privacyClose" aria-label="Close privacy notice">&times;</button>
-
+    <div id="privacyModal" class="privacy-overlay" role="dialog" aria-modal="true" aria-labelledby="privacyTitle" data-decline-url="{{ url('/') }}">
+        <div class="privacy-modal" tabindex="-1">
             <h2 id="privacyTitle">Data Privacy Notice</h2>
             <p class="privacy-modal__subtitle">Republic Act No. 10173 &middot; Data Privacy Act of 2012</p>
 
@@ -81,6 +79,7 @@
 
             <div class="privacy-modal__actions">
                 <button type="button" class="privacy-btn" id="privacyAgree">I Agree</button>
+                <button type="button" class="privacy-decline" id="privacyDecline">Decline</button>
             </div>
         </div>
     </div>

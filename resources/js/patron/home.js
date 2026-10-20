@@ -213,8 +213,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const privacyModal = document.getElementById("privacyModal");
     if (!privacyModal) return;
 
-    const privacyClose = document.getElementById("privacyClose");
     const privacyAgree = document.getElementById("privacyAgree");
+    const privacyDecline = document.getElementById("privacyDecline");
     const ACK_KEY = "vs_privacy_ack";
 
     // What kind of load is this? "reload" = Ctrl+R / refresh button.
@@ -233,29 +233,96 @@ document.addEventListener("DOMContentLoaded", function () {
     // Only show on a real reload, or the first time the patron enters this tab.
     if (navType !== "reload" && acknowledged) return;
 
+    let lastFocus = null;
+    let isOpen = false;
+
+    const focusables = function () {
+        return Array.from(privacyModal.querySelectorAll(
+            'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )).filter(function (el) {
+            return el.offsetParent !== null;
+        });
+    };
+
+    const onKeydown = function (event) {
+        if (!isOpen) return;
+
+        if (event.key === "Escape") {
+            event.preventDefault();
+            closePrivacyModal({ recordConsent: false });
+            return;
+        }
+
+        if (event.key !== "Tab") return;
+
+        const items = focusables();
+        if (!items.length) return;
+        const first = items[0];
+        const last = items[items.length - 1];
+
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+        }
+    };
+
     const showPrivacyModal = function () {
+        lastFocus = document.activeElement;
         window.vsModalPrepareOpen(privacyModal);
         privacyModal.style.display = "flex";
         document.body.style.overflow = "hidden";
+        isOpen = true;
+        document.addEventListener("keydown", onKeydown, true);
+        privacyModal.querySelector(".privacy-modal")?.focus();
     };
 
-    const hidePrivacyModal = function () {
-        try {
-            sessionStorage.setItem(ACK_KEY, "1");
-        } catch (e) { /* ignore */ }
-        window.vsModalCloseAfterFade(privacyModal, () => {
+    // Consent is recorded only by "I Agree". Escape, the backdrop and Decline
+    // close without writing the acknowledgement, so closing never counts as
+    // consent and never unlocks anything.
+    const closePrivacyModal = function (options) {
+        const settings = options || {};
+        isOpen = false;
+        document.removeEventListener("keydown", onKeydown, true);
+
+        if (settings.recordConsent) {
+            try {
+                sessionStorage.setItem(ACK_KEY, "1");
+            } catch (e) { /* ignore */ }
+        }
+
+        window.vsModalCloseAfterFade(privacyModal, function () {
             privacyModal.style.display = "none";
             document.body.style.overflow = "";
+
+            if (settings.leave) {
+                window.location.assign(privacyModal.dataset.declineUrl || "/");
+                return;
+            }
+
+            const target = lastFocus && lastFocus !== document.body && lastFocus.focus
+                ? lastFocus
+                : document.querySelector(".vs-nav-cta");
+            target?.focus?.();
         });
     };
 
     showPrivacyModal();
 
-    if (privacyClose) privacyClose.addEventListener("click", hidePrivacyModal);
-    if (privacyAgree) privacyAgree.addEventListener("click", hidePrivacyModal);
+    privacyAgree?.addEventListener("click", function () {
+        closePrivacyModal({ recordConsent: true });
+    });
 
-    // Close when clicking the dimmed backdrop
+    privacyDecline?.addEventListener("click", function () {
+        closePrivacyModal({ recordConsent: false, leave: true });
+    });
+
+    // Backdrop click closes without recording consent.
     privacyModal.addEventListener("click", function (event) {
-        if (event.target === privacyModal) hidePrivacyModal();
+        if (event.target === privacyModal) {
+            closePrivacyModal({ recordConsent: false });
+        }
     });
 });

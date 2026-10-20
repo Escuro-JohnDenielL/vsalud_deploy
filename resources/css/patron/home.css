@@ -443,12 +443,12 @@
   position: relative;
   background: var(--color-surface);
   width: 100%;
-  max-width: 560px;
-  max-height: 90vh;
+  max-width: 680px;
+  max-height: 92vh;
   overflow-y: auto;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
-  padding: 36px 36px 30px;
+  padding: 40px 44px 34px;
   text-align: center;
 }
 
@@ -498,7 +498,7 @@
   color: var(--color-text-muted);
   font-size: 13.5px;
   line-height: 1.7;
-  max-height: 230px;
+  max-height: 320px;
   overflow-y: auto;
   padding: 2px 12px 2px 2px;
   border-top: 1px solid var(--color-border-light);
@@ -540,6 +540,29 @@
   box-shadow: var(--shadow-md);
 }
 
+.privacy-decline {
+  border: 0;
+  background: none;
+  padding: 12px 10px;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.privacy-decline:hover {
+  color: var(--color-primary);
+}
+
+.privacy-decline:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+  border-radius: var(--vs-radius-control);
+}
+
 @media (max-width: 480px) {
   .privacy-modal {
     padding: 30px 20px 24px;
@@ -550,7 +573,7 @@
   }
 
   .privacy-modal__body {
-    max-height: 200px;
+    max-height: 46vh;
   }
 }
 

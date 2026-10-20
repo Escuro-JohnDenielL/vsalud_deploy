@@ -113,6 +113,7 @@
 
             <div style="text-align: center; margin-top: 30px;">
                 <button id="agreeButton" disabled>I Agree to the Terms</button>
+                <a class="agreement-decline" href="{{ url('/') }}">Decline</a>
             </div>
         </div>
     </div>
