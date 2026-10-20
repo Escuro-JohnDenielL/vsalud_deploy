@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Patron;
 
 use App\Http\Controllers\Controller;
 use App\Models\Feedback;
+use App\Rules\EmailAddress;
 use App\Support\FeedbackInput;
 use App\Support\PatronAudit;
 use App\Support\SecurityLog;
@@ -55,7 +56,7 @@ class FeedbackController extends Controller
         // names like O'Brien, Anne-Marie and Jose Maria passing.
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100', 'regex:' . FeedbackInput::NAME_PATTERN],
-            'email' => ['required', 'string', 'email', 'max:150'],
+            'email' => ['required', 'string', 'max:254', new EmailAddress()],
             'message' => ['required', 'string', 'max:2000'],
         ]);
 

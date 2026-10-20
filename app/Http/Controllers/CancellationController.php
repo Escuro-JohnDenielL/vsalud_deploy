@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Inquiry;
 use App\Models\Reservation;
 use App\Models\CancellationRequest;
+use App\Rules\EmailAddress;
 use App\Support\IdentityMatch;
 use App\Support\PatronAudit;
 use Illuminate\Support\Facades\Log;
@@ -44,7 +45,7 @@ class CancellationController extends Controller
     {
         $validated = $request->validate([
             'tracking_code' => 'required|string|max:32',
-            'email'         => 'required|email|max:255',
+            'email'         => ['required', 'string', 'max:254', new EmailAddress()],
         ]);
 
         $throttleKey = $this->failedLookupKey($validated['tracking_code'], $request);
@@ -118,7 +119,7 @@ class CancellationController extends Controller
     {
         $validated = $request->validate([
             'tracking_code' => 'required|string|max:32',
-            'patron_email'  => 'required|email|max:255',
+            'patron_email'  => ['required', 'string', 'max:254', new EmailAddress()],
             'reason'        => 'nullable|string|max:1000',
         ]);
 

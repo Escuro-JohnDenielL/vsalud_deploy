@@ -8,6 +8,7 @@ use App\Models\Patron;
 use App\Models\Inquiry;
 use App\Models\Form;
 use App\Models\FormField;
+use App\Rules\EmailAddress;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationSubmitted;
 use App\Services\AvailabilityService;
@@ -62,7 +63,7 @@ class ReservationController extends Controller
 
             // Add type-specific rules
             $fieldRules = array_merge($fieldRules, match ($field->field_type) {
-                'email' => ['email', 'max:255'],
+                'email' => ['max:254', new EmailAddress()],
                 'tel'   => ['string', 'max:20'],
                 'textarea' => ['string'],
                 'select', 'radio' => ['string'],
@@ -71,10 +72,6 @@ class ReservationController extends Controller
                 'time'  => [],
                 default => ['string', 'max:255'], // text
             });
-
-            if ($field->field_type === 'email') {
-                $fieldRules[] = 'max:255';
-            }
 
             $rules[$field->name] = $fieldRules;
 

@@ -115,7 +115,7 @@ class PaymentController extends Controller
             'full_name' => 'required|string|min:2|max:120',
             'payment_type' => 'required|in:full,half',
             'payment_method' => 'required|in:cash,gcash,bank',
-            'email' => 'required|email|max:255',
+            'email' => ['required', 'string', 'max:254', new \App\Rules\EmailAddress()],
             'reservation_code' => 'required|string|max:32',
             'receipt' => ['required', 'file', 'image', 'mimetypes:image/jpeg,image/png', 'max:5120'],
         ]);

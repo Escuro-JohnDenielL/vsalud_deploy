@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\WaitlistService;
+use App\Rules\EmailAddress;
 use App\Support\PatronAudit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -32,7 +33,7 @@ class WaitlistController extends Controller
 
         $validated = $request->validate([
             'patron_name'  => 'required|string|max:255',
-            'patron_email' => 'required|email|max:255',
+            'patron_email' => ['required', 'string', 'max:254', new EmailAddress()],
             'date'         => 'required|date',
         ]);
 

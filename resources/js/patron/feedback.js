@@ -56,9 +56,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Email validation
         if (field.type === 'email' && value !== '') {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(value)) {
-                showError(field, 'Please enter a valid email address.');
+            const emailRegex = /^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$/;
+            if (value.length > 254 || !emailRegex.test(value)) {
+                showError(field, 'Enter a valid email address, for example name@gmail.com');
                 return false;
             }
         }

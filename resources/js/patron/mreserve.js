@@ -26,6 +26,57 @@ document.addEventListener("DOMContentLoaded", function () {
     // Reset form on page load (prevents browser bfcache from restoring stale data)
     if (form) form.reset();
 
+    // Email: inline convenience check. The server rule is the real control.
+    const emailInput = document.getElementById("field_email");
+    const emailError = document.createElement("p");
+    emailError.className = "vs-field-error";
+    emailError.hidden = true;
+    const emailPattern = /^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$/;
+
+    const emailIsValid = function () {
+        const value = (emailInput?.value || "").trim();
+        return value !== "" && value.length <= 254 && emailPattern.test(value);
+    };
+
+    const checkEmail = function () {
+        if (!emailInput) return true;
+        const value = emailInput.value.trim();
+        if (value === "" || emailIsValid()) {
+            emailError.hidden = true;
+            emailInput.removeAttribute("aria-invalid");
+            return true;
+        }
+        emailError.textContent = "Enter a valid email address, for example name@gmail.com";
+        emailError.hidden = false;
+        emailInput.setAttribute("aria-invalid", "true");
+        return false;
+    };
+
+    if (emailInput) {
+        emailInput.insertAdjacentElement("afterend", emailError);
+        emailInput.setAttribute("aria-describedby", emailError.id = "field_email_error");
+        emailInput.addEventListener("blur", checkEmail);
+        emailInput.addEventListener("input", function () {
+            if (!emailError.hidden) checkEmail();
+        });
+    }
+
+    if (form) {
+        form.addEventListener("submit", function (event) {
+            if (emailInput && !checkEmail()) {
+                event.preventDefault();
+                emailInput.focus();
+                return;
+            }
+
+            const submitButton = form.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = "Sending...";
+            }
+        });
+    }
+
     const dateInput = document.getElementById("field_date");
 
     const periodSelect = document.getElementById("field_period");
