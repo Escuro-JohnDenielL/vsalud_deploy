@@ -14,10 +14,24 @@ class FeedbackController extends Controller
     /** Largest batch the bulk endpoint accepts in one request. */
     private const MAX_BULK = 100;
 
-    public function index()
+    public function index(Request $request)
     {
-        $feedbacks = Feedback::latest()->paginate(10);
-        return view('admin.feedback', compact('feedbacks'));
+        $search = trim((string) $request->query('search', ''));
+
+        $feedbacks = Feedback::query()
+            ->when($search !== '', function ($query) use ($search) {
+                $like = '%' . $search . '%';
+                $query->where(function ($group) use ($like) {
+                    $group->where('name', 'like', $like)
+                        ->orWhere('email', 'like', $like)
+                        ->orWhere('message', 'like', $like);
+                });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('admin.feedback', compact('feedbacks', 'search'));
     }
 
     public function destroy($id)

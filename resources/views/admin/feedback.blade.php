@@ -10,13 +10,19 @@
     <div class="vs-page vs-admin-feedback">
         <x-ui.page-header title="Customer Feedback" subtitle="View and manage feedback submitted by patrons." />
 
-        <div class="vs-toolbar">
+        <form class="vs-toolbar vs-table-search" method="GET" action="{{ route('admin.feedback') }}" role="search">
             <div class="vs-field">
                 <label class="vs-label" for="feedbackSearch">Search</label>
-                <input type="search" id="feedbackSearch" class="vs-input" placeholder="Name, email or message">
+                <input type="search" id="feedbackSearch" name="search" value="{{ $search }}" class="vs-input vs-table-search__input" placeholder="Name, email or message">
+            </div>
+            <div class="vs-table-search__actions">
+                <button type="submit" class="admin-btn admin-btn-primary">Search</button>
+                @if ($search !== '')
+                    <a href="{{ route('admin.feedback') }}" class="admin-btn admin-btn-ghost">Clear</a>
+                @endif
             </div>
             <button type="button" class="admin-btn admin-btn-danger" id="deleteSelectedBtn" disabled>Delete selected</button>
-        </div>
+        </form>
 
         <div class="vs-table-frame">
             <div class="vs-table-wrap" role="region" tabindex="0" aria-label="Customer feedback table">
@@ -182,19 +188,6 @@
             const action = pendingAction;
             closeConfirmModal(() => { if (action) action(); });
         });
-
-        // ---- Search (filters the rows on the current page) ----
-        const search = document.getElementById('feedbackSearch');
-        const dataRows = () => Array.from(document.querySelectorAll('[data-feedback-row]'));
-        if (search) {
-            search.addEventListener('input', function () {
-                const q = this.value.trim().toLowerCase();
-                dataRows().forEach(row => {
-                    row.hidden = q !== '' && !row.textContent.toLowerCase().includes(q);
-                });
-                updateBulkState();
-            });
-        }
 
         // ---- Bulk select + "Delete selected" ----
         // One request to the bulk route, carrying only the selected IDs.
