@@ -18,6 +18,10 @@
         <div class="guidelines-content" id="agreementContent">
             <h3>Reservation Guidelines</h3>
 
+            @if (session('consent_error'))
+                <p class="agreement-consent-error" role="alert">{{ session('consent_error') }}</p>
+            @endif
+
             <section>
                 <h3>Reservation & Payment Policy</h3>
                 <p><strong>Reservation Fee:</strong> Php 25,000.00 (Venue & Catering) / Php 5,000.00 (Swimming Pool).
@@ -112,9 +116,6 @@
             </section>
 
             <div style="text-align: center; margin-top: 30px;">
-                @if (session('consent_error'))
-                    <p class="agreement-consent-error" role="alert">{{ session('consent_error') }}</p>
-                @endif
                 <button id="agreeButton" disabled>I Agree to the Terms</button>
                 <a class="agreement-decline" href="{{ url('/') }}">Decline</a>
             </div>
