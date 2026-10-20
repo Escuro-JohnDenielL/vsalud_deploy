@@ -91,8 +91,36 @@ body.landing-page { margin: 0; overflow-x: hidden; background: var(--landing-bei
 .landing-footer .site-footer__list a:hover { color: var(--landing-beige); text-decoration: underline; }
 .landing-footer .site-footer__bottom { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 34px; padding-top: 18px; border-top: 1px solid rgba(245,242,223,.18); }
 .landing-footer .site-footer__bottom p { margin: 0; color: rgba(245,242,223,.75); font-size: 11px; }
-.landing-admin-link { color: rgba(245,242,223,.56); font-size: 10px; text-decoration: underline; text-underline-offset: 3px; }
-.landing-admin-link:hover { color: var(--landing-beige); }
+.landing-admin-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid rgba(245, 242, 223, 0.45);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(245, 242, 223, 0.9);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: background-color var(--transition-base), border-color var(--transition-base), color var(--transition-base);
+}
+
+.landing-admin-link svg { flex: 0 0 auto; }
+
+.landing-admin-link:hover {
+  background: rgba(245, 242, 223, 0.12);
+  border-color: rgba(245, 242, 223, 0.7);
+  color: var(--landing-beige);
+}
+
+.landing-admin-link:focus-visible {
+  outline: 2px solid var(--landing-beige);
+  outline-offset: 3px;
+}
 
 /* Short laptop viewports: tighten the hero so the heading and the portal card
    (the "Choose your portal" button) always fit without being cut off. */
@@ -137,7 +165,8 @@ body.landing-page { margin: 0; overflow-x: hidden; background: var(--landing-bei
   .landing-contact .container { width: 88%; }
   .landing-contact__details { margin-top: 29px; }
   .landing-footer .site-footer__inner { grid-template-columns: 1fr; gap: 24px; }
-  .landing-footer .site-footer__bottom { flex-direction: column; text-align: center; }
+  .landing-footer .site-footer__bottom { flex-direction: column; align-items: center; text-align: center; }
+  .landing-admin-link { margin-top: 8px; }
 }
 
 @media (max-width: 380px) {
