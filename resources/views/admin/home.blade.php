@@ -49,7 +49,6 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="packageModalLabel">Package Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -150,7 +149,6 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addPackageModalLabel">Add New Package</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="addPackageForm" enctype="multipart/form-data">
                 <div class="modal-body">
@@ -209,7 +207,6 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="confirmDeleteTitle">Confirm Delete</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p id="confirmDeleteMessage">Are you sure you want to delete this package?</p>
