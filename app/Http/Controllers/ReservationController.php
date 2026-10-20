@@ -45,8 +45,9 @@ class ReservationController extends Controller
         $isAdminSubmission = $request->is('admin/*');
 
         // Consent is checked before anything else, so a refused submission
-        // writes no row and never reaches the form-data log below.
-        if (ConsentGate::required($isAdminSubmission, $request->session()->get('guest_agreed', false))) {
+        // writes no row and never reaches the form-data log below. The
+        // exemption is the authenticated admin guard, never a request field.
+        if (ConsentGate::required(auth('admin')->check(), $request->session()->get('guest_agreed', false))) {
             SecurityLog::consentMissing($request->route()?->getName() ?? 'patron.mreserve.submit');
 
             if ($request->expectsJson()) {

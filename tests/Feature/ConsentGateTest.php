@@ -31,6 +31,15 @@ it('returns 403 JSON for an AJAX submission without the flag', function () {
         ]);
 });
 
+it('still gates a patron request that claims to be an admin', function () {
+    $response = $this->post(route('patron.mreserve.submit'), [
+        'created_by_type' => 'admin',
+    ]);
+
+    $response->assertRedirect(route('patron.mreserve'));
+    $response->assertSessionHas('consent_error', ConsentGate::MESSAGE);
+});
+
 it('lets a consented patron and an admin past the gate', function () {
     expect(ConsentGate::required(false, true))->toBeFalse();
     expect(ConsentGate::required(true, false))->toBeFalse();
