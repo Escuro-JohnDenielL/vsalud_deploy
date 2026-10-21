@@ -52,7 +52,7 @@
     {{-- Log Incident Modal --}}
     <div id="logIncidentModal" class="modal">
         <div class="modal-content modal-lg">
-            <span class="close-btn" onclick="closeModal('logIncidentModal')">&times;</span>
+            <button type="button" class="close-btn" aria-label="Close" onclick="closeModal('logIncidentModal')"><span aria-hidden="true">&times;</span></button>
             <h2>Log Incident</h2>
             <p style="font-size: 14px; color: var(--color-text-muted); margin: -8px 0 16px;">Record a security or system incident.</p>
 
@@ -101,7 +101,7 @@
     {{-- View Incident Modal --}}
     <div id="viewIncidentModal" class="modal">
         <div class="modal-content modal-lg">
-            <span class="close-btn" onclick="closeModal('viewIncidentModal')">&times;</span>
+            <button type="button" class="close-btn" aria-label="Close" onclick="closeModal('viewIncidentModal')"><span aria-hidden="true">&times;</span></button>
             <h2>Incident Details</h2>
             <div id="incidentDetailBody">
                 <p class="text-center text-muted">Loading...</p>
@@ -112,7 +112,7 @@
     {{-- Resolve Incident Modal --}}
     <div id="resolveIncidentModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('resolveIncidentModal')">&times;</span>
+            <button type="button" class="close-btn" aria-label="Close" onclick="closeModal('resolveIncidentModal')"><span aria-hidden="true">&times;</span></button>
             <h3>Resolve Incident</h3>
             <p style="font-size: 14px; color: var(--color-text-muted); margin: -8px 0 16px;">Update the status and add resolution notes.</p>
 
@@ -151,7 +151,7 @@
     {{-- Confirm Delete Modal --}}
     <div id="confirmDeleteModal" class="modal">
         <div class="modal-content modal-sm">
-            <span class="close-btn" onclick="closeModal('confirmDeleteModal')">&times;</span>
+            <button type="button" class="close-btn" aria-label="Close" onclick="closeModal('confirmDeleteModal')"><span aria-hidden="true">&times;</span></button>
             <h3>Confirm Delete</h3>
             <p id="confirmDeleteMessage" style="font-size: 15px; margin: 12px 0;">Are you sure you want to delete this incident?</p>
             <div class="modal-footer">

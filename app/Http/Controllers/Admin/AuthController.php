@@ -134,6 +134,12 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+        // The Packages page "Home" action posts redirect=home so the admin lands on
+        // the public landing page instead of the login screen after being signed out.
+        if ($request->input('redirect') === 'home') {
+            return redirect(url('/'));
+        }
+
         return redirect()->route('admin.login');
     }
 }

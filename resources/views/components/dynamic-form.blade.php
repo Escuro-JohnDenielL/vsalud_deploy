@@ -168,6 +168,7 @@
 {{-- Inline styles --}}
 <style>
     .dynamic-form .form-group { margin-bottom: 18px; }
+    .dynamic-form .form-group:last-of-type { margin-bottom: 0; }
     .dynamic-form .form-group label { display: block; font-weight: 600; margin-bottom: 4px; color: var(--color-text); font-size: 14px; }
     .dynamic-form .form-group .required-star { color: #dc3545; }
     .dynamic-form .form-control { width: 100%; border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 14px; box-sizing: border-box; transition: border-color 0.15s; }

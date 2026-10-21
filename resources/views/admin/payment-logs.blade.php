@@ -206,7 +206,7 @@
                     @php($payment_log = $group['payment'])
                     <div class="modal payment-details-modal vs-admin-payment-logs__modal" id="paymentDetails{{ $payment_log->payment_id }}" aria-hidden="true">
                         <div class="modal-content modal-lg payment-info-modal" role="dialog" aria-modal="true" aria-labelledby="paymentDetailsTitle{{ $payment_log->payment_id }}">
-                            <button type="button" class="close-btn js-payment-modal-close" aria-label="Close payment information">&times;</button>
+                            <button type="button" class="close-btn js-payment-modal-close" aria-label="Close payment information"><span aria-hidden="true">&times;</span></button>
                             <h2 id="paymentDetailsTitle{{ $payment_log->payment_id }}">Payment details</h2>
                             <div class="detail-section">
                                 <div class="detail-section-title">Payment</div>
@@ -236,7 +236,7 @@
 
     <div id="paymentInfoModal" class="modal vs-admin-payment-logs__modal vs-admin-payment-logs__info-modal" aria-hidden="true">
         <div class="modal-content modal-lg payment-info-modal" role="dialog" aria-modal="true" aria-labelledby="paymentInfoTitle">
-            <button type="button" class="close-btn js-modal-close" aria-label="Close payment information">&times;</button>
+            <button type="button" class="close-btn js-modal-close" aria-label="Close payment information"><span aria-hidden="true">&times;</span></button>
             <h2 id="paymentInfoTitle">Understanding payment totals</h2>
             <p class="payment-info-intro">Reservation totals and payment progress are calculated from recorded amounts.</p>
             <dl class="payment-info-list">
@@ -270,7 +270,7 @@
 
     <div id="receiptModal" class="modal vs-admin-payment-logs__modal vs-admin-payment-logs__receipt-modal">
         <div class="modal-content">
-            <span class="close-btn" id="closeReceiptModal">&times;</span>
+            <button type="button" class="close-btn" id="closeReceiptModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h2>Payment Receipt</h2>
             <div class="vs-admin-payment-logs__receipt-content">
                 <img id="receiptImage1" src="" alt="Receipt Image" class="receipt-image" hidden>
@@ -282,7 +282,7 @@
 
     <div id="statusModal" class="modal vs-admin-payment-logs__modal vs-admin-payment-logs__status-modal">
         <div class="modal-content">
-            <span class="close-btn" id="closeStatusModal">&times;</span>
+            <button type="button" class="close-btn" id="closeStatusModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h2 id="statusModalTitle">Confirm Status Change</h2>
             <p id="statusModalMessage" class="vs-admin-payment-logs__status-message"></p>
             <div id="statusModalNoteWrapper" class="vs-admin-payment-logs__status-note" hidden>

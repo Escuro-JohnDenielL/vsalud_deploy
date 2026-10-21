@@ -295,9 +295,20 @@
 }
 
 .vs-layout--admin .vs-overflow__separator {
+  /* Fixed 1px basis: the flex column must never squeeze the line to 0. */
+  flex: 0 0 1px;
   height: 1px;
   margin: var(--vs-space-1) 0;
   background: var(--vs-color-surface-pale-green);
+}
+
+/* A separator only earns its space between two items: drop leading,
+   trailing and doubled separators (e.g. when the item above is hidden
+   by @if/@can but the separator is not). */
+.vs-layout--admin .vs-overflow__separator:first-child,
+.vs-layout--admin .vs-overflow__separator:last-child,
+.vs-layout--admin .vs-overflow__separator + .vs-overflow__separator {
+  display: none;
 }
 
 .vs-layout--admin .vs-overflow__menu form {

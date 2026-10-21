@@ -140,7 +140,7 @@ if ($user && !$isSuperAdmin) {
 {{-- Edit Profile Modal --}}
 <div id="edit-modal" class="modal">
   <div class="modal-content">
-    <span class="close-btn" id="close-modal">&times;</span>
+    <button type="button" class="close-btn" id="close-modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
     <h3>Edit Profile</h3>
     <form id="edit-form">
       @csrf
@@ -172,7 +172,7 @@ if ($user && !$isSuperAdmin) {
 {{-- Change Password Modal --}}
 <div id="password-modal" class="modal">
   <div class="modal-content">
-    <span class="close-btn" id="close-password-modal">&times;</span>
+    <button type="button" class="close-btn" id="close-password-modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
     <h3>Change Password</h3>
     {{-- Step 1: Verify current password & send code --}}
     <div id="password-step-1">
@@ -232,7 +232,7 @@ if ($user && !$isSuperAdmin) {
 {{-- Confirm Modal --}}
 <div id="confirm-modal" class="modal">
   <div class="modal-content modal-sm">
-    <span class="close-btn" id="confirm-cancel">&times;</span>
+    <button type="button" class="close-btn" id="confirm-cancel" aria-label="Close"><span aria-hidden="true">&times;</span></button>
     <h3>Confirm Logout</h3>
     <p id="confirm-message" style="font-size: 16px; margin-bottom: 20px;">
       Are you sure you want to logout?

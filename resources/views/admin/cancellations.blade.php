@@ -109,7 +109,7 @@
     {{-- Approve Modal --}}
     <div id="approveModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('approveModal')">&times;</span>
+            <button type="button" class="close-btn" aria-label="Close" onclick="closeModal('approveModal')"><span aria-hidden="true">&times;</span></button>
             <h3>Approve Cancellation</h3>
             <p style="font-size: 14px; margin: 12px 0;">The reservation will be cancelled and the patron will be notified.</p>
             <form id="approveForm">
@@ -130,7 +130,7 @@
     {{-- Deny Modal --}}
     <div id="denyModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('denyModal')">&times;</span>
+            <button type="button" class="close-btn" aria-label="Close" onclick="closeModal('denyModal')"><span aria-hidden="true">&times;</span></button>
             <h3>Deny Cancellation</h3>
             <p style="font-size: 14px; margin: 12px 0;">The patron will be notified that their request was denied.</p>
             <form id="denyForm">

@@ -445,6 +445,11 @@ textarea:focus,
   color: var(--color-text);
 }
 
+/* An empty message should not render an empty bordered box. */
+.detail-message-block:empty {
+  display: none;
+}
+
 .detail-message-block::-webkit-scrollbar {
   width: 6px;
 }
@@ -710,18 +715,26 @@ textarea:focus,
   position: absolute;
   top: 14px;
   right: 18px;
+  font-family: inherit;
   font-size: 24px;
   font-weight: normal;
   cursor: pointer;
   color: var(--color-text-muted);
   background: none;
   border: none;
+  border-radius: var(--radius-sm);
   line-height: 1;
   padding: 0;
 }
 
 .close-btn:hover {
   color: var(--color-text);
+}
+
+.close-btn:focus-visible,
+.close-modal:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
 }
 
 /* Modal footer button row */
@@ -2089,7 +2102,7 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
 /* === Scoped baseline for legacy page elements === */
 .vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-row-actions__view):not(.vs-overflow__toggle):not(.vs-overflow__item):not(.preset-btn):not(.payment-group-toggle):not(.payment-group-details-toggle):not(.payment-info-button),
 .vs-layout--admin .btn,
-.vs-layout--patron button:where(:not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-calendar-btn):not(.faq-question):not(.btn-submit-cancel):not(.cancel-confirm__cancel):not(.cancel-confirm__confirm)),
+.vs-layout--patron button:where(:not(.close-btn):not(.close-modal):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-calendar-btn):not(.faq-question):not(.btn-submit-cancel):not(.cancel-confirm__cancel):not(.cancel-confirm__confirm):not(.pkg-modal__close):not(.pkg-modal__zoom):not(.pkg-lightbox__close):not(.pkg-lightbox__nav)),
 .vs-layout--patron .btn,
 .vs-layout--admin-auth button:not(.close-btn):not(.btn-close),
 .vs-layout--admin-auth .btn {
@@ -2107,7 +2120,7 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
 
 .vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-row-actions__view):not(.vs-overflow__toggle):not(.vs-overflow__item):not(.preset-btn):not(.payment-group-toggle):not(.payment-group-details-toggle):not(.payment-info-button):hover,
 .vs-layout--admin .btn:hover,
-.vs-layout--patron button:where(:not(.close-btn):not(.btn-close):not(.btn-submit):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-calendar-btn):not(.faq-question):not(.btn-submit-cancel):not(.cancel-confirm__cancel):not(.cancel-confirm__confirm)):hover,
+.vs-layout--patron button:where(:not(.close-btn):not(.close-modal):not(.btn-close):not(.btn-submit):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-calendar-btn):not(.faq-question):not(.btn-submit-cancel):not(.cancel-confirm__cancel):not(.cancel-confirm__confirm):not(.pkg-modal__close):not(.pkg-modal__zoom):not(.pkg-lightbox__close):not(.pkg-lightbox__nav)):hover,
 .vs-layout--patron .btn:hover,
 .vs-layout--admin-auth button:not(.close-btn):not(.btn-close):hover,
 .vs-layout--admin-auth .btn:hover {
@@ -2253,7 +2266,7 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
 .vs-inline-auth-code--large { font-size: 34px; }
 .vs-inline-dev-copy { margin-bottom: 4px; color: var(--vs-status-warning-text); font-size: 13px; }
 .vs-inline-dev-note { margin-top: 4px; color: var(--vs-status-warning-text); font-size: 12px; }
-.vs-inline-strength-track { height: 6px; overflow: hidden; border-radius: 4px; background: var(--vs-color-border); }
+.vs-inline-strength-track { height: 6px; overflow: hidden; border-radius: 4px; background: var(--color-border); }
 .vs-inline-strength-bar { height: 100%; border-radius: 4px; transition: all var(--vs-duration-base) ease; }
 .vs-inline-requirements { margin-top: 6px; font-size: 12px; line-height: 2; }
 .vs-inline-field-note { color: var(--vs-color-text-secondary); font-size: 12px; }
@@ -2361,14 +2374,14 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
 .vs-layout--admin .detail-row--borderless { border: 0; }
 .vs-layout--admin .report-issue-list { margin: 0; padding-inline-start: 20px; color: var(--vs-color-text); font-size: var(--vs-text-body-min); line-height: 1.7; }
 .vs-layout--admin .report-issue-copy { margin: 0; color: var(--vs-color-text); font-size: var(--vs-text-body-min); line-height: 1.6; }
-.vs-layout--admin .profile-access-card { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 20px; padding: 16px 20px; border: 1px solid var(--vs-color-border); border-radius: var(--vs-radius-control); background: #f9fafb; }
+.vs-layout--admin .profile-access-card { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 20px; padding: 16px 20px; border: 1px solid var(--color-border); border-radius: var(--vs-radius-control); background: #f9fafb; }
 .vs-layout--admin .profile-access-icon { flex-shrink: 0; font-size: 16px; font-weight: var(--vs-weight-semibold); }
 .vs-layout--admin .profile-access-title { display: block; margin-bottom: 4px; color: var(--vs-color-text); font-size: 15px; }
 .vs-layout--admin .profile-access-copy { margin: 0; color: var(--vs-color-text-secondary); font-size: var(--vs-text-body-min); line-height: 1.5; }
 .vs-layout--admin .profile-admin-name { overflow-wrap: anywhere; color: var(--vs-color-dark-green); font-size: 20px; font-weight: var(--vs-weight-semibold); line-height: 1.35; word-break: break-word; }
 .vs-layout--admin .profile-info-card { box-sizing: border-box; align-self: flex-start; width: 350px; padding: 20px; border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-md); }
 .vs-layout--admin .password-strength-container--spaced { margin-top: 8px; }
-.vs-layout--patron .waitlist-option { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--vs-color-border); }
+.vs-layout--patron .waitlist-option { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--color-border); }
 .vs-layout--patron .waitlist-option-copy { margin-bottom: 12px; color: var(--vs-color-text-secondary); }
 .vs-layout--patron .payment-back-button { background: var(--vs-status-neutral-border); border-color: var(--vs-status-neutral-border); }
 .vs-layout--admin-auth .auth-dev-title { display: block; margin-bottom: 4px; }
@@ -2384,7 +2397,7 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
 .vs-layout--admin .it-danger-text { color: var(--vs-status-danger-text); }
 .vs-layout--admin .it-muted-text { color: var(--vs-color-text-secondary); }
 .vs-layout--admin .it-full-button { width: 100%; }
-.vs-layout--admin .it-success-alert { margin-bottom: 20px; padding: 12px 16px; border: 1px solid var(--vs-color-border); border-radius: var(--vs-radius-control); background: var(--vs-color-surface-pale-green); color: var(--vs-status-success-text); }
+.vs-layout--admin .it-success-alert { margin-bottom: 20px; padding: 12px 16px; border: 1px solid var(--vs-status-success-border); border-radius: var(--vs-radius-control); background: var(--vs-color-surface-pale-green); color: var(--vs-status-success-text); }
 .vs-layout--admin .it-preview-label { display: block; margin: 4px 0; font-weight: var(--vs-weight-regular); }
 .vs-layout--admin .it-empty-preview { padding: 40px 0; color: var(--vs-status-success-text); text-align: center; }
 

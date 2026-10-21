@@ -240,8 +240,13 @@
 
 .close-modal {
     float: right;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
     font-size: 28px;
     font-weight: bold;
+    line-height: 1;
     color: #333;
     cursor: pointer;
 }

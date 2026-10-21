@@ -49,8 +49,10 @@
                     @if(!in_array($incident->status, ['resolved', 'closed']))
                         <button type="button" class="vs-overflow__item resolve-incident-btn"
                             data-id="{{ $incident->id }}">Resolve</button>
+                        {{-- The divider belongs to Resolve; without it there is
+                             nothing above Delete, so it must not render. --}}
+                        <div class="vs-overflow__separator"></div>
                     @endif
-                    <div class="vs-overflow__separator"></div>
                     <button type="button" class="vs-overflow__item vs-overflow__item--danger delete-incident-btn"
                         data-id="{{ $incident->id }}"
                         data-title="{{ $incident->title }}">Delete</button>

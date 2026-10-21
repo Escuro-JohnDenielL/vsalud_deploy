@@ -16,8 +16,8 @@
         data-vs-status-select
         data-vs-variants="{{ json_encode($variants) }}"
         data-vs-value="{{ $selected }}">
-    @if ($placeholder)
-        <option value="" @if ($selected === null || $selected === '') selected hidden @endif>{{ $placeholder }}</option>
+    @if ($placeholder && ($selected === null || $selected === ''))
+        <option value="" selected>{{ $placeholder }}</option>
     @endif
     @foreach ($options as $value => $label)
         <option value="{{ $value }}" @if ((string) $selected === (string) $value) selected @endif>{{ $label }}</option>

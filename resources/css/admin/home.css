@@ -3,10 +3,13 @@
   font-family: var(--vs-font-ui);
 }
 
+/* Flex (not grid) so a partially filled last row sits centered under the full rows
+   instead of hugging the left edge. Cards keep an even size and center themselves. */
 .vs-admin-dashboard .packages-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
+  display: flex;
+  flex-wrap: wrap;
   align-items: stretch;
+  justify-content: center;
   gap: var(--vs-space-5);
   padding: var(--vs-space-4) 0;
 }
@@ -18,11 +21,25 @@
   margin: var(--vs-space-5) 0 var(--vs-space-2);
 }
 
+/* Page-header "Home" action (submits the logout form). */
+.vs-admin-dashboard .vs-admin-dashboard__home-form {
+  display: flex;
+  margin: 0;
+}
+
+@media (max-width: 767.98px) {
+  .vs-admin-dashboard .vs-admin-dashboard__home-form,
+  .vs-admin-dashboard .vs-admin-dashboard__home-form .admin-btn {
+    width: 100%;
+  }
+}
+
 .vs-admin-dashboard .package-card {
   display: flex;
   width: 100%;
   min-width: 0;
-  max-width: 420px;
+  max-width: 320px;
+  flex: 1 1 260px;
   flex-direction: column;
   overflow: hidden;
   margin-inline: auto;
@@ -74,6 +91,11 @@
   flex-direction: column;
   margin-bottom: var(--vs-space-3);
   text-align: center;
+}
+
+/* Filled by JS after render; hide the placeholder block until then. */
+.vs-admin-dashboard .package-details:empty {
+  display: none;
 }
 
 .vs-admin-dashboard .package-description {
@@ -375,6 +397,8 @@
 
   .vs-admin-dashboard .package-card {
     width: min(100%, 440px);
+    max-width: 440px;
+    flex-basis: 100%;
   }
 
   .vs-admin-dashboard .vs-admin-dashboard__card-actions {

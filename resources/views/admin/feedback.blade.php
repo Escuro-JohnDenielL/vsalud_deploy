@@ -74,7 +74,7 @@
     {{-- View Modal --}}
     <div id="feedbackModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" id="closeModalBtn">&times;</span>
+            <button type="button" class="close-btn" id="closeModalBtn" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h2>Feedback Details</h2>
             <div class="feedback-detail">
                 <div class="detail-section">
@@ -103,7 +103,7 @@
     {{-- Confirm Delete Modal --}}
     <div id="confirmDeleteModal" class="modal">
         <div class="modal-content modal-sm">
-            <span class="close-btn" id="closeConfirmModal">&times;</span>
+            <button type="button" class="close-btn" id="closeConfirmModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h3>Confirm Delete</h3>
             <p id="confirmDeleteMessage" style="font-size: 15px; margin: 12px 0;">Are you sure you want to delete this feedback?</p>
             <div class="modal-footer">

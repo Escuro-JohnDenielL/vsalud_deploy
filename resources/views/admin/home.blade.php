@@ -9,7 +9,12 @@
     title="Packages"
     subtitle="Create and manage the packages shown to patrons.">
     <x-slot:action>
-        <a href="{{ url('/') }}" class="admin-btn admin-btn-ghost" target="_blank" rel="noopener noreferrer">View website</a>
+        {{-- Temporary: "Home" signs the admin out so the public site opens as a guest. --}}
+        <form method="POST" action="{{ route('admin.logout') }}" class="vs-admin-dashboard__home-form">
+            @csrf
+            <input type="hidden" name="redirect" value="home">
+            <button type="submit" class="admin-btn admin-btn-ghost">Home</button>
+        </form>
     </x-slot:action>
 </x-ui.page-header>
 

@@ -190,7 +190,7 @@
 
     <div id="dateUnavailableModal" class="modal" style="display: none;">
         <div class="modal-content">
-            <span class="close-modal" id="closeUnavailableModal">&times;</span>
+            <button type="button" class="close-modal" id="closeUnavailableModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h3 id="unavailableTitle">Date Not Available</h3>
             <p id="unavailableMessage">Sorry, the selected date is already full or closed. Please choose another available date.</p>
             <div id="waitlistOption" class="waitlist-option" style="display: none;">
@@ -214,7 +214,7 @@
 
     <div id="waitlistSuccessModal" class="modal" style="display: none;">
         <div class="modal-content vs-inline-centered">
-            <span class="close-modal" id="closeWaitlistSuccessModal">&times;</span>
+            <button type="button" class="close-modal" id="closeWaitlistSuccessModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h3 class="vs-inline-success">You're on the Waitlist!</h3>
             <p class="vs-inline-modal-copy">We'll email you if a slot opens up for this date. You'll have 24 hours to claim it.</p>
             <button onclick="window.vsModalCloseAfterFade(document.getElementById('waitlistSuccessModal'), () => { document.getElementById('waitlistSuccessModal').style.display = 'none'; })" class="vs-inline-success-button">

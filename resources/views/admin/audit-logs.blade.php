@@ -122,7 +122,7 @@
     {{-- Entry detail modal (filled by resources/js/admin/audit-logs.js) --}}
     <div id="auditDetailModal" class="modal vs-admin-audit-logs__detail-modal">
         <div class="modal-content modal-lg">
-            <span class="close-btn" onclick="closeModal('auditDetailModal')">&times;</span>
+            <button type="button" class="close-btn" aria-label="Close" onclick="closeModal('auditDetailModal')"><span aria-hidden="true">&times;</span></button>
             <h2>Audit Entry</h2>
             <p class="audit-modal-subtitle" id="auditDetailSubtitle">Loading entry…</p>
 

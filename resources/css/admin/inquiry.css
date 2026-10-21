@@ -266,6 +266,11 @@
     line-height: 1.4;
 }
 
+/* No message yet: do not reserve a blank 18px strip under the button. */
+.ai-draft-status:empty {
+    display: none;
+}
+
 .ai-draft-success {
     color: #047857;
 }

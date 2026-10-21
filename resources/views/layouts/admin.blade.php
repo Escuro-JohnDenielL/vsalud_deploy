@@ -201,7 +201,9 @@
                     <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
                 <ul class="nav-dropdown-menu vs-account-menu__list">
-                    <li class="vs-account-menu__header">{{ $adminUser?->name }}</li>
+                    @if($adminUser?->name)
+                    <li class="vs-account-menu__header">{{ $adminUser->name }}</li>
+                    @endif
                     <li>
                         <a href="{{ route('admin.profile') }}" class="{{ request()->is('admin/profile') ? 'active' : '' }}">
                             Admin Profile
@@ -238,7 +240,7 @@
     {{-- Report an Issue Modal --}}
     <div id="reportIssueModal" class="modal">
         <div class="modal-content">
-            <span class="js-modal-close close-btn">&times;</span>
+            <button type="button" class="js-modal-close close-btn" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h2>Report a Security Issue</h2>
             <p class="vs-inline-note report-issue-intro">For reporting security vulnerabilities, suspected breaches, or system problems.</p>
 

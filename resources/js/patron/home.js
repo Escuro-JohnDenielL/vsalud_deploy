@@ -32,6 +32,27 @@ document.addEventListener("DOMContentLoaded", function () {
     let packageName = "Package";
     let lightboxReturnFocus = null;
 
+    // Some package rows can still point at photos that were never uploaded.
+    // Probe each URL once and drop the ones that fail, so the gallery never
+    // cycles into a broken/empty slide (and arrows only show when there is
+    // genuinely more than one photo).
+    const imageStatus = new Map();
+    const probeImage = function (src) {
+        if (imageStatus.has(src)) return Promise.resolve(imageStatus.get(src));
+        return new Promise(function (resolve) {
+            const probe = new Image();
+            probe.onload = function () {
+                imageStatus.set(src, true);
+                resolve(true);
+            };
+            probe.onerror = function () {
+                imageStatus.set(src, false);
+                resolve(false);
+            };
+            probe.src = src;
+        });
+    };
+
     const showGalleryImage = function (index) {
         if (!gallery.length) return;
         galleryIndex = (index + gallery.length) % gallery.length;
@@ -90,11 +111,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             if (!data) return;
 
-            const images = Array.isArray(data.images) && data.images.length
-                ? data.images
-                : [DEFAULT_IMAGE];
+            const images = (Array.isArray(data.images) ? data.images : [])
+                .filter(function (src) {
+                    return typeof src === "string" && src.trim() !== "";
+                });
+            if (!images.length) images.push(DEFAULT_IMAGE);
 
-            gallery = images;
             packageName = data.name || "Package";
 
             titleEl.textContent = data.name || "Package";
@@ -105,24 +127,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 this.onerror = null;
                 this.src = DEFAULT_IMAGE;
             };
-            showGalleryImage(0);
-
-            // Thumbnails (only shown when the package has more than one photo)
-            thumbsEl.innerHTML = "";
-            if (images.length > 1) {
-                images.forEach(function (src, index) {
-                    const thumb = document.createElement("img");
-                    thumb.alt = (data.name || "Package") + " photo " + (index + 1);
-                    thumb.onerror = function () {
-                        this.remove();
-                    };
-                    thumb.src = src;
-                    thumb.addEventListener("click", function () {
-                        showGalleryImage(index);
-                    });
-                    thumbsEl.appendChild(thumb);
-                });
-            }
 
             inclusionsEl.innerHTML = "";
             const inclusions = Array.isArray(data.inclusions) ? data.inclusions : [];
@@ -138,7 +142,36 @@ document.addEventListener("DOMContentLoaded", function () {
                 inclusionsEl.appendChild(li);
             }
 
-            openModal();
+            // Keep only the photos that really load. A package with a single real
+            // photo ends up with a one-item gallery: no thumbnails, no arrows, and
+            // the counter reads "photo 1 of 1" instead of cycling into 404s.
+            Promise.all(images.map(probeImage)).then(function (loaded) {
+                const usable = images.filter(function (src, index) {
+                    return loaded[index];
+                });
+
+                gallery = usable.length ? usable : [DEFAULT_IMAGE];
+                showGalleryImage(0);
+
+                // Thumbnails (only shown when the package has more than one photo)
+                thumbsEl.innerHTML = "";
+                if (gallery.length > 1) {
+                    gallery.forEach(function (src, index) {
+                        const thumb = document.createElement("img");
+                        thumb.alt = packageName + " photo " + (index + 1);
+                        thumb.onerror = function () {
+                            this.remove();
+                        };
+                        thumb.src = src;
+                        thumb.addEventListener("click", function () {
+                            showGalleryImage(index);
+                        });
+                        thumbsEl.appendChild(thumb);
+                    });
+                }
+
+                openModal();
+            });
         });
     });
 
@@ -150,6 +183,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Enlarged photo. Click the main photo, then Escape, Close, arrows or swipe.
     if (zoomBtn) zoomBtn.addEventListener("click", openLightbox);
+    if (lightboxImage) {
+        lightboxImage.onerror = function () {
+            this.onerror = null;
+            this.src = DEFAULT_IMAGE;
+        };
+    }
     if (lightboxClose) lightboxClose.addEventListener("click", function () { closeLightbox(true); });
     if (lightboxPrev) lightboxPrev.addEventListener("click", function () {
         showGalleryImage(galleryIndex - 1);

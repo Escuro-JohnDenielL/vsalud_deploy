@@ -120,7 +120,7 @@
 
     <div id="dateUnavailableModal" class="modal">
         <div class="modal-content modal-sm">
-            <span class="close-btn" id="closeUnavailableModal">&times;</span>
+            <button type="button" class="close-btn" id="closeUnavailableModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h3>Date Not Available</h3>
             <p>Sorry, the selected date is already full or closed. Please choose another available date.</p>
         </div>

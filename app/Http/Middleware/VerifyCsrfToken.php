@@ -43,6 +43,12 @@ class VerifyCsrfToken extends ValidateCsrfToken
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
+            // Same "for now" behaviour as AuthController::logout(): the Packages page
+            // "Home" action asks to land on the public site after being signed out.
+            if ($request->input('redirect') === 'home') {
+                return redirect(url('/'));
+            }
+
             return redirect()
                 ->route('admin.login')
                 ->with('success', 'Your previous session had already ended. Please log in again.');

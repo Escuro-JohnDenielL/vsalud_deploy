@@ -9,10 +9,27 @@
 ])
 
 @php
+    // A stored path can point at a photo that was never uploaded (or was deleted),
+    // so only keep images that really exist locally. Remote URLs are kept as-is;
+    // the modal script drops any of those that fail to load.
+    $photoExists = function (string $path): bool {
+        $relative = ltrim(trim($path), '/');
+
+        if (str_starts_with($relative, 'images/')) {
+            return is_file(public_path($relative));
+        }
+
+        if (str_starts_with($relative, 'storage/')) {
+            return is_file(storage_path('app/public/' . substr($relative, strlen('storage/'))));
+        }
+
+        return true;
+    };
+
     // Build the gallery from whichever image paths this package actually has.
     // Stored paths look like "/images/wedding_package.jpg" or "/storage/packages/xxx.jpg".
     $gallery = collect([$imagePath, $image2Path, $image3Path])
-        ->filter(fn ($path) => is_string($path) && trim($path) !== '')
+        ->filter(fn ($path) => is_string($path) && trim($path) !== '' && $photoExists($path))
         ->map(fn ($path) => asset(ltrim(trim($path), '/')))
         ->values()
         ->all();

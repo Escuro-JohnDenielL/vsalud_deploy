@@ -76,7 +76,7 @@
     .options-editor { border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px; margin-top: 6px; }
     .option-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
     .option-row input { flex: 1; border: 1px solid #e5e7eb; border-radius: 6px; padding: 6px 10px; font-size: 13px; }
-    .option-row .remove-opt { background: none; border: none; color: #dc3545; cursor: pointer; font-size: 18px; padding: 0 4px; }
+    .option-row .remove-opt { background: none; border: none; color: #dc3545; cursor: pointer; font-family: inherit; font-size: 18px; line-height: 1; padding: 0 4px; }
     .add-opt-btn { background: none; border: 1px dashed #d1d5db; border-radius: 6px; padding: 6px 12px; font-size: 12px; color: #6b7280; cursor: pointer; width: 100%; margin-top: 4px; }
     .add-opt-btn:hover { background: #f9fafb; }
 
@@ -183,7 +183,7 @@
                         <div class="option-row">
                             <input type="text" class="opt-label" placeholder="Label" value="Option 1">
                             <input type="text" class="opt-value" placeholder="Value" value="option_1">
-                            <button type="button" class="remove-opt" onclick="this.parentElement.remove()">&times;</button>
+                            <button type="button" class="remove-opt" aria-label="Remove option" onclick="this.parentElement.remove()"><span aria-hidden="true">&times;</span></button>
                         </div>
                         <button type="button" class="add-opt-btn" onclick="addOptionRow('newOptionsEditor')">+ Add option</button>
                     </div>
@@ -421,7 +421,7 @@
         row.innerHTML = `
             <input type="text" class="opt-label" placeholder="Label" value="">
             <input type="text" class="opt-value" placeholder="Value" value="">
-            <button type="button" class="remove-opt" onclick="this.parentElement.remove()">&times;</button>
+            <button type="button" class="remove-opt" aria-label="Remove option" onclick="this.parentElement.remove()"><span aria-hidden="true">&times;</span></button>
         `;
         editor.insertBefore(row, editor.querySelector('.add-opt-btn'));
     }
@@ -448,7 +448,7 @@
             row.innerHTML = `
                 <input type="text" class="opt-label" placeholder="Label" value="${opt.label}">
                 <input type="text" class="opt-value" placeholder="Value" value="${opt.value}">
-                <button type="button" class="remove-opt" onclick="this.parentElement.remove()">&times;</button>
+                <button type="button" class="remove-opt" aria-label="Remove option" onclick="this.parentElement.remove()"><span aria-hidden="true">&times;</span></button>
             `;
             editor.insertBefore(row, editor.querySelector('.add-opt-btn'));
         });

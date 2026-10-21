@@ -2,6 +2,8 @@
     Shared row actions: a quiet "View" control plus a "..." overflow menu.
     Destructive actions belong in the menu with class
     "vs-overflow__item vs-overflow__item--danger" (keeps their own confirmation).
+    If the menu slot renders nothing (every item is behind a failing
+    condition), the "..." toggle is not rendered at all.
 
     Usage:
         <x-ui.row-actions>
@@ -17,12 +19,18 @@
 --}}
 @props(['label' => 'More actions'])
 
+@php
+    // Render the menu once so an empty slot (all items hidden by conditions)
+    // does not leave a "..." button that opens an empty white box.
+    $menuHtml = isset($menu) ? trim((string) $menu) : '';
+@endphp
+
 <div class="vs-row-actions">
     @isset($view)
         {{ $view }}
     @endisset
 
-    @isset($menu)
+    @if ($menuHtml !== '')
         <div class="vs-overflow" data-overflow>
             <button type="button" class="vs-overflow__toggle" data-overflow-toggle
                     aria-haspopup="menu" aria-expanded="false" aria-label="{{ $label }}">
@@ -31,8 +39,8 @@
                 </svg>
             </button>
             <div class="vs-overflow__menu" data-overflow-menu role="menu" hidden>
-                {{ $menu }}
+                {!! $menuHtml !!}
             </div>
         </div>
-    @endisset
+    @endif
 </div>

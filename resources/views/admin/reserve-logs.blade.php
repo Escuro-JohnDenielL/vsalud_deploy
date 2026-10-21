@@ -98,7 +98,7 @@
             <!-- View Modal -->
             <div id="viewModal" class="modal vs-admin-reservation-logs__view-modal">
                 <div class="modal-content">
-                    <span class="close-btn" onclick="closeModal()">&times;</span>
+                    <button type="button" class="close-btn" aria-label="Close" onclick="closeModal()"><span aria-hidden="true">&times;</span></button>
                     <h2>Reservation Details</h2>
                     <div id="modalBody">
                         Loading...
@@ -118,7 +118,7 @@
     {{-- Confirm Delete Modal --}}
     <div id="confirmDeleteReservationModal" class="modal vs-admin-reservation-logs__confirm-modal">
         <div class="modal-content modal-sm">
-            <span class="close-btn" id="closeConfirmDeleteModal">&times;</span>
+            <button type="button" class="close-btn" id="closeConfirmDeleteModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h3>Confirm Delete</h3>
             <p id="confirmDeleteReservationMessage" class="vs-admin-reservation-logs__confirm-message">Are you sure you want to delete this reservation?</p>
             <div class="modal-footer">
