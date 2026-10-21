@@ -49,7 +49,8 @@
                     <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                 </a>
                 <ul class="nav-dropdown-menu">
-                    <li>
+                    {{-- Mobile-only: the in-bar Track Booking button is hidden below 992px. --}}
+                    <li class="vs-nav-menu-only">
                         <a href="{{ route('patron.vreserve') }}"
                             class="{{ request()->routeIs('patron.vreserve') ? 'active' : '' }}">
                             Track Booking

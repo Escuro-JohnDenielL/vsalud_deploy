@@ -149,7 +149,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     const truncatedDesc = description.length > 80 ? description.substring(0, 80) + "..." : description;
                     detailsDiv.innerHTML = `
                         <p class="package-description">${truncatedDesc}</p>
-                        <p class="package-price">${formatPrice(packageData.price)}</p>
+                        <p class="package-price">
+                            <span class="package-price__label">Starting at</span>
+                            <strong>${formatPrice(packageData.price)}</strong>
+                        </p>
                     `;
                 }
             }
@@ -207,16 +210,21 @@ document.addEventListener("DOMContentLoaded", function () {
         const truncatedDesc = description.length > 80 ? description.substring(0, 80) + "..." : description;
 
         wrapper.innerHTML = `
-            <img src="${image}" alt="${data.name}" data-package-image class="${data.image_path ? '' : 'is-fallback'}">
+            <div class="package-card__media">
+                <img src="${image}" alt="${data.name}" data-package-image class="${data.image_path ? '' : 'is-fallback'}">
+            </div>
             <div class="package-content">
                 <h3>${data.name}</h3>
                 <div class="package-details">
                     <p class="package-description">${truncatedDesc}</p>
-                    <p class="package-price">${formatPrice(data.price)}</p>
+                    <p class="package-price">
+                        <span class="package-price__label">Starting at</span>
+                        <strong>${formatPrice(data.price)}</strong>
+                    </p>
                 </div>
                 <div class="vs-admin-dashboard__card-actions">
                     <div class="vs-row-actions">
-                        <button type="button" class="vs-row-actions__view view-package">View</button>
+                        <button type="button" class="vs-row-actions__view view-package">View Package</button>
                         <div class="vs-overflow" data-overflow>
                             <button type="button" class="vs-overflow__toggle" data-overflow-toggle aria-haspopup="menu" aria-expanded="false" aria-label="Package actions">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>

@@ -1,10 +1,13 @@
-/* === Packages Section === */
+/* === Packages Section ===
+   auto-fit (not auto-fill) so leftover column tracks collapse, and the tracks
+   are centered: 2 cards sit centered under the title instead of leaning to
+   one side with empty space on the other. */
 .packages {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 342px));
   grid-auto-rows: 1fr;
   align-items: stretch;
-  justify-content: start;
+  justify-content: center;
   gap: 28px;
   padding: 30px;
 }
@@ -547,20 +550,23 @@
 }
 
 .privacy-decline {
-  border: 0;
-  background: none;
-  padding: 12px 10px;
-  color: var(--color-text-muted);
+  border: 1px solid var(--vs-button-secondary-border);
+  background: var(--vs-button-secondary-bg);
+  padding: 12px 34px;
+  color: var(--vs-button-secondary-text);
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  text-decoration: none;
+  border-radius: var(--radius-full);
   cursor: pointer;
+  transition: all var(--transition-base);
 }
 
 .privacy-decline:hover {
-  color: var(--color-primary);
+  border-color: var(--vs-button-secondary-hover-border);
+  background: var(--vs-button-secondary-hover-bg);
+  color: var(--vs-button-secondary-hover-text);
 }
 
 .privacy-decline:focus-visible {
@@ -586,10 +592,10 @@
 /* Shared patron surface styling */
 .vs-layout--patron .packages {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 342px));
   grid-auto-rows: 1fr;
   align-items: stretch;
-  justify-content: start;
+  justify-content: center;
   gap: var(--vs-space-5);
   padding: var(--vs-space-4) 0;
 }

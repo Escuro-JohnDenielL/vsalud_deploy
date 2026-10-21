@@ -410,16 +410,23 @@
 
 .agreement-decline {
     display: inline-block;
-    margin-top: 14px;
-    color: var(--color-text-muted);
-    font-size: 14px;
+    margin: 20px 0 0 10px;
+    padding: 12px 30px;
+    border: 1px solid var(--vs-button-secondary-border);
+    border-radius: var(--radius-sm);
+    background: var(--vs-button-secondary-bg);
+    color: var(--vs-button-secondary-text);
+    font-size: 16px;
     font-weight: 600;
-    text-decoration: underline;
-    text-underline-offset: 3px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--transition-base);
 }
 
 .agreement-decline:hover {
-    color: var(--color-primary);
+    border-color: var(--vs-button-secondary-hover-border);
+    background: var(--vs-button-secondary-hover-bg);
+    color: var(--vs-button-secondary-hover-text);
 }
 
 .agreement-decline:focus-visible {
@@ -855,7 +862,8 @@
 .vs-layout--patron #agreementModal .guidelines-content section h3 {
     border-color: var(--vs-color-control-border);
     color: var(--vs-color-deep-green);
-    font-family: var(--vs-font-ui);
+    font-family: var(--vs-font-display);
+    font-weight: var(--vs-weight-semibold);
 }
 
 .vs-layout--patron #agreementModal .guidelines-content p,
@@ -879,6 +887,28 @@
     color: var(--vs-button-primary-hover-text);
     transform: none;
     box-shadow: none;
+}
+
+.vs-layout--patron #agreementModal .agreement-decline {
+    min-height: 44px;
+    margin: 20px 0 0 var(--vs-space-3);
+    padding: 0 var(--vs-space-5);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--vs-button-secondary-border);
+    border-radius: var(--vs-radius-control);
+    background: var(--vs-button-secondary-bg);
+    color: var(--vs-button-secondary-text);
+    font-family: var(--vs-font-ui);
+    font-size: var(--vs-text-control-min);
+    text-decoration: none;
+}
+
+.vs-layout--patron #agreementModal .agreement-decline:hover {
+    border-color: var(--vs-button-secondary-hover-border);
+    background: var(--vs-button-secondary-hover-bg);
+    color: var(--vs-button-secondary-hover-text);
 }
 
 @media (min-width: 901px) {

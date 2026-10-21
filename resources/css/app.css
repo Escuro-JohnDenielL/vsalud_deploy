@@ -1334,10 +1334,12 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
   color: var(--vs-button-secondary-hover-text);
 }
 
-/* Track Booking lives in the collapsed panel on small screens, so hide the
-   in-bar outline button by default here (desktop) and reveal the menu item. */
-.vs-layout--patron .vs-nav-menu-only {
-  display: none;
+/* Track Booking lives in the collapsed panel on small screens, so the in-bar
+   outline button is hidden there and this menu-only entry takes its place. */
+@media (min-width: 992px) {
+  .vs-layout--patron .vs-nav-menu-only {
+    display: none;
+  }
 }
 
 .vs-layout--patron .vs-patron-nav .nav-dropdown.active > .nav-dropdown-toggle,
@@ -2102,7 +2104,7 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
 /* === Scoped baseline for legacy page elements === */
 .vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-row-actions__view):not(.vs-overflow__toggle):not(.vs-overflow__item):not(.preset-btn):not(.payment-group-toggle):not(.payment-group-details-toggle):not(.payment-info-button),
 .vs-layout--admin .btn,
-.vs-layout--patron button:where(:not(.close-btn):not(.close-modal):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-calendar-btn):not(.faq-question):not(.btn-submit-cancel):not(.cancel-confirm__cancel):not(.cancel-confirm__confirm):not(.pkg-modal__close):not(.pkg-modal__zoom):not(.pkg-lightbox__close):not(.pkg-lightbox__nav)),
+.vs-layout--patron button:where(:not(.close-btn):not(.close-modal):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-calendar-btn):not(.faq-question):not(.btn-submit-cancel):not(.cancel-confirm__cancel):not(.cancel-confirm__confirm):not(.pkg-modal__close):not(.pkg-modal__zoom):not(.pkg-lightbox__close):not(.pkg-lightbox__nav):not(.privacy-decline)),
 .vs-layout--patron .btn,
 .vs-layout--admin-auth button:not(.close-btn):not(.btn-close),
 .vs-layout--admin-auth .btn {
@@ -2120,7 +2122,7 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
 
 .vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-row-actions__view):not(.vs-overflow__toggle):not(.vs-overflow__item):not(.preset-btn):not(.payment-group-toggle):not(.payment-group-details-toggle):not(.payment-info-button):hover,
 .vs-layout--admin .btn:hover,
-.vs-layout--patron button:where(:not(.close-btn):not(.close-modal):not(.btn-close):not(.btn-submit):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-calendar-btn):not(.faq-question):not(.btn-submit-cancel):not(.cancel-confirm__cancel):not(.cancel-confirm__confirm):not(.pkg-modal__close):not(.pkg-modal__zoom):not(.pkg-lightbox__close):not(.pkg-lightbox__nav)):hover,
+.vs-layout--patron button:where(:not(.close-btn):not(.close-modal):not(.btn-close):not(.btn-submit):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-calendar-btn):not(.faq-question):not(.btn-submit-cancel):not(.cancel-confirm__cancel):not(.cancel-confirm__confirm):not(.pkg-modal__close):not(.pkg-modal__zoom):not(.pkg-lightbox__close):not(.pkg-lightbox__nav):not(.privacy-decline)):hover,
 .vs-layout--patron .btn:hover,
 .vs-layout--admin-auth button:not(.close-btn):not(.btn-close):hover,
 .vs-layout--admin-auth .btn:hover {

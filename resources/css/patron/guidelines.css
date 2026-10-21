@@ -96,7 +96,8 @@
   padding-bottom: var(--vs-space-2);
   border-bottom: 1px solid var(--vs-color-control-border);
   color: var(--vs-color-deep-green);
-  font-family: var(--vs-font-ui);
+  font-family: var(--vs-font-display);
+  font-weight: var(--vs-weight-semibold);
   font-size: 20px;
   line-height: var(--vs-leading-tight);
 }

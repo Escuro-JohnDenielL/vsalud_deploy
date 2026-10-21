@@ -7,29 +7,22 @@
 
 <x-ui.page-header
     title="Packages"
-    subtitle="Create and manage the packages shown to patrons.">
-    <x-slot:action>
-        {{-- Temporary: "Home" signs the admin out so the public site opens as a guest. --}}
-        <form method="POST" action="{{ route('admin.logout') }}" class="vs-admin-dashboard__home-form">
-            @csrf
-            <input type="hidden" name="redirect" value="home">
-            <button type="submit" class="admin-btn admin-btn-ghost">Home</button>
-        </form>
-    </x-slot:action>
-</x-ui.page-header>
+    subtitle="Create and manage the packages shown to patrons." />
 
 {{-- Package Cards --}}
 <section class="packages-grid vs-admin-dashboard__packages-grid" id="packagesContainer">
     @forelse($packages as $package)
     <div class="package-card" data-package="{{ $package->name }}" data-id="{{ $package->id }}">
-        <img src="{{ asset(ltrim($package->image_path ?: 'images/package_placeholder.svg', '/')) }}" alt="{{ $package->name }}" data-package-image class="{{ $package->image_path ? '' : 'is-fallback' }}">
+        <div class="package-card__media">
+            <img src="{{ asset(ltrim($package->image_path ?: 'images/package_placeholder.svg', '/')) }}" alt="{{ $package->name }}" data-package-image class="{{ $package->image_path ? '' : 'is-fallback' }}">
+        </div>
         <div class="package-content">
             <h3>{{ $package->name }}</h3>
             <div class="package-details"></div>
             <div class="vs-admin-dashboard__card-actions">
                 <x-ui.row-actions label="Package actions">
                     <x-slot:view>
-                        <button type="button" class="vs-row-actions__view view-package">View</button>
+                        <button type="button" class="vs-row-actions__view view-package">View Package</button>
                     </x-slot:view>
                     <x-slot:menu>
                         <button type="button" class="vs-overflow__item edit-btn">Edit</button>
@@ -41,8 +34,8 @@
         </div>
     </div>
     @empty
-    <div class="text-center py-5">
-        <p class="text-muted">No packages found. Click "Add New Package" to create one.</p>
+    <div class="vs-admin-dashboard__empty">
+        <p class="vs-empty__msg">No packages yet. Use "Add New Package" below to create the first one.</p>
     </div>
     @endforelse
 </section>

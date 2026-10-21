@@ -15,6 +15,12 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
+        // An admin who is still signed in (e.g. after browsing the public site
+        // via the navbar Home link) goes straight back to the admin panel.
+        if (Auth::guard('admin')->check()) {
+            return redirect()->route('admin.home');
+        }
+
         return view('admin.login');
     }
 
