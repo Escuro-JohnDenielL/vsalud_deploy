@@ -35,6 +35,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Admin idle timeout
+    |--------------------------------------------------------------------------
+    |
+    | Minutes of inactivity after which a signed-in admin is logged out. Kept
+    | separate from config/session.php so the patron-facing session can stay
+    | longer than the admin one. 0 disables the extra check.
+    |
+    */
+
+    'admin_idle_minutes' => (int) env('ADMIN_IDLE_MINUTES', 30),
+
+    /*
+    |--------------------------------------------------------------------------
     | Bookable venues
     |--------------------------------------------------------------------------
     |

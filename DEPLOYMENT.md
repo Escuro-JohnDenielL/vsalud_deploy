@@ -34,6 +34,7 @@ to the log instead of delivered, and the UI still reports success.
   atomic across processes.
 - `SESSION_DRIVER` — `file` sessions are lost on redeploy; `database` keeps admins signed in.
 - `SESSION_LIFETIME`
+- `ADMIN_IDLE_MINUTES` — minutes of admin inactivity before the session is ended (default 30; `0` disables the extra check).
 - `QUEUE_CONNECTION`
 
 ### File storage
@@ -103,5 +104,10 @@ to the log instead of delivered, and the UI still reports success.
 - Upload a receipt, approve it, and confirm the patron email is sent.
 - Cancel an inquiry and confirm the patron email is sent.
 - Load `/calendar/availability` and the admin dashboard without errors.
-- Confirm the response headers `X-Content-Type-Options`, `X-Frame-Options` and
-  `Referrer-Policy` are present.
+- Confirm the response headers `X-Content-Type-Options`, `X-Frame-Options`,
+  `Referrer-Policy`, `Content-Security-Policy` and (over HTTPS)
+  `Strict-Transport-Security` are present — including on a 404 page such as
+  `/this-page-does-not-exist`.
+- Confirm `/.htaccess` returns 404 in the deployed container.
+- Leave an admin tab idle past `ADMIN_IDLE_MINUTES` and confirm the next click
+  lands on the login page with the inactivity message.

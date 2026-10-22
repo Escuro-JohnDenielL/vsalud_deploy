@@ -23,3 +23,8 @@ yarn-error.log
 # Git
 .git
 .gitignore
+
+# Apache rewrite rules. The Railway image runs `php artisan serve`, which has no
+# .htaccess support: leaving the file in public/ just lets anyone read it via
+# GET /.htaccess. The file stays in the repo for Apache/mXAMPP deployments.
+public/.htaccess

@@ -4,7 +4,9 @@
 
 @push('styles')
 @vite('resources/css/admin/report.css')
-<link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet">
+<link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet"
+      integrity="sha384-QxYwK1XYGHYi4SHPcx3vTvip8C2j8TELIT/XFu+dbKZMnnPnhharwNg54toGM/43"
+      crossorigin="anonymous">
 @endpush
 
 @section('content')

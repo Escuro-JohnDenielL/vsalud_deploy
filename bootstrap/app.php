@@ -25,11 +25,15 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Audit trail: records every state-changing admin request that does not
         // already log a richer entry of its own. See App\Http\Middleware\LogAdminActivity.
-        // SecurityHeaders adds the baseline nosniff / frame / referrer headers.
+        // EnforceAdminIdleTimeout signs an admin out after ADMIN_IDLE_MINUTES.
         $middleware->web(append: [
             \App\Http\Middleware\LogAdminActivity::class,
-            \App\Http\Middleware\SecurityHeaders::class,
+            \App\Http\Middleware\EnforceAdminIdleTimeout::class,
         ]);
+
+        // Global so unmatched routes and their 404 pages get the same headers as
+        // routed pages. See App\Http\Middleware\SecurityHeaders.
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
         $middleware->alias([
             'role.admin'      => CheckAdminRole::class,

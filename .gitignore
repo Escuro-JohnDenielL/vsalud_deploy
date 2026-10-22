@@ -29,6 +29,11 @@ nul
 # Thesis markdown files
 THESIS_*.md
 
+# Local VAPT working files (report prompt, exported Word document, extracted text)
+VAPT_DOC_FIX_PROMPT.md
+*.docx
+temp_vapt.txt
+
 # Local sensitive/private folder
 /hide
 BUG_REPORT_TRACKER.csv

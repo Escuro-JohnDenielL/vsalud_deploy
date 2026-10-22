@@ -24,7 +24,8 @@ RUN apt-get update && apt-get install -y \
 
 # Opcache. Without it every request recompiles the framework, which dominates
 # page load time on the built-in server. The image files never change at
-# runtime, so timestamp validation is turned off.
+# runtime, so timestamp validation is turned off. expose_php is off so the
+# exact PHP build is not advertised in every response.
 RUN { \
         echo 'opcache.enable=1'; \
         echo 'opcache.enable_cli=1'; \
@@ -35,7 +36,8 @@ RUN { \
         echo 'opcache.jit=off'; \
         echo 'realpath_cache_size=4096K'; \
         echo 'realpath_cache_ttl=600'; \
-    } > /usr/local/etc/php/conf.d/zz-opcache.ini
+        echo 'expose_php=Off';
+    } > /usr/local/etc/php/conf.d/zz-app.ini
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
