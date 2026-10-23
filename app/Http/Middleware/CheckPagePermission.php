@@ -30,6 +30,7 @@ class CheckPagePermission
         'admin.packages.store'   => 'packages',
         // Inquiry sub-routes
         'admin.inquiry.store'  => 'inquiries',
+        'admin.inquiries.update-status' => 'inquiries',
         'admin.inquiries.draft-reply' => 'inquiries',
         // Reports data endpoints
         'admin.inquiry.data'     => 'reports',

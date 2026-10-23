@@ -18,14 +18,15 @@ use Symfony\Component\HttpFoundation\Response;
  * would silently do nothing while 'unsafe-inline' is present, which is why the
  * policy is written with the allowance visible instead of pretending otherwise.
  *
+ * The CSP is skipped in the "local" environment, where the Vite dev server
+ * serves assets from a different origin (and an IPv6 origin that browsers do
+ * not accept as a CSP source). Production and testing always get the policy.
+ *
  * Registered as *global* middleware (bootstrap/app.php) so responses that never
  * reach the "web" group — unmatched routes and their 404 pages — are covered.
  */
 class SecurityHeaders
 {
-    /** Local <script src> origin the Vite dev server sets while `public/hot` exists. */
-    private const VITE_HOT_FILE = 'hot';
-
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
@@ -38,7 +39,7 @@ class SecurityHeaders
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 
-        if (! $response->headers->has('Content-Security-Policy')) {
+        if (! app()->environment('local') && ! $response->headers->has('Content-Security-Policy')) {
             $response->headers->set('Content-Security-Policy', $this->contentSecurityPolicy());
         }
 
@@ -70,51 +71,19 @@ class SecurityHeaders
      */
     private function contentSecurityPolicy(): string
     {
-        $script = ["'self'", "'unsafe-inline'", 'https://unpkg.com'];
-        $style = ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://unpkg.com'];
-        $font = ["'self'", 'data:', 'https://fonts.gstatic.com', 'https://unpkg.com'];
-        $connect = ["'self'"];
-
-        if ($devOrigin = $this->viteDevOrigin()) {
-            $script[] = $devOrigin;
-            $style[] = $devOrigin;
-            $connect[] = $devOrigin;
-            $connect[] = str_replace('http://', 'ws://', $devOrigin);
-        }
-
         return implode('; ', [
             "default-src 'self'",
-            'script-src '.implode(' ', array_unique($script)),
-            'style-src '.implode(' ', array_unique($style)),
+            "script-src 'self' 'unsafe-inline' https://unpkg.com",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com",
             "img-src 'self' data: blob:",
-            'font-src '.implode(' ', array_unique($font)),
-            'connect-src '.implode(' ', array_unique($connect)),
+            "font-src 'self' data: https://fonts.gstatic.com https://unpkg.com",
+            "connect-src 'self'",
+            // The feedback page embeds a Google Maps location.
+            "frame-src 'self' https://www.google.com https://maps.google.com",
             "frame-ancestors 'self'",
             "base-uri 'self'",
             "form-action 'self'",
             "object-src 'none'",
         ]);
-    }
-
-    /**
-     * Origin of the Vite dev server, if the app is running `npm run dev`.
-     * Returns null in production, where public/hot is not shipped.
-     */
-    private function viteDevOrigin(): ?string
-    {
-        $hot = public_path(self::VITE_HOT_FILE);
-
-        if (! is_file($hot)) {
-            return null;
-        }
-
-        $url = trim((string) file_get_contents($hot));
-        $parts = parse_url($url);
-
-        if (! isset($parts['scheme'], $parts['host'])) {
-            return null;
-        }
-
-        return $parts['scheme'].'://'.$parts['host'].(isset($parts['port']) ? ':'.$parts['port'] : '');
     }
 }

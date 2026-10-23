@@ -117,7 +117,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
 
     // Inquiry
     Route::get('/inquiry', [InquiryController::class, 'index'])->name('inquiry');
-    Route::post('/inquiries/{id}/update-status', [InquiryController::class, 'updateStatusAjax']);
+    Route::post('/inquiries/{id}/update-status', [InquiryController::class, 'updateStatusAjax'])
+        ->name('inquiries.update-status');
     Route::post('/inquiry', [InquiryController::class, 'store'])->name('inquiry.store');
 
     // AI-assisted reply draft (Google Gemini) — max 10 requests per minute
