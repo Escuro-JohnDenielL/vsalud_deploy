@@ -14,8 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Framing is decided per request. Public read-only pages may be embedded (the
  * capstone demo page on Google Sites embeds the landing page), while the admin
- * area and anything answered for a signed-in session stay same-origin only so a
- * framed copy cannot drive an authenticated action (clickjacking).
+ * area stays same-origin only so a framed copy cannot drive an authenticated
+ * action (clickjacking).
  *
  * X-Frame-Options has no allow-list — ALLOW-FROM was dropped by every modern
  * browser — so it is removed on frameable responses and the CSP frame-ancestors
@@ -94,21 +94,24 @@ class SecurityHeaders
     }
 
     /**
-     * Public, read-only responses may be embedded. Everything else — the admin
-     * area, including its login and MFA pages, and any response produced for a
-     * signed-in session — stays same-origin only.
+     * Public, read-only responses may be embedded. The whole admin area —
+     * login, MFA, panel — stays same-origin only.
      *
-     * Form submissions are deliberately not frameable: the session cookie is
+     * The decision deliberately ignores the session. Deciding on "is this
+     * visitor signed in" made the same URL answer differently per browser: a
+     * person who had signed into the admin panel in that browser got
+     * SAMEORIGIN on the landing page, so the Google Sites embed worked in a
+     * clean profile and failed for them. Every authenticated surface in this
+     * app lives under /admin, so the path check covers the clickjacking risk on
+     * its own.
+     *
+     * Form submissions are not frameable either: the session cookie is
      * SameSite=Lax, so a cross-site iframe would post without it and fail the
      * CSRF check anyway.
      */
     private function isFrameable(Request $request): bool
     {
-        if (! $request->isMethodCacheable() || $this->isAuthenticated($request)) {
-            return false;
-        }
-
-        return ! $request->is('admin', 'admin/*');
+        return $request->isMethodCacheable() && ! $request->is('admin', 'admin/*');
     }
 
     /**
