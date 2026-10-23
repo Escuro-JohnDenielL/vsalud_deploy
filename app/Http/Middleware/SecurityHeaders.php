@@ -8,9 +8,18 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Adds the baseline response headers that do not depend on a per-route policy:
- * MIME sniffing is disabled, the site can only be framed by itself, referrers
- * are trimmed to the origin for cross-site requests, HSTS is sent on HTTPS,
- * and authenticated responses are kept out of the browser cache.
+ * MIME sniffing is disabled, referrers are trimmed to the origin for cross-site
+ * requests, HSTS is sent on HTTPS, and authenticated responses are kept out of
+ * the browser cache.
+ *
+ * Framing is decided per request. Public read-only pages may be embedded (the
+ * capstone demo page on Google Sites embeds the landing page), while the admin
+ * area and anything answered for a signed-in session stay same-origin only so a
+ * framed copy cannot drive an authenticated action (clickjacking).
+ *
+ * X-Frame-Options has no allow-list — ALLOW-FROM was dropped by every modern
+ * browser — so it is removed on frameable responses and the CSP frame-ancestors
+ * directive below becomes the single source of truth for those pages.
  *
  * The CSP is intentionally a baseline: the Blade views still use inline
  * <script> blocks and inline event handlers, so script-src has to allow
@@ -27,20 +36,39 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class SecurityHeaders
 {
+    /**
+     * Origins allowed to frame the public pages when the deployment does not
+     * configure config('villasalud.embed.allowed_ancestors'). Google Sites serves
+     * an embed either straight from sites.google.com or through one of Google's
+     * opaque content hosts, so both shapes are listed.
+     */
+    private const DEFAULT_FRAME_ANCESTORS = [
+        'https://sites.google.com',
+        'https://*.google.com',
+        'https://*.googleusercontent.com',
+    ];
+
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
 
+        $frameable = $this->isFrameable($request);
+
         $response->headers->set('X-Content-Type-Options', 'nosniff');
-        $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
+
+        if ($frameable) {
+            $response->headers->remove('X-Frame-Options');
+        } else {
+            $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
+        }
 
         if ($request->isSecure()) {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 
         if (! app()->environment('local') && ! $response->headers->has('Content-Security-Policy')) {
-            $response->headers->set('Content-Security-Policy', $this->contentSecurityPolicy());
+            $response->headers->set('Content-Security-Policy', $this->contentSecurityPolicy($frameable));
         }
 
         if ($this->isAuthenticated($request)) {
@@ -66,10 +94,28 @@ class SecurityHeaders
     }
 
     /**
+     * Public, read-only responses may be embedded. Everything else — the admin
+     * area, including its login and MFA pages, and any response produced for a
+     * signed-in session — stays same-origin only.
+     *
+     * Form submissions are deliberately not frameable: the session cookie is
+     * SameSite=Lax, so a cross-site iframe would post without it and fail the
+     * CSRF check anyway.
+     */
+    private function isFrameable(Request $request): bool
+    {
+        if (! $request->isMethodCacheable() || $this->isAuthenticated($request)) {
+            return false;
+        }
+
+        return ! $request->is('admin', 'admin/*');
+    }
+
+    /**
      * Baseline policy that matches how the views are written today. External
      * origins are limited to what the templates actually load.
      */
-    private function contentSecurityPolicy(): string
+    private function contentSecurityPolicy(bool $frameable = false): string
     {
         return implode('; ', [
             "default-src 'self'",
@@ -80,10 +126,28 @@ class SecurityHeaders
             "connect-src 'self'",
             // The feedback page embeds a Google Maps location.
             "frame-src 'self' https://www.google.com https://maps.google.com",
-            "frame-ancestors 'self'",
+            'frame-ancestors ' . ($frameable ? $this->frameAncestors() : "'self'"),
             "base-uri 'self'",
             "form-action 'self'",
             "object-src 'none'",
         ]);
+    }
+
+    /**
+     * frame-ancestors allow-list: this site plus the configured embed hosts.
+     */
+    private function frameAncestors(): string
+    {
+        $configured = config('villasalud.embed.allowed_ancestors');
+        $configured = is_array($configured) ? $configured : self::DEFAULT_FRAME_ANCESTORS;
+
+        $origins = array_unique(array_map(
+            static fn ($origin) => trim((string) $origin),
+            array_merge(["'self'"], $configured)
+        ));
+
+        $origins = array_values(array_filter($origins, static fn ($origin) => $origin !== ''));
+
+        return $origins === [] ? "'self'" : implode(' ', $origins);
     }
 }

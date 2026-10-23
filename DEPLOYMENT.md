@@ -104,10 +104,16 @@ to the log instead of delivered, and the UI still reports success.
 - Upload a receipt, approve it, and confirm the patron email is sent.
 - Cancel an inquiry and confirm the patron email is sent.
 - Load `/calendar/availability` and the admin dashboard without errors.
-- Confirm the response headers `X-Content-Type-Options`, `X-Frame-Options`,
-  `Referrer-Policy`, `Content-Security-Policy` and (over HTTPS)
-  `Strict-Transport-Security` are present — including on a 404 page such as
-  `/this-page-does-not-exist`.
+- Confirm the response headers `X-Content-Type-Options`, `Referrer-Policy`,
+  `Content-Security-Policy` and (over HTTPS) `Strict-Transport-Security` are
+  present — including on a 404 page such as `/this-page-does-not-exist`.
+- Confirm `X-Frame-Options: SAMEORIGIN` is still returned for `/admin/login`
+  (the admin area must not be frameable) and that `/` returns no
+  `X-Frame-Options` but a `Content-Security-Policy` containing
+  `frame-ancestors 'self' https://sites.google.com ...` — that is what lets the
+  Google Sites page embed the landing page. Override the embed hosts with the
+  comma-separated `EMBED_ALLOWED_ANCESTORS` variable if the embed lives
+  somewhere other than Google Sites.
 - Confirm `/.htaccess` returns 404 in the deployed container.
 - Leave an admin tab idle past `ADMIN_IDLE_MINUTES` and confirm the next click
   lands on the login page with the inactivity message.

@@ -48,6 +48,28 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Framing allow-list (CSP frame-ancestors)
+    |--------------------------------------------------------------------------
+    |
+    | Public read-only pages may be embedded in an iframe; admin pages and any
+    | signed-in session stay same-origin only. List the origins allowed to host
+    | the embed. Google Sites is included because the capstone demo page embeds
+    | the landing page. Override with a comma-separated EMBED_ALLOWED_ANCESTORS.
+    |
+    */
+
+    'embed' => [
+        'allowed_ancestors' => array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) env(
+                'EMBED_ALLOWED_ANCESTORS',
+                'https://sites.google.com,https://*.google.com,https://*.googleusercontent.com'
+            ))
+        ))),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Bookable venues
     |--------------------------------------------------------------------------
     |
