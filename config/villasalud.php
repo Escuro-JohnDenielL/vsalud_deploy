@@ -52,9 +52,15 @@ return [
     |--------------------------------------------------------------------------
     |
     | Public read-only pages may be embedded in an iframe; admin pages and any
-    | signed-in session stay same-origin only. List the origins allowed to host
-    | the embed. Google Sites is included because the capstone demo page embeds
-    | the landing page. Override with a comma-separated EMBED_ALLOWED_ANCESTORS.
+    | POST stay same-origin only. List the origins allowed to host the embed.
+    | Google Sites is included because the capstone demo page embeds the landing
+    | page. Override with a comma-separated EMBED_ALLOWED_ANCESTORS.
+    |
+    | Set EMBED_ALLOWED_ANCESTORS to * when Google Sites still refuses the frame:
+    | its embed wrapper runs in an about:blank / sandboxed frame whose ancestor
+    | origin never matches a host list, so the only way to load it is to omit the
+    | directive. * affects public pages only — /admin keeps frame-ancestors 'self'
+    | and X-Frame-Options: SAMEORIGIN.
     |
     */
 

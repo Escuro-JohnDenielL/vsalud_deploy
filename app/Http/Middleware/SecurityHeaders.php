@@ -120,7 +120,7 @@ class SecurityHeaders
      */
     private function contentSecurityPolicy(bool $frameable = false): string
     {
-        return implode('; ', [
+        $directives = [
             "default-src 'self'",
             "script-src 'self' 'unsafe-inline' https://unpkg.com",
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com",
@@ -129,17 +129,33 @@ class SecurityHeaders
             "connect-src 'self'",
             // The feedback page embeds a Google Maps location.
             "frame-src 'self' https://www.google.com https://maps.google.com",
-            'frame-ancestors ' . ($frameable ? $this->frameAncestors() : "'self'"),
+        ];
+
+        $ancestors = $frameable ? $this->frameAncestors() : "'self'";
+
+        if ($ancestors !== null) {
+            $directives[] = 'frame-ancestors ' . $ancestors;
+        }
+
+        return implode('; ', array_merge($directives, [
             "base-uri 'self'",
             "form-action 'self'",
             "object-src 'none'",
-        ]);
+        ]));
     }
 
     /**
-     * frame-ancestors allow-list: this site plus the configured embed hosts.
+     * frame-ancestors allow-list for public pages: this site plus the configured
+     * embed hosts.
+     *
+     * Returns null when the deployment sets the list to '*', which drops the
+     * directive for frameable responses only. Google Sites renders an embed
+     * inside an about:blank wrapper whose ancestor origin is not in the
+     * document's own origin chain, so no origin list can match it: the check
+     * has to be absent for the frame to load. Admin pages are unaffected and
+     * always keep frame-ancestors 'self'.
      */
-    private function frameAncestors(): string
+    private function frameAncestors(): ?string
     {
         $configured = config('villasalud.embed.allowed_ancestors');
         $configured = is_array($configured) ? $configured : self::DEFAULT_FRAME_ANCESTORS;
@@ -150,6 +166,10 @@ class SecurityHeaders
         ));
 
         $origins = array_values(array_filter($origins, static fn ($origin) => $origin !== ''));
+
+        if (in_array('*', $origins, true)) {
+            return null;
+        }
 
         return $origins === [] ? "'self'" : implode(' ', $origins);
     }

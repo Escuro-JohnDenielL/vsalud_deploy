@@ -116,6 +116,13 @@ to the log instead of delivered, and the UI still reports success.
   somewhere other than Google Sites. Framing depends only on the method and
   path, so the answer is the same whether or not the browser holds an admin
   session.
+- If Google Sites still reports "refused to connect" while the console shows
+  `Framing 'https://www.villasalud.online/' violates the following Content
+  Security Policy directive: "frame-ancestors …"`, set the Railway variable
+  `EMBED_ALLOWED_ANCESTORS=*` and restart. That omits `frame-ancestors` on public
+  pages (Google's embed wrapper runs in an `about:blank` frame whose ancestor
+  origin never matches a host list). `/admin` keeps
+  `X-Frame-Options: SAMEORIGIN` and `frame-ancestors 'self'` regardless.
 - Confirm `/.htaccess` returns 404 in the deployed container.
 - Leave an admin tab idle past `ADMIN_IDLE_MINUTES` and confirm the next click
   lands on the login page with the inactivity message.
