@@ -438,18 +438,6 @@
   color: var(--vs-button-primary-hover-text);
 }
 
-.vs-layout--patron .pkg-modal__cta--secondary {
-  border: 1px solid var(--vs-button-secondary-border);
-  background: var(--vs-button-secondary-bg);
-  color: var(--vs-button-secondary-text);
-}
-
-.vs-layout--patron .pkg-modal__cta--secondary:hover {
-  border-color: var(--vs-button-secondary-hover-border);
-  background: var(--vs-button-secondary-hover-bg);
-  color: var(--vs-button-secondary-hover-text);
-}
-
 .pkg-modal__cta:focus-visible {
   outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
   outline-offset: var(--vs-focus-offset);

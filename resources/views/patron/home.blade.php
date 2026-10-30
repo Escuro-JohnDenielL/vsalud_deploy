@@ -59,7 +59,6 @@
 
             <div class="pkg-modal__footer">
                 <a href="{{ route('patron.mreserve') }}" class="pkg-modal__cta pkg-modal__cta--primary">Book this package</a>
-                <a href="{{ url('/') }}#contact" class="pkg-modal__cta pkg-modal__cta--secondary">Inquire</a>
             </div>
         </div>
     </div>
