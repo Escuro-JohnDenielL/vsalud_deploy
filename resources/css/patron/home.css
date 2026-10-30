@@ -494,11 +494,34 @@
 }
 
 .privacy-modal h2 {
-  font-family: var(--font-heading);
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--color-text);
   margin: 0 0 6px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--vs-color-dark-green);
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-display);
+  font-size: 22px;
+  font-weight: var(--vs-weight-bold);
+}
+
+/* Section headings mirror the reservation agreement dialog: serif, dark
+   green, thin green underline. */
+.privacy-modal__body h3 {
+  margin: 0 0 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--vs-color-dark-green);
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-display);
+  font-size: 18px;
+  font-weight: var(--vs-weight-semibold);
+  line-height: var(--vs-leading-tight);
+}
+
+.privacy-section {
+  margin: 16px 0;
+}
+
+.privacy-section p {
+  margin: 0;
 }
 
 .privacy-modal__subtitle {
@@ -547,7 +570,7 @@
   font-weight: 600;
   font-size: 14px;
   padding: 12px 34px;
-  border-radius: var(--radius-full);
+  border-radius: var(--vs-radius-control);
   background: var(--color-primary);
   color: #fff;
   transition: all var(--transition-base);
@@ -568,7 +591,7 @@
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
-  border-radius: var(--radius-full);
+  border-radius: var(--vs-radius-control);
   cursor: pointer;
   transition: all var(--transition-base);
 }
@@ -632,10 +655,15 @@
 }
 
 .vs-layout--patron .package-card__title,
-.vs-layout--patron .pkg-modal__title,
-.vs-layout--patron .privacy-modal h2 {
+.vs-layout--patron .pkg-modal__title {
   color: var(--vs-color-deep-green);
   font-family: var(--vs-font-ui);
+}
+
+.vs-layout--patron .privacy-modal h2,
+.vs-layout--patron .privacy-modal__body h3 {
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-display);
 }
 
 .vs-layout--patron .package-card__desc,
