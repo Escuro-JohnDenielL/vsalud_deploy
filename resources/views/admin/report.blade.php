@@ -27,10 +27,21 @@
 
     <x-ui.page-header title="Report Dashboard" subtitle="Monitor inquiries, reservations, and event trends.">
         <x-slot:action>
-            <button type="button" class="refresh-btn" onclick="window.dashboardManager.refreshDashboard()">
-                <i class='bx bx-refresh'></i>
-                Refresh Data
-            </button>
+            <div class="vs-report-actions">
+                {{-- Downloads the summary (KPIs + chart data) for the period
+                     picked below; report.js keeps the ?period= in sync. --}}
+                <a href="{{ route('admin.report.export') }}"
+                   id="reportExportBtn"
+                   class="admin-btn admin-btn-primary"
+                   data-base-url="{{ route('admin.report.export') }}">
+                    <i class='bx bx-download' aria-hidden="true"></i>
+                    Download Summary
+                </a>
+                <button type="button" class="admin-btn admin-btn-ghost" onclick="window.dashboardManager.refreshDashboard()">
+                    <i class='bx bx-refresh' aria-hidden="true"></i>
+                    Refresh Data
+                </button>
+            </div>
         </x-slot:action>
     </x-ui.page-header>
 

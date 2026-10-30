@@ -14,11 +14,13 @@ class DashboardManager {
         this.isLoading = false;
         this.lastUpdated = null;
         this.hasLoadedOnce = false;
+        this.exportBtn = document.getElementById("reportExportBtn");
         this.init();
     }
 
     init() {
         this.setupEventListeners();
+        this.syncExportLink();
         this.updateLastUpdatedTime();
 
         // The overlay is dismissed once the first load settles (see
@@ -34,6 +36,7 @@ class DashboardManager {
         const periodSelect = document.getElementById("report-period");
         if (periodSelect) {
             periodSelect.addEventListener("change", (e) => {
+                this.syncExportLink();
                 this.loadAllData(e.target.value);
             });
         }
@@ -74,6 +77,17 @@ class DashboardManager {
     currentPeriod() {
         const select = document.getElementById("report-period");
         return select ? select.value : "month";
+    }
+
+    // The summary download must match what the dashboard is showing, so the
+    // link always carries the currently selected period.
+    syncExportLink() {
+        if (!this.exportBtn) return;
+
+        const base = this.exportBtn.dataset.baseUrl;
+        if (!base) return;
+
+        this.exportBtn.href = `${base}?period=${encodeURIComponent(this.currentPeriod())}`;
     }
 
     async loadAllData(period = this.currentPeriod()) {

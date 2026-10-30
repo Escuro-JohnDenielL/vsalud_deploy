@@ -57,11 +57,21 @@ body.landing-page { margin: 0; overflow-x: hidden; background: var(--landing-bei
 .portal-action__copy strong { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; }
 .portal-action__copy small { margin-top: 3px; font-size: 10px; opacity: .85; }
 .portal-action__arrow { color: var(--landing-beige); font-size: 20px; }
-.landing-about { display: flex; min-height: 100svh; align-items: center; padding: 100px 0; background: var(--landing-beige); }
+/* The nav turns fixed (72px) as soon as the page scrolls and #about anchors
+   right below it, so the section is sized to the space that is actually
+   visible. A full 100svh section under a 72px offset used to push the row
+   ~72px below the optical centre at every screen size. */
+.landing-about { display: flex; min-height: calc(100svh - 72px); align-items: center; padding: clamp(56px, 9vh, 100px) 0; background: var(--landing-beige); }
 .landing-about__image { height: 460px; overflow: hidden; border-radius: 25px; background: #ddd; }
 .landing-about__image img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
 .landing-about__image:hover img { transform: scale(1.03); }
 .landing-about__copy { max-width: 530px; }
+/* Between the md and lg breakpoints the columns stack, so the copy has to fill
+   the column like the image does instead of staying a 530px block pinned to the
+   left edge. */
+@media (max-width: 991.98px) {
+  .landing-about__copy { max-width: none; }
+}
 .section-eyebrow { color: var(--landing-emerald); font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; }
 .landing-about h2, .landing-contact h2 { margin: 15px 0 20px; font-size: clamp(40px, 5vw, 61px); font-weight: 600; line-height: .98; letter-spacing: -1.8px; }
 .landing-about h2 em { color: var(--landing-emerald); }

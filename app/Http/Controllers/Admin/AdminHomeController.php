@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\ActivityLog;
 use App\Models\Inquiry;
-use Carbon\Carbon;
 use App\Models\Reservation;
+use App\Support\Csv;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminHomeController extends Controller
 {
@@ -297,6 +301,134 @@ class AdminHomeController extends Controller
             'themes' => $this->themePayload($period),
             'eventTypes' => $this->eventTypePayload($period),
         ]);
+    }
+
+    /**
+     * Readable label for a period key, used in the exported summary.
+     */
+    private function periodLabel(string $period): string
+    {
+        return match ($period) {
+            'week' => 'This Week',
+            '3months' => 'Last 3 Months',
+            'year' => 'This Year',
+            'all' => 'All Time',
+            default => 'This Month',
+        };
+    }
+
+    /**
+     * Date range covered by a period ("All records" when there is no bound).
+     */
+    private function periodRangeLabel(string $period): string
+    {
+        [$start, $end] = $this->periodBounds($period);
+
+        if (! $start || ! $end) {
+            return 'All records';
+        }
+
+        return $start->format('M j, Y') . ' - ' . $end->format('M j, Y');
+    }
+
+    /**
+     * Download the dashboard summary (KPIs + chart data) as a CSV for the
+     * selected period. Same formula-safe writer as the other admin exports, and
+     * the download is recorded in the audit trail.
+     */
+    public function exportSummary(Request $request): StreamedResponse
+    {
+        $period = $this->resolvePeriod($request);
+
+        $inquiries = $this->inquiryPayload($period);
+        $reservations = $this->reservationPayload($period);
+        $themes = $this->themePayload($period);
+        $eventTypes = $this->eventTypePayload($period);
+
+        $admin = Auth::guard('admin')->user();
+        $name = trim((string) ($admin->f_name ?? '') . ' ' . (string) ($admin->l_name ?? ''))
+            ?: (string) ($admin->email ?? 'Admin');
+
+        ActivityLog::create([
+            'admin_id'      => $admin?->getAuthIdentifier() ?? 0,
+            'activity_type' => 'Report Summary Exported',
+            'category'      => 'data',
+            'route_name'    => 'admin.report.export',
+            'http_method'   => 'GET',
+            'subject'       => 'Report summary CSV',
+            'description'   => "Admin {$name} downloaded the report summary ({$this->periodLabel($period)}).",
+            'ip_address'    => $request->ip(),
+            'user_agent'    => substr((string) $request->userAgent(), 0, 500),
+        ]);
+
+        $filename = 'report-summary-' . $period . '-' . now()->format('Y-m-d-His') . '.csv';
+
+        return response()->streamDownload(function () use ($period, $inquiries, $reservations, $themes, $eventTypes) {
+            $out = fopen('php://output', 'w');
+
+            // BOM so Excel opens the file as UTF-8.
+            fwrite($out, "\xEF\xBB\xBF");
+
+            $this->putCsvRow($out, ['Villa Salud Catering - Report Summary']);
+            $this->putCsvRow($out, ['Generated at', now()->format('Y-m-d H:i:s')]);
+            $this->putCsvRow($out, ['Period', $this->periodLabel($period)]);
+            $this->putCsvRow($out, ['Date range', $this->periodRangeLabel($period)]);
+
+            $this->putCsvRow($out, []);
+            $this->putCsvRow($out, ['Inquiries']);
+            $this->putCsvRow($out, ['Metric', 'Value']);
+            $this->putCsvRow($out, ['Total inquiries', $inquiries['total']]);
+            $this->putCsvRow($out, ['Change vs previous period (%)', $inquiries['change_percentage']]);
+            $this->putCsvRow($out, ['Average inquiries per period', $inquiries['average_per_day']]);
+            $this->putCsvRow($out, ['Peak period', Csv::neutralize($inquiries['peak_day'])]);
+
+            $this->putCsvRow($out, []);
+            $this->putCsvRow($out, ['Reservations (by event date, cancelled excluded)']);
+            $this->putCsvRow($out, ['Metric', 'Value']);
+            $this->putCsvRow($out, ['Total reservations', $reservations['total']]);
+            $this->putCsvRow($out, ['Change vs previous period (%)', $reservations['growth_rate']]);
+            $this->putCsvRow($out, [$reservations['best_period_label'], Csv::neutralize($reservations['best_period'])]);
+
+            $this->putCsvRow($out, []);
+            $this->putCsvRow($out, ['Inquiries over time']);
+            $this->putCsvRow($out, ['Period', 'Inquiries']);
+            foreach ($inquiries['labels'] as $index => $label) {
+                $this->putCsvRow($out, [Csv::neutralize($label), $inquiries['data'][$index] ?? 0]);
+            }
+
+            $this->putCsvRow($out, []);
+            $this->putCsvRow($out, ['Reservations over time']);
+            $this->putCsvRow($out, ['Period', 'Reservations']);
+            foreach ($reservations['labels'] as $index => $label) {
+                $this->putCsvRow($out, [Csv::neutralize($label), $reservations['data'][$index] ?? 0]);
+            }
+
+            $this->putCsvRow($out, []);
+            $this->putCsvRow($out, ['Theme popularity']);
+            $this->putCsvRow($out, ['Theme', 'Inquiries']);
+            foreach ($themes['labels'] as $index => $label) {
+                $this->putCsvRow($out, [Csv::neutralize($label ?? ''), $themes['data'][$index] ?? 0]);
+            }
+            $this->putCsvRow($out, ['Total themes', $themes['total_themes']]);
+
+            $this->putCsvRow($out, []);
+            $this->putCsvRow($out, ['Inquiry categories']);
+            $this->putCsvRow($out, ['Category', 'Inquiries']);
+            foreach ($eventTypes['labels'] as $index => $label) {
+                $this->putCsvRow($out, [Csv::neutralize($label ?? ''), $eventTypes['data'][$index] ?? 0]);
+            }
+            $this->putCsvRow($out, ['Total categories', $eventTypes['total_types']]);
+
+            fclose($out);
+        }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
+    /**
+     * fputcsv with explicit delimiter/enclosure/escape, so PHP 8.4 does not warn.
+     */
+    private function putCsvRow($handle, array $row): void
+    {
+        fputcsv($handle, $row, ',', '"', '');
     }
 
     public function getInquiryData(Request $request)

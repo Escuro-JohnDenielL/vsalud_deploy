@@ -122,6 +122,41 @@
   opacity: 0.8;
 }
 
+/* === Page header actions (Download Summary + Refresh Data) ===
+   The two controls sit side by side in the page header and stack full width on
+   narrow screens, where the header action column is also full width. */
+.vs-report-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.vs-report-actions > * {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.vs-report-actions i {
+  font-size: 18px;
+  line-height: 1;
+}
+
+@media (max-width: 767.98px) {
+  .vs-report-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .vs-report-actions > * {
+    width: 100%;
+  }
+}
+
 /* === Metrics Overview - Force Single Row === */
 .metrics-overview {
     display: flex;

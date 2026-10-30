@@ -22,6 +22,7 @@ class CheckPagePermission
         'admin.reserve-logs'   => 'reserve-logs',
         'admin.reserve-logs.export' => 'reserve-logs',
         'admin.report'         => 'reports',
+        'admin.report.export'  => 'reports',
         'admin.feedback'       => 'feedback',
         'admin.feedback.destroy' => 'feedback',
         'admin.feedback.bulk-destroy' => 'feedback',

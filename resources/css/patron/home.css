@@ -461,6 +461,14 @@
   text-align: center;
 }
 
+/* The card and its text region are focused on open (tabindex -1 / 0) so
+   assistive tech lands inside the dialog. Neither is an interactive control,
+   so the browser must not paint its focus ring around the whole modal. */
+.privacy-modal:focus,
+.privacy-modal__body:focus {
+  outline: none;
+}
+
 .privacy-modal__close {
   position: absolute;
   top: 12px;
@@ -533,6 +541,8 @@
 .privacy-btn {
   border: none;
   cursor: pointer;
+  /* The system has a single font: inherit it like every other control does.
+     (These dialogs used a different stack, so the fallback differed.) */
   font-family: var(--font-body);
   font-weight: 600;
   font-size: 14px;
@@ -652,7 +662,8 @@
   border-radius: var(--vs-radius-control);
   background: var(--vs-button-primary-bg);
   color: var(--vs-button-primary-text);
-  font-family: var(--vs-font-ui);
+  /* Keep the dialog action on the system font (same token as <body>). */
+  font-family: var(--font-body);
   font-size: var(--vs-text-control-min);
   font-weight: var(--vs-weight-semibold);
   box-shadow: none;

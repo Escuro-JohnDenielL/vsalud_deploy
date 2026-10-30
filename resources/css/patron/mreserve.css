@@ -388,6 +388,9 @@
     padding: 12px 30px;
     border: none;
     border-radius: var(--radius-sm);
+    /* System font, same as <body>. The card inherits Playfair Display, so
+       without this the action buttons looked like a different font. */
+    font-family: var(--font-body);
     font-weight: 600;
     font-size: 16px;
     cursor: pointer;
@@ -416,6 +419,7 @@
     border-radius: var(--radius-sm);
     background: var(--vs-button-secondary-bg);
     color: var(--vs-button-secondary-text);
+    font-family: var(--font-body);
     font-size: 16px;
     font-weight: 600;
     text-decoration: none;
@@ -462,10 +466,17 @@
     text-underline-offset: 3px;
 }
 
-.agreement-privacy a:focus-visible,
-.guidelines-content:focus-visible {
+.agreement-privacy a:focus-visible {
     outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
     outline-offset: var(--vs-focus-offset);
+}
+
+/* The guidelines card is focused programmatically when the modal opens (and is
+   a scroll region for keyboard users), so it must not draw a focus ring around
+   the whole notice. The buttons inside keep their own focus rings. */
+.guidelines-content:focus,
+.guidelines-content:focus-visible {
+    outline: none;
 }
 
 .agreement-reopen {
@@ -878,7 +889,7 @@
     border-radius: var(--vs-radius-control);
     background: var(--vs-button-primary-bg);
     color: var(--vs-button-primary-text);
-    font-family: var(--vs-font-ui);
+    font-family: var(--font-body);
     font-size: var(--vs-text-control-min);
 }
 
@@ -900,7 +911,7 @@
     border-radius: var(--vs-radius-control);
     background: var(--vs-button-secondary-bg);
     color: var(--vs-button-secondary-text);
-    font-family: var(--vs-font-ui);
+    font-family: var(--font-body);
     font-size: var(--vs-text-control-min);
     text-decoration: none;
 }

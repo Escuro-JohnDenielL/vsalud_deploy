@@ -203,6 +203,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
     // Report page
     Route::view('/report', 'admin.report')->name('report');
 
+    // Downloadable summary of the report dashboard (same period as the page)
+    Route::get('/report/export', [AdminHomeController::class, 'exportSummary'])->name('report.export');
+
     Route::post('/send-reply', [ReservationController::class, 'sendReply']);
 
     // Cancellation requests (admin)
