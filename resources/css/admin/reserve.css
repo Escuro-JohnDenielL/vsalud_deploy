@@ -26,7 +26,7 @@
 .vs-admin-reservation .reservation-container h2 {
   margin: 0 0 var(--vs-space-5);
   color: var(--vs-color-deep-green);
-  font-family: var(--vs-font-ui);
+  font-family: var(--vs-font-display);
   font-size: 1.375rem;
   line-height: var(--vs-leading-tight);
 }

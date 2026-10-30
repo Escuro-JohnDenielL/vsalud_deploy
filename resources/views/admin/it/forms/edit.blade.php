@@ -6,7 +6,7 @@
 <style>
     .fbe-container { padding: 32px 20px 60px; max-width: 1200px; margin: 0 auto; }
     .fbe-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
-    .fbe-header h1 { font-family: var(--font-heading); font-size: 28px; color: var(--color-primary); margin: 0; }
+    .fbe-header h1 { font-family: var(--vs-font-display); font-size: 28px; color: var(--color-primary); margin: 0; }
     .fbe-header p { color: var(--color-text-muted); margin: 4px 0 0; }
     /* .fbe-status — now using .badge-modern from app.css */
 

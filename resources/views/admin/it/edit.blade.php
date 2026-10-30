@@ -6,7 +6,7 @@
 <style>
     .edit-container { max-width: 600px; margin: 32px auto; padding: 0 20px 60px; }
     .edit-card { background: #fff; border-radius: 16px; border: 1px solid rgba(18,59,38,0.1); box-shadow: 0 10px 30px rgba(18,59,38,0.06); padding: 28px; }
-    .edit-card h1 { font-family: var(--font-heading); font-size: 26px; color: var(--color-primary); margin: 0 0 6px; }
+    .edit-card h1 { font-family: var(--vs-font-display); font-size: 26px; color: var(--color-primary); margin: 0 0 6px; }
     .edit-card .back-link { display: inline-block; margin-bottom: 16px; color: var(--color-primary); font-weight: 600; text-decoration: none; font-size: 14px; }
     .edit-card .back-link:hover { text-decoration: underline; }
     .field { margin-bottom: 14px; }

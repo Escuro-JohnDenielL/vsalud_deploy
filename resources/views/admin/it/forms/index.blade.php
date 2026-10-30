@@ -5,7 +5,7 @@
 @push('styles')
 <style>
     .fb-container { padding: 32px 20px 60px; }
-    .fb-title { font-family: var(--font-heading); font-size: 28px; color: var(--color-primary); margin: 0 0 6px; }
+    .fb-title { font-family: var(--vs-font-display); font-size: 28px; color: var(--color-primary); margin: 0 0 6px; }
     .fb-subtitle { color: var(--color-text-muted); margin: 0 0 24px; }
     .form-card { background: var(--color-surface); border-radius: 16px; border: 1px solid var(--color-border); box-shadow: var(--shadow-sm); padding: 22px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
     .form-card .info h3 { margin: 0 0 4px; color: #2d2d2d; }
