@@ -1568,14 +1568,17 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
   color: var(--vs-button-primary-hover-text);
 }
 
-/* Sliding active pill on the primary patron links. The pill is absolute and
-   moves with transform, so nothing shifts layout. Hidden in the collapsed
-   mobile panel and disabled under reduced motion. */
-.vs-layout--patron .vs-patron-nav {
+/* Sliding active pill on the primary nav links (patron and admin). The pill is
+   absolute and moves with transform, so nothing shifts layout. It ignores
+   pointer events. Hidden in the collapsed mobile nav and under reduced motion,
+   where the static active background below takes over. */
+.vs-layout--patron .vs-patron-nav,
+.vs-layout--admin .vs-admin-nav {
   overflow: visible;
 }
 
-.vs-layout--patron .vs-nav-pill {
+.vs-layout--patron .vs-nav-pill,
+.vs-layout--admin .vs-nav-pill {
   position: absolute;
   left: 0;
   top: 0;
@@ -1590,46 +1593,70 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
               height var(--vs-duration-base) ease-out;
 }
 
-.vs-layout--patron .vs-nav-pill[hidden] {
+.vs-layout--patron .vs-nav-pill[hidden],
+.vs-layout--admin .vs-nav-pill[hidden] {
   display: none;
 }
 
-.vs-layout--patron .vs-patron-nav .nav-links > li > a {
+/* Top-level links sit above the pill. */
+.vs-layout--patron .vs-patron-nav .nav-links > li > a,
+.vs-layout--admin .vs-admin-nav .vs-admin-nav__links > li > a {
   position: relative;
   z-index: 1;
 }
 
+/* The pill supplies the background. Without this the old active rule keeps
+   white text after the pill moves away, so the active label disappears. */
 .vs-layout--patron .vs-patron-nav .nav-links > li > a,
 .vs-layout--patron .vs-patron-nav .nav-links > li > a:hover,
 .vs-layout--patron .vs-patron-nav .nav-links > li > a.active,
 .vs-layout--patron .vs-patron-nav .nav-links > li > a.active:hover,
 .vs-layout--patron .vs-patron-nav .nav-links > li.nav-dropdown.active > a,
-.vs-layout--patron .vs-patron-nav .nav-links > li.nav-dropdown.active > a:hover {
+.vs-layout--patron .vs-patron-nav .nav-links > li.nav-dropdown.active > a:hover,
+.vs-layout--admin .vs-admin-nav .vs-admin-nav__links > li > a,
+.vs-layout--admin .vs-admin-nav .vs-admin-nav__links > li > a:hover,
+.vs-layout--admin .vs-admin-nav .vs-admin-nav__links > li > a.active,
+.vs-layout--admin .vs-admin-nav .vs-admin-nav__links > li > a.active:hover,
+.vs-layout--admin .vs-admin-nav .vs-admin-nav__links > li.nav-dropdown.active > a,
+.vs-layout--admin .vs-admin-nav .vs-admin-nav__links > li.nav-dropdown.active > a:hover {
   background: transparent;
-  /* The pill supplies the background. Without this the old active rule keeps
-     white text after the pill moves away, so the active label disappears. */
   color: var(--vs-color-deep-green);
 }
 
-.vs-layout--patron .vs-patron-nav .nav-links > li > a.is-pill-target {
+.vs-layout--patron .vs-patron-nav .nav-links > li > a.is-pill-target,
+.vs-layout--admin .vs-admin-nav .vs-admin-nav__links > li > a.is-pill-target {
   color: var(--vs-color-white);
 }
 
 @media (max-width: 991.98px) {
-  .vs-layout--patron .vs-nav-pill {
+  .vs-layout--patron .vs-nav-pill,
+  .vs-layout--admin .vs-nav-pill {
     display: none;
   }
 
   body.nav-js.vs-layout--patron .vs-patron-nav .nav-links > li > a.active,
-  body.nav-js.vs-layout--patron .vs-patron-nav .nav-links > li.nav-dropdown.active > a {
+  body.nav-js.vs-layout--patron .vs-patron-nav .nav-links > li.nav-dropdown.active > a,
+  .vs-layout--admin .vs-admin-nav .vs-admin-nav__links > li > a.active,
+  .vs-layout--admin .vs-admin-nav .vs-admin-nav__links > li.nav-dropdown.active > a {
     background: var(--vs-color-dark-green);
     color: var(--vs-color-white);
+    font-weight: var(--vs-weight-semibold);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .vs-layout--patron .vs-nav-pill {
-    transition: none;
+  .vs-layout--patron .vs-nav-pill,
+  .vs-layout--admin .vs-nav-pill {
+    display: none;
+  }
+
+  .vs-layout--patron .vs-patron-nav .nav-links > li > a.active,
+  .vs-layout--patron .vs-patron-nav .nav-links > li.nav-dropdown.active > a,
+  .vs-layout--admin .vs-admin-nav .vs-admin-nav__links > li > a.active,
+  .vs-layout--admin .vs-admin-nav .vs-admin-nav__links > li.nav-dropdown.active > a {
+    background: var(--vs-color-dark-green);
+    color: var(--vs-color-white);
+    font-weight: var(--vs-weight-semibold);
   }
 }
 

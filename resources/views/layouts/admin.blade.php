@@ -56,6 +56,8 @@
             <span class="landing-logo__name"><small>VILLA</small><strong>SALUD</strong></span>
         </a>
 
+        <span class="vs-nav-pill" aria-hidden="true" hidden></span>
+
         <ul class="navbar vs-admin-nav__links">
             {{-- Dashboard (single link to the report dashboard) --}}
             @if($canAccess('reports'))

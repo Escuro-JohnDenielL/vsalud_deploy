@@ -113,25 +113,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* ----------------------------------------------------------
-       Patron collapsible (hamburger) menu.
+       Sliding nav pill (patron + admin). Active by default, follows
+       hover and keyboard focus, then returns to the active item.
+       Null-safe: a nav without a pill or link list is ignored.
        ---------------------------------------------------------- */
-    const nav = document.querySelector('.nav-collapsible');
-    if (!nav) return;
+    const initNavPill = (navEl) => {
+        const linksEl = navEl?.querySelector(':scope > .nav-links, :scope > .vs-admin-nav__links');
+        const pill = navEl?.querySelector('.vs-nav-pill');
+        if (!navEl || !linksEl || !pill) return;
 
-    const toggle = nav.querySelector('.nav-toggle');
-    const links = nav.querySelector('.nav-links');
-    if (!toggle) return;
-
-    /* Patron link pill: active by default, follows hover and keyboard focus,
-       then returns to the active item when the pointer or focus leaves. */
-    const patronNav = document.querySelector('.vs-patron-nav');
-    const patronLinks = patronNav?.querySelector('.nav-links');
-    const navPill = patronNav?.querySelector('.vs-nav-pill');
-
-    if (patronNav && patronLinks && navPill) {
-        const pillLinks = () => Array.from(patronLinks.querySelectorAll(':scope > li > a'));
+        const pillLinks = () => Array.from(linksEl.querySelectorAll(':scope > li > a'));
         const activeLink = () => pillLinks().find((link) => link.classList.contains('active'));
         const isMobile = () => window.matchMedia('(max-width: 991.98px)').matches;
+        const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         const setPillTarget = (link) => {
             pillLinks().forEach((item) => {
@@ -140,20 +134,20 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const movePill = (link) => {
-            if (!link || isMobile()) {
-                navPill.hidden = true;
+            if (!link || isMobile() || reduceMotion()) {
+                pill.hidden = true;
                 setPillTarget(null);
                 return;
             }
 
-            const navRect = patronNav.getBoundingClientRect();
+            const navRect = navEl.getBoundingClientRect();
             const linkRect = link.getBoundingClientRect();
 
-            navPill.hidden = false;
-            navPill.style.transform =
+            pill.hidden = false;
+            pill.style.transform =
                 `translate3d(${Math.round(linkRect.left - navRect.left)}px, ${Math.round(linkRect.top - navRect.top)}px, 0)`;
-            navPill.style.width = `${Math.round(linkRect.width)}px`;
-            navPill.style.height = `${Math.round(linkRect.height)}px`;
+            pill.style.width = `${Math.round(linkRect.width)}px`;
+            pill.style.height = `${Math.round(linkRect.height)}px`;
             setPillTarget(link);
         };
 
@@ -164,14 +158,14 @@ document.addEventListener('DOMContentLoaded', () => {
             link.addEventListener('focus', () => movePill(link));
         });
 
-        patronLinks.addEventListener('mouseleave', resetPill);
-        patronLinks.addEventListener('focusout', (event) => {
-            if (!patronLinks.contains(event.relatedTarget)) resetPill();
+        linksEl.addEventListener('mouseleave', resetPill);
+        linksEl.addEventListener('focusout', (event) => {
+            if (!linksEl.contains(event.relatedTarget)) resetPill();
         });
 
         window.addEventListener('resize', () => {
-            if (isMobile()) {
-                navPill.hidden = true;
+            if (isMobile() || reduceMotion()) {
+                pill.hidden = true;
                 setPillTarget(null);
             } else {
                 resetPill();
@@ -180,7 +174,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         requestAnimationFrame(resetPill);
         window.addEventListener('load', resetPill);
-    }
+    };
+
+    document.querySelectorAll('.vs-patron-nav, .vs-admin-nav').forEach(initNavPill);
+
+    /* ----------------------------------------------------------
+       Patron collapsible (hamburger) menu.
+       ---------------------------------------------------------- */
+    const nav = document.querySelector('.nav-collapsible');
+    if (!nav) return;
+
+    const toggle = nav.querySelector('.nav-toggle');
+    const links = nav.querySelector('.nav-links');
+    if (!toggle) return;
 
     const setOpen = (open) => {
         nav.classList.toggle('open', open);
