@@ -13,7 +13,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: var(--font-body);
-  background: var(--color-bg);
+  background: var(--vs-color-page-bg);
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -2186,7 +2186,9 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
   margin-top: var(--vs-space-8);
   padding: var(--vs-space-6) var(--vs-space-4);
   border-top: 1px solid var(--vs-color-control-border);
-  background: var(--vs-color-surface-beige);
+  /* The page background is now the same beige the footer used to carry,
+     so the footer needs a white surface to stay a distinct band. */
+  background: var(--vs-color-surface);
   color: var(--vs-color-text);
   font-family: var(--vs-font-ui);
 }

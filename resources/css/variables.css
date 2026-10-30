@@ -4,6 +4,8 @@
      white-text buttons. */
   --vs-color-white: #ffffff;
   --vs-color-beige: #f5f2df;
+  /* Single page background for patron, admin and landing surfaces. */
+  --vs-color-page-bg: #f5f2df;
   --vs-color-pale-green: #e8f5ec;
   --vs-color-dark-green: #006b53;
   --vs-color-deep-green: #004c3a;
@@ -152,8 +154,10 @@
   --color-bg: #f6f5f2;
   --color-surface: #ffffff;
   --color-text: #2d2d2d;
-  --color-text-muted: #6b7280;
-  --color-text-light: #9ca3af;
+  /* 5.12:1 on the #f5f2df page background (4.83:1 on white). */
+  --color-text-muted: #5c6773;
+  /* 4.53:1 on the #f5f2df page background. */
+  --color-text-light: #656f7c;
   --color-border: #e5e7eb;
   --color-border-light: #f0f0f0;
 
