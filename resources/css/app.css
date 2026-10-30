@@ -1164,16 +1164,18 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
 
 /* ============================================================
    Shared mobile content polish (patron pages)
+   The top offset stays at the admin 36px at every width so a
+   patron page never starts lower than the matching admin page.
    ============================================================ */
 @media (max-width: 768px) {
   .patron-content {
-    padding: 26px 18px;
+    padding: 36px 18px 26px;
   }
 }
 
 @media (max-width: 480px) {
   .patron-content {
-    padding: 20px 12px;
+    padding: 36px 12px 20px;
   }
 }
 

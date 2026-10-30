@@ -1,7 +1,7 @@
 /* === Payment Page Styles === */
 .payment-wrapper {
   max-width: 800px;
-  margin: 40px auto;
+  margin: 0 auto var(--vs-space-8);
   padding: 0 15px;
 }
 
@@ -320,7 +320,7 @@ input[type="file"]::file-selector-button:hover {
 /* Navbar collapses to a hamburger menu — see resources/css/app.css */
 @media (max-width: 768px) {
   .payment-wrapper {
-    margin: 20px auto;
+    margin: 0 auto var(--vs-space-5);
     padding: 0 10px;
   }
 

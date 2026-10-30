@@ -200,7 +200,7 @@ button:hover {
   width: 100%;
   max-width: 1200px;
   gap: var(--vs-space-6);
-  margin: var(--vs-space-8) auto;
+  margin: 0 auto var(--vs-space-8);
   padding: var(--vs-space-6);
   border: 1px solid var(--vs-color-control-border);
   border-radius: var(--vs-radius-card);

@@ -1,6 +1,6 @@
 .vs-reservation-page {
     max-width: 600px;
-    margin: var(--vs-space-10) auto;
+    margin: 0 auto var(--vs-space-10);
     padding: 0 var(--vs-space-4);
     color: var(--vs-color-text);
     font-family: var(--vs-font-ui);
@@ -232,7 +232,7 @@
 
 .vs-reservation-page {
     max-width: 760px;
-    margin: var(--vs-space-8) auto;
+    margin: 0 auto var(--vs-space-8);
     padding-inline: var(--vs-space-4);
 }
 
@@ -266,7 +266,7 @@
 
 @media (max-width: 600px) {
     .vs-reservation-page {
-        margin: var(--vs-space-6) auto;
+        margin: 0 auto var(--vs-space-6);
         padding-inline: var(--vs-space-3);
     }
 
