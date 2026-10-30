@@ -600,7 +600,7 @@
     align-items: flex-start;
     justify-content: center;
     gap: var(--vs-space-8);
-    margin: var(--vs-space-8) auto;
+    margin: 0 auto var(--vs-space-8);
     padding: var(--vs-space-6);
     border: 1px solid var(--vs-color-control-border);
     border-radius: var(--vs-radius-card);
