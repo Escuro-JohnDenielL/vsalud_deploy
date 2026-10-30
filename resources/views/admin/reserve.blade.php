@@ -14,7 +14,23 @@
     @endphp
 
     <div class="vs-page vs-admin-reservation">
-    <x-ui.page-header title="Reservation Calendar" subtitle="Create a new reservation and manage date availability." />
+    <x-ui.page-header title="Reservation Calendar" subtitle="Create a new reservation and manage date availability.">
+        <x-slot:action>
+            <x-ui.page-info id="adminReserveInfo" title="How to create a reservation">
+                <ol>
+                    <li>Click any date on the calendar to open that date's status panel. Full and closed dates can still be opened.</li>
+                    <li>Fill out the form and submit it. This creates the patron's booking request, which then appears on Inquiries.</li>
+                    <li>If the Date field in the form is set to a full or closed date, a notice appears and the field is cleared.</li>
+                    <li>The venue panel shows which venues are still free on that date.</li>
+                    <li>The legend shows how full a date is: Available, Limited, Nearly Full, Full, Closed. Only confirmed reservations count.</li>
+                    <li>In the status panel, set the date to Available, Half Full, Nearly Full, Full, or Closed. That status overrides the automatic count.</li>
+                    <li>Available is refused when the date already holds the daily limit of confirmed reservations.</li>
+                    <li>Closing a date that still has bookings needs a reason and a confirmation of the booking count. Closing does not cancel those bookings.</li>
+                    <li>Undo Status removes the override, so the date returns to the automatic count.</li>
+                </ol>
+            </x-ui.page-info>
+        </x-slot:action>
+    </x-ui.page-header>
     <div class="container vs-admin-reservation__layout">
         <div class="reservation-container">
             <h2>Let's bring your vision to life. Just fill out the form.</h2>

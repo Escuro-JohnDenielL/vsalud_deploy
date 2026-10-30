@@ -109,7 +109,20 @@
 
 @section('content')
     <div class="vs-page vs-admin-waitlist">
-        <x-ui.page-header title="Waitlist" subtitle="Track patrons waiting for available dates. Entries are managed automatically." />
+        <x-ui.page-header title="Waitlist" subtitle="Track patrons waiting for available dates. Entries are managed automatically.">
+            <x-slot:action>
+                <x-ui.page-info id="waitlistInfo" title="How the waitlist works">
+                    <ol>
+                        <li>This page is read only. Entries are added when a patron joins from the calendar.</li>
+                        <li>Status is waiting, notified, claimed, or expired. Claimed means the patron submitted a booking for that date.</li>
+                        <li>When a slot frees up, the next person is offered the date automatically. Only one offer per date is open at a time.</li>
+                        <li>An offer is held for 24 hours. If it is not used, the entry expires and the next person is offered the date.</li>
+                        <li>Expired offers are checked when the calendar is loaded, when a patron joins the waitlist, or when a cancellation is approved. The check runs at most once every five minutes.</li>
+                        <li>Search by name or email.</li>
+                    </ol>
+                </x-ui.page-info>
+            </x-slot:action>
+        </x-ui.page-header>
 
         <x-ui.table-search
             :action="route('admin.waitlist')"

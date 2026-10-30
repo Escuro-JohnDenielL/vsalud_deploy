@@ -7,8 +7,33 @@
 }
 
 .vs-admin-reservation-logs .page-header {
+    position: relative;
     margin-bottom: 24px;
     text-align: center;
+}
+
+.vs-admin-reservation-logs__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.vs-admin-reservation-logs__guide {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+@media (max-width: 767.98px) {
+    .vs-admin-reservation-logs__guide {
+        position: static;
+        display: flex;
+        justify-content: center;
+        margin-top: 12px;
+    }
 }
 
 .vs-admin-reservation-logs .page-header h1 {

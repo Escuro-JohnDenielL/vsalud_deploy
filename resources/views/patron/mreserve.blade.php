@@ -141,7 +141,22 @@
     <div class="page-wrapper vs-patron-reservation">
         <div class="container vs-patron-reservation__layout">
             <div class="reservation-container">
-                <h2>Let's bring your vision to life. Fill out the form below.</h2>
+                <div class="vs-patron-reservation__intro">
+                    <h2>Let's bring your vision to life. Fill out the form below.</h2>
+                    <x-ui.page-info id="patronReserveInfo" title="How to reserve a date">
+                        <ol>
+                            <li>Pick a date on the calendar.</li>
+                            <li>Read the legend to see how full each date is. Closed dates cannot be booked.</li>
+                            <li>Fill out the form with your event details.</li>
+                            <li>Read and accept the Data Privacy Notice and Reservation Guidelines.</li>
+                            <li>Submit the form. Your tracking code appears on screen and is also emailed to you. Save it.</li>
+                            <li>Your submission is a request. Villa Salud reviews it and confirms the reservation.</li>
+                            <li>After the reservation is confirmed, upload your proof of payment under Manage Booking, then Payment Order.</li>
+                            <li>Use Track Booking to check your booking status.</li>
+                            <li>If the date is full, you can join the waitlist from the calendar.</li>
+                        </ol>
+                    </x-ui.page-info>
+                </div>
 
                 @php
                     $reservationForm = \App\Models\Form::with('activeFields')

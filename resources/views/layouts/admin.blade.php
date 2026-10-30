@@ -62,14 +62,6 @@
             </li>
             @endif
 
-            {{-- Home (public landing page). A plain link, so the admin session stays signed in. --}}
-            <li>
-                <a href="{{ url('/') }}">
-                    <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
-                    Home
-                </a>
-            </li>
-
             {{-- Reservations Dropdown --}}
             @if($canAccess('reservations') || $canAccess('inquiries') || $canAccess('reserve-logs') || $canAccess('payment-logs') || $canAccess('cancellations') || $canAccess('waitlist'))
             <li class="nav-dropdown {{ $isActive(['admin/reserve', 'admin/inquiry', 'admin/reserve-logs', 'admin/payment-logs', 'admin/cancellations', 'admin/waitlist']) ? 'active' : '' }}">
@@ -200,6 +192,15 @@
                     </li>
                     @endif
                 </ul>
+            </li>
+
+            {{-- Home (public landing page), kept beside the account menu. A plain
+                 link, so the admin session stays signed in. --}}
+            <li class="vs-admin-nav__home">
+                <a href="{{ url('/') }}">
+                    <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+                    Home
+                </a>
             </li>
 
             {{-- Account menu (far right) --}}

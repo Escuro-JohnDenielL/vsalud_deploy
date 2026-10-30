@@ -792,6 +792,151 @@ textarea:focus,
   }
 }
 
+/* === Shared page info button and guide dialog (x-ui.page-info) === */
+.vs-info {
+  display: inline-flex;
+}
+
+.vs-info__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-white);
+  color: var(--vs-color-deep-green);
+  font: inherit;
+  font-weight: var(--vs-weight-semibold);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color var(--vs-duration-fast), background-color var(--vs-duration-fast);
+}
+
+.vs-info__button:hover {
+  border-color: var(--vs-color-dark-green);
+  background: var(--vs-color-pale-green);
+}
+
+.vs-info__button:focus-visible,
+.vs-info__close:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.vs-info__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1;
+}
+
+.modal.vs-info__modal {
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.modal.vs-info__modal .vs-info__dialog {
+  display: flex;
+  flex-direction: column;
+  width: min(560px, 100%);
+  max-width: 560px;
+  max-height: min(80vh, 640px);
+  margin: auto;
+  padding: 24px 26px 18px;
+  overflow: hidden;
+  text-align: left;
+}
+
+.modal.vs-info__modal .vs-info__dialog .vs-info__title {
+  margin: 0 0 12px;
+  color: var(--color-primary);
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.vs-info__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 4px;
+  color: var(--vs-color-text);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-normal);
+  overflow-wrap: break-word;
+}
+
+.vs-info__body ol {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 1.25em;
+}
+
+.vs-info__body p {
+  margin: 0;
+}
+
+.vs-info__actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 14px;
+}
+
+.vs-info__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 18px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-white);
+  color: var(--vs-color-deep-green);
+  font: inherit;
+  font-weight: var(--vs-weight-semibold);
+  cursor: pointer;
+  transition: border-color var(--vs-duration-fast), background-color var(--vs-duration-fast);
+}
+
+.vs-info__close:hover {
+  border-color: var(--vs-color-dark-green);
+  background: var(--vs-color-pale-green);
+}
+
+@media (max-width: 767.98px) {
+  .vs-page-header__action .vs-info,
+  .vs-page-header__action .vs-info__button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 400px) {
+  .modal.vs-info__modal .vs-info__dialog {
+    width: 100%;
+    max-height: calc(100vh - 32px);
+    padding: 20px 18px 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-info__button,
+  .vs-info__close {
+    transition: none;
+  }
+}
+
 /* === Bootstrap Modal Overrides — match shared modal system === */
 .modal.show {
   display: flex !important;
@@ -1198,6 +1343,17 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
 
 .vs-layout--admin .vs-admin-nav .vs-account-menu {
   margin-left: auto;
+}
+
+/* Home sits at the right end, immediately left of the account menu. */
+@media (min-width: 992px) {
+  .vs-layout--admin .vs-admin-nav .vs-admin-nav__home {
+    margin-left: auto;
+  }
+
+  .vs-layout--admin .vs-admin-nav .vs-admin-nav__home + .vs-account-menu {
+    margin-left: 6px;
+  }
 }
 
 .vs-layout--admin .vs-admin-nav .vs-account-toggle {
@@ -2102,9 +2258,9 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
 }
 
 /* === Scoped baseline for legacy page elements === */
-.vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-row-actions__view):not(.vs-overflow__toggle):not(.vs-overflow__item):not(.preset-btn):not(.payment-group-toggle):not(.payment-group-details-toggle):not(.payment-info-button),
+.vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-row-actions__view):not(.vs-overflow__toggle):not(.vs-overflow__item):not(.preset-btn):not(.payment-group-toggle):not(.payment-group-details-toggle):not(.payment-info-button):not(.vs-info__button):not(.vs-info__close),
 .vs-layout--admin .btn,
-.vs-layout--patron button:where(:not(.close-btn):not(.close-modal):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-calendar-btn):not(.faq-question):not(.btn-submit-cancel):not(.cancel-confirm__cancel):not(.cancel-confirm__confirm):not(.pkg-modal__close):not(.pkg-modal__zoom):not(.pkg-lightbox__close):not(.pkg-lightbox__nav):not(.privacy-decline)),
+.vs-layout--patron button:where(:not(.close-btn):not(.close-modal):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-calendar-btn):not(.faq-question):not(.btn-submit-cancel):not(.cancel-confirm__cancel):not(.cancel-confirm__confirm):not(.pkg-modal__close):not(.pkg-modal__zoom):not(.pkg-lightbox__close):not(.pkg-lightbox__nav):not(.privacy-decline):not(.vs-info__button):not(.vs-info__close)),
 .vs-layout--patron .btn,
 .vs-layout--admin-auth button:not(.close-btn):not(.btn-close),
 .vs-layout--admin-auth .btn {
@@ -2120,9 +2276,9 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
   transition: background-color var(--vs-duration-fast), border-color var(--vs-duration-fast), box-shadow var(--vs-duration-fast), color var(--vs-duration-fast);
 }
 
-.vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-row-actions__view):not(.vs-overflow__toggle):not(.vs-overflow__item):not(.preset-btn):not(.payment-group-toggle):not(.payment-group-details-toggle):not(.payment-info-button):hover,
+.vs-layout--admin button:not(.admin-btn):not(.close-btn):not(.btn-close):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-row-actions__view):not(.vs-overflow__toggle):not(.vs-overflow__item):not(.preset-btn):not(.payment-group-toggle):not(.payment-group-details-toggle):not(.payment-info-button):not(.vs-info__button):not(.vs-info__close):hover,
 .vs-layout--admin .btn:hover,
-.vs-layout--patron button:where(:not(.close-btn):not(.close-modal):not(.btn-close):not(.btn-submit):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-calendar-btn):not(.faq-question):not(.btn-submit-cancel):not(.cancel-confirm__cancel):not(.cancel-confirm__confirm):not(.pkg-modal__close):not(.pkg-modal__zoom):not(.pkg-lightbox__close):not(.pkg-lightbox__nav):not(.privacy-decline)):hover,
+.vs-layout--patron button:where(:not(.close-btn):not(.close-modal):not(.btn-close):not(.btn-submit):not(.nav-toggle):not(.nav-dropdown-toggle):not(.admin-logout-button):not(.vs-calendar-btn):not(.faq-question):not(.btn-submit-cancel):not(.cancel-confirm__cancel):not(.cancel-confirm__confirm):not(.pkg-modal__close):not(.pkg-modal__zoom):not(.pkg-lightbox__close):not(.pkg-lightbox__nav):not(.privacy-decline):not(.vs-info__button):not(.vs-info__close)):hover,
 .vs-layout--patron .btn:hover,
 .vs-layout--admin-auth button:not(.close-btn):not(.btn-close):hover,
 .vs-layout--admin-auth .btn:hover {

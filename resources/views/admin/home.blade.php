@@ -7,7 +7,22 @@
 
 <x-ui.page-header
     title="Packages"
-    subtitle="Create and manage the packages shown to patrons." />
+    subtitle="Create and manage the packages shown to patrons.">
+    <x-slot:action>
+        <x-ui.page-info id="packagesInfo" title="How packages work">
+            <ol>
+                <li>Select Add New Package to create a package.</li>
+                <li>Enter the package name, description, and price.</li>
+                <li>Upload the main photo. Two more photos are optional.</li>
+                <li>Photos must be JPEG, PNG, or GIF, and no larger than 2 MB each.</li>
+                <li>Add inclusions one row at a time. Use Remove to drop a row.</li>
+                <li>Save the package to show it on the patron Packages page.</li>
+                <li>Edit keeps the current photo when you leave a photo field empty.</li>
+                <li>Delete removes the package and its photo files. It cannot be undone from this page.</li>
+            </ol>
+        </x-ui.page-info>
+    </x-slot:action>
+</x-ui.page-header>
 
 {{-- Package Cards --}}
 <section class="packages-grid vs-admin-dashboard__packages-grid" id="packagesContainer">

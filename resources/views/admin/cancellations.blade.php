@@ -8,7 +8,19 @@
 
 @section('content')
     <div class="vs-page vs-admin-cancellations">
-        <x-ui.page-header title="Cancellation Requests" subtitle="Review and manage patron cancellation requests." />
+        <x-ui.page-header title="Cancellation Requests" subtitle="Review and manage patron cancellation requests.">
+            <x-slot:action>
+                <x-ui.page-info id="cancellationsInfo" title="How cancellation requests are reviewed">
+                    <ol>
+                        <li>Each row is one patron request and the booking it belongs to.</li>
+                        <li>Approve needs a reason. The reservation and its inquiry are marked Cancelled, and the patron gets an email.</li>
+                        <li>Deny needs a reason. The booking stays as it is, and the patron gets an email.</li>
+                        <li>Approving can offer the freed date to the next person on the waitlist automatically.</li>
+                        <li>A request that was already approved or denied cannot be processed again.</li>
+                    </ol>
+                </x-ui.page-info>
+            </x-slot:action>
+        </x-ui.page-header>
 
         <x-ui.table-search
             :action="route('admin.cancellations')"

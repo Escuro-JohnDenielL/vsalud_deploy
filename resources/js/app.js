@@ -212,3 +212,85 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Escape' && nav.classList.contains('open')) setOpen(false);
     });
 });
+
+// === Shared page info guides ("How this works") ===
+// One implementation for admin and patron pages: the trigger carries
+// data-info-open="<dialog id>", the dialog carries a [data-info-close] button.
+document.addEventListener('DOMContentLoaded', () => {
+    const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+    document.querySelectorAll('[data-info-open]').forEach((trigger) => {
+        const modal = document.getElementById(trigger.getAttribute('data-info-open'));
+        if (!modal) return;
+
+        // position: fixed is relative to any transformed ancestor, so keep the
+        // dialog at the document root while it is open.
+        if (modal.parentNode !== document.body) document.body.appendChild(modal);
+
+        const dialog = modal.querySelector('.vs-info__dialog');
+        const closeBtn = modal.querySelector('[data-info-close]');
+        let lastFocused = null;
+
+        const focusables = () => Array.prototype.slice
+            .call(dialog.querySelectorAll(FOCUSABLE))
+            .filter((el) => el.offsetParent !== null);
+
+        const onKeydown = (event) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                event.stopPropagation();
+                close();
+                return;
+            }
+            if (event.key !== 'Tab') return;
+
+            const items = focusables();
+            if (!items.length) {
+                event.preventDefault();
+                dialog.focus();
+                return;
+            }
+            const first = items[0];
+            const last = items[items.length - 1];
+
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+
+        const open = () => {
+            lastFocused = trigger;
+            window.vsModalPrepareOpen(modal);
+            modal.classList.add('open');
+            modal.setAttribute('aria-hidden', 'false');
+            trigger.setAttribute('aria-expanded', 'true');
+            // Focus synchronously: the dialog is already displayed at this point.
+            (focusables()[0] || dialog).focus();
+            // Escape and the Tab trap live on the document while the dialog is
+            // open, so they still work if focus ends up outside the dialog.
+            document.addEventListener('keydown', onKeydown, true);
+        };
+
+        const close = () => {
+            if (!modal.classList.contains('open')) return;
+            document.removeEventListener('keydown', onKeydown, true);
+            trigger.setAttribute('aria-expanded', 'false');
+            modal.setAttribute('aria-hidden', 'true');
+            window.vsModalCloseAfterFade(modal, () => {
+                modal.classList.remove('open');
+                if (lastFocused) lastFocused.focus();
+            });
+        };
+
+        trigger.addEventListener('click', open);
+        if (closeBtn) closeBtn.addEventListener('click', close);
+
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) close();
+        });
+    });
+});

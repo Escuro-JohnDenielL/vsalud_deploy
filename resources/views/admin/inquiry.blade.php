@@ -8,7 +8,22 @@
 
 @section('content')
     <div class="vs-page vs-admin-inquiry">
-        <x-ui.page-header title="Inquiries" subtitle="View and manage customer inquiries." />
+        <x-ui.page-header title="Inquiries" subtitle="View and manage customer inquiries.">
+            <x-slot:action>
+                <x-ui.page-info id="inquiryInfo" title="How inquiries are handled">
+                    <ol>
+                        <li>Search by name, email, contact number, or tracking code.</li>
+                        <li>Status can be Pending, In Progress, Completed, or Cancelled.</li>
+                        <li>Completed converts the inquiry into a reservation. The date and venue are checked before it is saved.</li>
+                        <li>If the inquiry has no AM or PM period, choose one before the conversion.</li>
+                        <li>Changing the status to Cancelled emails the patron.</li>
+                        <li>Reply opens the message box. AI Draft Reply writes a draft you can edit before sending.</li>
+                        <li>Review the AI draft before sending. It uses the patron's name, event details and message.</li>
+                        <li>View shows every answer the patron submitted.</li>
+                    </ol>
+                </x-ui.page-info>
+            </x-slot:action>
+        </x-ui.page-header>
 
         <x-ui.table-search
             :action="route('admin.inquiry')"

@@ -13,10 +13,24 @@
                 <h1>Reservation Logs</h1>
                 <p>Manage and track all reservation requests</p>
             </div>
-            <a href="{{ route('admin.reserve-logs.export') }}" class="admin-btn admin-btn-primary"
-                style="margin-top:14px;">
-                Export CSV
-            </a>
+            <div class="vs-admin-reservation-logs__actions">
+                <a href="{{ route('admin.reserve-logs.export') }}" class="admin-btn admin-btn-primary">
+                    Export CSV
+                </a>
+            </div>
+            <div class="vs-admin-reservation-logs__guide">
+                <x-ui.page-info id="reserveLogsInfo" title="How reservation logs work">
+                    <ol>
+                        <li>Search by name, email, or tracking code.</li>
+                        <li>View shows the full booking and the reservation total.</li>
+                        <li>Enter the total and select Save total. Approved payments with no recorded amount must be confirmed first.</li>
+                        <li>Status can be active, completed, or cancelled. Setting cancelled also marks the linked inquiry as Cancelled.</li>
+                        <li>Delete removes the reservation. Deleting an active reservation notifies the waitlist automatically.</li>
+                        <li>Export CSV downloads the reservation list as a CSV file. The export is written to the audit trail.</li>
+                        <li>View also has AI Event Brief, a short handoff summary for the team.</li>
+                    </ol>
+                </x-ui.page-info>
+            </div>
         </div>
 
         <x-ui.table-search
