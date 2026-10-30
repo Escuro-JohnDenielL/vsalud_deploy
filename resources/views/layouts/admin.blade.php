@@ -51,6 +51,11 @@
     @endphp
 
     <nav class="navbar vs-admin-nav">
+        <a href="{{ route('admin.report') }}" class="landing-logo vs-admin-brand" aria-label="Villa Salud admin dashboard">
+            <span class="landing-logo__mark">VS</span>
+            <span class="landing-logo__name"><small>VILLA</small><strong>SALUD</strong></span>
+        </a>
+
         <ul class="navbar vs-admin-nav__links">
             {{-- Dashboard (single link to the report dashboard) --}}
             @if($canAccess('reports'))

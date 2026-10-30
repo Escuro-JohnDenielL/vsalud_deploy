@@ -1338,13 +1338,50 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
 }
 
 /* Admin nav: links row fills the bar; account menu pinned far right. */
+.vs-layout--admin .vs-admin-nav {
+  justify-content: flex-start;
+  gap: var(--vs-space-3);
+}
+
 .vs-layout--admin .vs-admin-nav > .vs-admin-nav__links {
   flex: 1;
   justify-content: center;
 }
 
+/* Brand: same landing-page logo markup as the patron nav, recolored for the
+   light nav and linked to the admin dashboard. */
+.vs-layout--admin .vs-admin-nav a.landing-logo,
+.vs-layout--admin .vs-admin-nav a.landing-logo:hover {
+  flex: 0 0 auto;
+  padding: 4px;
+  background: transparent;
+  color: var(--vs-color-dark-green);
+  text-decoration: none;
+}
+
+.vs-layout--admin .vs-admin-nav .landing-logo__mark {
+  width: 40px;
+  height: 40px;
+  border-color: var(--vs-color-control-border);
+  color: var(--vs-color-dark-green);
+  font-size: 15px;
+}
+
+.vs-layout--admin .vs-admin-nav .landing-logo__name {
+  color: var(--vs-color-dark-green);
+  letter-spacing: 3px;
+}
+
 .vs-layout--admin .vs-admin-nav .vs-account-menu {
   margin-left: auto;
+}
+
+/* Between 992px and 1199px the admin links need the extra width, so the
+   brand collapses to its monogram and the nav stays on one row. */
+@media (max-width: 1199.98px) {
+  .vs-layout--admin .vs-admin-nav .landing-logo__name {
+    display: none;
+  }
 }
 
 /* Home sits at the right end, immediately left of the account menu. */
@@ -1633,7 +1670,8 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
 
 /* Below 576px the two-line wordmark collapses to just the monogram. */
 @media (max-width: 575.98px) {
-  .vs-layout--patron .vs-patron-nav .landing-logo__name {
+  .vs-layout--patron .vs-patron-nav .landing-logo__name,
+  .vs-layout--admin .vs-admin-nav .landing-logo__name {
     display: none;
   }
 }
