@@ -5,7 +5,7 @@
 @section('content')
 <div style="max-width: 720px; margin: 32px auto; padding: 0 20px;">
     <h1 style="font-family: var(--vs-font-display); font-size: 28px; color: var(--color-primary); margin: 0 0 6px;">Payment Settings</h1>
-    <p style="color: #6b7280; margin: 0 0 24px;">Manage payment instructions shown to patrons. Changes take effect immediately.</p>
+    <p style="color: var(--color-text-muted); margin: 0 0 24px;">Manage payment instructions shown to patrons. Changes take effect immediately.</p>
 
     <form method="POST" enctype="multipart/form-data" action="{{ route('admin.payment-settings.update') }}" style="background:#fff;border-radius:16px;border:1px solid #e5e7eb;box-shadow:0 1px 3px rgba(0,0,0,0.05);padding:28px;">
         @csrf
@@ -79,7 +79,7 @@
 
         <div style="margin-top:24px;">
             <button type="submit" class="admin-btn admin-btn-primary" style="padding:10px 28px;">Save Settings</button>
-            <a href="{{ route('admin.report') }}" style="color:#6b7280;font-size:14px;margin-left:16px;">&larr; Back to Dashboard</a>
+            <a href="{{ route('admin.report') }}" style="color:var(--color-text-muted);font-size:14px;margin-left:16px;">&larr; Back to Dashboard</a>
         </div>
     </form>
 </div>

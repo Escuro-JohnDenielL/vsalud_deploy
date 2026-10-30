@@ -14,10 +14,15 @@
   padding: var(--vs-space-4) 0;
 }
 
-/* Empty state spans the whole row so it centers under the page title. */
+/* Empty state spans the whole row so it centers under the page title.
+   It sits directly on the beige page background, so give it a white
+   surface and a border instead of blending into the page. */
 .vs-admin-dashboard .vs-admin-dashboard__empty {
   flex: 0 0 100%;
   padding: var(--vs-space-10) var(--vs-space-5);
+  border: 1px dashed var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
   text-align: center;
 }
 
