@@ -35,22 +35,31 @@
         <div class="pkg-modal__dialog">
             <button type="button" class="pkg-modal__close" id="pkgModalClose" aria-label="Close package details">&times;</button>
 
-            <div class="pkg-modal__media">
-                <button type="button" class="pkg-modal__zoom" id="pkgModalZoom" aria-label="Enlarge package photo">
-                    <img id="pkgModalMainImage" class="pkg-modal__main-image" src="" alt="Package image">
-                </button>
-                <div class="pkg-modal__thumbs" id="pkgModalThumbs"></div>
+            <div class="pkg-modal__body">
+                <div class="pkg-modal__media">
+                    <button type="button" class="pkg-modal__zoom" id="pkgModalZoom" aria-label="Enlarge package photo">
+                        <img id="pkgModalMainImage" class="pkg-modal__main-image" src="" alt="Package image">
+                    </button>
+                    <p class="pkg-modal__media-label">Actual venue &amp; setup photos</p>
+                    <div class="pkg-modal__thumbs" id="pkgModalThumbs"></div>
+                    <p class="pkg-modal__hint">Click a photo to enlarge. Swipe or use arrows to browse.</p>
+                </div>
+
+                <div class="pkg-modal__info">
+                    <h2 class="pkg-modal__title" id="pkgModalTitle"></h2>
+                    <p class="pkg-modal__desc" id="pkgModalDesc"></p>
+                    <p class="pkg-modal__price" id="pkgModalPrice"></p>
+
+                    <div class="pkg-modal__inclusions">
+                        <h3>Package Inclusions</h3>
+                        <ul id="pkgModalInclusions"></ul>
+                    </div>
+                </div>
             </div>
 
-            <div class="pkg-modal__info">
-                <h2 class="pkg-modal__title" id="pkgModalTitle"></h2>
-                <p class="pkg-modal__desc" id="pkgModalDesc"></p>
-                <p class="pkg-modal__price" id="pkgModalPrice"></p>
-
-                <div class="pkg-modal__inclusions">
-                    <h3>Package Inclusions</h3>
-                    <ul id="pkgModalInclusions"></ul>
-                </div>
+            <div class="pkg-modal__footer">
+                <a href="{{ route('patron.mreserve') }}" class="pkg-modal__cta pkg-modal__cta--primary">Book this package</a>
+                <a href="{{ url('/') }}#contact" class="pkg-modal__cta pkg-modal__cta--secondary">Inquire</a>
             </div>
         </div>
     </div>

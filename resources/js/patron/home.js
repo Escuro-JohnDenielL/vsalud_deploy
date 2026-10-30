@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const priceEl = document.getElementById("pkgModalPrice");
     const mainImage = document.getElementById("pkgModalMainImage");
     const thumbsEl = document.getElementById("pkgModalThumbs");
+    const hintEl = modal.querySelector(".pkg-modal__hint");
     const inclusionsEl = document.getElementById("pkgModalInclusions");
     const zoomBtn = document.getElementById("pkgModalZoom");
     const lightbox = document.getElementById("pkgLightbox");
@@ -19,6 +20,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const lightboxPrev = document.getElementById("pkgLightboxPrev");
     const lightboxNext = document.getElementById("pkgLightboxNext");
     const DEFAULT_IMAGE = "/images/package_placeholder.svg";
+    // Three boxed thumbs are always visible; extra photos collapse into a +N tile.
+    const MAX_THUMBS = 3;
+    const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
     const formatPrice = function (price) {
         return `₱${Number(price || 0).toLocaleString("en-PH", {
@@ -31,6 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let galleryIndex = 0;
     let packageName = "Package";
     let lightboxReturnFocus = null;
+    let modalReturnFocus = null;
 
     // Some package rows can still point at photos that were never uploaded.
     // Probe each URL once and drop the ones that fail, so the gallery never
@@ -53,11 +58,21 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     };
 
+    const syncThumbs = function () {
+        const thumbs = Array.from(thumbsEl.querySelectorAll(".pkg-modal__thumb"));
+        thumbs.forEach(function (thumb, index) {
+            const isMore = thumb.classList.contains("pkg-modal__thumb--more");
+            const active = isMore ? galleryIndex >= MAX_THUMBS : galleryIndex === index;
+            thumb.classList.toggle("is-active", active);
+        });
+    };
+
     const showGalleryImage = function (index) {
         if (!gallery.length) return;
         galleryIndex = (index + gallery.length) % gallery.length;
         mainImage.src = gallery[galleryIndex];
         mainImage.alt = `${packageName} photo ${galleryIndex + 1} of ${gallery.length}`;
+        syncThumbs();
     };
 
     const updateLightbox = function () {
@@ -88,9 +103,11 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     const openModal = function () {
+        modalReturnFocus = document.activeElement;
         window.vsModalPrepareOpen(modal);
         modal.style.display = "flex";
         document.body.style.overflow = "hidden";
+        closeBtn?.focus();
     };
 
     const closeModal = function () {
@@ -98,6 +115,9 @@ document.addEventListener("DOMContentLoaded", function () {
         window.vsModalCloseAfterFade(modal, () => {
             modal.style.display = "none";
             document.body.style.overflow = "";
+            if (modalReturnFocus && typeof modalReturnFocus.focus === "function") {
+                modalReturnFocus.focus();
+            }
         });
     };
 
@@ -153,21 +173,52 @@ document.addEventListener("DOMContentLoaded", function () {
                 gallery = usable.length ? usable : [DEFAULT_IMAGE];
                 showGalleryImage(0);
 
-                // Thumbnails (only shown when the package has more than one photo)
+                if (hintEl) {
+                    hintEl.textContent = gallery.length > 1
+                        ? "Click a photo to enlarge. Swipe or use arrows to browse."
+                        : "Click the photo to enlarge it.";
+                }
+
+                // Thumbnails (only shown when the package has more than one photo).
+                // Three boxed squares stay visible; extras collapse into a +N tile.
                 thumbsEl.innerHTML = "";
                 if (gallery.length > 1) {
-                    gallery.forEach(function (src, index) {
-                        const thumb = document.createElement("img");
-                        thumb.alt = packageName + " photo " + (index + 1);
-                        thumb.onerror = function () {
-                            this.remove();
+                    const shown = Math.min(gallery.length, MAX_THUMBS);
+                    for (let index = 0; index < shown; index += 1) {
+                        const thumb = document.createElement("button");
+                        thumb.type = "button";
+                        thumb.className = "pkg-modal__thumb";
+                        thumb.setAttribute("aria-label", `${packageName} photo ${index + 1} of ${gallery.length}`);
+
+                        const image = document.createElement("img");
+                        image.src = gallery[index];
+                        image.alt = `${packageName} photo ${index + 1}`;
+                        image.onerror = function () {
+                            thumb.remove();
                         };
-                        thumb.src = src;
+                        thumb.appendChild(image);
+
                         thumb.addEventListener("click", function () {
                             showGalleryImage(index);
+                            openLightbox();
                         });
                         thumbsEl.appendChild(thumb);
-                    });
+                    }
+
+                    if (gallery.length > MAX_THUMBS) {
+                        const more = document.createElement("button");
+                        more.type = "button";
+                        more.className = "pkg-modal__thumb pkg-modal__thumb--more";
+                        more.textContent = `+${gallery.length - MAX_THUMBS}`;
+                        more.setAttribute("aria-label", `View ${gallery.length - MAX_THUMBS} more photos`);
+                        more.addEventListener("click", function () {
+                            showGalleryImage(MAX_THUMBS);
+                            openLightbox();
+                        });
+                        thumbsEl.appendChild(more);
+                    }
+
+                    syncThumbs();
                 }
 
                 openModal();
@@ -233,8 +284,29 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        if (event.key === "Escape" && modal.style.display === "flex") {
+        if (modal.style.display !== "flex") return;
+
+        if (event.key === "Escape") {
+            event.preventDefault();
             closeModal();
+            return;
+        }
+
+        // Keep keyboard focus inside the open package dialog.
+        if (event.key !== "Tab") return;
+        const items = Array.from(modal.querySelectorAll(FOCUSABLE)).filter(function (el) {
+            return el.offsetParent !== null;
+        });
+        if (!items.length) return;
+
+        const first = items[0];
+        const last = items[items.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
         }
     });
 });
