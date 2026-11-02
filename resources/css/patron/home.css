@@ -1136,6 +1136,8 @@
 .pkg-modal--venue .pkg-modal__thumb {
   width: 104px;
   height: 80px;
+  /* The villa dialog has no zoom overlay: a thumbnail just swaps the big photo. */
+  cursor: pointer;
 }
 
 .pkg-modal--venue .venue-modal__capacity {

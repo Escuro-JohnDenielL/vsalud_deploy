@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!modal) return;
 
     const closeBtn = document.getElementById("venueGalleryClose");
-    const zoomBtn = document.getElementById("venueGalleryZoom");
     const mainImage = document.getElementById("venueGalleryImage");
     const countEl = document.getElementById("venueGalleryCount");
     const thumbsEl = document.getElementById("venueGalleryThumbs");
@@ -18,12 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const capacityEl = document.getElementById("venueGalleryCapacity");
     const descEl = document.getElementById("venueGalleryDesc");
     const choicesEl = document.getElementById("venueGalleryChoices");
-
-    const lightbox = document.getElementById("venueGalleryLightbox");
-    const lightboxImage = document.getElementById("venueGalleryLightboxImage");
-    const lightboxClose = document.getElementById("venueGalleryLightboxClose");
-    const lightboxPrev = document.getElementById("venueGalleryLightboxPrev");
-    const lightboxNext = document.getElementById("venueGalleryLightboxNext");
 
     const DEFAULT_IMAGE = "/images/package_placeholder.svg";
     const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -34,7 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
     let galleryIndex = 0;
     let hasPhotos = false;
     let returnFocus = null;
-    let lightboxReturnFocus = null;
 
     // A photo can be missing from disk; probe once and drop the broken URLs so
     // the gallery never cycles into an empty slide.
@@ -111,33 +103,6 @@ document.addEventListener("DOMContentLoaded", function () {
         syncChoices();
     };
 
-    const updateLightbox = function () {
-        if (!lightboxImage) return;
-        lightboxImage.src = gallery[galleryIndex];
-        lightboxImage.alt = `${venues[activeVenue]?.name || "Venue"} enlarged photo ${galleryIndex + 1} of ${gallery.length}`;
-        const multiple = gallery.length > 1;
-        if (lightboxPrev) lightboxPrev.hidden = !multiple;
-        if (lightboxNext) lightboxNext.hidden = !multiple;
-    };
-
-    const openLightbox = function () {
-        if (!lightbox || !gallery.length || !hasPhotos) return;
-        lightboxReturnFocus = document.activeElement;
-        lightbox.hidden = false;
-        updateLightbox();
-        document.body.style.overflow = "hidden";
-        lightboxClose?.focus();
-    };
-
-    const closeLightbox = function (restoreFocus) {
-        if (!lightbox || lightbox.hidden) return;
-        lightbox.hidden = true;
-        document.body.style.overflow = "hidden"; // the gallery dialog is still open
-        if (restoreFocus !== false && lightboxReturnFocus?.focus) {
-            lightboxReturnFocus.focus();
-        }
-    };
-
     const open = function () {
         returnFocus = document.activeElement;
         window.vsModalPrepareOpen(modal);
@@ -147,7 +112,6 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     const close = function () {
-        closeLightbox(false);
         window.vsModalCloseAfterFade(modal, function () {
             modal.style.display = "none";
 
@@ -244,7 +208,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     thumb.addEventListener("click", function () {
                         showImage(index);
-                        openLightbox();
                     });
                     thumbsEl.appendChild(thumb);
                 });
@@ -252,10 +215,11 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             if (hintEl) {
-                hintEl.hidden = !hasPhotos;
-                hintEl.textContent = finalPhotos.length > 1
-                    ? "Click a photo to enlarge. Swipe or use arrows to browse."
-                    : "Click the photo to enlarge it.";
+                // There is no zoom overlay in this dialog: a thumbnail simply
+                // swaps the main photo, so the hint only appears when there is
+                // more than one photo to choose from.
+                hintEl.hidden = !hasPhotos || finalPhotos.length < 2;
+                hintEl.textContent = "Click a photo below to show it here.";
             }
 
             showImage(0);
@@ -304,51 +268,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (event.target === modal) close();
     });
 
-    if (zoomBtn) zoomBtn.addEventListener("click", openLightbox);
-    if (lightboxClose) lightboxClose.addEventListener("click", function () { closeLightbox(true); });
-    if (lightboxPrev) lightboxPrev.addEventListener("click", function () {
-        showImage(galleryIndex - 1);
-        updateLightbox();
-    });
-    if (lightboxNext) lightboxNext.addEventListener("click", function () {
-        showImage(galleryIndex + 1);
-        updateLightbox();
-    });
-
-    lightbox?.addEventListener("click", function (event) {
-        if (event.target === lightbox) closeLightbox(true);
-    });
-
-    let touchStartX = null;
-    lightbox?.addEventListener("touchstart", function (event) {
-        touchStartX = event.changedTouches[0]?.clientX ?? null;
-    }, { passive: true });
-    lightbox?.addEventListener("touchend", function (event) {
-        if (touchStartX === null || gallery.length < 2) return;
-        const delta = (event.changedTouches[0]?.clientX ?? touchStartX) - touchStartX;
-        touchStartX = null;
-        if (Math.abs(delta) < 40) return;
-        showImage(galleryIndex + (delta < 0 ? 1 : -1));
-        updateLightbox();
-    }, { passive: true });
-
     document.addEventListener("keydown", function (event) {
-        if (lightbox && !lightbox.hidden) {
-            if (event.key === "Escape") {
-                event.preventDefault();
-                closeLightbox(true);
-            } else if (event.key === "ArrowLeft" && gallery.length > 1) {
-                event.preventDefault();
-                showImage(galleryIndex - 1);
-                updateLightbox();
-            } else if (event.key === "ArrowRight" && gallery.length > 1) {
-                event.preventDefault();
-                showImage(galleryIndex + 1);
-                updateLightbox();
-            }
-            return;
-        }
-
         if (modal.style.display !== "flex") return;
 
         if (event.key === "Escape") {
