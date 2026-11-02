@@ -19,6 +19,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const lightboxClose = document.getElementById("pkgLightboxClose");
     const lightboxPrev = document.getElementById("pkgLightboxPrev");
     const lightboxNext = document.getElementById("pkgLightboxNext");
+
+    // Venue row inside the package dialog. The villa gallery is opened from the
+    // page-level "View venue pictures" button (venue-gallery.js owns it), so this
+    // script only fills the venue name/capacity line.
+    const pkgVenueInfo = document.getElementById("pkgModalVenueInfo");
+    const pkgVenueName = document.getElementById("pkgModalVenueName");
+
     const DEFAULT_IMAGE = "/images/package_placeholder.svg";
     // Three boxed thumbs are always visible; extra photos collapse into a +N tile.
     const MAX_THUMBS = 3;
@@ -142,6 +149,21 @@ document.addEventListener("DOMContentLoaded", function () {
             titleEl.textContent = data.name || "Package";
             descEl.textContent = data.description || "No description available.";
             priceEl.textContent = formatPrice(data.price);
+
+            // Which villa(s) this package is held in.
+            const venues = Array.isArray(data.venues) ? data.venues : [];
+            const hasVenue = venues.length > 0;
+
+            if (pkgVenueInfo) {
+                pkgVenueInfo.hidden = !hasVenue;
+            }
+            if (pkgVenueName) {
+                const names = venues.map(v => v.name).filter(Boolean).join(" · ");
+                const only = venues.length === 1 && venues[0].capacity
+                    ? ` · Good for up to ${Number(venues[0].capacity).toLocaleString("en-PH")} guests`
+                    : "";
+                pkgVenueName.textContent = hasVenue ? `${names}${only}` : "";
+            }
 
             mainImage.onerror = function () {
                 this.onerror = null;

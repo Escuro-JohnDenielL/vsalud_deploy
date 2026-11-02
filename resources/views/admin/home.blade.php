@@ -15,6 +15,7 @@
                 <li>Enter the package name, description, and price.</li>
                 <li>Upload the main photo. Two more photos are optional.</li>
                 <li>Photos must be JPEG, PNG, or GIF, and no larger than 2 MB each.</li>
+                <li>Pick the venue this package is held in. Its photo gallery is managed on the Venues page and is shown to patrons from the package card.</li>
                 <li>Add inclusions one row at a time. Use Remove to drop a row.</li>
                 <li>Save the package to show it on the patron Packages page.</li>
                 <li>Edit keeps the current photo when you leave a photo field empty.</li>
@@ -58,6 +59,7 @@
 {{-- Add New Package Button (below the packages, centered) --}}
 <div class="vs-admin-dashboard__add-package">
     <button type="button" id="addPackageBtn" class="admin-btn admin-btn-primary" data-bs-toggle="modal" data-bs-target="#addPackageModal">+ Add New Package</button>
+    <a href="{{ route('admin.venues') }}" class="admin-btn admin-btn-ghost">Manage venue photos</a>
 </div>
 
 {{-- View Package Modal --}}
@@ -130,6 +132,20 @@
                             <label class="form-label">Price</label>
                             <input type="number" id="editPackagePrice" class="form-control" step="0.01" required>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Venues used by this package</label>
+                            <div class="vs-venue-checks" id="editPackageVenues">
+                                @forelse ($venues as $venue)
+                                    <label class="vs-venue-checks__item">
+                                        <input type="checkbox" class="edit-package-venue" value="{{ $venue->id }}">
+                                        <span>{{ $venue->name }}</span>
+                                    </label>
+                                @empty
+                                    <p class="vs-admin-dashboard__field-note mb-0">No venues yet. <a href="{{ route('admin.venues') }}">Create one first</a>.</p>
+                                @endforelse
+                            </div>
+                            <p class="vs-admin-dashboard__field-note">Patrons get a "View venue pictures" button that lets them switch between these venues. <a href="{{ route('admin.venues') }}">Upload the villa photos on the Venues page</a>.</p>
+                        </div>
                     </div>
                     <div class="vs-admin-dashboard__edit-media">
                         <div class="mb-3">
@@ -182,6 +198,20 @@
                     <div class="mb-3">
                         <label class="form-label">Description</label>
                         <textarea name="description" id="newPackageDescription" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Venues used by this package</label>
+                        <div class="vs-venue-checks" id="newPackageVenues">
+                            @forelse ($venues as $venue)
+                                <label class="vs-venue-checks__item">
+                                    <input type="checkbox" class="new-package-venue" value="{{ $venue->id }}">
+                                    <span>{{ $venue->name }}</span>
+                                </label>
+                            @empty
+                                <p class="vs-admin-dashboard__field-note mb-0">No venues yet. <a href="{{ route('admin.venues') }}">Create one first</a>.</p>
+                            @endforelse
+                        </div>
+                        <p class="vs-admin-dashboard__field-note">Tick every venue this package can be held in. Photos are uploaded once per venue on the Venues page — they are shared, not copied per package.</p>
                     </div>
                     <div class="vs-admin-dashboard__add-media">
                         <div class="mb-3">

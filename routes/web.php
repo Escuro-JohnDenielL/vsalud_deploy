@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\AdminHomeController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\InquiryController;
 use App\Http\Controllers\Admin\PackageController;
+use App\Http\Controllers\Admin\VenueController;
 use App\Http\Controllers\Admin\AvailabilityController;
 use App\Http\Controllers\Admin\AdminActivityController;
 use App\Http\Controllers\Admin\AdminProfileController;
@@ -114,6 +115,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
     Route::post('/packages', [PackageController::class, 'store'])->name('admin.packages.store');
     Route::put('/packages/{package}', [PackageController::class, 'update']);
     Route::delete('/packages/{package}', [PackageController::class, 'destroy'])->name('admin.packages.destroy');
+
+    // Venue galleries. Photos live on the venue (one copy) and are reused by
+    // every package bound to it — packages never store villa photos.
+    Route::get('/venues', [VenueController::class, 'index'])->name('venues');
+    Route::post('/venues', [VenueController::class, 'store'])->name('venues.store');
+    Route::put('/venues/{venue}', [VenueController::class, 'update'])->name('venues.update');
+    Route::delete('/venues/{venue}', [VenueController::class, 'destroy'])->name('venues.destroy');
+    Route::post('/venues/{venue}/photos', [VenueController::class, 'storePhotos'])->name('venues.photos.store');
+    Route::delete('/venues/{venue}/photos', [VenueController::class, 'destroyPhotos'])->name('venues.photos.bulk-destroy');
+    Route::delete('/venues/photos/{photo}', [VenueController::class, 'destroyPhoto'])->name('venues.photos.destroy');
+    Route::post('/venues/photos/{photo}/cover', [VenueController::class, 'makeCover'])->name('venues.photos.cover');
 
     // Inquiry
     Route::get('/inquiry', [InquiryController::class, 'index'])->name('inquiry');

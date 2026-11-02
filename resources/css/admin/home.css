@@ -119,6 +119,35 @@
   line-clamp: 3;
 }
 
+.vs-admin-dashboard .package-venue {
+  margin: 6px 0 8px;
+  color: var(--vs-color-deep-green);
+  font-size: var(--vs-text-secondary-min);
+  font-weight: var(--vs-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Venue checkboxes in the Add / Edit package modals (a package can use several). */
+.vs-venue-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-light, #e5e7eb);
+  border-radius: 10px;
+  background: #f9fbf9;
+}
+
+.vs-venue-checks__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  color: #2d2d2d;
+  cursor: pointer;
+}
+
 .vs-admin-dashboard .package-price {
   display: flex;
   flex-direction: column;

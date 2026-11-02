@@ -11,7 +11,7 @@ class PackageController extends Controller
 {
     public function index()
     {
-        return response()->json(Package::all());
+        return response()->json(Package::with('venues')->get());
     }
 
     public function store(Request $request)
@@ -28,6 +28,8 @@ class PackageController extends Controller
             // ConvertEmptyStringsToNull middleware turns those into null,
             // so the rule must allow null (cleanInclusions() strips them later).
             'inclusions.*' => 'nullable|string|max:255',
+            'venues' => 'nullable|array',
+            'venues.*' => 'integer|exists:venues,id',
         ]);
 
         $imagePath = $request->file('image')->store('packages', 'public');
@@ -43,6 +45,12 @@ class PackageController extends Controller
             'image_3_path' => $image3Path ? "/storage/$image3Path" : null,
             'inclusions' => $this->cleanInclusions($request->input('inclusions', [])),
         ]);
+
+        $package->venues()->sync($this->cleanVenueIds($request->input('venues', [])));
+
+        // Include the venues so the admin card shows them immediately instead of
+        // "No venue linked" until the next page load.
+        $package->load('venues');
 
         return response()->json($package, 201);
     }
@@ -64,9 +72,17 @@ class PackageController extends Controller
             'inclusions' => 'nullable|array',
             // See store(): blank rows arrive as null, so allow null here too.
             'inclusions.*' => 'nullable|string|max:255',
+            'venues' => 'nullable|array',
+            'venues.*' => 'integer|exists:venues,id',
         ]);
 
         $data = $request->only(['name', 'description', 'price']);
+
+        // Only sync when the form submitted the field, so an edit that omits it
+        // does not silently unlink every venue.
+        if ($request->has('venues')) {
+            $package->venues()->sync($this->cleanVenueIds($request->input('venues', [])));
+        }
 
         // Only touch inclusions when the form actually submitted them, otherwise an
         // edit that doesn't include the field would silently wipe the existing list.
@@ -106,6 +122,9 @@ class PackageController extends Controller
 
         $package->update($data);
 
+        // Keep the response shape identical to index() (which eager-loads venues).
+        $package->load('venues');
+
         return response()->json($package);
     }
 
@@ -142,6 +161,23 @@ class PackageController extends Controller
         return collect(is_array($inclusions) ? $inclusions : [])
             ->filter(fn ($value) => is_string($value) && trim($value) !== '')
             ->map(fn ($value) => trim($value))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Venue ids from the checkbox list, de-duplicated and cast to int so the
+     * pivot sync receives exactly what the venue table expects.
+     *
+     * @param  mixed  $venues
+     * @return array<int, int>
+     */
+    private function cleanVenueIds($venues): array
+    {
+        return collect(is_array($venues) ? $venues : [])
+            ->filter(fn ($value) => $value !== null && $value !== '')
+            ->map(fn ($value) => (int) $value)
+            ->unique()
             ->values()
             ->all();
     }

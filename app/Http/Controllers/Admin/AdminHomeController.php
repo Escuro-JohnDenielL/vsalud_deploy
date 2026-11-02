@@ -31,8 +31,10 @@ class AdminHomeController extends Controller
             }
         });
 
-        $packages = \App\Models\Package::all();
-        return view('admin.home', compact('packages'));
+        $packages = \App\Models\Package::with('venues')->get();
+        $venues = \App\Models\Venue::ordered()->get();
+
+        return view('admin.home', compact('packages', 'venues'));
     }
 
     /**

@@ -147,8 +147,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (detailsDiv) {
                     const description = packageData.description || "No description available";
                     const truncatedDesc = description.length > 80 ? description.substring(0, 80) + "..." : description;
+                    const venueNames = (Array.isArray(packageData.venues) ? packageData.venues : [])
+                        .map(v => v.name)
+                        .filter(Boolean);
+                    const venueLabel = venueNames.length
+                        ? "Venue" + (venueNames.length > 1 ? "s" : "") + ": " + venueNames.join(", ")
+                        : "No venue linked";
                     detailsDiv.innerHTML = `
                         <p class="package-description">${truncatedDesc}</p>
+                        <p class="package-venue">${venueLabel}</p>
                         <p class="package-price">
                             <span class="package-price__label">Starting at</span>
                             <strong>${formatPrice(packageData.price)}</strong>
@@ -208,6 +215,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const image = data.image_path || PACKAGE_FALLBACK;
         const description = data.description || "No description available";
         const truncatedDesc = description.length > 80 ? description.substring(0, 80) + "..." : description;
+        const venueNames = (Array.isArray(data.venues) ? data.venues : [])
+            .map(v => v.name)
+            .filter(Boolean);
+        const venueLabel = venueNames.length
+            ? "Venue" + (venueNames.length > 1 ? "s" : "") + ": " + venueNames.join(", ")
+            : "No venue linked";
 
         wrapper.innerHTML = `
             <div class="package-card__media">
@@ -217,6 +230,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <h3>${data.name}</h3>
                 <div class="package-details">
                     <p class="package-description">${truncatedDesc}</p>
+                    <p class="package-venue">${venueLabel}</p>
                     <p class="package-price">
                         <span class="package-price__label">Starting at</span>
                         <strong>${formatPrice(data.price)}</strong>
@@ -259,6 +273,10 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("editPackageName").value = data.name;
             document.getElementById("editPackageDescription").value = data.description || "";
             document.getElementById("editPackagePrice").value = data.price;
+            const venueIds = (Array.isArray(data.venues) ? data.venues : []).map(v => String(v.id));
+            document.querySelectorAll("#editPackageVenues .edit-package-venue").forEach(cb => {
+                cb.checked = venueIds.includes(cb.value);
+            });
 
             // Prefill the inclusions editor with this package's current inclusions
             const inclusionsContainer = document.getElementById("editInclusionsContainer");
@@ -300,6 +318,10 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append("name", document.getElementById("newPackageName").value);
             formData.append("description", document.getElementById("newPackageDescription").value);
             formData.append("price", document.getElementById("newPackagePrice").value);
+
+            document.querySelectorAll("#newPackageVenues .new-package-venue:checked").forEach(cb => {
+                formData.append("venues[]", cb.value);
+            });
 
             appendInclusions(formData, "#inclusionsContainer");
             
@@ -355,6 +377,10 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append("name", document.getElementById("editPackageName").value);
             formData.append("description", document.getElementById("editPackageDescription").value);
             formData.append("price", document.getElementById("editPackagePrice").value);
+
+            document.querySelectorAll("#editPackageVenues .edit-package-venue:checked").forEach(cb => {
+                formData.append("venues[]", cb.value);
+            });
 
             appendInclusions(formData, "#editInclusionsContainer");
 

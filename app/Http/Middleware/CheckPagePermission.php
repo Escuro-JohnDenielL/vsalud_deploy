@@ -29,6 +29,15 @@ class CheckPagePermission
         // Package CRUD
         'admin.packages.destroy' => 'packages',
         'admin.packages.store'   => 'packages',
+        // Venue galleries are part of package management
+        'admin.venues'                => 'packages',
+        'admin.venues.store'          => 'packages',
+        'admin.venues.update'         => 'packages',
+        'admin.venues.destroy'        => 'packages',
+        'admin.venues.photos.store'   => 'packages',
+        'admin.venues.photos.destroy' => 'packages',
+        'admin.venues.photos.bulk-destroy' => 'packages',
+        'admin.venues.photos.cover'   => 'packages',
         // Inquiry sub-routes
         'admin.inquiry.store'  => 'inquiries',
         'admin.inquiries.update-status' => 'inquiries',

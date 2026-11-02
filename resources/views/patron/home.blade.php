@@ -8,7 +8,20 @@
 
 @section('content')
     <div class="vs-page vs-patron-packages">
-        <x-ui.page-header title="Packages" subtitle="Welcome to Villa Salud Catering! Your go-to destination for elegant events and hassle-free reservations." />
+        <x-ui.page-header title="Packages" subtitle="Welcome to Villa Salud Catering! Your go-to destination for elegant events and hassle-free reservations.">
+            <x-slot:action>
+                {{-- One gallery for the whole page: it holds every villa, and the
+                     chips inside switch between Villa I, Villa II, and the rest. --}}
+                @if (! empty($venuePayloads))
+                    <button type="button"
+                            class="venue-gallery-trigger view-venue"
+                            id="venueGalleryTrigger"
+                            data-venues='@json($venuePayloads)'>
+                        View venue pictures
+                    </button>
+                @endif
+            </x-slot:action>
+        </x-ui.page-header>
 
     <div class="packages">
         @foreach ($packages as $package)
@@ -20,6 +33,7 @@
                 :inclusions="$package->inclusions ?? []"
                 :image2Path="$package->image_2_path"
                 :image3Path="$package->image_3_path"
+                :venues="$package->venues"
             />
         @endforeach
 
@@ -40,7 +54,6 @@
                     <button type="button" class="pkg-modal__zoom" id="pkgModalZoom" aria-label="Enlarge package photo">
                         <img id="pkgModalMainImage" class="pkg-modal__main-image" src="" alt="Package image">
                     </button>
-                    <p class="pkg-modal__media-label">Actual venue &amp; setup photos</p>
                     <div class="pkg-modal__thumbs" id="pkgModalThumbs"></div>
                     <p class="pkg-modal__hint">Click a photo to enlarge. Swipe or use arrows to browse.</p>
                 </div>
@@ -49,6 +62,12 @@
                     <h2 class="pkg-modal__title" id="pkgModalTitle"></h2>
                     <p class="pkg-modal__desc" id="pkgModalDesc"></p>
                     <p class="pkg-modal__price" id="pkgModalPrice"></p>
+
+                    {{-- Which villa this package is held in (hidden when not linked). --}}
+                    <div class="pkg-modal__venue" id="pkgModalVenueInfo" hidden>
+                        <span class="pkg-modal__venue-label">Venue</span>
+                        <span class="pkg-modal__venue-name" id="pkgModalVenueName"></span>
+                    </div>
 
                     <div class="pkg-modal__inclusions">
                         <h3>Package Inclusions</h3>
@@ -63,8 +82,11 @@
         </div>
     </div>
 
-    {{-- Enlarged package photo. Opens from the main photo in the package modal. --}}
-    <div id="pkgLightbox" class="pkg-lightbox" role="dialog" aria-modal="true" aria-label="Enlarged package photo" hidden>
+    {{-- Villa gallery, shared with the Make Reservation page. --}}
+    <x-venue-gallery />
+
+    {{-- Enlarged photo. Opens from the main photo in the package or venue dialog. --}}
+    <div id="pkgLightbox" class="pkg-lightbox" role="dialog" aria-modal="true" aria-label="Enlarged photo" hidden>
         <div class="pkg-lightbox__dialog">
             <button type="button" class="pkg-lightbox__close" id="pkgLightboxClose">Close</button>
             <button type="button" class="pkg-lightbox__nav pkg-lightbox__nav--prev" id="pkgLightboxPrev" aria-label="Previous photo">&#8249;</button>
@@ -130,7 +152,7 @@
 @endsection
 
 @push('scripts')
-    @vite('resources/js/patron/home.js')
+    @vite(['resources/js/patron/home.js', 'resources/js/patron/venue-gallery.js'])
     @if (session('tracking_code'))
         <script>
             (function () {

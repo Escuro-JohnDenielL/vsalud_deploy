@@ -1,11 +1,9 @@
 /* === Packages Section ===
-   auto-fit (not auto-fill) so leftover column tracks collapse, and the tracks
-   are centered: 2 cards sit centered under the title instead of leaning to
-   one side with empty space on the other. */
+   Flex (not grid) so a short last row is centred too: with grid the leftover
+   card stayed pinned to the left edge. Cards grow/shrink between 280 and 342px. */
 .packages {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 342px));
-  grid-auto-rows: 1fr;
+  display: flex;
+  flex-wrap: wrap;
   align-items: stretch;
   justify-content: center;
   gap: 28px;
@@ -13,12 +11,14 @@
 }
 
 .packages-empty {
-  grid-column: 1 / -1;
+  flex: 1 1 100%;
   text-align: center;
   color: var(--color-text-muted);
 }
 
 .package-card {
+  flex: 1 0 280px;
+  max-width: 342px;
   background: var(--color-surface);
   border-radius: var(--radius-lg);
   text-align: center;
@@ -28,7 +28,8 @@
   transition: all var(--transition-base);
   display: flex;
   flex-direction: column;
-  height: 100%;
+  /* No height:100% here — it would opt the card out of `align-items: stretch`
+     and every card would end at its own content height (buttons not level). */
   min-width: 0;
 }
 
@@ -278,6 +279,80 @@
   font-weight: var(--vs-weight-semibold);
 }
 
+/* The package dialog has no caption under the main photo, so the strip needs
+   its own spacing. */
+.pkg-modal__media .pkg-modal__thumbs {
+  margin-top: 14px;
+}
+
+/* Which villa the package is held in (package dialog only). */
+.pkg-modal__venue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin: 14px 0 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: 10px;
+  background: rgba(0, 107, 83, 0.05);
+}
+
+.pkg-modal__venue-label {
+  font-family: var(--vs-font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--vs-color-deep-green);
+}
+
+.pkg-modal__venue-name {
+  font-family: var(--vs-font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--vs-color-deep-green);
+}
+
+/* Venue chooser inside the villa gallery (only when a package lists several). */
+.venue-gallery__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 12px;
+}
+
+.vs-layout--patron .venue-gallery__choice {
+  min-height: 34px;
+  padding: 6px 14px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.vs-layout--patron .venue-gallery__choice:hover {
+  background: rgba(0, 107, 83, 0.08);
+  color: var(--vs-color-deep-green);
+  transform: none;
+}
+
+.vs-layout--patron .venue-gallery__choice.is-active {
+  border-color: var(--vs-color-deep-green);
+  background: var(--vs-color-deep-green);
+  color: #fff;
+}
+
+.vs-layout--patron .venue-gallery__choice:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
 .pkg-modal__thumbs {
   display: flex;
   gap: 10px;
@@ -436,6 +511,18 @@
   border-color: var(--vs-button-primary-hover-border);
   background: var(--vs-button-primary-hover-bg);
   color: var(--vs-button-primary-hover-text);
+}
+
+/* "View Villa I" inside the package dialog — outlined, secondary to the booking CTA. */
+.vs-layout--patron .pkg-modal__cta--secondary {
+  border: 1px solid var(--vs-color-control-border);
+  background: transparent;
+  color: var(--vs-color-deep-green);
+}
+
+.vs-layout--patron .pkg-modal__cta--secondary:hover {
+  background: rgba(0, 107, 83, 0.08);
+  color: var(--vs-color-deep-green);
 }
 
 .pkg-modal__cta:focus-visible {
@@ -740,9 +827,8 @@
 
 /* Shared patron surface styling */
 .vs-layout--patron .packages {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 342px));
-  grid-auto-rows: 1fr;
+  display: flex;
+  flex-wrap: wrap;
   align-items: stretch;
   justify-content: center;
   gap: var(--vs-space-5);
@@ -843,7 +929,13 @@
 
 @media (max-width: 600px) {
   .vs-layout--patron .packages {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .vs-layout--patron .package-card {
+    flex: 1 1 auto;
+    max-width: 100%;
   }
 }
 
@@ -974,4 +1066,93 @@
 
   .pkg-lightbox__nav--prev { left: 10px; }
   .pkg-lightbox__nav--next { right: 10px; }
+}
+
+/* === Page-level "View venue pictures" button + villa gallery === */
+/* One outlined trigger in the page header; the dialog itself switches between
+   every villa (Villa I, Villa II, ...) with chips. */
+.vs-layout--patron .venue-gallery-trigger {
+  min-height: 40px;
+  padding: 9px 20px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: transparent;
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-control-min);
+  font-weight: var(--vs-weight-semibold);
+  cursor: pointer;
+  transition: background-color var(--vs-duration-fast), border-color var(--vs-duration-fast);
+}
+
+.vs-layout--patron .venue-gallery-trigger:hover {
+  border-color: var(--vs-color-deep-green);
+  background: rgba(0, 107, 83, 0.08);
+  color: var(--vs-color-deep-green);
+}
+
+.vs-layout--patron .venue-gallery-trigger:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+/* A villa can have many photos, so the strip scrolls sideways and shows all. */
+.pkg-modal__thumbs--venue {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+}
+
+.pkg-modal__thumbs--venue .pkg-modal__thumb {
+  flex: 0 0 auto;
+}
+
+.venue-modal__capacity {
+  margin: 0 0 10px;
+  color: var(--color-primary);
+  font-family: var(--vs-font-ui);
+  font-size: 14px;
+  font-weight: var(--vs-weight-semibold);
+}
+
+/* === Larger villa gallery ===
+   The venue photos are the point of this dialog, so it gets more width and a
+   much taller photo area than the package dialog. */
+.pkg-modal--venue .pkg-modal__dialog {
+  max-width: 1240px;
+  padding: 30px 32px 26px;
+}
+
+.pkg-modal--venue .pkg-modal__body {
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 32px;
+}
+
+.pkg-modal--venue .pkg-modal__main-image {
+  height: min(60vh, 540px);
+}
+
+.pkg-modal--venue .pkg-modal__thumb {
+  width: 104px;
+  height: 80px;
+}
+
+.pkg-modal--venue .venue-modal__capacity {
+  font-size: 15px;
+}
+
+@media (max-width: 900px) {
+  .pkg-modal--venue .pkg-modal__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pkg-modal--venue .pkg-modal__main-image {
+    height: min(46vh, 380px);
+  }
+
+  .pkg-modal--venue .pkg-modal__thumb {
+    width: 84px;
+    height: 66px;
+  }
 }
