@@ -2,7 +2,7 @@
   --error-deep-green: #004c3a;
   --error-dark-green: #006b53;
   --error-white: #ffffff;
-  --error-beige: var(--vs-color-page-bg, #f5f2df);
+  --error-beige: var(--vs-color-page-bg, #faf8ef);
   --error-text-secondary: #4b5d55;
   --error-danger-text: #743232;
   --error-danger-bg: #f6e8e6;
