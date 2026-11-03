@@ -98,6 +98,7 @@ class ReservationFormSeeder extends Seeder
                     ['label' => 'Villa II', 'value' => 'Villa II'],
                     ['label' => 'Elizabeth Hall', 'value' => 'Elizabeth Hall'],
                     ['label' => 'Private Pool', 'value' => 'Private Pool'],
+                    ['label' => 'Sabrina Hall', 'value' => 'Sabrina Hall'],
                 ],
                 'validation_rules' => ['required', 'string'],
                 'has_other_option' => true,

@@ -1,9 +1,10 @@
 // === Villa galleries ===
 // Every button with class "view-venue" carries its venue list as JSON:
 //   data-venues='[ { name, capacity, description, photos: [url, ...] }, ... ]'
-// A package can be held in several venues, so the dialog shows a chip per venue
-// and swapping the chip swaps the photos. The photos live on the venue record,
-// so the same villa upload serves every package that lists it.
+// A package can be held in several venues, so the dialog shows a row per venue
+// and swapping the row swaps the photos. The photos live on the venue record,
+// so the same villa upload serves every package that lists it. "Make
+// reservation" opens the booking form with the highlighted venue preselected.
 document.addEventListener("DOMContentLoaded", function () {
     const modal = document.getElementById("venueGallery");
     if (!modal) return;
@@ -17,6 +18,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const capacityEl = document.getElementById("venueGalleryCapacity");
     const descEl = document.getElementById("venueGalleryDesc");
     const choicesEl = document.getElementById("venueGalleryChoices");
+    const choicesLabelEl = document.getElementById("venueGalleryChoicesLabel");
+    const prevBtn = document.getElementById("venueGalleryPrev");
+    const nextBtn = document.getElementById("venueGalleryNext");
+    const reserveEl = document.getElementById("venueGalleryReserve");
+    const dismissBtn = document.getElementById("venueGalleryDismiss");
+
+    // Original booking-page URL; each venue is appended to it as ?venue=<name>.
+    const reserveBase = reserveEl ? reserveEl.getAttribute("href") : "";
 
     const DEFAULT_IMAGE = "/images/package_placeholder.svg";
     const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -54,6 +63,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     };
 
+    // The arrows only make sense when there is something to page through.
+    const syncNav = function () {
+        const show = hasPhotos && gallery.length > 1;
+        if (prevBtn) prevBtn.hidden = !show;
+        if (nextBtn) nextBtn.hidden = !show;
+    };
+
     const showImage = function (index) {
         if (!gallery.length) return;
         galleryIndex = (index + gallery.length) % gallery.length;
@@ -66,6 +82,22 @@ document.addEventListener("DOMContentLoaded", function () {
             countEl.textContent = `Photo ${galleryIndex + 1} of ${gallery.length}`;
         }
         syncThumbs();
+        syncNav();
+    };
+
+    // Carry the highlighted venue to the booking form so it opens preselected.
+    const syncReserveLink = function (venue) {
+        if (!reserveEl || !reserveBase) return;
+
+        const name = venue && venue.name ? venue.name : "";
+        if (!name) {
+            reserveEl.setAttribute("href", reserveBase);
+            return;
+        }
+
+        const url = new URL(reserveBase, window.location.origin);
+        url.searchParams.set("venue", name);
+        reserveEl.setAttribute("href", url.pathname + url.search);
     };
 
     const syncChoices = function () {
@@ -80,6 +112,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const renderChoices = function () {
         if (!choicesEl) return;
 
+        if (choicesLabelEl) choicesLabelEl.hidden = venues.length < 2;
+
         if (venues.length < 2) {
             choicesEl.hidden = true;
             choicesEl.innerHTML = "";
@@ -90,14 +124,32 @@ document.addEventListener("DOMContentLoaded", function () {
         choicesEl.innerHTML = "";
 
         venues.forEach(function (venue, index) {
-            const chip = document.createElement("button");
-            chip.type = "button";
-            chip.className = "venue-gallery__choice";
-            chip.textContent = venue.name || `Venue ${index + 1}`;
-            chip.addEventListener("click", function () {
+            const choice = document.createElement("button");
+            choice.type = "button";
+            choice.className = "venue-gallery__choice";
+
+            const nameEl = document.createElement("span");
+            nameEl.className = "venue-gallery__choice-name";
+            nameEl.textContent = venue.name || `Venue ${index + 1}`;
+            choice.appendChild(nameEl);
+
+            if (venue.capacity) {
+                const guestsEl = document.createElement("span");
+                guestsEl.className = "venue-gallery__choice-capacity";
+                guestsEl.textContent = `${Number(venue.capacity).toLocaleString("en-PH")} guests`;
+                choice.appendChild(guestsEl);
+            }
+
+            const checkEl = document.createElement("span");
+            checkEl.className = "venue-gallery__choice-check";
+            checkEl.setAttribute("aria-hidden", "true");
+            checkEl.textContent = "\u2713";
+            choice.appendChild(checkEl);
+
+            choice.addEventListener("click", function () {
                 selectVenue(index);
             });
-            choicesEl.appendChild(chip);
+            choicesEl.appendChild(choice);
         });
 
         syncChoices();
@@ -156,6 +208,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         syncChoices();
+        syncReserveLink(venue);
 
         // Linked venue with no uploads yet: explain it instead of showing an
         // empty carousel.
@@ -174,6 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 thumbsEl.innerHTML = "";
                 thumbsEl.style.display = "none";
             }
+            syncNav();
             if (descEl) {
                 const parts = [];
                 if (venue.description) parts.push(venue.description);
@@ -263,6 +317,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     if (closeBtn) closeBtn.addEventListener("click", close);
+    if (dismissBtn) dismissBtn.addEventListener("click", close);
+    if (prevBtn) prevBtn.addEventListener("click", function () {
+        showImage(galleryIndex - 1);
+    });
+    if (nextBtn) nextBtn.addEventListener("click", function () {
+        showImage(galleryIndex + 1);
+    });
 
     modal.addEventListener("click", function (event) {
         if (event.target === modal) close();

@@ -19,6 +19,7 @@ class VenueSeeder extends Seeder
             ['name' => 'Villa II', 'capacity' => 300, 'sort_order' => 2],
             ['name' => 'Elizabeth Hall', 'capacity' => null, 'sort_order' => 3],
             ['name' => 'Private Pool', 'capacity' => 50, 'sort_order' => 4],
+            ['name' => 'Sabrina Hall', 'capacity' => 200, 'sort_order' => 5],
         ];
 
         foreach ($venues as $venue) {

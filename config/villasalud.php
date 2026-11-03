@@ -90,6 +90,7 @@ return [
         'Villa II',
         'Elizabeth Hall',
         'Private Pool',
+        'Sabrina Hall',
     ],
 
 ];

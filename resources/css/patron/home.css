@@ -271,6 +271,58 @@
   background: var(--vs-color-surface-beige);
 }
 
+/* Holds the main photo plus the prev/next controls that sit over it. */
+.pkg-modal__stage {
+  position: relative;
+}
+
+/* Scoped a step tighter than the shared patron button rule in app.css, which
+   would otherwise paint these round controls as solid primary buttons. */
+.vs-layout--patron .pkg-modal__nav {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--vs-color-surface);
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-ui);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-50%);
+  transition: background-color var(--vs-duration-fast), color var(--vs-duration-fast);
+}
+
+.pkg-modal__nav[hidden] {
+  display: none;
+}
+
+.pkg-modal__nav--prev {
+  left: 16px;
+}
+
+.pkg-modal__nav--next {
+  right: 16px;
+}
+
+.vs-layout--patron .pkg-modal__nav:hover {
+  background: var(--vs-color-surface-pale-green);
+  color: var(--vs-color-deep-green);
+}
+
+.vs-layout--patron .pkg-modal__nav:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
 .pkg-modal__media-label {
   margin: 14px 0 8px;
   color: var(--vs-color-deep-green);
@@ -314,43 +366,87 @@
   color: var(--vs-color-deep-green);
 }
 
-/* Venue chooser inside the villa gallery (only when a package lists several). */
+/* Venue chooser inside the villa gallery: one row per venue, with its capacity
+   on the right and a tick on the highlighted row. Only rendered when the page
+   lists several venues. */
+.venue-gallery__label {
+  margin: 0 0 8px;
+  color: var(--vs-color-text-secondary);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-secondary-min);
+  font-weight: var(--vs-weight-semibold);
+}
+
+.venue-gallery__label[hidden],
+.venue-gallery__choices[hidden] {
+  display: none;
+}
+
 .venue-gallery__choices {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 8px;
-  margin: 10px 0 12px;
+  margin: 0 0 14px;
 }
 
 .vs-layout--patron .venue-gallery__choice {
-  min-height: 34px;
-  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 14px;
   border: 1px solid var(--vs-color-control-border);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--vs-color-deep-green);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface);
+  color: var(--vs-color-text);
   font-family: var(--vs-font-ui);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-regular);
+  line-height: var(--vs-leading-normal);
+  text-align: left;
   cursor: pointer;
   box-shadow: none;
 }
 
 .vs-layout--patron .venue-gallery__choice:hover {
-  background: rgba(0, 107, 83, 0.08);
-  color: var(--vs-color-deep-green);
+  border-color: var(--vs-color-dark-green);
+  background: var(--vs-color-surface-pale-green);
+  color: var(--vs-color-text);
   transform: none;
 }
 
 .vs-layout--patron .venue-gallery__choice.is-active {
-  border-color: var(--vs-color-deep-green);
-  background: var(--vs-color-deep-green);
-  color: #fff;
+  border-color: var(--vs-status-success-border);
+  background: var(--vs-status-success-bg);
+  color: var(--vs-color-text);
+  font-weight: var(--vs-weight-semibold);
 }
 
 .vs-layout--patron .venue-gallery__choice:focus-visible {
   outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
   outline-offset: var(--vs-focus-offset);
+}
+
+.venue-gallery__choice-name {
+  flex: 1 1 auto;
+}
+
+.venue-gallery__choice-capacity {
+  flex: 0 0 auto;
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-secondary-min);
+  font-weight: var(--vs-weight-regular);
+}
+
+.venue-gallery__choice-check {
+  display: none;
+  flex: 0 0 auto;
+  color: var(--vs-status-success-text);
+  font-weight: var(--vs-weight-bold);
+}
+
+.venue-gallery__choice.is-active .venue-gallery__choice-check {
+  display: inline;
 }
 
 .pkg-modal__thumbs {
@@ -491,6 +587,7 @@
   justify-content: center;
   padding: 10px 22px;
   border-radius: var(--vs-radius-control);
+  cursor: pointer;
   font-family: var(--vs-font-ui);
   font-size: var(--vs-text-control-min);
   font-weight: var(--vs-weight-semibold);
@@ -1142,6 +1239,14 @@
 
 .pkg-modal--venue .venue-modal__capacity {
   font-size: 15px;
+}
+
+/* Short viewports: shrink the photo so the venue list and the footer buttons
+   stay in view instead of forcing a scroll. */
+@media (max-height: 800px) {
+  .pkg-modal--venue .pkg-modal__main-image {
+    height: min(44vh, 380px);
+  }
 }
 
 @media (max-width: 900px) {

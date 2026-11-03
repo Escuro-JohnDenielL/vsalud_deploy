@@ -181,6 +181,23 @@ document.addEventListener("DOMContentLoaded", function () {
         getSnapshot: () => availabilitySnapshot,
     });
 
+    // A venue picked in the home-page gallery arrives as ?venue=<name>. This
+    // runs after the form reset above and after the change handlers are bound,
+    // so the dropdown, the "Others" toggle and the venue panel all stay in sync.
+    const requestedVenue = new URLSearchParams(window.location.search).get("venue");
+    if (requestedVenue && venueSelect) {
+        const match = Array.from(venueSelect.options).find(
+            (option) =>
+                option.value.trim().toLowerCase() ===
+                requestedVenue.trim().toLowerCase()
+        );
+
+        if (match && !match.disabled) {
+            venueSelect.value = match.value;
+            venueSelect.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+    }
+
     // Agreement Modal Logic
     const agreementModal = document.getElementById("agreementModal");
     const agreementContent = document.getElementById("agreementContent");
