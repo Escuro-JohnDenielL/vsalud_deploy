@@ -70,7 +70,6 @@
                     </div>
 
                     <div class="pkg-modal__actions">
-                        <a href="{{ route('patron.mreserve') }}" class="pkg-modal__cta pkg-modal__cta--primary">Book this package</a>
                         <button type="button" class="pkg-modal__cta pkg-modal__cta--secondary" id="pkgModalDismiss">Close</button>
                     </div>
                 </div>
