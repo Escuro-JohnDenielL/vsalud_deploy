@@ -237,29 +237,33 @@
   align-items: start;
 }
 
-.pkg-modal__close {
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  z-index: 2;
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  line-height: 1;
-  color: var(--vs-color-deep-green);
-  background: var(--vs-color-surface-beige);
-  border: 1px solid transparent;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all var(--transition-base);
+/* The package dialog mirrors the venue one, but a package carries a single
+   photo: the media column is one tall framed image, and the details column
+   holds the price, the inclusions and the actions. */
+.pkg-modal--package .pkg-modal__dialog {
+  max-width: 1060px;
+  padding: 22px;
 }
 
-.pkg-modal__close:hover {
-  color: var(--vs-color-deep-green);
-  background: var(--vs-color-pale-green);
+.pkg-modal--package .pkg-modal__body {
+  align-items: stretch;
+  gap: 34px;
+}
+
+.pkg-modal--package .pkg-modal__media,
+.pkg-modal--package .pkg-modal__zoom {
+  height: 100%;
+}
+
+.pkg-modal--package .pkg-modal__main-image {
+  height: 100%;
+  min-height: 400px;
+}
+
+.pkg-modal--package .pkg-modal__info {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 2px 0;
 }
 
 .pkg-modal__main-image {
@@ -343,7 +347,7 @@
   flex-wrap: wrap;
   align-items: baseline;
   gap: 8px;
-  margin: 14px 0 4px;
+  margin: 0 0 14px;
   padding: 10px 12px;
   border: 1px solid var(--vs-color-control-border);
   border-radius: 10px;
@@ -484,26 +488,9 @@
   border-color: var(--vs-color-deep-green);
 }
 
-.pkg-modal__thumb:focus-visible,
-.pkg-modal__thumb--more:focus-visible {
+.pkg-modal__thumb:focus-visible {
   outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
   outline-offset: var(--vs-focus-offset);
-}
-
-.pkg-modal__thumb--more {
-  display: grid;
-  place-items: center;
-  border-color: transparent;
-  background: var(--vs-color-deep-green);
-  color: var(--vs-color-white);
-  font-family: var(--vs-font-ui);
-  font-size: 16px;
-  font-weight: var(--vs-weight-bold);
-}
-
-.pkg-modal__thumb--more:hover {
-  border-color: transparent;
-  background: var(--vs-color-dark-green);
 }
 
 .pkg-modal__hint {
@@ -514,11 +501,11 @@
 }
 
 .pkg-modal__title {
-  font-family: var(--font-heading);
-  font-size: 25px;
+  font-family: var(--vs-font-display);
+  font-size: 30px;
   font-weight: 700;
-  color: var(--color-text);
-  margin: 0 0 8px;
+  color: var(--vs-color-deep-green);
+  margin: 0 0 6px;
 }
 
 .pkg-modal__desc {
@@ -528,49 +515,100 @@
   margin: 0 0 14px;
 }
 
+/* Gold price under the title; the hairline separates it from the description. */
 .pkg-modal__price {
   font-size: 22px;
   font-weight: 700;
-  color: var(--color-primary);
-  margin: 0 0 20px;
+  color: var(--vs-color-gold);
+  margin: 0 0 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 107, 83, 0.18);
+}
+
+.pkg-modal--package .pkg-modal__desc {
+  margin: 0 0 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 107, 83, 0.18);
+}
+
+.pkg-modal__inclusions {
+  /* Guarantees breathing room before the actions divider when the details
+     column is taller than the photo. */
+  margin-bottom: 18px;
 }
 
 .pkg-modal__inclusions h3 {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--vs-color-deep-green);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-semibold);
+  color: var(--vs-color-text-secondary);
   margin: 0 0 10px;
 }
 
 /* The shared heading rule makes every h3 Playfair; this one stays on the UI
    font like the mockup. */
 .vs-layout--patron .pkg-modal__inclusions h3 {
-  color: var(--vs-color-deep-green);
+  color: var(--vs-color-text-secondary);
   font-family: var(--vs-font-ui);
 }
 
 .pkg-modal__inclusions ul {
+  display: grid;
+  gap: 8px;
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
+/* One bordered row per inclusion, with the tick on the right. */
 .pkg-modal__inclusions li {
-  position: relative;
-  padding: 4px 0 4px 24px;
-  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--vs-space-3);
+  padding: 10px 14px;
+  border: 1px solid var(--vs-status-success-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-status-success-bg);
   color: var(--color-text);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-normal);
 }
 
-.pkg-modal__inclusions li::before {
-  content: "\2713";
-  position: absolute;
-  left: 0;
-  top: 3px;
-  color: var(--color-primary);
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 1.4;
+.pkg-modal__inclusion-text {
+  min-width: 0;
+}
+
+.pkg-modal__inclusion-check {
+  flex: 0 0 auto;
+  color: var(--vs-status-success-text);
+  font-weight: var(--vs-weight-bold);
+}
+
+/* Actions sit in the details column, under the inclusions. */
+.pkg-modal__actions {
+  display: flex;
+  gap: var(--vs-space-3);
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid rgba(0, 107, 83, 0.18);
+}
+
+.pkg-modal__actions .pkg-modal__cta {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-inline: 18px;
+  white-space: nowrap;
+}
+
+/* Below this the two actions no longer fit side by side without clipping. */
+@media (max-width: 920px) {
+  .pkg-modal__actions {
+    flex-wrap: wrap;
+  }
+
+  .pkg-modal__actions .pkg-modal__cta {
+    flex: 1 1 100%;
+  }
 }
 
 .pkg-modal__footer {
@@ -586,7 +624,7 @@
   align-items: center;
   justify-content: center;
   padding: 10px 22px;
-  border-radius: var(--vs-radius-control);
+  border-radius: var(--vs-radius-pill);
   cursor: pointer;
   font-family: var(--vs-font-ui);
   font-size: var(--vs-text-control-min);
@@ -709,6 +747,19 @@
 
   .pkg-modal__main-image {
     height: 210px;
+  }
+
+  .pkg-modal--package .pkg-modal__main-image {
+    height: 220px;
+    min-height: 0;
+  }
+
+  .pkg-modal__actions {
+    flex-wrap: wrap;
+  }
+
+  .pkg-modal__actions .pkg-modal__cta {
+    flex: 1 1 100%;
   }
 
   .pkg-modal__footer {
@@ -953,8 +1004,7 @@
   box-shadow: var(--vs-shadow-card);
 }
 
-.vs-layout--patron .package-card__title,
-.vs-layout--patron .pkg-modal__title {
+.vs-layout--patron .package-card__title {
   color: var(--vs-color-deep-green);
   font-family: var(--vs-font-ui);
 }
@@ -977,7 +1027,7 @@
 }
 
 .vs-layout--patron .pkg-modal__price {
-  color: var(--color-primary);
+  color: var(--vs-color-gold);
 }
 
 .vs-layout--patron .package-card .btn,
@@ -1016,7 +1066,6 @@
   font-family: var(--vs-font-ui);
 }
 
-.vs-layout--patron .pkg-modal__close:focus-visible,
 .vs-layout--patron .privacy-modal__close:focus-visible,
 .vs-layout--patron .package-card :is(button, a):focus-visible,
 .vs-layout--patron .privacy-btn:focus-visible {
@@ -1050,6 +1099,7 @@
   display: block;
   width: 100%;
   padding: 0;
+  overflow: hidden;
   border: 0;
   border-radius: var(--radius-md, 10px);
   background: var(--vs-color-surface-beige);
@@ -1117,29 +1167,7 @@
   cursor: pointer;
 }
 
-.pkg-lightbox__nav {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.45);
-  color: #fff;
-  font-size: 28px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.pkg-lightbox__nav--prev { left: 20px; }
-.pkg-lightbox__nav--next { right: 20px; }
-
-.pkg-lightbox__close:focus-visible,
-.pkg-lightbox__nav:focus-visible {
+.pkg-lightbox__close:focus-visible {
   outline: var(--vs-focus-width) solid var(--vs-focus-on-dark);
   outline-offset: var(--vs-focus-offset);
 }
@@ -1154,15 +1182,6 @@
     max-height: calc(100vh - 128px);
     max-height: calc(100dvh - 128px);
   }
-
-  .pkg-lightbox__nav {
-    width: 40px;
-    height: 40px;
-    font-size: 24px;
-  }
-
-  .pkg-lightbox__nav--prev { left: 10px; }
-  .pkg-lightbox__nav--next { right: 10px; }
 }
 
 /* === Page-level "View venue pictures" button + villa gallery === */
@@ -1207,7 +1226,7 @@
 
 .venue-modal__capacity {
   margin: 0 0 10px;
-  color: var(--color-primary);
+  color: var(--vs-color-gold);
   font-family: var(--vs-font-ui);
   font-size: 14px;
   font-weight: var(--vs-weight-semibold);

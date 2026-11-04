@@ -279,8 +279,7 @@
 
 .vs-admin-dashboard .form-control:focus-visible,
 .vs-admin-dashboard .admin-btn:focus-visible,
-.vs-admin-dashboard .btn-close:focus-visible,
-.vs-admin-dashboard .thumbnail-img:focus-visible {
+.vs-admin-dashboard .btn-close:focus-visible {
   outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
   outline-offset: var(--vs-focus-offset);
   box-shadow: none;
@@ -292,11 +291,6 @@
   max-width: 100%;
   max-height: 150px;
   object-fit: contain;
-}
-
-.vs-admin-dashboard .vs-admin-dashboard__edit-image--optional,
-.vs-admin-dashboard__edit-modal .vs-admin-dashboard__edit-image--optional {
-  max-height: 120px;
 }
 
 .vs-admin-dashboard__edit-modal #editPackageForm .modal-body {
@@ -399,18 +393,6 @@
   grid-column: 1 / -1;
 }
 
-.vs-admin-dashboard .thumbnail-img {
-  cursor: pointer;
-  border: 2px solid transparent;
-  border-radius: var(--vs-radius-control);
-  transition: border-color var(--vs-duration-fast), transform var(--vs-duration-fast);
-}
-
-.vs-admin-dashboard .thumbnail-img:hover {
-  transform: scale(1.03);
-  border-color: var(--vs-color-control-border);
-}
-
 .vs-admin-dashboard .package-inclusions ul {
   padding-left: 0;
   list-style: none;
@@ -489,13 +471,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .vs-admin-dashboard .package-card,
-  .vs-admin-dashboard .thumbnail-img {
+  .vs-admin-dashboard .package-card {
     transition: none;
   }
 
-  .vs-admin-dashboard .package-card:hover,
-  .vs-admin-dashboard .thumbnail-img:hover {
+  .vs-admin-dashboard .package-card:hover {
     transform: none;
   }
 

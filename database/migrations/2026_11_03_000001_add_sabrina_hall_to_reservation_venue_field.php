@@ -74,6 +74,11 @@ return new class extends Migration
             'updated_at' => now(),
         ]);
 
-        Cache::forget('venue_catalog:reservation');
+        try {
+            Cache::forget('venue_catalog:reservation');
+        } catch (\Throwable $e) {
+            // A cache that is not reachable must not fail the deploy; the
+            // cached list expires on its own after a few minutes.
+        }
     }
 };

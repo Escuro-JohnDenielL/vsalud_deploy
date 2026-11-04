@@ -4,26 +4,19 @@
     'price' => 0,
     'imagePath' => '',
     'inclusions' => [],
-    'image2Path' => null,
-    'image3Path' => null,
     'venues' => [],
 ])
 
 @php
     // A stored path can point at a photo that was never uploaded (or was deleted),
-    // so only keep images that really exist locally. Remote URLs are kept as-is;
-    // the modal script drops any of those that fail to load.
-    $gallery = collect([$imagePath, $image2Path, $image3Path])
-        ->filter(fn ($path) => is_string($path) && \App\Support\PublicImage::exists($path))
-        ->map(fn ($path) => \App\Support\PublicImage::url($path))
-        ->values()
-        ->all();
+    // so only keep the image when it really exists locally. Remote URLs are kept
+    // as-is; the modal script drops any of those that fail to load.
+    $photo = is_string($imagePath) && \App\Support\PublicImage::exists($imagePath)
+        ? \App\Support\PublicImage::url($imagePath)
+        : null;
 
-    $hasPhoto = ! empty($gallery);
-
-    if (! $hasPhoto) {
-        $gallery = [asset('images/package_placeholder.svg')];
-    }
+    $hasPhoto = $photo !== null;
+    $photo = $photo ?? asset('images/package_placeholder.svg');
 
     $inclusions = collect(is_array($inclusions) ? $inclusions : [])
         ->filter(fn ($item) => is_string($item) && trim($item) !== '')
@@ -37,7 +30,7 @@
         'description' => $description ?: 'No description available.',
         'price' => (float) $price,
         'inclusions' => $inclusions,
-        'images' => $gallery,
+        'image' => $photo,
     ];
 
     // Venues behind this package. The dialog only needs names/capacity for the
@@ -58,7 +51,7 @@
 
 <div class="package-card">
     <div class="package-card__media">
-        <img src="{{ $gallery[0] }}" alt="{{ $name }}" loading="lazy"
+        <img src="{{ $photo }}" alt="{{ $name }}" loading="lazy"
              @if (! $hasPhoto) class="is-fallback" @endif
              onerror="this.onerror=null;this.src='{{ asset('images/package_placeholder.svg') }}';this.classList.add('is-fallback');">
     </div>

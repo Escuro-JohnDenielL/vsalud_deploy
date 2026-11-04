@@ -12,8 +12,6 @@
 --}}
 <div id="venueGallery" class="pkg-modal pkg-modal--venue" role="dialog" aria-modal="true" aria-labelledby="venueGalleryTitle">
     <div class="pkg-modal__dialog">
-        <button type="button" class="pkg-modal__close" id="venueGalleryClose" aria-label="Close venue gallery">&times;</button>
-
         <div class="pkg-modal__body">
             <div class="pkg-modal__media">
                 {{-- No zoom overlay: a thumbnail or arrow swaps this photo. --}}

@@ -31,8 +31,6 @@
                 :price="$package->price"
                 :imagePath="$package->image_path"
                 :inclusions="$package->inclusions ?? []"
-                :image2Path="$package->image_2_path"
-                :image3Path="$package->image_3_path"
                 :venues="$package->venues"
             />
         @endforeach
@@ -44,24 +42,21 @@
     </div>
     </div>
 
-    {{-- View Package Modal --}}
-    <div id="packageModal" class="pkg-modal" role="dialog" aria-modal="true" aria-labelledby="pkgModalTitle">
+    {{-- View Package Modal. A package carries one photo, so the media column is
+         a single framed image and the details column holds the actions. --}}
+    <div id="packageModal" class="pkg-modal pkg-modal--package" role="dialog" aria-modal="true" aria-labelledby="pkgModalTitle">
         <div class="pkg-modal__dialog">
-            <button type="button" class="pkg-modal__close" id="pkgModalClose" aria-label="Close package details">&times;</button>
-
             <div class="pkg-modal__body">
                 <div class="pkg-modal__media">
                     <button type="button" class="pkg-modal__zoom" id="pkgModalZoom" aria-label="Enlarge package photo">
                         <img id="pkgModalMainImage" class="pkg-modal__main-image" src="" alt="Package image">
                     </button>
-                    <div class="pkg-modal__thumbs" id="pkgModalThumbs"></div>
-                    <p class="pkg-modal__hint">Click a photo to enlarge. Swipe or use arrows to browse.</p>
                 </div>
 
                 <div class="pkg-modal__info">
                     <h2 class="pkg-modal__title" id="pkgModalTitle"></h2>
-                    <p class="pkg-modal__desc" id="pkgModalDesc"></p>
                     <p class="pkg-modal__price" id="pkgModalPrice"></p>
+                    <p class="pkg-modal__desc" id="pkgModalDesc"></p>
 
                     {{-- Which villa this package is held in (hidden when not linked). --}}
                     <div class="pkg-modal__venue" id="pkgModalVenueInfo" hidden>
@@ -70,14 +65,15 @@
                     </div>
 
                     <div class="pkg-modal__inclusions">
-                        <h3>Package Inclusions</h3>
+                        <h3>Package inclusions</h3>
                         <ul id="pkgModalInclusions"></ul>
                     </div>
-                </div>
-            </div>
 
-            <div class="pkg-modal__footer">
-                <a href="{{ route('patron.mreserve') }}" class="pkg-modal__cta pkg-modal__cta--primary">Book this package</a>
+                    <div class="pkg-modal__actions">
+                        <a href="{{ route('patron.mreserve') }}" class="pkg-modal__cta pkg-modal__cta--primary">Book this package</a>
+                        <button type="button" class="pkg-modal__cta pkg-modal__cta--secondary" id="pkgModalDismiss">Close</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -85,13 +81,11 @@
     {{-- Villa gallery, shared with the Make Reservation page. --}}
     <x-venue-gallery />
 
-    {{-- Enlarged photo. Opens from the main photo in the package or venue dialog. --}}
+    {{-- Enlarged photo. Opens from the main photo in the package dialog. --}}
     <div id="pkgLightbox" class="pkg-lightbox" role="dialog" aria-modal="true" aria-label="Enlarged photo" hidden>
         <div class="pkg-lightbox__dialog">
             <button type="button" class="pkg-lightbox__close" id="pkgLightboxClose">Close</button>
-            <button type="button" class="pkg-lightbox__nav pkg-lightbox__nav--prev" id="pkgLightboxPrev" aria-label="Previous photo">&#8249;</button>
             <img id="pkgLightboxImage" class="pkg-lightbox__image" src="" alt="">
-            <button type="button" class="pkg-lightbox__nav pkg-lightbox__nav--next" id="pkgLightboxNext" aria-label="Next photo">&#8250;</button>
         </div>
     </div>
     <div id="privacyModal" class="privacy-overlay" role="dialog" aria-modal="true" aria-labelledby="privacyTitle" data-decline-url="{{ url('/') }}">

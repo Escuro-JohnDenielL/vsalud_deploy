@@ -17,8 +17,6 @@ class Package extends Model
         'description',
         'price',
         'image_path',
-        'image_2_path', 
-        'image_3_path',
         'inclusions',
     ];
 

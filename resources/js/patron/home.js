@@ -5,20 +5,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const modal = document.getElementById("packageModal");
     if (!modal) return;
 
-    const closeBtn = document.getElementById("pkgModalClose");
+    const closeBtn = document.getElementById("pkgModalDismiss");
     const titleEl = document.getElementById("pkgModalTitle");
     const descEl = document.getElementById("pkgModalDesc");
     const priceEl = document.getElementById("pkgModalPrice");
     const mainImage = document.getElementById("pkgModalMainImage");
-    const thumbsEl = document.getElementById("pkgModalThumbs");
-    const hintEl = modal.querySelector(".pkg-modal__hint");
     const inclusionsEl = document.getElementById("pkgModalInclusions");
     const zoomBtn = document.getElementById("pkgModalZoom");
     const lightbox = document.getElementById("pkgLightbox");
     const lightboxImage = document.getElementById("pkgLightboxImage");
     const lightboxClose = document.getElementById("pkgLightboxClose");
-    const lightboxPrev = document.getElementById("pkgLightboxPrev");
-    const lightboxNext = document.getElementById("pkgLightboxNext");
 
     // Venue row inside the package dialog. The villa gallery is opened from the
     // page-level "View venue pictures" button (venue-gallery.js owns it), so this
@@ -27,8 +23,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const pkgVenueName = document.getElementById("pkgModalVenueName");
 
     const DEFAULT_IMAGE = "/images/package_placeholder.svg";
-    // Three boxed thumbs are always visible; extra photos collapse into a +N tile.
-    const MAX_THUMBS = 3;
     const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
     const formatPrice = function (price) {
@@ -38,61 +32,30 @@ document.addEventListener("DOMContentLoaded", function () {
         })}`;
     };
 
-    let gallery = [];
-    let galleryIndex = 0;
+    let currentImage = DEFAULT_IMAGE;
     let packageName = "Package";
     let lightboxReturnFocus = null;
     let modalReturnFocus = null;
 
-    // Some package rows can still point at photos that were never uploaded.
-    // Probe each URL once and drop the ones that fail, so the gallery never
-    // cycles into a broken/empty slide (and arrows only show when there is
-    // genuinely more than one photo).
-    const imageStatus = new Map();
+    // A package row can still point at a photo that was never uploaded, so probe
+    // the URL once and fall back to the branded placeholder when it fails.
     const probeImage = function (src) {
-        if (imageStatus.has(src)) return Promise.resolve(imageStatus.get(src));
         return new Promise(function (resolve) {
             const probe = new Image();
-            probe.onload = function () {
-                imageStatus.set(src, true);
-                resolve(true);
-            };
-            probe.onerror = function () {
-                imageStatus.set(src, false);
-                resolve(false);
-            };
+            probe.onload = function () { resolve(true); };
+            probe.onerror = function () { resolve(false); };
             probe.src = src;
         });
     };
 
-    const syncThumbs = function () {
-        const thumbs = Array.from(thumbsEl.querySelectorAll(".pkg-modal__thumb"));
-        thumbs.forEach(function (thumb, index) {
-            const isMore = thumb.classList.contains("pkg-modal__thumb--more");
-            const active = isMore ? galleryIndex >= MAX_THUMBS : galleryIndex === index;
-            thumb.classList.toggle("is-active", active);
-        });
-    };
-
-    const showGalleryImage = function (index) {
-        if (!gallery.length) return;
-        galleryIndex = (index + gallery.length) % gallery.length;
-        mainImage.src = gallery[galleryIndex];
-        mainImage.alt = `${packageName} photo ${galleryIndex + 1} of ${gallery.length}`;
-        syncThumbs();
-    };
-
     const updateLightbox = function () {
         if (!lightboxImage) return;
-        lightboxImage.src = gallery[galleryIndex];
-        lightboxImage.alt = `${packageName} enlarged photo ${galleryIndex + 1} of ${gallery.length}`;
-        const multiple = gallery.length > 1;
-        if (lightboxPrev) lightboxPrev.hidden = !multiple;
-        if (lightboxNext) lightboxNext.hidden = !multiple;
+        lightboxImage.src = currentImage;
+        lightboxImage.alt = `${packageName} enlarged photo`;
     };
 
     const openLightbox = function () {
-        if (!lightbox || !gallery.length) return;
+        if (!lightbox) return;
         lightboxReturnFocus = document.activeElement;
         lightbox.hidden = false;
         updateLightbox();
@@ -128,6 +91,23 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     };
 
+    // One bordered row per inclusion, with the tick on the right.
+    const addInclusionRow = function (text) {
+        const li = document.createElement("li");
+
+        const label = document.createElement("span");
+        label.className = "pkg-modal__inclusion-text";
+        label.textContent = text;
+
+        const check = document.createElement("span");
+        check.className = "pkg-modal__inclusion-check";
+        check.setAttribute("aria-hidden", "true");
+        check.textContent = "\u2713";
+
+        li.append(label, check);
+        inclusionsEl.appendChild(li);
+    };
+
     document.querySelectorAll(".view-package").forEach(function (button) {
         button.addEventListener("click", function () {
             let data = null;
@@ -138,15 +118,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             if (!data) return;
 
-            const images = (Array.isArray(data.images) ? data.images : [])
-                .filter(function (src) {
-                    return typeof src === "string" && src.trim() !== "";
-                });
-            if (!images.length) images.push(DEFAULT_IMAGE);
-
             packageName = data.name || "Package";
 
-            titleEl.textContent = data.name || "Package";
+            titleEl.textContent = packageName;
             descEl.textContent = data.description || "No description available.";
             priceEl.textContent = formatPrice(data.price);
 
@@ -165,84 +139,30 @@ document.addEventListener("DOMContentLoaded", function () {
                 pkgVenueName.textContent = hasVenue ? `${names}${only}` : "";
             }
 
-            mainImage.onerror = function () {
-                this.onerror = null;
-                this.src = DEFAULT_IMAGE;
-            };
-
             inclusionsEl.innerHTML = "";
             const inclusions = Array.isArray(data.inclusions) ? data.inclusions : [];
             if (inclusions.length > 0) {
-                inclusions.forEach(function (item) {
-                    const li = document.createElement("li");
-                    li.textContent = item;
-                    inclusionsEl.appendChild(li);
-                });
+                inclusions.forEach(addInclusionRow);
             } else {
-                const li = document.createElement("li");
-                li.textContent = "No inclusions specified.";
-                inclusionsEl.appendChild(li);
+                addInclusionRow("No inclusions specified");
             }
 
-            // Keep only the photos that really load. A package with a single real
-            // photo ends up with a one-item gallery: no thumbnails, no arrows, and
-            // the counter reads "photo 1 of 1" instead of cycling into 404s.
-            Promise.all(images.map(probeImage)).then(function (loaded) {
-                const usable = images.filter(function (src, index) {
-                    return loaded[index];
-                });
+            // A package carries a single photo. Probe it once so a broken path
+            // falls back to the placeholder instead of an empty frame.
+            const source = typeof data.image === "string" && data.image.trim() !== ""
+                ? data.image.trim()
+                : DEFAULT_IMAGE;
 
-                gallery = usable.length ? usable : [DEFAULT_IMAGE];
-                showGalleryImage(0);
+            mainImage.onerror = function () {
+                this.onerror = null;
+                this.src = DEFAULT_IMAGE;
+                currentImage = DEFAULT_IMAGE;
+            };
 
-                if (hintEl) {
-                    hintEl.textContent = gallery.length > 1
-                        ? "Click a photo to enlarge. Swipe or use arrows to browse."
-                        : "Click the photo to enlarge it.";
-                }
-
-                // Thumbnails (only shown when the package has more than one photo).
-                // Three boxed squares stay visible; extras collapse into a +N tile.
-                thumbsEl.innerHTML = "";
-                if (gallery.length > 1) {
-                    const shown = Math.min(gallery.length, MAX_THUMBS);
-                    for (let index = 0; index < shown; index += 1) {
-                        const thumb = document.createElement("button");
-                        thumb.type = "button";
-                        thumb.className = "pkg-modal__thumb";
-                        thumb.setAttribute("aria-label", `${packageName} photo ${index + 1} of ${gallery.length}`);
-
-                        const image = document.createElement("img");
-                        image.src = gallery[index];
-                        image.alt = `${packageName} photo ${index + 1}`;
-                        image.onerror = function () {
-                            thumb.remove();
-                        };
-                        thumb.appendChild(image);
-
-                        thumb.addEventListener("click", function () {
-                            showGalleryImage(index);
-                            openLightbox();
-                        });
-                        thumbsEl.appendChild(thumb);
-                    }
-
-                    if (gallery.length > MAX_THUMBS) {
-                        const more = document.createElement("button");
-                        more.type = "button";
-                        more.className = "pkg-modal__thumb pkg-modal__thumb--more";
-                        more.textContent = `+${gallery.length - MAX_THUMBS}`;
-                        more.setAttribute("aria-label", `View ${gallery.length - MAX_THUMBS} more photos`);
-                        more.addEventListener("click", function () {
-                            showGalleryImage(MAX_THUMBS);
-                            openLightbox();
-                        });
-                        thumbsEl.appendChild(more);
-                    }
-
-                    syncThumbs();
-                }
-
+            probeImage(source).then(function (loaded) {
+                currentImage = loaded ? source : DEFAULT_IMAGE;
+                mainImage.src = currentImage;
+                mainImage.alt = `${packageName} photo`;
                 openModal();
             });
         });
@@ -254,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (event.target === modal) closeModal();
     });
 
-    // Enlarged photo. Click the main photo, then Escape, Close, arrows or swipe.
+    // Enlarged photo. Click the main photo, then Escape, Close or a backdrop click.
     if (zoomBtn) zoomBtn.addEventListener("click", openLightbox);
     if (lightboxImage) {
         lightboxImage.onerror = function () {
@@ -263,45 +183,16 @@ document.addEventListener("DOMContentLoaded", function () {
         };
     }
     if (lightboxClose) lightboxClose.addEventListener("click", function () { closeLightbox(true); });
-    if (lightboxPrev) lightboxPrev.addEventListener("click", function () {
-        showGalleryImage(galleryIndex - 1);
-        updateLightbox();
-    });
-    if (lightboxNext) lightboxNext.addEventListener("click", function () {
-        showGalleryImage(galleryIndex + 1);
-        updateLightbox();
-    });
 
     lightbox?.addEventListener("click", function (event) {
         if (event.target === lightbox) closeLightbox(true);
     });
-
-    let touchStartX = null;
-    lightbox?.addEventListener("touchstart", function (event) {
-        touchStartX = event.changedTouches[0]?.clientX ?? null;
-    }, { passive: true });
-    lightbox?.addEventListener("touchend", function (event) {
-        if (touchStartX === null || gallery.length < 2) return;
-        const delta = (event.changedTouches[0]?.clientX ?? touchStartX) - touchStartX;
-        touchStartX = null;
-        if (Math.abs(delta) < 40) return;
-        showGalleryImage(galleryIndex + (delta < 0 ? 1 : -1));
-        updateLightbox();
-    }, { passive: true });
 
     document.addEventListener("keydown", function (event) {
         if (lightbox && !lightbox.hidden) {
             if (event.key === "Escape") {
                 event.preventDefault();
                 closeLightbox(true);
-            } else if (event.key === "ArrowLeft" && gallery.length > 1) {
-                event.preventDefault();
-                showGalleryImage(galleryIndex - 1);
-                updateLightbox();
-            } else if (event.key === "ArrowRight" && gallery.length > 1) {
-                event.preventDefault();
-                showGalleryImage(galleryIndex + 1);
-                updateLightbox();
             }
             return;
         }

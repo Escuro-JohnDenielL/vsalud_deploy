@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const modal = document.getElementById("venueGallery");
     if (!modal) return;
 
-    const closeBtn = document.getElementById("venueGalleryClose");
     const mainImage = document.getElementById("venueGalleryImage");
     const countEl = document.getElementById("venueGalleryCount");
     const thumbsEl = document.getElementById("venueGalleryThumbs");
@@ -160,7 +159,7 @@ document.addEventListener("DOMContentLoaded", function () {
         window.vsModalPrepareOpen(modal);
         modal.style.display = "flex";
         document.body.style.overflow = "hidden";
-        closeBtn?.focus();
+        dismissBtn?.focus();
     };
 
     const close = function () {
@@ -316,7 +315,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    if (closeBtn) closeBtn.addEventListener("click", close);
     if (dismissBtn) dismissBtn.addEventListener("click", close);
     if (prevBtn) prevBtn.addEventListener("click", function () {
         showImage(galleryIndex - 1);

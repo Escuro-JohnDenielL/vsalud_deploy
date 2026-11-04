@@ -73,17 +73,6 @@
                 <div class="row">
                     <div class="col-md-6">
                         <img id="modalMainImage" src="" alt="Package Image" class="img-fluid rounded mb-3">
-                        <div class="row">
-                            <div class="col-4">
-                                <img id="modalImg1" src="" alt="Image 1" class="img-fluid rounded thumbnail-img">
-                            </div>
-                            <div class="col-4">
-                                <img id="modalImg2" src="" alt="Image 2" class="img-fluid rounded thumbnail-img">
-                            </div>
-                            <div class="col-4">
-                                <img id="modalImg3" src="" alt="Image 3" class="img-fluid rounded thumbnail-img">
-                            </div>
-                        </div>
                     </div>
                     <div class="col-md-6">
                         <h4 id="modalTitle">Package Name</h4>
@@ -153,19 +142,9 @@
                             <img id="currentMainImage" src="" alt="Current Image" class="img-fluid rounded mb-2 vs-admin-dashboard__edit-image">
                             <input type="file" id="editPackageImage" class="form-control" accept="image/*">
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Image 2 (Optional)</label>
-                            <img id="currentImage2" src="" alt="Current Image 2" class="img-fluid rounded mb-2 vs-admin-dashboard__edit-image vs-admin-dashboard__edit-image--optional">
-                            <input type="file" id="editPackageImage2" class="form-control" accept="image/*">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Image 3 (Optional)</label>
-                            <img id="currentImage3" src="" alt="Current Image 3" class="img-fluid rounded mb-2 vs-admin-dashboard__edit-image vs-admin-dashboard__edit-image--optional">
-                            <input type="file" id="editPackageImage3" class="form-control" accept="image/*">
-                        </div>
                         <p class="vs-admin-dashboard__field-note">Use a landscape photo without text, at least 1200px wide.</p>
                     </div>
-                    <p class="text-muted mb-0 vs-admin-dashboard__edit-note"><small>Leave a photo field empty to keep the package's current photo. Only the slots where you pick a new file are replaced.</small></p>
+                    <p class="text-muted mb-0 vs-admin-dashboard__edit-note"><small>Leave the photo field empty to keep the package's current photo.</small></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="admin-btn admin-btn-ghost" data-bs-dismiss="modal">Cancel</button>
@@ -217,14 +196,6 @@
                         <div class="mb-3">
                             <label class="form-label" for="newPackageImage">Package Image</label>
                             <input type="file" name="image" id="newPackageImage" class="form-control" accept="image/*" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="newPackageImage2">Image 2 (Optional)</label>
-                            <input type="file" name="image2" id="newPackageImage2" class="form-control" accept="image/*">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="newPackageImage3">Image 3 (Optional)</label>
-                            <input type="file" name="image3" id="newPackageImage3" class="form-control" accept="image/*">
                         </div>
                         <p class="vs-admin-dashboard__field-note">Use a landscape photo without text, at least 1200px wide.</p>
                     </div>

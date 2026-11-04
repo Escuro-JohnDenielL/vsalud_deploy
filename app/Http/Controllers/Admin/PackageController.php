@@ -21,8 +21,6 @@ class PackageController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'image2' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'image3' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'inclusions' => 'nullable|array',
             // Blank inclusion rows are submitted as "" and Laravel's
             // ConvertEmptyStringsToNull middleware turns those into null,
@@ -33,16 +31,12 @@ class PackageController extends Controller
         ]);
 
         $imagePath = $request->file('image')->store('packages', 'public');
-        $image2Path = $request->file('image2')?->store('packages', 'public');
-        $image3Path = $request->file('image3')?->store('packages', 'public');
 
         $package = Package::create([
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
             'image_path' => "/storage/$imagePath",
-            'image_2_path' => $image2Path ? "/storage/$image2Path" : null,
-            'image_3_path' => $image3Path ? "/storage/$image3Path" : null,
             'inclusions' => $this->cleanInclusions($request->input('inclusions', [])),
         ]);
 
@@ -67,8 +61,6 @@ class PackageController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'image2' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'image3' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'inclusions' => 'nullable|array',
             // See store(): blank rows arrive as null, so allow null here too.
             'inclusions.*' => 'nullable|string|max:255',
@@ -100,26 +92,6 @@ class PackageController extends Controller
             $data['image_path'] = "/storage/$imagePath";
         }
 
-        if ($request->hasFile('image2')) {
-            // Delete old image
-            if ($package->image_2_path) {
-                $oldPath = str_replace('/storage/', '', $package->image_2_path);
-                Storage::disk('public')->delete($oldPath);
-            }
-            $image2Path = $request->file('image2')->store('packages', 'public');
-            $data['image_2_path'] = "/storage/$image2Path";
-        }
-
-        if ($request->hasFile('image3')) {
-            // Delete old image
-            if ($package->image_3_path) {
-                $oldPath = str_replace('/storage/', '', $package->image_3_path);
-                Storage::disk('public')->delete($oldPath);
-            }
-            $image3Path = $request->file('image3')->store('packages', 'public');
-            $data['image_3_path'] = "/storage/$image3Path";
-        }
-
         $package->update($data);
 
         // Keep the response shape identical to index() (which eager-loads venues).
@@ -130,17 +102,9 @@ class PackageController extends Controller
 
     public function destroy(Package $package)
     {
-        // Delete associated images
+        // Delete the package photo
         if ($package->image_path) {
             $imagePath = str_replace('/storage/', '', $package->image_path);
-            Storage::disk('public')->delete($imagePath);
-        }
-        if ($package->image_2_path) {
-            $imagePath = str_replace('/storage/', '', $package->image_2_path);
-            Storage::disk('public')->delete($imagePath);
-        }
-        if ($package->image_3_path) {
-            $imagePath = str_replace('/storage/', '', $package->image_3_path);
             Storage::disk('public')->delete($imagePath);
         }
 

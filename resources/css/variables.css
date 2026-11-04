@@ -16,6 +16,8 @@
   --vs-color-surface-beige: #f5f2df;
   --vs-color-surface-pale-green: #e8f5ec;
   --vs-color-control-border: #006b53;
+  /* Gold for package pricing in the patron package dialog (large bold text). */
+  --vs-color-gold: #a9822b;
 
   /* Muted semantic state contrast ratios (text/background; border/background):
      success 8.52:1; 3.93:1 | warning 7.68:1; 3.93:1

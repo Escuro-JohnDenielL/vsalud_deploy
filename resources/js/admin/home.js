@@ -174,16 +174,9 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("modalDescription").textContent = data.description || "No description available";
         document.getElementById("modalPrice").textContent = formatPrice(data.price);
 
-        const images = [
-            data.image_path || PACKAGE_FALLBACK,
-            data.image_2_path || data.image_path || PACKAGE_FALLBACK,
-            data.image_3_path || data.image_path || PACKAGE_FALLBACK
-        ];
-        
-        document.getElementById("modalMainImage").src = images[0];
-        document.getElementById("modalImg1").src = images[0];
-        document.getElementById("modalImg2").src = images[1];
-        document.getElementById("modalImg3").src = images[2];
+        const image = data.image_path || PACKAGE_FALLBACK;
+
+        document.getElementById("modalMainImage").src = image;
 
         const inclusionsList = document.getElementById("modalInclusions");
         inclusionsList.innerHTML = "";
@@ -294,8 +287,6 @@ document.addEventListener("DOMContentLoaded", function () {
             resetEditImageInputs();
 
             applyImagePreview("currentMainImage", data.image_path);
-            applyImagePreview("currentImage2", data.image_2_path);
-            applyImagePreview("currentImage3", data.image_3_path);
 
             editPackageModal.show();
         });
@@ -329,10 +320,6 @@ document.addEventListener("DOMContentLoaded", function () {
             if (image && image.files[0]) {
                 formData.append("image", image.files[0]);
             }
-
-            // Image 2 and 3 were collected by the modal but never submitted.
-            appendOptionalImage(formData, "newPackageImage2", "image2");
-            appendOptionalImage(formData, "newPackageImage3", "image3");
 
             fetch("/admin/packages", {
                 method: "POST",
@@ -389,16 +376,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 formData.append("image", image.files[0]);
             }
 
-            const image2 = document.getElementById("editPackageImage2");
-            if (image2 && image2.files[0]) {
-                formData.append("image2", image2.files[0]);
-            }
-
-            const image3 = document.getElementById("editPackageImage3");
-            if (image3 && image3.files[0]) {
-                formData.append("image3", image3.files[0]);
-            }
-
             fetch(`/admin/packages/${id}`, {
                 method: "POST",
                 headers: {
@@ -427,38 +404,12 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Setup thumbnail handlers for package modal
-    setupThumbnailHandlers();
-
-    function setupThumbnailHandlers() {
-        const img1 = document.getElementById("modalImg1");
-        const img2 = document.getElementById("modalImg2");
-        const img3 = document.getElementById("modalImg3");
-        const mainImg = document.getElementById("modalMainImage");
-
-        if (img1 && mainImg) {
-            img1.addEventListener("click", function () {
-                mainImg.src = this.src;
-            });
-        }
-        if (img2 && mainImg) {
-            img2.addEventListener("click", function () {
-                mainImg.src = this.src;
-            });
-        }
-        if (img3 && mainImg) {
-            img3.addEventListener("click", function () {
-                mainImg.src = this.src;
-            });
-        }
-    }
-
     // Swap any package photo that fails to load for the branded placeholder.
     // Scoped to package images so unrelated page images are left alone.
     document.addEventListener('error', function(e) {
         const img = e.target;
         if (!img || img.tagName !== 'IMG') return;
-        const PACKAGE_IMAGE_IDS = ['modalMainImage', 'modalImg1', 'modalImg2', 'modalImg3', 'currentMainImage', 'currentImage2', 'currentImage3'];
+        const PACKAGE_IMAGE_IDS = ['modalMainImage', 'currentMainImage'];
         const isPackageImage = img.hasAttribute('data-package-image') || PACKAGE_IMAGE_IDS.indexOf(img.id) !== -1;
         if (!isPackageImage || img.dataset.fallbackApplied === 'true') return;
         img.dataset.fallbackApplied = 'true';
@@ -467,9 +418,9 @@ document.addEventListener("DOMContentLoaded", function () {
         img.classList.add('is-fallback');
     }, true);
 
-    // Clear every file input in the shared edit modal.
+    // Clear the file input in the shared edit modal.
     function resetEditImageInputs() {
-        ["editPackageImage", "editPackageImage2", "editPackageImage3"].forEach(id => {
+        ["editPackageImage"].forEach(id => {
             const input = document.getElementById(id);
             if (input) input.value = "";
         });
@@ -486,15 +437,6 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             img.removeAttribute("src");
             img.style.display = "none";
-        }
-    }
-
-    // Only attach an optional image when the admin actually picked one, so an
-    // empty field means "keep the current photo" rather than "clear it".
-    function appendOptionalImage(formData, inputId, fieldName) {
-        const input = document.getElementById(inputId);
-        if (input && input.files && input.files[0]) {
-            formData.append(fieldName, input.files[0]);
         }
     }
 
