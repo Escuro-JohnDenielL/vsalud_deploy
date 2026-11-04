@@ -260,7 +260,14 @@ class VenueOccupancyService
      *
      * @param  int  $dailyCap  maximum active events for the date
      */
-    public function guardBooking(?string $venue, ?string $date, ?string $period, int $dailyCap, Closure $create): string
+    public function guardBooking(
+        ?string $venue,
+        ?string $date,
+        ?string $period,
+        int $dailyCap,
+        Closure $create,
+        ?int $ignoreReservationId = null
+    ): string
     {
         $cap = max(1, $dailyCap);
         $dateKey = trim((string) $date);
@@ -287,7 +294,7 @@ class VenueOccupancyService
         }
 
         try {
-            $result = DB::transaction(function () use ($venue, $dateKey, $period, $cap, $create) {
+            $result = DB::transaction(function () use ($venue, $dateKey, $period, $cap, $create, $ignoreReservationId) {
                 if ($this->activeCountForDate($dateKey) >= $cap) {
                     return self::RESULT_CAPACITY;
                 }
@@ -295,7 +302,7 @@ class VenueOccupancyService
                 $targetPeriod = VenueSlot::normalizePeriod($period);
 
                 if (VenueSlot::isTrackable($venue) && $targetPeriod !== null
-                    && $this->isOccupied((string) $venue, $dateKey, $targetPeriod)) {
+                    && $this->isOccupied((string) $venue, $dateKey, $targetPeriod, $ignoreReservationId)) {
                     return self::RESULT_CONFLICT;
                 }
 

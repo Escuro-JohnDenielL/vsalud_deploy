@@ -3,16 +3,20 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\ActivityLog;
 use App\Models\Payment;
 use App\Models\Reservation;
+use App\Services\AiReplyService;
+use App\Services\VenueOccupancyService;
+use App\Support\AvailabilityScale;
+use App\Support\BookingRules;
 use App\Support\Csv;
 use App\Support\PaymentAmount;
+use App\Support\VenueSlot;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use App\Services\AiReplyService;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReservationController extends Controller
@@ -269,11 +273,61 @@ class ReservationController extends Controller
 
         try {
             $reservation = Reservation::findOrFail($id);
-            $reservation->status = $request->input('status');
-            $reservation->save();
+            $newStatus = $request->input('status');
+
+            if ($newStatus === 'active' && $reservation->status !== 'active') {
+                $period = VenueSlot::periodFromFormData($reservation->form_data)
+                    ?? VenueSlot::periodFromTimeText($reservation->time);
+                $date = $reservation->date
+                    ? \Illuminate\Support\Carbon::parse($reservation->date)->format('Y-m-d')
+                    : null;
+
+                if ($date !== null && VenueSlot::isTrackable($reservation->venue) && $period === null) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => VenueSlot::PERIOD_REQUIRED_MESSAGE,
+                    ], 422);
+                }
+
+                $outcome = app(VenueOccupancyService::class)->guardBooking(
+                    $reservation->venue,
+                    $date,
+                    $period,
+                    AvailabilityScale::cap(),
+                    function () use ($reservation) {
+                        $reservation->status = 'active';
+                        $reservation->save();
+                    },
+                    (int) $reservation->reserve_id
+                );
+
+                if ($outcome === VenueOccupancyService::RESULT_CAPACITY) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => BookingRules::FULL_MESSAGE,
+                    ], 409);
+                }
+
+                if ($outcome === VenueOccupancyService::RESULT_CONFLICT) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => VenueSlot::CONFLICT_MESSAGE,
+                    ], 409);
+                }
+
+                if ($outcome === VenueOccupancyService::RESULT_BUSY) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => VenueSlot::TRY_AGAIN_MESSAGE,
+                    ], 503);
+                }
+            } else {
+                $reservation->status = $newStatus;
+                $reservation->save();
+            }
 
             // Also update the linked inquiry status if cancelling
-            if ($request->input('status') === 'cancelled' && $reservation->inquiry) {
+            if ($newStatus === 'cancelled' && $reservation->inquiry) {
                 $inquiry = $reservation->inquiry;
                 $inquiry->status = 'Cancelled';
                 $inquiry->save();
