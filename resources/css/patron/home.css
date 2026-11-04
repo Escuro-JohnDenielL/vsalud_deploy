@@ -335,12 +335,6 @@
   font-weight: var(--vs-weight-semibold);
 }
 
-/* The package dialog has no caption under the main photo, so the strip needs
-   its own spacing. */
-.pkg-modal__media .pkg-modal__thumbs {
-  margin-top: 14px;
-}
-
 /* Which villa the package is held in (package dialog only). */
 .pkg-modal__venue {
   display: flex;
@@ -493,13 +487,6 @@
   outline-offset: var(--vs-focus-offset);
 }
 
-.pkg-modal__hint {
-  margin: 10px 0 0;
-  color: var(--color-text-muted);
-  font-size: var(--vs-text-secondary-min);
-  line-height: var(--vs-leading-normal);
-}
-
 .pkg-modal__title {
   font-family: var(--vs-font-display);
   font-size: 30px;
@@ -609,13 +596,6 @@
   .pkg-modal__actions .pkg-modal__cta {
     flex: 1 1 100%;
   }
-}
-
-.pkg-modal__footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--vs-space-3);
-  flex-wrap: wrap;
 }
 
 .pkg-modal__cta {
@@ -760,10 +740,6 @@
 
   .pkg-modal__actions .pkg-modal__cta {
     flex: 1 1 100%;
-  }
-
-  .pkg-modal__footer {
-    justify-content: stretch;
   }
 
   .pkg-modal__cta {
@@ -1212,12 +1188,33 @@
   outline-offset: var(--vs-focus-offset);
 }
 
-/* A villa can have many photos, so the strip scrolls sideways and shows all. */
+/* A villa can have many photos, so the strip scrolls sideways and shows all.
+   The extra bottom padding keeps the scrollbar below the thumbnails instead of
+   cutting across them. (Safari uses the ::-webkit-* rules, Chrome and Firefox
+   the standard properties.) */
 .pkg-modal__thumbs--venue {
   flex-wrap: nowrap;
   overflow-x: auto;
-  padding-bottom: 6px;
+  padding-bottom: 10px;
   scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.6) transparent;
+}
+
+.pkg-modal__thumbs--venue::-webkit-scrollbar {
+  height: 6px;
+}
+
+.pkg-modal__thumbs--venue::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pkg-modal__thumbs--venue::-webkit-scrollbar-thumb {
+  border-radius: var(--vs-radius-pill);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.pkg-modal__thumbs--venue::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .pkg-modal__thumbs--venue .pkg-modal__thumb {
@@ -1232,40 +1229,92 @@
   font-weight: var(--vs-weight-semibold);
 }
 
-/* === Larger villa gallery ===
-   The venue photos are the point of this dialog, so it gets more width and a
-   much taller photo area than the package dialog. */
+/* === Villa gallery: photo-first dialog ===
+   The photos are the point of this dialog, so the image fills the left pane
+   edge to edge and the counter plus the thumbnails hover over its bottom-left
+   corner, the way the villa mockup shows it. */
 .pkg-modal--venue .pkg-modal__dialog {
-  max-width: 1240px;
-  padding: 30px 32px 26px;
+  max-width: 1180px;
+  padding: 0;
+  overflow: hidden;
 }
 
 .pkg-modal--venue .pkg-modal__body {
-  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-  gap: 32px;
+  flex: 1 1 auto;
+  min-height: 0;
+  grid-template-columns: minmax(0, 1.62fr) minmax(0, 1fr);
+  gap: 0;
+  align-items: stretch;
+}
+
+.pkg-modal--venue .pkg-modal__media {
+  position: relative;
+  min-height: min(580px, 72vh);
+  background: var(--vs-color-deep-green);
+}
+
+.pkg-modal--venue .pkg-modal__stage {
+  position: absolute;
+  inset: 0;
 }
 
 .pkg-modal--venue .pkg-modal__main-image {
-  height: min(60vh, 540px);
+  height: 100%;
+  border-radius: 0;
+}
+
+.pkg-modal--venue .pkg-modal__info {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 32px 26px;
+  overflow-y: auto;
+}
+
+/* Bottom scrim keeps the white counter and thumbnails readable on any photo. */
+.venue-gallery__overlay {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: grid;
+  gap: 10px;
+  padding: 72px 22px 18px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.68), rgba(0, 0, 0, 0));
+  pointer-events: none;
+}
+
+.venue-gallery__overlay > * {
+  pointer-events: auto;
+}
+
+.pkg-modal--venue .pkg-modal__media-label {
+  margin: 0;
+  color: #fff;
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-semibold);
 }
 
 .pkg-modal--venue .pkg-modal__thumb {
-  width: 104px;
-  height: 80px;
+  width: 74px;
+  height: 58px;
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.16);
   /* The villa dialog has no zoom overlay: a thumbnail just swaps the big photo. */
   cursor: pointer;
+}
+
+.pkg-modal--venue .pkg-modal__thumb:hover,
+.pkg-modal--venue .pkg-modal__thumb.is-active {
+  border-color: #fff;
 }
 
 .pkg-modal--venue .venue-modal__capacity {
   font-size: 15px;
 }
 
-/* Short viewports: shrink the photo so the venue list and the footer buttons
-   stay in view instead of forcing a scroll. */
-@media (max-height: 800px) {
-  .pkg-modal--venue .pkg-modal__main-image {
-    height: min(44vh, 380px);
-  }
+/* No hairline above the villa actions: they sit alone at the bottom. */
+.pkg-modal--venue .pkg-modal__actions--venue {
+  border-top: 0;
+  justify-content: flex-end;
 }
 
 @media (max-width: 900px) {
@@ -1273,12 +1322,20 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .pkg-modal--venue .pkg-modal__main-image {
-    height: min(46vh, 380px);
+  .pkg-modal--venue .pkg-modal__media {
+    min-height: min(300px, 42vh);
+  }
+
+  .pkg-modal--venue .pkg-modal__info {
+    padding: 20px;
+  }
+
+  .venue-gallery__overlay {
+    padding: 56px 16px 14px;
   }
 
   .pkg-modal--venue .pkg-modal__thumb {
-    width: 84px;
-    height: 66px;
+    width: 60px;
+    height: 48px;
   }
 }

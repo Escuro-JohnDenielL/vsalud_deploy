@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const mainImage = document.getElementById("venueGalleryImage");
     const countEl = document.getElementById("venueGalleryCount");
     const thumbsEl = document.getElementById("venueGalleryThumbs");
-    const hintEl = document.getElementById("venueGalleryHint");
     const titleEl = document.getElementById("venueGalleryTitle");
     const capacityEl = document.getElementById("venueGalleryCapacity");
     const descEl = document.getElementById("venueGalleryDesc");
@@ -221,7 +220,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 mainImage.alt = `${venue.name || "Venue"} placeholder`;
             }
             if (countEl) countEl.textContent = "";
-            if (hintEl) hintEl.hidden = true;
             if (thumbsEl) {
                 thumbsEl.innerHTML = "";
                 thumbsEl.style.display = "none";
@@ -265,14 +263,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     thumbsEl.appendChild(thumb);
                 });
                 thumbsEl.style.display = hasPhotos ? "" : "none";
-            }
-
-            if (hintEl) {
-                // There is no zoom overlay in this dialog: a thumbnail simply
-                // swaps the main photo, so the hint only appears when there is
-                // more than one photo to choose from.
-                hintEl.hidden = !hasPhotos || finalPhotos.length < 2;
-                hintEl.textContent = "Click a photo below to show it here.";
             }
 
             showImage(0);
