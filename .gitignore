@@ -41,3 +41,6 @@ SECURITY.md
 
 # Tests stay local only
 /tests
+docs/MAJOR_SPRINT_PROPOSAL.md
+docs/SPRINT_1_IMPORT.csv
+docs/SPRINT_2_IMPORT.csv

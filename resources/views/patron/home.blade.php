@@ -8,20 +8,21 @@
 
 @section('content')
     <div class="vs-page vs-patron-packages">
-        <x-ui.page-header title="Packages" subtitle="Welcome to Villa Salud Catering! Your go-to destination for elegant events and hassle-free reservations.">
-            <x-slot:action>
-                {{-- One gallery for the whole page: it holds every villa, and the
-                     chips inside switch between Villa I, Villa II, and the rest. --}}
-                @if (! empty($venuePayloads))
-                    <button type="button"
-                            class="venue-gallery-trigger view-venue"
-                            id="venueGalleryTrigger"
-                            data-venues='@json($venuePayloads)'>
-                        View venue pictures
-                    </button>
-                @endif
-            </x-slot:action>
-        </x-ui.page-header>
+        <x-ui.page-header title="Packages" subtitle="Welcome to Villa Salud Catering! Your go-to destination for elegant events and hassle-free reservations."></x-ui.page-header>
+
+        {{-- One gallery for the whole page: it holds every villa, and the chips
+             inside switch between Villa I, Villa II, and the rest. The trigger
+             sits under the description instead of the header action slot. --}}
+        @if (! empty($venuePayloads))
+            <div class="packages-venue-pics">
+                <button type="button"
+                        class="venue-gallery-trigger view-venue"
+                        id="venueGalleryTrigger"
+                        data-venues='@json($venuePayloads)'>
+                    View venue pictures
+                </button>
+            </div>
+        @endif
 
     <div class="packages">
         @foreach ($packages as $package)

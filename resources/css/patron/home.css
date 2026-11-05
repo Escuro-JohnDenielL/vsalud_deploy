@@ -1163,8 +1163,23 @@
 }
 
 /* === Page-level "View venue pictures" button + villa gallery === */
-/* One outlined trigger in the page header; the dialog itself switches between
-   every villa (Villa I, Villa II, ...) with chips. */
+/* One outlined trigger under the page description; the dialog itself switches
+   between every villa (Villa I, Villa II, ...) with chips. It reads as part of
+   the description, so the shared header gap and the grid's top padding shrink
+   to matching 12px gaps above and below the button. */
+.vs-layout--patron .vs-patron-packages .vs-page-header {
+  margin-bottom: var(--vs-space-3);
+}
+
+.vs-layout--patron .packages-venue-pics {
+  display: flex;
+  justify-content: center;
+}
+
+.vs-layout--patron .packages-venue-pics + .packages {
+  padding-top: var(--vs-space-3);
+}
+
 .vs-layout--patron .venue-gallery-trigger {
   min-height: 40px;
   padding: 9px 20px;
