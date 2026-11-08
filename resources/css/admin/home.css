@@ -36,9 +36,12 @@
   font-size: var(--vs-text-body-min);
 }
 
-/* "Add New Package" action sits below the package grid, centered. */
+/* "Add New Package" and "Manage venue photos" actions sit below the package
+   grid, centered, with breathing room between them. */
 .vs-admin-dashboard .vs-admin-dashboard__add-package {
   display: flex;
+  flex-wrap: wrap;
+  gap: var(--vs-space-3);
   justify-content: center;
   margin: var(--vs-space-5) 0 var(--vs-space-2);
 }
