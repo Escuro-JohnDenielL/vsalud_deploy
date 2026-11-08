@@ -158,6 +158,64 @@
   color: var(--vs-status-danger-text);
 }
 
+.venue-price-estimate {
+  margin: 20px 0;
+  padding: 16px;
+  border: 1px solid var(--color-border-light, #dce5df);
+  border-radius: 12px;
+  background: #f7fbf8;
+}
+
+.venue-price-estimate h3 {
+  margin: 0 0 10px;
+  color: var(--color-primary, #006b53);
+  font-size: 16px;
+}
+
+.venue-price-estimate__option {
+  margin-bottom: 10px;
+}
+
+.venue-price-estimate__option[hidden] {
+  display: none;
+}
+
+.venue-price-estimate__option label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.venue-price-estimate__option select {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid var(--color-border-light, #d1d5db);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+}
+
+.venue-price-estimate__summary {
+  margin: 0;
+  color: var(--color-primary, #006b53);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.venue-price-estimate__error {
+  margin: 0 0 8px;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+.venue-price-estimate__note {
+  margin: 6px 0 0;
+  color: var(--color-text-muted, #6b7280);
+  font-size: 12px;
+}
+
 /* Narrow phones: the panel stacks under the calendar and each venue takes a
    full row with the status on its own line. */
 @media (max-width: 480px) {

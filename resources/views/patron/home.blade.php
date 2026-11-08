@@ -29,7 +29,6 @@
             <x-package-card
                 :name="$package->name"
                 :description="$package->description"
-                :price="$package->price"
                 :imagePath="$package->image_path"
                 :inclusions="$package->inclusions ?? []"
                 :venues="$package->venues"
@@ -56,7 +55,12 @@
 
                 <div class="pkg-modal__info">
                     <h2 class="pkg-modal__title" id="pkgModalTitle"></h2>
-                    <p class="pkg-modal__price" id="pkgModalPrice"></p>
+                    <section class="pkg-modal__pricing" aria-labelledby="pkgModalPricingTitle">
+                        <h3 id="pkgModalPricingTitle">Venue rental estimate</h3>
+                        <p id="pkgModalPriceRange" class="pkg-modal__pricing-range"></p>
+                        <p class="pkg-modal__pricing-disclaimer">Venue rental only; the final quote is confirmed by Villa Salud.</p>
+                        <ul id="pkgModalVenueRates" class="pkg-modal__venue-rates"></ul>
+                    </section>
                     <p class="pkg-modal__desc" id="pkgModalDesc"></p>
 
                     {{-- Which villa this package is held in (hidden when not linked). --}}

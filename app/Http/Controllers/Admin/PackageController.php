@@ -19,7 +19,6 @@ class PackageController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'inclusions' => 'nullable|array',
             // Blank inclusion rows are submitted as "" and Laravel's
@@ -35,7 +34,9 @@ class PackageController extends Controller
         $package = Package::create([
             'name' => $request->name,
             'description' => $request->description,
-            'price' => $request->price,
+            // packages.price is retained for legacy database compatibility;
+            // rental pricing now belongs to venue_rates.
+            'price' => 0,
             'image_path' => "/storage/$imagePath",
             'inclusions' => $this->cleanInclusions($request->input('inclusions', [])),
         ]);
@@ -59,7 +60,6 @@ class PackageController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'inclusions' => 'nullable|array',
             // See store(): blank rows arrive as null, so allow null here too.
@@ -68,7 +68,7 @@ class PackageController extends Controller
             'venues.*' => 'integer|exists:venues,id',
         ]);
 
-        $data = $request->only(['name', 'description', 'price']);
+        $data = $request->only(['name', 'description']);
 
         // Only sync when the form submitted the field, so an edit that omits it
         // does not silently unlink every venue.

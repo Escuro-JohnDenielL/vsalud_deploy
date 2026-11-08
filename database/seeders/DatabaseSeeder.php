@@ -33,6 +33,9 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        $this->call(ReservationFormSeeder::class);
+        $this->call([
+            VenueSeeder::class,
+            ReservationFormSeeder::class,
+        ]);
     }
 }

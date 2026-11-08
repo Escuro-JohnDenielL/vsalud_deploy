@@ -6,6 +6,8 @@
     'errors' => null,    // Validation errors
     'submitLabel' => 'Submit',
     'showCalendar' => false,  // Whether to show the calendar sidebar
+    'venues' => collect(),
+    'showVenuePriceEstimate' => false,
 ])
 
 @php
@@ -27,6 +29,21 @@
             $isOthers = isset($values[$fieldName]) && $values[$fieldName] === 'Others';
             $otherFieldName = $fieldName . '_other';
             $otherValue = $values[$otherFieldName] ?? old($otherFieldName, '');
+            $fieldOptions = $field->options;
+            if ($fieldName === 'venue' && $venues->isNotEmpty()) {
+                $fieldOptions = $venues->map(fn ($venue) => [
+                    'label' => $venue->name,
+                    'value' => $venue->name,
+                ])->all();
+            }
+            $fieldOptions = collect($fieldOptions ?? [])
+                ->map(fn ($option) => is_array($option)
+                    ? [
+                        'label' => $option['label'] ?? $option['value'] ?? '',
+                        'value' => $option['value'] ?? '',
+                    ]
+                    : ['label' => (string) $option, 'value' => (string) $option])
+                ->all();
         @endphp
 
         <div class="form-group {{ $hasError ? 'has-error' : '' }}"
@@ -74,8 +91,8 @@
                         class="form-control"
                         data-has-other="{{ $field->has_other_option ? 'true' : 'false' }}">
                     <option value="">{{ $field->placeholder ?? 'Select...' }}</option>
-                    @if($field->options)
-                        @foreach($field->options as $opt)
+                    @if($fieldOptions)
+                        @foreach($fieldOptions as $opt)
                             <option value="{{ $opt['value'] }}" {{ $fieldValue === $opt['value'] ? 'selected' : '' }}>
                                 {{ $opt['label'] }}
                             </option>
@@ -159,6 +176,10 @@
             @endif
         </div>
     @endforeach
+
+    @if($showVenuePriceEstimate)
+        <x-venue-price-estimate :venues="$venues" :selected-rate-id="old('venue_rate_id')" :errors="$errors" />
+    @endif
 
     <div class="form-group">
         <button type="submit" class="btn-submit">{{ $submitLabel }}</button>

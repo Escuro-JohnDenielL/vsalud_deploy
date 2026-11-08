@@ -12,7 +12,7 @@
         <x-ui.page-info id="packagesInfo" title="How packages work">
             <ol>
                 <li>Select Add New Package to create a package.</li>
-                <li>Enter the package name, description, and price.</li>
+                <li>Enter the package name, description, photo, and inclusions. Venue rental pricing is managed separately on the Venues page.</li>
                 <li>Upload the main photo. Two more photos are optional.</li>
                 <li>Photos must be JPEG, PNG, or GIF, and no larger than 2 MB each.</li>
                 <li>Pick the venue this package is held in. Its photo gallery is managed on the Venues page and is shown to patrons from the package card.</li>
@@ -77,7 +77,7 @@
                     <div class="col-md-6">
                         <h4 id="modalTitle">Package Name</h4>
                         <p id="modalDescription">Package description will appear here...</p>
-                        <h5 class="text-success" id="modalPrice">₱0.00</h5>
+                        <p class="text-muted">Venue rental pricing depends on the selected venue and time slot. It is estimated on the reservation form.</p>
                         <div class="package-inclusions mt-3">
                             <h6>Package Inclusions:</h6>
                             <ul id="modalInclusions"></ul>
@@ -116,10 +116,6 @@
                             <label class="form-label">Package Inclusions</label>
                             <div id="editInclusionsContainer"></div>
                             <button type="button" id="editAddInclusion" class="admin-btn admin-btn-ghost admin-btn-sm">+ Add Inclusion</button>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Price</label>
-                            <input type="number" id="editPackagePrice" class="form-control" step="0.01" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Venues used by this package</label>
@@ -168,10 +164,6 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Package Name</label>
                             <input type="text" name="name" id="newPackageName" class="form-control" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Price</label>
-                            <input type="number" name="price" id="newPackagePrice" class="form-control" step="0.01" required>
                         </div>
                     </div>
                     <div class="mb-3">

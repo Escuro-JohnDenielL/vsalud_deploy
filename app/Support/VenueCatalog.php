@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\FormField;
+use App\Models\Venue;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -23,6 +24,14 @@ final class VenueCatalog
     public static function names(): array
     {
         $names = Cache::remember(self::CACHE_KEY, self::CACHE_SECONDS, function () {
+            $activeVenues = Venue::active()->ordered()->pluck('name')->all();
+            if ($activeVenues !== []) {
+                return array_values(array_unique(array_filter(
+                    $activeVenues,
+                    fn (string $name) => VenueSlot::isTrackable($name)
+                )));
+            }
+
             $field = FormField::query()
                 ->where('name', 'venue')
                 ->whereHas('form', fn ($query) => $query->where('slug', 'reservation'))
@@ -43,6 +52,11 @@ final class VenueCatalog
         });
 
         return is_array($names) && $names !== [] ? $names : self::fallback();
+    }
+
+    public static function clearCache(): void
+    {
+        Cache::forget(self::CACHE_KEY);
     }
 
     /**

@@ -8,7 +8,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const closeBtn = document.getElementById("pkgModalDismiss");
     const titleEl = document.getElementById("pkgModalTitle");
     const descEl = document.getElementById("pkgModalDesc");
-    const priceEl = document.getElementById("pkgModalPrice");
+    const priceRangeEl = document.getElementById("pkgModalPriceRange");
+    const venueRatesEl = document.getElementById("pkgModalVenueRates");
     const mainImage = document.getElementById("pkgModalMainImage");
     const inclusionsEl = document.getElementById("pkgModalInclusions");
     const zoomBtn = document.getElementById("pkgModalZoom");
@@ -22,15 +23,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const pkgVenueInfo = document.getElementById("pkgModalVenueInfo");
     const pkgVenueName = document.getElementById("pkgModalVenueName");
 
-    const DEFAULT_IMAGE = "/images/package_placeholder.svg";
-    const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
-    const formatPrice = function (price) {
-        return `₱${Number(price || 0).toLocaleString("en-PH", {
-            minimumFractionDigits: 2,
+    const formatPrice = function (amount) {
+        return `₱${Number(amount).toLocaleString("en-PH", {
+            minimumFractionDigits: Number.isInteger(Number(amount)) ? 0 : 2,
             maximumFractionDigits: 2,
         })}`;
     };
+
+    const DEFAULT_IMAGE = "/images/package_placeholder.svg";
+    const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
     let currentImage = DEFAULT_IMAGE;
     let packageName = "Package";
@@ -122,8 +123,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
             titleEl.textContent = packageName;
             descEl.textContent = data.description || "No description available.";
-            priceEl.textContent = formatPrice(data.price);
-
             // Which villa(s) this package is held in.
             const venues = Array.isArray(data.venues) ? data.venues : [];
             const hasVenue = venues.length > 0;
@@ -137,6 +136,49 @@ document.addEventListener("DOMContentLoaded", function () {
                     ? ` · Good for up to ${Number(venues[0].capacity).toLocaleString("en-PH")} guests`
                     : "";
                 pkgVenueName.textContent = hasVenue ? `${names}${only}` : "";
+            }
+
+            const prices = venues.flatMap((venue) => (
+                Array.isArray(venue.rates) ? venue.rates.map((rate) => Number(rate.price)) : []
+            )).filter(Number.isFinite);
+
+            if (prices.length > 0) {
+                const minimum = Math.min(...prices);
+                const maximum = Math.max(...prices);
+                priceRangeEl.textContent = minimum === maximum
+                    ? formatPrice(minimum)
+                    : `${formatPrice(minimum)}–${formatPrice(maximum)}`;
+            } else {
+                priceRangeEl.textContent = "Contact us for venue pricing";
+            }
+
+            venueRatesEl.replaceChildren();
+            venues.forEach((venue) => {
+                const item = document.createElement("li");
+                const name = document.createElement("strong");
+                name.textContent = venue.name || "Venue";
+                item.appendChild(name);
+
+                if (!Array.isArray(venue.rates) || venue.rates.length === 0) {
+                    item.append(" — Contact us for pricing");
+                } else {
+                    const rateList = document.createElement("ul");
+                    venue.rates.forEach((rate) => {
+                        const rateItem = document.createElement("li");
+                        const period = rate.period ? ` (${rate.period})` : "";
+                        rateItem.textContent = `${rate.label}${period}: ${formatPrice(rate.price)}`;
+                        rateList.appendChild(rateItem);
+                    });
+                    item.appendChild(rateList);
+                }
+
+                venueRatesEl.appendChild(item);
+            });
+
+            if (!hasVenue) {
+                const item = document.createElement("li");
+                item.textContent = "Contact us to discuss available venues and pricing.";
+                venueRatesEl.appendChild(item);
             }
 
             inclusionsEl.innerHTML = "";

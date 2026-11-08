@@ -10,13 +10,15 @@
 <div class="vs-page vs-admin-venues">
     <x-ui.page-header
         title="Venues"
-        subtitle="Manage the villa galleries that packages show on the patron Packages page.">
+        subtitle="Manage venue galleries and the rates used to estimate reservation costs.">
         <x-slot:action>
             <x-ui.page-info id="venuesInfo" title="How venue galleries work">
                 <ol>
                     <li>Each venue owns one photo gallery. It is uploaded here, once.</li>
                     <li>Every package bound to the venue shows the same gallery — no second upload.</li>
                     <li>Bind a package to a venue on the Packages page (Add or Edit, "Venue" field).</li>
+                    <li>Manage venue pricing options here. AM/PM rates are matched to the time slot selected on the reservation form.</li>
+                    <li>Rate changes affect new estimates only. Existing booking estimates keep their saved price snapshot.</li>
                     <li>The first photo is the cover. Use "Make cover" on another photo to change it.</li>
                     <li>A venue that still has packages cannot be deleted; move those packages first.</li>
                 </ol>
@@ -177,6 +179,66 @@
                             <label for="venueDescription{{ $venue->id }}">Description</label>
                             <textarea id="venueDescription{{ $venue->id }}" name="description" rows="2" maxlength="2000">{{ $venue->description }}</textarea>
                         </div>
+                        <input type="hidden" name="rates_submitted" value="1">
+                        <div class="vs-admin-venues__rates" data-venue-rates>
+                            <div class="vs-admin-venues__rates-head">
+                                <div>
+                                    <h3>Venue pricing options</h3>
+                                    <p>Leave period blank for an option that applies to any time. Set AM or PM for slot-specific rates.</p>
+                                </div>
+                                <button type="button" class="admin-btn admin-btn-ghost admin-btn-sm" data-add-venue-rate>
+                                    Add pricing option
+                                </button>
+                            </div>
+                            <div class="vs-admin-venues__rate-rows" data-venue-rate-rows>
+                                @foreach ($venue->rates as $index => $rate)
+                                    <div class="vs-admin-venues__rate-row" data-venue-rate-row>
+                                        <label>
+                                            <span>Option name</span>
+                                            <input type="text" name="rates[{{ $index }}][label]" value="{{ $rate->label }}" maxlength="100" required>
+                                        </label>
+                                        <label>
+                                            <span>Period</span>
+                                            <select name="rates[{{ $index }}][period]">
+                                                <option value="" @selected($rate->period === null)>Any</option>
+                                                <option value="AM" @selected($rate->period === 'AM')>AM</option>
+                                                <option value="PM" @selected($rate->period === 'PM')>PM</option>
+                                            </select>
+                                        </label>
+                                        <label>
+                                            <span>Price (₱)</span>
+                                            <input type="number" name="rates[{{ $index }}][price]" value="{{ $rate->price }}" min="0" max="99999999.99" step="0.01" required>
+                                        </label>
+                                        <button type="button" class="admin-btn admin-btn-danger admin-btn-sm" data-remove-venue-rate>
+                                            Remove
+                                        </button>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <template data-venue-rate-template>
+                                <div class="vs-admin-venues__rate-row" data-venue-rate-row>
+                                    <label>
+                                        <span>Option name</span>
+                                        <input type="text" name="rates[__INDEX__][label]" maxlength="100" required>
+                                    </label>
+                                    <label>
+                                        <span>Period</span>
+                                        <select name="rates[__INDEX__][period]">
+                                            <option value="">Any</option>
+                                            <option value="AM">AM</option>
+                                            <option value="PM">PM</option>
+                                        </select>
+                                    </label>
+                                    <label>
+                                        <span>Price (₱)</span>
+                                        <input type="number" name="rates[__INDEX__][price]" min="0" max="99999999.99" step="0.01" required>
+                                    </label>
+                                    <button type="button" class="admin-btn admin-btn-danger admin-btn-sm" data-remove-venue-rate>
+                                        Remove
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
                         <div class="vs-admin-venues__actions">
                             <label class="vs-admin-venues__check">
                                 <input type="checkbox" name="is_active" value="1" @checked($venue->is_active)>
@@ -199,6 +261,27 @@
     // Bulk photo selection: the "Select all" box, the running count, and the
     // "Delete selected" button all reflect the checkboxes of one venue card.
     document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll("[data-venue-rates]").forEach(function (editor) {
+            const rows = editor.querySelector("[data-venue-rate-rows]");
+            const template = editor.querySelector("[data-venue-rate-template]");
+            let nextIndex = rows.querySelectorAll("[data-venue-rate-row]").length;
+
+            editor.querySelector("[data-add-venue-rate]")?.addEventListener("click", function () {
+                const row = template.content.firstElementChild.cloneNode(true);
+                row.querySelectorAll("[name]").forEach(function (input) {
+                    input.name = input.name.replace(/__INDEX__/g, String(nextIndex));
+                });
+                nextIndex += 1;
+                rows.appendChild(row);
+                row.querySelector('input[type="text"]')?.focus();
+            });
+
+            rows.addEventListener("click", function (event) {
+                const removeButton = event.target.closest("[data-remove-venue-rate]");
+                if (removeButton) removeButton.closest("[data-venue-rate-row]")?.remove();
+            });
+        });
+
         document.querySelectorAll("[data-venue-select-all]").forEach(function (master) {
             const venueId = master.dataset.venueSelectAll;
             const boxes = Array.from(document.querySelectorAll('[data-venue-photo="' + venueId + '"]'));

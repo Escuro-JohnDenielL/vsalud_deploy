@@ -209,6 +209,10 @@ class InquiryController extends Controller
 
     private function createReservationRow(Inquiry $inquiry): \App\Models\Reservation
     {
+        $estimate = is_array($inquiry->form_data)
+            ? ($inquiry->form_data['venue_price_estimate'] ?? null)
+            : null;
+
         return \App\Models\Reservation::create([
             'inquiry_id'         => $inquiry->inquiry_id,
             'patron_id'          => $inquiry->patron_id,
@@ -219,6 +223,7 @@ class InquiryController extends Controller
             'theme_motif'        => $inquiry->theme_motif,
             'message'            => $inquiry->message,
             'status'             => 'active',
+            'total_amount'       => is_array($estimate) ? ($estimate['amount'] ?? null) : null,
             'form_data'          => $inquiry->form_data, // carry forward dynamic data
         ]);
     }

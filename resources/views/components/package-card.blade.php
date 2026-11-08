@@ -1,7 +1,6 @@
 @props([
     'name' => '',
     'description' => '',
-    'price' => 0,
     'imagePath' => '',
     'inclusions' => [],
     'venues' => [],
@@ -28,7 +27,6 @@
     $payload = [
         'name' => $name,
         'description' => $description ?: 'No description available.',
-        'price' => (float) $price,
         'inclusions' => $inclusions,
         'image' => $photo,
     ];
@@ -42,11 +40,41 @@
             'id' => $venue->id,
             'name' => $venue->name,
             'capacity' => $venue->capacity,
+            'rates' => collect($venue->rates ?? [])
+                ->map(fn ($rate) => [
+                    'label' => $rate->label,
+                    'period' => $rate->period,
+                    'price' => (float) $rate->price,
+                ])
+                ->values()
+                ->all(),
         ])
         ->values()
         ->all();
 
     $payload['venues'] = $venuePayloads;
+
+    $allPrices = collect($venuePayloads)
+        ->flatMap(fn ($venue) => collect($venue['rates'])->pluck('price'))
+        ->map(fn ($price) => (float) $price)
+        ->values();
+    $minimumPrice = $allPrices->isNotEmpty() ? $allPrices->min() : null;
+    $maximumPrice = $allPrices->isNotEmpty() ? $allPrices->max() : null;
+    $unpricedVenues = collect($venuePayloads)
+        ->filter(fn ($venue) => empty($venue['rates']))
+        ->pluck('name')
+        ->values()
+        ->all();
+
+    $formatPrice = fn ($price) => '₱' . number_format(
+        (float) $price,
+        floor((float) $price) === (float) $price ? 0 : 2
+    );
+    $priceRange = $minimumPrice === null
+        ? null
+        : ($minimumPrice === $maximumPrice
+            ? $formatPrice($minimumPrice)
+            : $formatPrice($minimumPrice) . '–' . $formatPrice($maximumPrice));
 @endphp
 
 <div class="package-card">
@@ -69,10 +97,17 @@
                 @endforeach
             </ul>
         @endif
-        <p class="package-card__price">
-            <span class="package-card__price-label">Starting at</span>
-            <strong>&#8369;{{ number_format($price, 2) }}</strong>
-        </p>
+        <div class="package-card__pricing">
+            <span class="package-card__pricing-label">Venue rental estimate</span>
+            @if ($priceRange !== null)
+                <strong>{{ $priceRange }}</strong>
+                @if (! empty($unpricedVenues))
+                    <span class="package-card__pricing-note">Contact us for rates at {{ implode(', ', $unpricedVenues) }}.</span>
+                @endif
+            @else
+                <strong class="package-card__pricing-unavailable">Contact us for venue pricing</strong>
+            @endif
+        </div>
         <button type="button" class="package-card__view view-package" data-package='@json($payload)'>
             View Package
         </button>

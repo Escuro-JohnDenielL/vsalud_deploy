@@ -95,17 +95,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     id: packageName.toLowerCase().replace(/\s+/g, '_'),
                     name: packageName,
                     description: "This is a sample package description. Edit this package to add more details.",
-                    price: 0,
                     image_path: card.querySelector('img').src,
                     inclusions: ["Professional coordination", "Event setup and decoration", "Photography coverage", "Catering service"]
                 };
             }
             attachPackageEventListeners(card);
         });
-    }
-
-    function formatPrice(price) {
-        return `₱${parseFloat(price).toLocaleString("en-PH", { minimumFractionDigits: 2 })}`;
     }
 
     function showSuccessModal(message) {
@@ -156,10 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     detailsDiv.innerHTML = `
                         <p class="package-description">${truncatedDesc}</p>
                         <p class="package-venue">${venueLabel}</p>
-                        <p class="package-price">
-                            <span class="package-price__label">Starting at</span>
-                            <strong>${formatPrice(packageData.price)}</strong>
-                        </p>
+                        <p class="package-pricing-note">Venue pricing is managed on the Venues page.</p>
                     `;
                 }
             }
@@ -172,8 +164,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.getElementById("modalTitle").textContent = data.name;
         document.getElementById("modalDescription").textContent = data.description || "No description available";
-        document.getElementById("modalPrice").textContent = formatPrice(data.price);
-
         const image = data.image_path || PACKAGE_FALLBACK;
 
         document.getElementById("modalMainImage").src = image;
@@ -224,10 +214,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div class="package-details">
                     <p class="package-description">${truncatedDesc}</p>
                     <p class="package-venue">${venueLabel}</p>
-                    <p class="package-price">
-                        <span class="package-price__label">Starting at</span>
-                        <strong>${formatPrice(data.price)}</strong>
-                    </p>
+                    <p class="package-pricing-note">Venue pricing is managed on the Venues page.</p>
                 </div>
                 <div class="vs-admin-dashboard__card-actions">
                     <div class="vs-row-actions">
@@ -265,7 +252,6 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("editPackageId").value = data.id;
             document.getElementById("editPackageName").value = data.name;
             document.getElementById("editPackageDescription").value = data.description || "";
-            document.getElementById("editPackagePrice").value = data.price;
             const venueIds = (Array.isArray(data.venues) ? data.venues : []).map(v => String(v.id));
             document.querySelectorAll("#editPackageVenues .edit-package-venue").forEach(cb => {
                 cb.checked = venueIds.includes(cb.value);
@@ -308,7 +294,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const formData = new FormData();
             formData.append("name", document.getElementById("newPackageName").value);
             formData.append("description", document.getElementById("newPackageDescription").value);
-            formData.append("price", document.getElementById("newPackagePrice").value);
 
             document.querySelectorAll("#newPackageVenues .new-package-venue:checked").forEach(cb => {
                 formData.append("venues[]", cb.value);
@@ -363,7 +348,6 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append("_method", "PUT");
             formData.append("name", document.getElementById("editPackageName").value);
             formData.append("description", document.getElementById("editPackageDescription").value);
-            formData.append("price", document.getElementById("editPackagePrice").value);
 
             document.querySelectorAll("#editPackageVenues .edit-package-venue:checked").forEach(cb => {
                 formData.append("venues[]", cb.value);

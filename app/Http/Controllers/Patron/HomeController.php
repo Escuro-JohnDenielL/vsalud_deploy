@@ -10,8 +10,8 @@ class HomeController extends Controller
 {
     public function index()
     {
-        // Package cards only need venue names for the "Venue" row in the dialog.
-        $packages = Package::with('venues')->get();
+        // Package cards show the rental range for each linked venue.
+        $packages = Package::with('venues.rates')->get();
 
         // One page-level gallery shows every villa (Villa I, Villa II, ...);
         // the dialog chips switch between them.

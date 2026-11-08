@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Venue;
 use App\Models\VenuePhoto;
+use App\Support\VenueCatalog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -19,7 +21,7 @@ class VenueController extends Controller
 {
     public function index()
     {
-        $venues = Venue::with('photos')
+        $venues = Venue::with(['photos', 'rates'])
             ->withCount('packages')
             ->ordered()
             ->get();
@@ -44,6 +46,8 @@ class VenueController extends Controller
             'is_active' => true,
         ]);
 
+        VenueCatalog::clearCache();
+
         return redirect()
             ->route('admin.venues')
             ->with('success', "\"{$venue->name}\" was added. Upload its photos below.");
@@ -56,14 +60,27 @@ class VenueController extends Controller
             'capacity' => 'nullable|integer|min:1|max:9999',
             'description' => 'nullable|string|max:2000',
             'is_active' => 'nullable|boolean',
+            'rates_submitted' => 'sometimes|boolean',
+            'rates' => 'nullable|array|max:20',
+            'rates.*.label' => 'required|string|max:100',
+            'rates.*.period' => 'nullable|in:AM,PM',
+            'rates.*.price' => 'required|numeric|min:0|max:99999999.99',
         ]);
 
-        $venue->update([
-            'name' => $validated['name'],
-            'capacity' => $validated['capacity'] ?? null,
-            'description' => $validated['description'] ?? null,
-            'is_active' => $request->boolean('is_active'),
-        ]);
+        DB::transaction(function () use ($venue, $validated, $request) {
+            $venue->update([
+                'name' => $validated['name'],
+                'capacity' => $validated['capacity'] ?? null,
+                'description' => $validated['description'] ?? null,
+                'is_active' => $request->boolean('is_active'),
+            ]);
+
+            if ($request->boolean('rates_submitted')) {
+                $this->replaceRates($venue, $validated['rates'] ?? []);
+            }
+        });
+
+        VenueCatalog::clearCache();
 
         return redirect()
             ->route('admin.venues')
@@ -90,6 +107,7 @@ class VenueController extends Controller
         // Hard delete: the venue is unreachable once gone and a soft-deleted row
         // would still occupy the unique name/slug, blocking a re-add.
         $venue->forceDelete();
+        VenueCatalog::clearCache();
 
         return redirect()
             ->route('admin.venues')
@@ -231,5 +249,24 @@ class VenueController extends Controller
         }
 
         return $slug;
+    }
+
+    /**
+     * Replace the admin-managed rate choices. Historical inquiry estimates
+     * retain their own label and amount snapshots, so removing a rate is safe.
+     *
+     * @param  array<int, array{label: string, period?: ?string, price: int|float|string}>  $rates
+     */
+    private function replaceRates(Venue $venue, array $rates): void
+    {
+        $venue->rates()->delete();
+
+        foreach (array_values($rates) as $rate) {
+            $venue->rates()->create([
+                'label' => trim($rate['label']),
+                'period' => $rate['period'] ?: null,
+                'price' => $rate['price'],
+            ]);
+        }
     }
 }

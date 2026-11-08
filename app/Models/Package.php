@@ -12,6 +12,8 @@ class Package extends Model
 
     protected $table = 'packages';
 
+    protected $hidden = ['price'];
+
     protected $fillable = [
         'name',
         'description',

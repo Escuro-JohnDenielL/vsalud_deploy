@@ -8,6 +8,7 @@ use App\Models\Patron;
 use App\Models\Inquiry;
 use App\Models\Form;
 use App\Models\FormField;
+use App\Models\Venue;
 use App\Rules\EmailAddress;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationSubmitted;
@@ -26,13 +27,15 @@ class ReservationController extends Controller
 {
     public function create(Request $request)
     {
+        $venues = Venue::active()->with('rates')->ordered()->get();
+
         if ($request->is('admin/*')) {
-            return view('admin.reserve');
+            return view('admin.reserve', compact('venues'));
         }
 
         $agreementAccepted = (bool) $request->session()->get('guest_agreed', false);
 
-        return view('patron.mreserve', compact('agreementAccepted'));
+        return view('patron.mreserve', compact('agreementAccepted', 'venues'));
     }
 
     public function fetch_vreserve(Request $request)
@@ -102,6 +105,7 @@ class ReservationController extends Controller
             }
         }
 
+        $rules['venue_rate_id'] = 'nullable|integer|exists:venue_rates,id';
         $validated = $request->validate($rules);
 
         // Extract patron fields (always present in the form)
@@ -140,6 +144,15 @@ class ReservationController extends Controller
                     $hardcodedData[$fieldName] = $fieldValue;
                 }
             }
+        }
+
+        $priceEstimate = app(\App\Services\VenuePricingService::class)->estimate(
+            $hardcodedData['venue'] ?? $validated['venue'] ?? null,
+            $formData['period'] ?? null,
+            $validated['venue_rate_id'] ?? null
+        );
+        if ($priceEstimate !== null) {
+            $formData['venue_price_estimate'] = $priceEstimate;
         }
 
         // Non-locking booking gates. An active reservation or an open inquiry

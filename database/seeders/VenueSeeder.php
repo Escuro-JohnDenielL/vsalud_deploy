@@ -23,7 +23,7 @@ class VenueSeeder extends Seeder
         ];
 
         foreach ($venues as $venue) {
-            Venue::withTrashed()->firstOrCreate(
+            $model = Venue::withTrashed()->firstOrCreate(
                 ['name' => $venue['name']],
                 [
                     'slug' => Str::slug($venue['name']),
@@ -32,6 +32,21 @@ class VenueSeeder extends Seeder
                     'is_active' => true,
                 ]
             );
+
+            if ($model->trashed()) {
+                continue;
+            }
+
+            foreach (config('venue_pricing.defaults.' . $model->name, []) as $rate) {
+                $query = $model->rates()->where('label', $rate['label']);
+                $rate['period'] === null
+                    ? $query->whereNull('period')
+                    : $query->where('period', $rate['period']);
+
+                if (! $query->exists()) {
+                    $model->rates()->create($rate);
+                }
+            }
         }
     }
 }

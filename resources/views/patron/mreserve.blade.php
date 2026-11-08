@@ -168,6 +168,8 @@
                 @if($reservationForm)
                     <x-dynamic-form
                         :form="$reservationForm"
+                        :venues="$venues"
+                        :show-venue-price-estimate="true"
                         action="{{ route('patron.mreserve.submit') }}"
                         :errors="$errors"
                         submitLabel="Submit Inquiry"

@@ -2,6 +2,7 @@
 
 import "../bootstrap";
 import { initVenueAvailability } from "../venue-availability";
+import { initVenuePriceEstimate } from "../venue-price-estimate";
 
 document.addEventListener("DOMContentLoaded", function () {
     const venueSelect = document.getElementById("field_venue");
@@ -25,6 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const form = document.querySelector("form");
     // Reset form on page load (prevents browser bfcache from restoring stale data)
     if (form) form.reset();
+    initVenuePriceEstimate();
 
     // Email: inline convenience check. The server rule is the real control.
     const emailInput = document.getElementById("field_email");

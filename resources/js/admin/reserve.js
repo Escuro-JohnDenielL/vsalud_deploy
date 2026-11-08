@@ -1,6 +1,8 @@
 import { initVenueAvailability } from "../venue-availability";
+import { initVenuePriceEstimate } from "../venue-price-estimate";
 
 document.addEventListener("DOMContentLoaded", function () {
+    initVenuePriceEstimate();
     const form = document.querySelector("form");
 
     // Form validation

@@ -54,6 +54,11 @@ class Venue extends Model
         return $this->hasMany(VenuePhoto::class)->orderBy('sort_order')->orderBy('id');
     }
 
+    public function rates(): HasMany
+    {
+        return $this->hasMany(VenueRate::class)->orderBy('period')->orderBy('id');
+    }
+
     public function packages(): BelongsToMany
     {
         return $this->belongsToMany(Package::class, 'package_venue', 'venue_id', 'package_id');

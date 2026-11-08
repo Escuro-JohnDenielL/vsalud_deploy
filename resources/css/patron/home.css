@@ -137,26 +137,35 @@
   background: var(--color-primary);
 }
 
-.package-card__price {
+.package-card__pricing {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
   margin-top: auto;
   color: var(--color-primary);
+  text-align: center;
 }
 
-.package-card__price-label {
+.package-card__pricing-label {
   color: var(--color-text-muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: .06em;
+  letter-spacing: .04em;
   text-transform: uppercase;
 }
 
-.package-card__price strong {
-  font-size: 20px;
-  font-weight: 700;
+.package-card__pricing > strong {
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.package-card__pricing-note,
+.package-card__pricing > .package-card__pricing-unavailable {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
 }
 
 .package-card .btn {
@@ -502,14 +511,62 @@
   margin: 0 0 14px;
 }
 
-/* Gold price under the title; the hairline separates it from the description. */
-.pkg-modal__price {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--vs-color-gold);
+.pkg-modal__pricing {
   margin: 0 0 16px;
-  padding-bottom: 16px;
+  padding: 0 0 16px;
   border-bottom: 1px solid rgba(0, 107, 83, 0.18);
+}
+
+.pkg-modal__pricing h3 {
+  margin: 0 0 5px;
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-ui);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.pkg-modal__pricing-range {
+  margin: 0;
+  color: var(--vs-color-deep-green);
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.pkg-modal__pricing-disclaimer {
+  margin: 3px 0 10px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.pkg-modal__venue-rates {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pkg-modal__venue-rates > li {
+  padding: 9px 11px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: 9px;
+  color: var(--vs-color-deep-green);
+  font-size: 13px;
+}
+
+.pkg-modal__venue-rates > li > strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.pkg-modal__venue-rates ul {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--vs-color-text-secondary);
+  font-size: 12px;
 }
 
 .pkg-modal--package .pkg-modal__desc {
@@ -999,13 +1056,10 @@
   font-size: var(--vs-text-body-min);
 }
 
-.vs-layout--patron .package-card__price,
+.vs-layout--patron .package-card__pricing-label,
+.vs-layout--patron .package-card__pricing strong,
 .vs-layout--patron .privacy-modal__subtitle {
   color: var(--vs-color-deep-green);
-}
-
-.vs-layout--patron .pkg-modal__price {
-  color: var(--vs-color-gold);
 }
 
 .vs-layout--patron .package-card .btn,

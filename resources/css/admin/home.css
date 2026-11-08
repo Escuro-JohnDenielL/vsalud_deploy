@@ -40,7 +40,7 @@
 }
 
 /* Card layout mirrors the patron package card: photo band, centered title and
-   description, "Starting at" price block, then one full-width action row. */
+   description, venue-pricing note, then one full-width action row. */
 .vs-admin-dashboard .package-card {
   display: flex;
   width: 100%;
@@ -148,24 +148,12 @@
   cursor: pointer;
 }
 
-.vs-admin-dashboard .package-price {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
+.vs-admin-dashboard .package-pricing-note {
   margin: auto 0 0;
-  color: var(--vs-color-deep-green);
-  font-size: 1.125rem;
-  font-weight: var(--vs-weight-bold);
-  line-height: var(--vs-leading-tight);
-}
-
-.vs-admin-dashboard .package-price__label {
   color: var(--vs-color-text-secondary);
   font-size: var(--vs-text-secondary-min);
-  font-weight: var(--vs-weight-semibold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  line-height: var(--vs-leading-normal);
+  text-align: center;
 }
 
 /* One balanced footer: wide primary "View Package" + compact overflow menu. */
