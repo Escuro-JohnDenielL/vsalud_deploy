@@ -50,15 +50,21 @@
         $isActive = fn($patterns) => collect((array) $patterns)->contains(fn($p) => request()->is($p));
     @endphp
 
-    <nav class="navbar vs-admin-nav">
+    <nav class="navbar vs-admin-nav nav-collapsible">
         <a href="{{ route('admin.report') }}" class="landing-logo vs-admin-brand" aria-label="Villa Salud admin dashboard">
             <span class="landing-logo__mark">VS</span>
             <span class="landing-logo__name"><small>VILLA</small><strong>SALUD</strong></span>
         </a>
 
+        <button type="button" class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="adminPrimaryNav">
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+        </button>
+
         <span class="vs-nav-pill" aria-hidden="true" hidden></span>
 
-        <ul class="navbar vs-admin-nav__links">
+        <ul class="vs-admin-nav__links" id="adminPrimaryNav">
             {{-- Dashboard (single link to the report dashboard) --}}
             @if($canAccess('reports'))
             <li>

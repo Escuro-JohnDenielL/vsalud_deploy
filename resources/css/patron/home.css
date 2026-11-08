@@ -1,17 +1,14 @@
-/* === Packages Section ===
-   Flex (not grid) so a short last row is centred too: with grid the leftover
-   card stayed pinned to the left edge. Cards grow/shrink between 280 and 342px. */
+/* Five packages share one row on wide screens; smaller screens can scroll the row. */
 .packages {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: stretch;
-  justify-content: center;
-  gap: 28px;
-  padding: 30px;
+  gap: 16px;
+  padding: 24px 0;
 }
 
 .packages-empty {
-  flex: 1 1 100%;
+  grid-column: 1 / -1;
   text-align: center;
   color: var(--color-text-muted);
 }
@@ -1010,23 +1007,27 @@
 
 /* Shared patron surface styling */
 .vs-layout--patron .packages {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   align-items: stretch;
-  justify-content: center;
-  gap: var(--vs-space-5);
-  padding: var(--vs-space-4) 0;
+  gap: var(--vs-space-4);
+  overflow-x: auto;
+  padding: var(--vs-space-4) 0 var(--vs-space-3);
+  scroll-snap-type: x proximity;
 }
 
 .vs-layout--patron .vs-patron-packages {
   width: 100%;
-  max-width: 1100px;
+  max-width: 1320px;
   margin: 0 auto;
   padding: 0 var(--vs-space-4);
 }
 
 .vs-layout--patron .package-card {
   min-width: 0;
+  max-width: none;
+  flex: none;
+  scroll-snap-align: start;
   border: 1px solid var(--vs-color-control-border);
   border-radius: var(--vs-radius-card);
   background: var(--vs-color-surface);
@@ -1105,15 +1106,56 @@
   outline-offset: var(--vs-focus-offset);
 }
 
+@media (max-width: 768px) {
+  .vs-layout--patron .packages-swipe-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--vs-space-2);
+    margin: var(--vs-space-3) 0 0;
+    color: var(--vs-color-text-secondary);
+    font-size: var(--vs-text-secondary-min);
+    font-weight: var(--vs-weight-medium);
+    text-align: center;
+  }
+}
+
 @media (max-width: 600px) {
   .vs-layout--patron .packages {
-    flex-direction: column;
+    display: flex;
+    flex-wrap: nowrap;
     align-items: stretch;
+    justify-content: flex-start;
+    gap: var(--vs-space-4);
+    overflow-x: auto;
+    padding: var(--vs-space-4) 0 var(--vs-space-3);
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
   }
 
   .vs-layout--patron .package-card {
-    flex: 1 1 auto;
-    max-width: 100%;
+    flex: 0 0 min(380px, 100%);
+    width: min(380px, 100%);
+    max-width: min(380px, 100%);
+    scroll-snap-align: center;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 768px) {
+  .vs-layout--patron .packages {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+  }
+
+  .vs-layout--patron .package-card {
+    flex: 0 0 min(380px, 100%);
+    width: min(380px, 100%);
+    max-width: min(380px, 100%);
+    scroll-snap-align: center;
   }
 }
 

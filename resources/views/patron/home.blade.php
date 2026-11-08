@@ -24,6 +24,14 @@
             </div>
         @endif
 
+    @if ($packages->count() > 1)
+        <p class="packages-swipe-hint">
+            <span aria-hidden="true">&larr;</span>
+            Swipe right to see more packages
+            <span aria-hidden="true">&rarr;</span>
+        </p>
+    @endif
+
     <div class="packages">
         @foreach ($packages as $package)
             <x-package-card

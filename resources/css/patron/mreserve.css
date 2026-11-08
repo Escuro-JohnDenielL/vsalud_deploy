@@ -898,6 +898,40 @@
     font-size: var(--vs-text-body-min);
 }
 
+@media (max-width: 768px) {
+    .vs-layout--patron #agreementModal {
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        padding:
+            max(8px, env(safe-area-inset-top, 0px))
+            max(8px, env(safe-area-inset-right, 0px))
+            max(8px, env(safe-area-inset-bottom, 0px))
+            max(8px, env(safe-area-inset-left, 0px));
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    .vs-layout--patron #agreementModal .guidelines-content {
+        width: 100%;
+        max-width: 720px;
+        max-height: calc(100vh - 16px);
+        max-height: calc(100dvh - 16px);
+        padding: var(--vs-space-4);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .vs-layout--patron #agreementModal .guidelines-content h3:first-child {
+        font-size: clamp(18px, 5vw, 22px);
+    }
+
+    .vs-layout--patron #agreementModal .guidelines-content section h3 {
+        font-size: 17px;
+    }
+}
+
 .vs-layout--patron #agreementModal .guidelines-content h3:first-child,
 .vs-layout--patron #agreementModal .guidelines-content section h3 {
     border-color: var(--vs-color-control-border);
@@ -980,6 +1014,24 @@
     }
 }
 
+@media (max-width: 600px) {
+    .vs-layout--patron #dateUnavailableModal,
+    .vs-layout--patron #waitlistSuccessModal {
+        padding: 16px;
+        padding-top: max(16px, env(safe-area-inset-top, 0px));
+    }
+
+    .vs-layout--patron #dateUnavailableModal .modal-content,
+    .vs-layout--patron #waitlistSuccessModal .modal-content {
+        width: 100%;
+        max-width: 420px;
+        max-height: calc(100vh - 32px);
+        max-height: calc(100dvh - 32px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+}
+
 @media (max-width: 480px) {
     .vs-patron-reservation .vs-patron-reservation__layout {
         gap: var(--vs-space-5);
@@ -1022,4 +1074,3 @@
 
 /* Legacy .legend-box color helpers removed: the legend now uses the shared
    .vs-calendar__legend-swatch classes so the swatches match the day cells. */
-

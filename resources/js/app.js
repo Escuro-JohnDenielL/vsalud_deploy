@@ -179,13 +179,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.vs-patron-nav, .vs-admin-nav').forEach(initNavPill);
 
     /* ----------------------------------------------------------
-       Patron collapsible (hamburger) menu.
+       Responsive navigation menu (patron and admin).
        ---------------------------------------------------------- */
     const nav = document.querySelector('.nav-collapsible');
     if (!nav) return;
 
     const toggle = nav.querySelector('.nav-toggle');
-    const links = nav.querySelector('.nav-links');
+    const links = nav.querySelector(':scope > .nav-links, :scope > .vs-admin-nav__links');
     if (!toggle) return;
 
     const setOpen = (open) => {

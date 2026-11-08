@@ -3,22 +3,26 @@
   font-family: var(--vs-font-ui);
 }
 
-/* Flex (not grid) so a partially filled last row sits centered under the full rows
-   instead of hugging one edge. Cards keep an even size and center themselves. */
-.vs-admin-dashboard .packages-grid {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: stretch;
-  justify-content: center;
-  gap: var(--vs-space-5);
-  padding: var(--vs-space-4) 0;
+.vs-layout--admin .vs-page.vs-admin-dashboard {
+  max-width: none;
 }
 
-/* Empty state spans the whole row so it centers under the page title.
-   It sits directly on the beige page background, so give it a white
-   surface and a border instead of blending into the page. */
+.vs-admin-dashboard .packages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  align-items: stretch;
+  gap: var(--vs-space-4);
+  overflow-x: auto;
+  padding: var(--vs-space-4) 0 var(--vs-space-3);
+  scroll-snap-type: x proximity;
+}
+
+.vs-admin-dashboard .packages-swipe-hint {
+  display: none;
+}
+
 .vs-admin-dashboard .vs-admin-dashboard__empty {
-  flex: 0 0 100%;
+  grid-column: 1 / -1;
   padding: var(--vs-space-10) var(--vs-space-5);
   border: 1px dashed var(--vs-color-control-border);
   border-radius: var(--vs-radius-card);
@@ -45,10 +49,9 @@
   display: flex;
   width: 100%;
   min-width: 0;
-  max-width: 320px;
-  flex: 1 1 260px;
   flex-direction: column;
   overflow: hidden;
+  scroll-snap-align: start;
   border: 1px solid var(--vs-color-control-border);
   border-radius: var(--vs-radius-card);
   background: var(--vs-color-surface);
@@ -452,9 +455,50 @@
   }
 
   .vs-admin-dashboard .package-card {
-    width: min(100%, 440px);
-    max-width: 440px;
-    flex-basis: 100%;
+    width: auto;
+    max-width: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .vs-admin-dashboard .packages-grid {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(220px, 1fr);
+    grid-template-columns: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .vs-admin-dashboard .packages-swipe-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--vs-space-2);
+    margin: var(--vs-space-2) 0 0;
+    color: var(--vs-color-text-secondary);
+    font-size: var(--vs-text-secondary-min);
+    font-weight: var(--vs-weight-medium);
+    text-align: center;
+  }
+
+  .vs-admin-dashboard .packages-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: var(--vs-space-4);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+  }
+
+  .vs-admin-dashboard .package-card {
+    flex: 0 0 min(380px, 100%);
+    width: min(380px, 100%);
+    scroll-snap-align: center;
+  }
+
+  .vs-admin-dashboard .vs-admin-dashboard__empty {
+    flex: 0 0 100%;
   }
 }
 
