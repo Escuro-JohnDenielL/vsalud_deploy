@@ -98,7 +98,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const saveStatusBtn = document.getElementById("saveStatus");
     const closeModalBtn = document.getElementById("closeModal");
     const statusSelect = document.getElementById("statusSelect");
-    const undoStatusBtn = document.getElementById("undoStatus");
     const statusModalNotice = document.getElementById("statusModalNotice");
     const statusReasonGroup = document.getElementById("statusReasonGroup");
     const statusReasonInput = document.getElementById("statusReason");
@@ -391,29 +390,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 reason: closingWithBookings ? (statusReasonInput?.value || "").trim() : null,
                 confirmedCount: closingWithBookings ? booked : null,
             });
-        });
-    }
-
-    if (undoStatusBtn) {
-        undoStatusBtn.addEventListener("click", function () {
-            if (selectedDate && dateStatuses[selectedDate]) {
-                delete dateStatuses[selectedDate];
-
-                const dayCells = document.querySelectorAll(
-                    ".calendar-day[data-date]"
-                );
-                dayCells.forEach((cell) => {
-                    if (cell.getAttribute("data-date") === selectedDate) {
-                        applyStatusStyle(cell, null);
-                    }
-                });
-
-                deleteStatusFromBackend(selectedDate);
-
-                if (modal) {
-                    closeStatusModal();
-                }
-            }
         });
     }
 

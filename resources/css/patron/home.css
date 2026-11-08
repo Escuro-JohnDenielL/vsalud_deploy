@@ -1570,7 +1570,12 @@
   }
 
   .vs-layout--patron .pkg-modal--venue .pkg-modal__actions {
+    justify-content: center;
     padding-top: 12px;
+  }
+
+  .vs-layout--patron .pkg-modal--package .pkg-modal__actions {
+    justify-content: center;
   }
 
   .vs-layout--patron .pkg-lightbox {

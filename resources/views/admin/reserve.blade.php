@@ -26,7 +26,7 @@
                     <li>In the status panel, set the date to Available, Half Full, Nearly Full, Full, or Closed. That status overrides the automatic count.</li>
                     <li>Available is refused when the date already holds the daily limit of confirmed reservations.</li>
                     <li>Closing a date that still has bookings needs a reason and a confirmation of the booking count. Closing does not cancel those bookings.</li>
-                    <li>Undo Status removes the override, so the date returns to the automatic count.</li>
+                    <li>Select No Status and save to remove the override, so the date returns to the automatic count.</li>
                 </ol>
             </x-ui.page-info>
         </x-slot:action>
@@ -129,7 +129,6 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" id="undoStatus" class="admin-btn admin-btn-danger">Undo Status</button>
                 <button type="button" id="closeModal" class="admin-btn admin-btn-ghost">Cancel</button>
                 <button type="button" id="saveStatus" class="admin-btn admin-btn-primary">Save</button>
             </div>
