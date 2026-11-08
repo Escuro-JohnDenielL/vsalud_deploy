@@ -280,6 +280,7 @@
     align-items: center;
     padding: 20px;
     background-color: rgba(0, 0, 0, 0.4);
+    overflow: hidden;
 }
 
 #agreementModal.show {
@@ -291,8 +292,10 @@
     background: #ffffff;
     width: 100%;
     max-width: 600px;
+    min-height: 0;
     max-height: 80vh;
     overflow-y: auto;
+    box-sizing: border-box;
     padding: 30px 40px;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -300,6 +303,14 @@
     color: #333;
     line-height: 1.6;
     margin: 0 auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.guidelines-content::-webkit-scrollbar {
+    display: none;
 }
 
 /* Mobile Adjustment */
@@ -314,22 +325,6 @@
     /* Remove any scaling */
     transform: none !important;
     scale: none !important;
-}
-
-/* Scrollbar styling */
-.guidelines-content::-webkit-scrollbar {
-    width: 8px;
-}
-.guidelines-content::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-.guidelines-content::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-.guidelines-content::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
 }
 
 /* Section Styling */
@@ -908,19 +903,16 @@
             max(8px, env(safe-area-inset-right, 0px))
             max(8px, env(safe-area-inset-bottom, 0px))
             max(8px, env(safe-area-inset-left, 0px));
-        overflow-y: auto;
-        overscroll-behavior: contain;
+        overflow: hidden;
     }
 
     .vs-layout--patron #agreementModal .guidelines-content {
         width: 100%;
         max-width: 720px;
         max-height: calc(100vh - 16px);
-        max-height: calc(100dvh - 16px);
+        max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px);
         padding: var(--vs-space-4);
         overflow-y: auto;
-        overscroll-behavior: contain;
-        -webkit-overflow-scrolling: touch;
     }
 
     .vs-layout--patron #agreementModal .guidelines-content h3:first-child {
