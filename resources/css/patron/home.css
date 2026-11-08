@@ -1539,8 +1539,18 @@
     touch-action: pan-y;
   }
 
+  .vs-layout--patron .pkg-modal--venue .pkg-modal__nav {
+    display: none;
+  }
+
   .vs-layout--patron .pkg-modal__thumbs--venue {
+    gap: 6px;
     touch-action: pan-x;
+  }
+
+  .vs-layout--patron .pkg-modal--venue .pkg-modal__thumb {
+    width: 48px;
+    height: 38px;
   }
 
   .vs-layout--patron .pkg-modal--venue .pkg-modal__info {
