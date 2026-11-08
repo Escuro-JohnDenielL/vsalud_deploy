@@ -1008,7 +1008,7 @@
 /* Shared patron surface styling */
 .vs-layout--patron .packages {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: stretch;
   gap: var(--vs-space-4);
   overflow-x: auto;
@@ -1018,9 +1018,13 @@
 
 .vs-layout--patron .vs-patron-packages {
   width: 100%;
-  max-width: 1320px;
+  max-width: 1680px;
   margin: 0 auto;
   padding: 0 var(--vs-space-4);
+}
+
+.vs-layout--patron .packages-swipe-hint {
+  display: none;
 }
 
 .vs-layout--patron .package-card {
@@ -1106,7 +1110,7 @@
   outline-offset: var(--vs-focus-offset);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .vs-layout--patron .packages-swipe-hint {
     display: flex;
     align-items: center;

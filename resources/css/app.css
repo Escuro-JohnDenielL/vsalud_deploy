@@ -660,6 +660,10 @@ textarea:focus,
   padding: 36px 28px;
 }
 
+.patron-content--packages {
+  max-width: 1740px;
+}
+
 /* === Shared Modal System — single source of truth for all admin modals === */
 .modal {
   display: none;
@@ -1391,7 +1395,21 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
 
 .vs-layout--admin .vs-admin-nav > .vs-admin-nav__links {
   flex: 1;
-  justify-content: center;
+  min-width: 0;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  gap: var(--vs-space-1);
+}
+
+.vs-layout--admin .vs-admin-nav > .vs-admin-nav__links > li {
+  flex: 0 0 auto;
+}
+
+.vs-layout--admin .vs-admin-nav > .vs-admin-nav__links > li > a {
+  display: inline-flex;
+  align-items: center;
+  padding-right: var(--vs-space-3);
+  padding-left: var(--vs-space-3);
 }
 
 /* Brand: same landing-page logo markup as the patron nav, recolored for the
@@ -1418,10 +1436,6 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
   letter-spacing: 3px;
 }
 
-.vs-layout--admin .vs-admin-nav .vs-account-menu {
-  margin-left: auto;
-}
-
 /* Between 992px and 1199px the admin links need the extra width, so the
    brand collapses to its monogram and the nav stays on one row. */
 @media (max-width: 1199.98px) {
@@ -1430,10 +1444,25 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
   }
 }
 
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .vs-layout--admin .vs-admin-nav > .vs-admin-nav__links {
+    gap: 0;
+  }
+
+  .vs-layout--admin .vs-admin-nav > .vs-admin-nav__links > li > a {
+    padding-right: var(--vs-space-2);
+    padding-left: var(--vs-space-2);
+  }
+}
+
 /* Home sits at the right end, immediately left of the account menu. */
 @media (min-width: 992px) {
   .vs-layout--admin .vs-admin-nav .vs-admin-nav__home {
     margin-left: auto;
+  }
+
+  .vs-layout--admin .vs-admin-nav .vs-account-menu {
+    margin-left: 0;
   }
 
   .vs-layout--admin .vs-admin-nav .vs-admin-nav__home + .vs-account-menu {

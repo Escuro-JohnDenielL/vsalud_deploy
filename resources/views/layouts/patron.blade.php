@@ -113,7 +113,7 @@
     {{-- Site-wide notification confirmation modal (handles ?toast= redirects and flash messages) --}}
     <x-ui.notification-modal />
 
-    <main class="patron-content">
+    <main class="patron-content {{ request()->routeIs('patron.home') ? 'patron-content--packages' : '' }}">
         @yield('content')
     </main>
 

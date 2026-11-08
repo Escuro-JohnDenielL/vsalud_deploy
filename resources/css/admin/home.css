@@ -469,18 +469,6 @@
 }
 
 @media (max-width: 768px) {
-  .vs-admin-dashboard .packages-swipe-hint {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--vs-space-2);
-    margin: var(--vs-space-2) 0 0;
-    color: var(--vs-color-text-secondary);
-    font-size: var(--vs-text-secondary-min);
-    font-weight: var(--vs-weight-medium);
-    text-align: center;
-  }
-
   .vs-admin-dashboard .packages-grid {
     display: flex;
     flex-wrap: nowrap;
@@ -499,6 +487,20 @@
 
   .vs-admin-dashboard .vs-admin-dashboard__empty {
     flex: 0 0 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .vs-admin-dashboard .packages-swipe-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--vs-space-2);
+    margin: var(--vs-space-2) 0 0;
+    color: var(--vs-color-text-secondary);
+    font-size: var(--vs-text-secondary-min);
+    font-weight: var(--vs-weight-medium);
+    text-align: center;
   }
 }
 
