@@ -4,8 +4,20 @@
 
 @section('content')
 <div style="max-width: 720px; margin: 32px auto; padding: 0 20px;">
-    <h1 style="font-family: var(--vs-font-display); font-size: 28px; color: var(--color-primary); margin: 0 0 6px;">Payment Settings</h1>
-    <p style="color: var(--color-text-muted); margin: 0 0 24px;">Manage payment instructions shown to patrons. Changes take effect immediately.</p>
+    <x-ui.page-header
+        title="Payment Settings"
+        subtitle="Manage payment instructions shown to patrons. Changes take effect immediately.">
+        <x-slot:action>
+            <x-ui.page-info id="paymentSettingsInfo" title="How payment settings work">
+                <ol>
+                    <li>Update the GCash and bank transfer details that patrons use to make payments.</li>
+                    <li>Upload a replacement QR image in JPG, PNG, or WebP format, up to 2 MB. Leave the file field empty to keep the current image.</li>
+                    <li>Set the cash payment instructions and contact details shown to patrons.</li>
+                    <li>Select Save Settings to apply your changes immediately.</li>
+                </ol>
+            </x-ui.page-info>
+        </x-slot:action>
+    </x-ui.page-header>
 
     <form method="POST" enctype="multipart/form-data" action="{{ route('admin.payment-settings.update') }}" style="background:#fff;border-radius:16px;border:1px solid #e5e7eb;box-shadow:0 1px 3px rgba(0,0,0,0.05);padding:28px;">
         @csrf
