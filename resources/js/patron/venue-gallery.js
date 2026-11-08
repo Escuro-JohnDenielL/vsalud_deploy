@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const nextBtn = document.getElementById("venueGalleryNext");
     const reserveEl = document.getElementById("venueGalleryReserve");
     const dismissBtn = document.getElementById("venueGalleryDismiss");
+    const stage = modal.querySelector(".pkg-modal__stage");
 
     // Original booking-page URL; each venue is appended to it as ?venue=<name>.
     const reserveBase = reserveEl ? reserveEl.getAttribute("href") : "";
@@ -34,6 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let galleryIndex = 0;
     let hasPhotos = false;
     let returnFocus = null;
+    let touchStart = null;
 
     // A photo can be missing from disk; probe once and drop the broken URLs so
     // the gallery never cycles into an empty slide.
@@ -312,6 +314,35 @@ document.addEventListener("DOMContentLoaded", function () {
     if (nextBtn) nextBtn.addEventListener("click", function () {
         showImage(galleryIndex + 1);
     });
+
+    stage?.addEventListener("touchstart", function (event) {
+        if (event.touches.length !== 1 || event.target.closest(".pkg-modal__thumbs")) {
+            touchStart = null;
+            return;
+        }
+
+        const touch = event.touches[0];
+        touchStart = { x: touch.clientX, y: touch.clientY };
+    }, { passive: true });
+
+    stage?.addEventListener("touchend", function (event) {
+        if (!touchStart || !hasPhotos || gallery.length < 2) {
+            touchStart = null;
+            return;
+        }
+
+        const touch = event.changedTouches[0];
+        const deltaX = touch.clientX - touchStart.x;
+        const deltaY = touch.clientY - touchStart.y;
+        touchStart = null;
+
+        if (Math.abs(deltaX) < 48 || Math.abs(deltaX) < Math.abs(deltaY) * 1.2) return;
+        showImage(galleryIndex + (deltaX < 0 ? 1 : -1));
+    }, { passive: true });
+
+    stage?.addEventListener("touchcancel", function () {
+        touchStart = null;
+    }, { passive: true });
 
     modal.addEventListener("click", function (event) {
         if (event.target === modal) close();
