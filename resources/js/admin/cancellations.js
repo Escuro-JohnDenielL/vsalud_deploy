@@ -57,6 +57,11 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        const resetLoading = window.vsSetButtonLoading(
+            e.submitter || e.currentTarget.querySelector('[type="submit"]'),
+            'Approving...'
+        );
+
         try {
             const response = await fetch(`/admin/cancellations/${requestId}/approve`, {
                 method: "POST",
@@ -82,6 +87,8 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (err) {
             window.showAdminToast('An error occurred.', 'error');
             console.error(err);
+        } finally {
+            resetLoading();
         }
     });
 
@@ -97,6 +104,10 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         const csrf = document.querySelector('input[name="_token"]').value;
+        const resetLoading = window.vsSetButtonLoading(
+            e.submitter || e.currentTarget.querySelector('[type="submit"]'),
+            'Denying...'
+        );
 
         try {
             const response = await fetch(`/admin/cancellations/${requestId}/deny`, {
@@ -123,6 +134,8 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (err) {
             window.showAdminToast('An error occurred.', 'error');
             console.error(err);
+        } finally {
+            resetLoading();
         }
     });
 

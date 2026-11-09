@@ -76,6 +76,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const csrf = document.querySelector('input[name="_token"]').value;
+        const resetLoading = window.vsSetButtonLoading(
+            lookupForm.querySelector('[type="submit"]'),
+            'Looking up reservation...'
+        );
 
         try {
             const response = await fetch("/cancel-reservation/lookup", {
@@ -112,6 +116,8 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (err) {
             showMessage("An error occurred. Please try again.", "error");
             console.error(err);
+        } finally {
+            resetLoading();
         }
     });
 
@@ -142,6 +148,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const patronEmail = document.getElementById("lookup_email").value.trim();
         const reason = document.getElementById("reason").value.trim();
         const csrf = document.querySelector('input[name="_token"]').value;
+        const resetLoading = window.vsSetButtonLoading(
+            confirmSubmitBtn,
+            'Submitting request...'
+        );
 
         try {
             const response = await fetch("/cancel-reservation/submit", {
@@ -170,6 +180,8 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (err) {
             showMessage("An error occurred. Please try again.", "error");
             console.error(err);
+        } finally {
+            resetLoading();
         }
     }
 

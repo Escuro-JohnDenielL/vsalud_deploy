@@ -418,6 +418,7 @@
     cancel.addEventListener('click', close);
     confirm.addEventListener('click', function () {
         submitting = true;
+        window.vsSetButtonLoading(confirm, 'Logging out...');
         window.vsModalCloseAfterFade(modal, function () {
             form.submit();
         });

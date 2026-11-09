@@ -47,6 +47,10 @@
   color: var(--vs-status-danger-text);
 }
 
+.vs-admin-reservation .form-group button[aria-busy="true"] > span {
+  color: var(--vs-button-primary-text);
+}
+
 .vs-admin-reservation .form-group input,
 .vs-admin-reservation .form-group select,
 .vs-admin-reservation .form-group textarea {

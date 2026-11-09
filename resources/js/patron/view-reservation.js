@@ -98,6 +98,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const csrf = document.querySelector('input[name="_token"]').value;
+        const resetLoading = window.vsSetButtonLoading(
+            form.querySelector('[type="submit"]'),
+            'Looking up reservation...'
+        );
 
         try {
             const response = await fetch("/fetch-reservation", {
@@ -211,6 +215,8 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (err) {
             window.vsNotify("An error occurred while fetching the reservation.", "error");
             console.error(err);
+        } finally {
+            resetLoading();
         }
     });
 

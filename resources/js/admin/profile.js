@@ -625,9 +625,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const btn = sendCodeBtn;
-            const originalText = btn.textContent;
-            btn.textContent = "Sending...";
-            btn.disabled = true;
+            const resetLoading = window.vsSetButtonLoading(btn, "Sending code...");
 
             fetch("/admin/profile/send-reset-code", {
                 method: "POST",
@@ -643,8 +641,7 @@ document.addEventListener("DOMContentLoaded", function () {
             })
                 .then((response) => response.json())
                 .then((data) => {
-                    btn.textContent = originalText;
-                    btn.disabled = false;
+                    resetLoading();
 
                     if (data.success) {
                         // Show step 2
@@ -669,8 +666,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 })
                 .catch((err) => {
-                    btn.textContent = originalText;
-                    btn.disabled = false;
+                    resetLoading();
                     console.error("Send code error", err);
                     showErrorMessage("An error occurred while sending the code.", passwordModal);
                 });
@@ -712,9 +708,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const btn = verifyCodeBtn;
-            const originalText = btn.textContent;
-            btn.textContent = "Changing...";
-            btn.disabled = true;
+            const resetLoading = window.vsSetButtonLoading(btn, "Changing password...");
 
             fetch("/admin/profile/change-password", {
                 method: "POST",
@@ -733,8 +727,7 @@ document.addEventListener("DOMContentLoaded", function () {
             })
                 .then((response) => response.json())
                 .then((data) => {
-                    btn.textContent = originalText;
-                    btn.disabled = false;
+                    resetLoading();
 
                     if (data.success) {
                         closeProfileModal(passwordModal, () => {
@@ -756,8 +749,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 })
                 .catch((err) => {
-                    btn.textContent = originalText;
-                    btn.disabled = false;
+                    resetLoading();
                     console.error("Password update error", err);
                     showErrorMessage("An error occurred while changing password.", passwordModal);
                     addToHistory("security", "Password change error", "Network or server error occurred");

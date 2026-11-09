@@ -103,6 +103,10 @@
 
     document.getElementById('logIncidentForm')?.addEventListener('submit', function(e) {
         e.preventDefault();
+        const resetLoading = window.vsSetButtonLoading(
+            e.submitter || this.querySelector('[type="submit"]'),
+            'Logging incident...'
+        );
         const formData = new FormData(this);
         const data = Object.fromEntries(formData.entries());
 
@@ -122,7 +126,8 @@
             // The new incident sorts to the top of page 1 — show it right there.
             applyPayload(res.payload, res.focus_id);
         })
-        .catch(err => showToast(err.message || 'Failed to log incident.', 'error'));
+        .catch(err => showToast(err.message || 'Failed to log incident.', 'error'))
+        .finally(resetLoading);
     });
 
     // --- Row actions (delegated) ---
@@ -236,6 +241,10 @@
 
     document.getElementById('resolveIncidentForm')?.addEventListener('submit', function(e) {
         e.preventDefault();
+        const resetLoading = window.vsSetButtonLoading(
+            e.submitter || this.querySelector('[type="submit"]'),
+            'Updating incident...'
+        );
         const id = document.getElementById('resolveIncidentId').value;
         const formData = new FormData(this);
         const data = Object.fromEntries(formData.entries());
@@ -262,7 +271,8 @@
             closeModal('resolveIncidentModal');
             applyPayload(res.payload, res.focus_id);
         })
-        .catch(err => showToast(err.message || 'Failed to update incident.', 'error'));
+        .catch(err => showToast(err.message || 'Failed to update incident.', 'error'))
+        .finally(resetLoading);
     });
 
     // --- Delete Incident ---
@@ -277,6 +287,7 @@
 
     document.getElementById('confirmDeleteYes')?.addEventListener('click', function() {
         if (!deleteIncidentId) return;
+        const resetLoading = window.vsSetButtonLoading(this, 'Deleting...');
 
         fetch(window.incidentLogRoutes.destroy + '/' + deleteIncidentId + '?page=' + currentPage(), {
             method: 'DELETE',
@@ -292,7 +303,8 @@
             applyPayload(res.payload);
             deleteIncidentId = null;
         })
-        .catch(err => showToast(err.message || 'Failed to delete incident.', 'error'));
+        .catch(err => showToast(err.message || 'Failed to delete incident.', 'error'))
+        .finally(resetLoading);
     });
 
     // --- Utilities ---

@@ -219,7 +219,6 @@ function viewReservation(id) {
 
             // Wire up the AI Event Brief button (re-created each time the modal opens).
             const aiBriefBtn = document.getElementById("aiBriefBtn");
-            const aiBriefLabel = document.getElementById("aiBriefLabel");
             const aiBriefStatus = document.getElementById("aiBriefStatus");
             const aiBriefOutput = document.getElementById("aiBriefOutput");
 
@@ -238,6 +237,10 @@ function viewReservation(id) {
 
             reservationTotalForm?.addEventListener("submit", async (event) => {
                 event.preventDefault();
+                const resetLoading = window.vsSetButtonLoading(
+                    event.submitter || reservationTotalForm.querySelector('[type="submit"]'),
+                    'Saving total...'
+                );
                 const formData = new FormData(reservationTotalForm);
                 const message = document.getElementById("reservationTotalMessage");
                 const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
@@ -290,13 +293,14 @@ function viewReservation(id) {
                 } catch (error) {
                     message.textContent = error.message;
                     window.showAdminToast(error.message, "error");
+                } finally {
+                    resetLoading();
                 }
             });
 
             if (aiBriefBtn) {
                 aiBriefBtn.addEventListener("click", async () => {
-                    aiBriefBtn.disabled = true;
-                    aiBriefLabel.textContent = "Generating brief...";
+                    const resetLoading = window.vsSetButtonLoading(aiBriefBtn, "Generating brief...");
                     aiBriefStatus.textContent = "";
                     aiBriefStatus.className = "ai-brief-status";
                     aiBriefOutput.hidden = true;
@@ -331,8 +335,7 @@ function viewReservation(id) {
                         aiBriefStatus.textContent = "Failed to reach the AI service.";
                         aiBriefStatus.className = "ai-brief-status ai-brief-error";
                     } finally {
-                        aiBriefBtn.disabled = false;
-                        aiBriefLabel.textContent = "AI Event Brief";
+                        resetLoading();
                     }
                 });
             }
@@ -403,12 +406,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const id = pendingDeleteId;
             closeModal();
             if (!id) return;
-            executeDelete(id);
+            const resetLoading = window.vsSetButtonLoading(yesBtn, "Deleting reservation...");
+            executeDelete(id, resetLoading);
         });
     }
 });
 
-function executeDelete(id) {
+function executeDelete(id, resetLoading) {
     const csrfToken = document
         .querySelector('meta[name="csrf-token"]')
         ?.getAttribute("content");
@@ -450,7 +454,8 @@ function executeDelete(id) {
             .catch((err) => {
                 console.error("Error deleting reservation:", err);
                 window.showAdminToast(`Failed to delete: ${err.message}`, "error");
-            });
+            })
+            .finally(resetLoading);
 }
 
 // RECEIPT VIEW (stub)
@@ -463,6 +468,11 @@ function updateReservationStatus(id, status, selectElement) {
     const csrfToken = document
         .querySelector('meta[name="csrf-token"]')
         ?.getAttribute("content");
+    const wasDisabled = selectElement?.disabled;
+    if (selectElement) {
+        selectElement.disabled = true;
+        selectElement.setAttribute("aria-busy", "true");
+    }
 
     fetch(`/admin/reservations/${id}/status`, {
         method: "PATCH",
@@ -494,6 +504,12 @@ function updateReservationStatus(id, status, selectElement) {
             if (selectElement) selectElement.value = selectElement.dataset.previousStatus;
             console.error("Error updating reservation status:", error.message);
             window.showAdminToast("Failed to update reservation status", "error");
+        })
+        .finally(() => {
+            if (selectElement) {
+                selectElement.disabled = wasDisabled;
+                selectElement.removeAttribute("aria-busy");
+            }
         });
 }
 
@@ -512,6 +528,9 @@ document.addEventListener("change", function (e) {
         const csrfToken = document
             .querySelector('meta[name="csrf-token"]')
             ?.getAttribute("content");
+        const wasDisabled = select.disabled;
+        select.disabled = true;
+        select.setAttribute("aria-busy", "true");
 
         fetch(`/admin/payments/${paymentId}/status`, {
             method: "PATCH",
@@ -539,6 +558,10 @@ document.addEventListener("change", function (e) {
             .catch(() => {
                 select.value = previousStatus;
                 window.showAdminToast("Failed to update payment status", "error");
+            })
+            .finally(() => {
+                select.disabled = wasDisabled;
+                select.removeAttribute("aria-busy");
             });
     }
 });

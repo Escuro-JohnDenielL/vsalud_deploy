@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const cancelReplyBtn = document.getElementById("cancelReplyBtn");
     const closeReplyModal = document.getElementById("closeReplyModal");
     const aiDraftBtn = document.getElementById("aiDraftBtn");
-    const aiDraftLabel = document.getElementById("aiDraftLabel");
     const aiDraftStatus = document.getElementById("aiDraftStatus");
 
     // View Inquiry modal
@@ -146,6 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        const resetLoading = window.vsSetButtonLoading(sendReplyBtn, 'Sending reply...');
         fetch("/admin/send-reply", {
             method: "POST",
             headers: {
@@ -174,15 +174,15 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch((err) => {
                 console.error("Error:", err);
                 window.showAdminToast('Failed to send reply.', 'error');
-            });
+            })
+            .finally(resetLoading);
     });
 
     // AI-assisted reply draft (Google Gemini)
     aiDraftBtn.addEventListener("click", async () => {
         if (!inquiryId) return;
 
-        aiDraftBtn.disabled = true;
-        aiDraftLabel.textContent = "Generating draft...";
+        const resetLoading = window.vsSetButtonLoading(aiDraftBtn, 'Generating draft...');
         aiDraftStatus.textContent = "";
         aiDraftStatus.className = "ai-draft-status";
 
@@ -213,8 +213,7 @@ document.addEventListener("DOMContentLoaded", function () {
             aiDraftStatus.textContent = "Failed to reach the AI service.";
             aiDraftStatus.className = "ai-draft-status ai-draft-error";
         } finally {
-            aiDraftBtn.disabled = false;
-            aiDraftLabel.textContent = "AI Draft Reply";
+            resetLoading();
         }
     });
 
@@ -292,6 +291,8 @@ function saveStatusToDatabase(selectElement, newStatus) {
     // The value the server last accepted. A rejected change is rolled back to
     // this so the dropdown never claims a status the database does not have.
     const previousStatus = selectElement.dataset.vsLastValue || "";
+    selectElement.disabled = true;
+    selectElement.setAttribute('aria-busy', 'true');
 
     const send = (period) => {
         const body = { status: newStatus };
@@ -367,5 +368,9 @@ function saveStatusToDatabase(selectElement, newStatus) {
         .catch((error) => {
             console.error("Error:", error.message);
             reject(null);
+        })
+        .finally(() => {
+            selectElement.disabled = false;
+            selectElement.removeAttribute('aria-busy');
         });
 }

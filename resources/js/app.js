@@ -1,6 +1,104 @@
 import './bootstrap';
 
 const vsModalCloseTimers = new WeakMap();
+const vsButtonLoadingStates = new WeakMap();
+
+window.vsSetButtonLoading = function (button, label = 'Loading...') {
+    if (!button || vsButtonLoadingStates.has(button)) {
+        return () => {};
+    }
+
+    const state = {
+        html: button instanceof HTMLInputElement ? null : button.innerHTML,
+        value: button instanceof HTMLInputElement ? button.value : null,
+        disabled: button.disabled,
+        ariaBusy: button.getAttribute('aria-busy'),
+    };
+    vsButtonLoadingStates.set(button, state);
+    button.disabled = true;
+    button.setAttribute('aria-busy', 'true');
+
+    if (button instanceof HTMLInputElement) {
+        button.value = label;
+    } else {
+        const spinner = document.createElement('span');
+        spinner.className = 'vs-loading-spinner';
+        spinner.setAttribute('aria-hidden', 'true');
+        const text = document.createElement('span');
+        text.textContent = label;
+        button.replaceChildren(spinner, text);
+    }
+
+    return () => window.vsResetButtonLoading(button);
+};
+
+window.vsResetButtonLoading = function (button) {
+    const state = button && vsButtonLoadingStates.get(button);
+    if (!state) return;
+
+    if (button instanceof HTMLInputElement) {
+        button.value = state.value;
+    } else {
+        button.innerHTML = state.html;
+    }
+    button.disabled = state.disabled;
+    if (state.ariaBusy === null) {
+        button.removeAttribute('aria-busy');
+    } else {
+        button.setAttribute('aria-busy', state.ariaBusy);
+    }
+    vsButtonLoadingStates.delete(button);
+};
+
+const nativeFetch = window.fetch.bind(window);
+let pendingRequests = 0;
+let requestIndicatorTimer = null;
+let requestIndicator = null;
+
+window.fetch = (...args) => {
+    pendingRequests++;
+    if (!requestIndicatorTimer) {
+        requestIndicatorTimer = window.setTimeout(() => {
+            requestIndicatorTimer = null;
+            if (!document.body) return;
+
+            if (!requestIndicator) {
+                requestIndicator = document.createElement('div');
+                requestIndicator.className = 'vs-request-indicator';
+                requestIndicator.setAttribute('role', 'status');
+                requestIndicator.setAttribute('aria-live', 'polite');
+                const spinner = document.createElement('span');
+                spinner.className = 'vs-loading-spinner';
+                spinner.setAttribute('aria-hidden', 'true');
+                const label = document.createElement('span');
+                label.textContent = 'Working...';
+                requestIndicator.append(spinner, label);
+                document.body.appendChild(requestIndicator);
+            }
+
+            requestIndicator.hidden = false;
+        }, 250);
+    }
+
+    return nativeFetch(...args).finally(() => {
+        pendingRequests--;
+        if (pendingRequests === 0) {
+            window.clearTimeout(requestIndicatorTimer);
+            requestIndicatorTimer = null;
+            if (requestIndicator) requestIndicator.hidden = true;
+        }
+    });
+};
+
+document.addEventListener('submit', (event) => {
+    if (event.defaultPrevented) return;
+
+    const form = event.target;
+    if (!(form instanceof HTMLFormElement)) return;
+
+    const button = event.submitter || form.querySelector('[type="submit"]');
+    if (button) window.vsSetButtonLoading(button, 'Submitting...');
+});
 
 window.vsModalPrepareOpen = function (modal) {
     if (!modal) return;

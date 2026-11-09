@@ -349,9 +349,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Empty selection means "no status": the override row is removed.
             if (!selectedStatus) {
+                const resetLoading = window.vsSetButtonLoading(saveStatusBtn, "Removing override...");
                 delete dateStatuses[selectedDate];
                 refreshDayCell(selectedDate, null);
-                deleteStatusFromBackend(selectedDate);
+                deleteStatusFromBackend(selectedDate).finally(resetLoading);
 
                 if (modal) {
                     closeStatusModal();
@@ -386,10 +387,11 @@ document.addEventListener("DOMContentLoaded", function () {
             // The cell is only repainted once the server accepts the override,
             // so a refused save cannot leave the calendar showing a state the
             // database does not have.
+            const resetLoading = window.vsSetButtonLoading(saveStatusBtn, "Saving availability...");
             saveStatusToBackend(selectedDate, selectedStatus, {
                 reason: closingWithBookings ? (statusReasonInput?.value || "").trim() : null,
                 confirmedCount: closingWithBookings ? booked : null,
-            });
+            }).finally(resetLoading);
         });
     }
 
@@ -576,7 +578,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Delete status from backend
     function deleteStatusFromBackend(date) {
-        fetch("/admin/availability/remove-override", {
+        return fetch("/admin/availability/remove-override", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

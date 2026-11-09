@@ -2,6 +2,57 @@
 @import "variables.css";
 @import "index.css";
 
+.vs-loading-spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  flex: 0 0 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: vs-loading-spin 0.7s linear infinite;
+}
+
+.vs-request-indicator {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  z-index: 2100;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: 999px;
+  background: var(--vs-color-surface);
+  box-shadow: var(--vs-shadow-card);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  transform: translateX(-50%);
+}
+
+.vs-request-indicator[hidden] {
+  display: none;
+}
+
+button[aria-busy="true"],
+input[aria-busy="true"] {
+  cursor: wait;
+}
+
+@keyframes vs-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-loading-spinner {
+    animation: none;
+  }
+}
+
 /* === Global Reset / Base === */
 *,
 *::before,

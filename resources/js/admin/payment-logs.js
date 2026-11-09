@@ -174,6 +174,12 @@ document.addEventListener('DOMContentLoaded', function () {
     let pendingStatus = null;
 
     function sendStatusUpdate(select, paymentId, newStatus, adminNote) {
+        const wasDisabled = select?.disabled;
+        if (select) {
+            select.disabled = true;
+            select.setAttribute('aria-busy', 'true');
+        }
+
         fetch(`/admin/payments/${paymentId}/status`, {
             method: 'PATCH',
             headers: {
@@ -201,6 +207,12 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(() => {
             if (select) select.value = select.dataset.previousStatus;
             window.showAdminToast('Network error. Please try again.', 'error');
+        })
+        .finally(() => {
+            if (select) {
+                select.disabled = wasDisabled;
+                select.removeAttribute('aria-busy');
+            }
         });
     }
 

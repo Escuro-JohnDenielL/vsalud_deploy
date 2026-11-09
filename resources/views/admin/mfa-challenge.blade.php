@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-    @vite(['resources/css/login.css', 'resources/css/notify.css', 'resources/js/notify.js'])
+    @vite(['resources/css/login.css', 'resources/css/notify.css', 'resources/js/app.js', 'resources/js/notify.js'])
 </head>
 <body class="vs-layout--admin-auth">
     @php
@@ -88,8 +88,7 @@
                 this.value = this.value.replace(/\D/g, '').slice(0, 6);
                 if (this.value.length === 6) {
                     setTimeout(function () {
-                        verifyBtn.disabled = true;
-                        verifyBtn.textContent = 'Verifying...';
+                        window.vsSetButtonLoading(verifyBtn, 'Verifying...');
                         form.submit();
                     }, 300);
                 }

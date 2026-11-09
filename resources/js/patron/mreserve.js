@@ -317,6 +317,7 @@ document.addEventListener("DOMContentLoaded", function () {
         agreeButton.addEventListener("click", () => {
             if (!hasScrolledToBottom) return;
 
+            const resetLoading = window.vsSetButtonLoading(agreeButton, "Saving...");
             fetch(window.agreeUrl, {
                 method: "POST",
                 headers: {
@@ -339,7 +340,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 })
                 .catch((error) => {
                     console.error("Failed to save guest consent:", error);
-                });
+                })
+                .finally(resetLoading);
         });
     }
 
@@ -620,7 +622,7 @@ document.addEventListener("DOMContentLoaded", function () {
         msgEl.classList.remove("vs-state--error");
         msgEl.classList.add("vs-state--neutral");
         msgEl.style.display = "block";
-        this.disabled = true;
+        const resetLoading = window.vsSetButtonLoading(this, "Joining waitlist...");
 
         fetch("/waitlist/join", {
             method: "POST",
@@ -637,7 +639,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then((res) => res.json())
             .then((data) => {
-                this.disabled = false;
+                resetLoading();
                 if (data.success) {
                     const waitlistSuccessModal = document.getElementById("waitlistSuccessModal");
                     window.vsModalCloseAfterFade(dateUnavailableModal, () => {
@@ -653,7 +655,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             })
             .catch((err) => {
-                this.disabled = false;
+                resetLoading();
                 msgEl.textContent = "An error occurred. Please try again.";
                 msgEl.classList.remove("vs-state--neutral");
                 msgEl.classList.add("vs-state--error");

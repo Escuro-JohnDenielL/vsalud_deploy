@@ -90,9 +90,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form submission with loading state
     if (form) {
         form.addEventListener('submit', function(e) {
-            const submitButton = form.querySelector('button[type="submit"]');
-            const originalText = submitButton.textContent;
-            
             // Validate all fields before submission
             let isValid = true;
             inputs.forEach(input => {
@@ -105,16 +102,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 return;
             }
-            
-            // Show loading state
-            submitButton.textContent = 'Sending...';
-            submitButton.disabled = true;
-            
-            // Re-enable button after 3 seconds (in case of slow response)
-            setTimeout(() => {
-                submitButton.textContent = originalText;
-                submitButton.disabled = false;
-            }, 3000);
         });
     }
     

@@ -186,6 +186,7 @@
 
         confirmYes.addEventListener('click', function() {
             const action = pendingAction;
+            if (action) window.vsSetButtonLoading(confirmYes, 'Processing...');
             closeConfirmModal(() => { if (action) action(); });
         });
 

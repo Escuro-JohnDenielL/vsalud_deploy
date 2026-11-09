@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
         pendingDelete = null;
 
         const packageId = packages[packageName].id;
+        const resetLoading = window.vsSetButtonLoading(this, 'Deleting...');
         fetch(`/admin/packages/${packageId}`, {
             method: 'DELETE',
             headers: {
@@ -45,7 +46,8 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(err => {
             console.error("Delete failed:", err);
             showToast(err.message);
-        });
+        })
+        .finally(resetLoading);
     });
 
     // Load packages on page load
@@ -290,6 +292,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (addPackageForm) {
         addPackageForm.addEventListener("submit", function (e) {
             e.preventDefault();
+            const resetLoading = window.vsSetButtonLoading(
+                e.submitter || this.querySelector('[type="submit"]'),
+                'Adding package...'
+            );
 
             const formData = new FormData();
             formData.append("name", document.getElementById("newPackageName").value);
@@ -332,7 +338,8 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(err => {
                 console.error("Add package error:", err);
                 showToast(err.message);
-            });
+            })
+            .finally(resetLoading);
         });
     }
 
@@ -341,6 +348,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (editPackageForm) {
         editPackageForm.addEventListener("submit", function (e) {
             e.preventDefault();
+            const resetLoading = window.vsSetButtonLoading(
+                e.submitter || this.querySelector('[type="submit"]'),
+                'Saving changes...'
+            );
 
             const id = document.getElementById("editPackageId").value;
             const formData = new FormData();
@@ -384,7 +395,8 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(err => {
                 console.error("Edit error:", err);
                 showToast(err.message);
-            });
+            })
+            .finally(resetLoading);
         });
     }
 

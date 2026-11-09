@@ -253,6 +253,7 @@
 
             document.getElementById('confirmModalYes').addEventListener('click', function() {
                 if (pendingFormId) {
+                    window.vsSetButtonLoading(this, 'Submitting...');
                     document.getElementById(pendingFormId).submit();
                 }
                 confirmModal.hide();
