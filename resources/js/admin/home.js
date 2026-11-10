@@ -21,6 +21,30 @@ document.addEventListener("DOMContentLoaded", function () {
     const successModal = new bootstrap.Modal(document.getElementById("successModal"));
     const confirmDeleteModal = new bootstrap.Modal(document.getElementById("confirmDeleteModal"));
 
+    function restoreModalFocus(modalElement, fallbackId) {
+        let returnFocus = null;
+
+        modalElement.addEventListener("show.bs.modal", event => {
+            returnFocus = event.relatedTarget instanceof HTMLElement ? event.relatedTarget : document.activeElement;
+        });
+
+        modalElement.addEventListener("hidden.bs.modal", () => {
+            if (document.querySelector(".modal.show")) {
+                returnFocus = null;
+                return;
+            }
+
+            const target = returnFocus?.isConnected && returnFocus.getClientRects().length
+                ? returnFocus
+                : document.getElementById(fallbackId);
+            if (target && !target.hasAttribute("disabled")) target.focus();
+            returnFocus = null;
+        });
+    }
+
+    restoreModalFocus(document.getElementById("editPackageModal"), "addPackageBtn");
+    restoreModalFocus(document.getElementById("addPackageModal"), "addPackageBtn");
+
     const packages = {};
 
     // Branded placeholder for packages with no photo, or when a photo fails to load.
@@ -621,26 +645,107 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Build one inclusion input row (shared by the Add and Edit modals)
-    function createInclusionRow(container, value = "") {
+    // Build one inclusion row (shared by the Add and Edit modals)
+    function createInclusionRow(container, value = "", afterRow = null) {
         if (!container) return null;
 
-        const row = document.createElement("div");
-        row.className = "vs-inclusion-row mb-2";
+        const row = document.createElement("li");
+        row.className = "vs-inclusion-row";
         row.innerHTML = `
-            <input type="text" name="inclusions[]" class="form-control" placeholder="Enter inclusion">
-            <button type="button" class="admin-btn admin-btn-danger admin-btn-sm remove-inclusion">Remove</button>
+            <div class="vs-inclusion-row__reorder">
+                <button type="button" class="vs-inclusion-icon-button move-inclusion" data-direction="up" aria-label="Move inclusion up">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                        <path d="m6 14 6-6 6 6"/>
+                    </svg>
+                </button>
+                <button type="button" class="vs-inclusion-icon-button move-inclusion" data-direction="down" aria-label="Move inclusion down">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                        <path d="m6 10 6 6 6-6"/>
+                    </svg>
+                </button>
+            </div>
+            <textarea name="inclusions[]" class="form-control vs-inclusion-text" rows="1" placeholder="Enter inclusion"></textarea>
+            <button type="button" class="vs-inclusion-icon-button vs-inclusion-icon-button--remove remove-inclusion" aria-label="Remove inclusion">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d="M4 7h16M10 11v6m4-6v6M5 7l1 14h12l1-14M9 7V4h6v3"/>
+                </svg>
+            </button>
         `;
-        row.querySelector('input[name="inclusions[]"]').value = value;
-        container.appendChild(row);
+        const textarea = row.querySelector('textarea[name="inclusions[]"]');
+        textarea.value = value;
+        if (afterRow && afterRow.parentElement === container) {
+            afterRow.after(row);
+        } else {
+            container.appendChild(row);
+        }
+        resizeInclusionTextarea(textarea);
+        updateInclusionEditor(container);
 
         return row;
     }
 
-    // Collect every inclusion input in a container so the values are actually submitted
+    function resizeInclusionTextarea(textarea) {
+        textarea.style.height = "auto";
+        textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+
+    function updateInclusionEditor(container) {
+        const rows = Array.from(container.querySelectorAll(".vs-inclusion-row"));
+        const editor = container.closest(".vs-package-inclusions-editor");
+        const countLabel = editor?.querySelector(".form-label");
+
+        if (countLabel) {
+            countLabel.textContent = `Package inclusions (${rows.length})`;
+        }
+
+        rows.forEach((row, index) => {
+            const position = index + 1;
+            const upButton = row.querySelector('.move-inclusion[data-direction="up"]');
+            const downButton = row.querySelector('.move-inclusion[data-direction="down"]');
+            const removeButton = row.querySelector(".remove-inclusion");
+            const textarea = row.querySelector('textarea[name="inclusions[]"]');
+
+            upButton.disabled = index === 0;
+            upButton.setAttribute("aria-label", `Move inclusion ${position} up`);
+            downButton.disabled = index === rows.length - 1;
+            downButton.setAttribute("aria-label", `Move inclusion ${position} down`);
+            removeButton.setAttribute("aria-label", `Remove inclusion ${position}`);
+            textarea.setAttribute("aria-label", `Package inclusion ${position}`);
+        });
+    }
+
+    function focusInclusionRow(row) {
+        const textarea = row?.querySelector('textarea[name="inclusions[]"]');
+        if (textarea) {
+            textarea.focus();
+            textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+            return;
+        }
+
+        row?.closest(".vs-package-inclusions-editor")?.querySelector(".vs-inclusion-add")?.focus();
+    }
+
+    function removeInclusionRow(row, focusPrevious = false) {
+        const container = row?.parentElement;
+        if (!container) return;
+
+        const previousRow = row.previousElementSibling;
+        const nextRow = row.nextElementSibling;
+        row.remove();
+        updateInclusionEditor(container);
+
+        const focusTarget = focusPrevious ? previousRow || nextRow : nextRow || previousRow;
+        if (focusTarget) {
+            focusInclusionRow(focusTarget);
+        } else {
+            container.closest(".vs-package-inclusions-editor")?.querySelector(".vs-inclusion-add")?.focus();
+        }
+    }
+
+    // Collect every inclusion value so the submitted order follows the visible list
     // (empty values are filtered out server-side).
     function appendInclusions(formData, containerSelector) {
-        const inputs = document.querySelectorAll(`${containerSelector} input[name="inclusions[]"]`);
+        const inputs = document.querySelectorAll(`${containerSelector} textarea[name="inclusions[]"]`);
 
         if (inputs.length === 0) {
             // Send a blank value so the server can tell "cleared" from "not touched"
@@ -649,6 +754,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         inputs.forEach(input => formData.append("inclusions[]", input.value));
+    }
+
+    const addInclusionsContainer = document.getElementById("inclusionsContainer");
+    if (addInclusionsContainer) {
+        createInclusionRow(addInclusionsContainer);
     }
 
     // Handle dynamic inclusions for add package form
@@ -669,9 +779,70 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Handle remove inclusion for existing inputs (delegated)
     document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('remove-inclusion')) {
-            e.target.closest('.vs-inclusion-row').remove();
+        const button = e.target.closest("button");
+        if (!button) return;
+
+        const row = button.closest(".vs-inclusion-row");
+        if (!row) return;
+
+        if (button.classList.contains("remove-inclusion")) {
+            removeInclusionRow(row);
+            return;
         }
+
+        if (button.classList.contains("move-inclusion")) {
+            const container = row.parentElement;
+            if (button.dataset.direction === "up" && row.previousElementSibling) {
+                container.insertBefore(row, row.previousElementSibling);
+            } else if (button.dataset.direction === "down" && row.nextElementSibling) {
+                container.insertBefore(row.nextElementSibling, row);
+            }
+            updateInclusionEditor(container);
+            focusInclusionRow(row);
+        }
+    });
+
+    document.addEventListener("input", function(e) {
+        if (e.target.matches(".vs-inclusion-text")) {
+            resizeInclusionTextarea(e.target);
+        }
+    });
+
+    document.addEventListener("keydown", function(e) {
+        if (!e.target.matches(".vs-inclusion-text")) return;
+        if (e.isComposing) return;
+
+        if (e.key === "Enter") {
+            e.preventDefault();
+            if (!e.shiftKey) {
+                const row = e.target.closest(".vs-inclusion-row");
+                const newRow = createInclusionRow(row.parentElement, "", row);
+                focusInclusionRow(newRow);
+            }
+            return;
+        }
+
+        if (e.key === "Backspace" && e.target.value === "") {
+            e.preventDefault();
+            removeInclusionRow(e.target.closest(".vs-inclusion-row"), true);
+        }
+    });
+
+    document.addEventListener("paste", function(e) {
+        if (!e.target.matches(".vs-inclusion-text")) return;
+
+        const pastedText = e.clipboardData?.getData("text/plain");
+        if (typeof pastedText !== "string" || !/[\r\n]/.test(pastedText)) return;
+
+        e.preventDefault();
+        const textarea = e.target;
+        const cleanText = pastedText.replace(/[\r\n]+/g, " ");
+        textarea.setRangeText(cleanText, textarea.selectionStart, textarea.selectionEnd, "end");
+        resizeInclusionTextarea(textarea);
+    });
+
+    window.addEventListener("resize", function() {
+        document.querySelectorAll(".vs-inclusion-text").forEach(resizeInclusionTextarea);
     });
 
     console.log("Admin Package Manager initialized.");

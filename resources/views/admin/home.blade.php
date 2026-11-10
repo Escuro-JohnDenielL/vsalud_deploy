@@ -16,7 +16,7 @@
                 <li>Upload the main photo. Two more photos are optional.</li>
                 <li>Photos must be JPEG, PNG, or GIF, and no larger than 2 MB each.</li>
                 <li>Pick the venue this package is held in. Its photo gallery is managed on the Venues page and is shown to patrons from the package card.</li>
-                <li>Add inclusions one row at a time. Use Remove to drop a row.</li>
+                <li>Add inclusions, reorder them with the arrow controls, or remove a row.</li>
                 <li>Save the package to show it on the patron Packages page.</li>
                 <li>Edit keeps the current photo when you leave a photo field empty.</li>
                 <li>Delete removes the package and its photo files. It cannot be undone from this page.</li>
@@ -144,44 +144,53 @@
             <form id="editPackageForm">
                 <div class="modal-body">
                     <input type="hidden" id="editPackageId">
-                    <div class="vs-admin-dashboard__edit-details">
-                        <div class="mb-3">
-                            <label class="form-label">Package Name</label>
-                            <input type="text" id="editPackageName" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Description</label>
-                            <textarea id="editPackageDescription" class="form-control" rows="3"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Package Inclusions</label>
-                            <div id="editInclusionsContainer"></div>
-                            <button type="button" id="editAddInclusion" class="admin-btn admin-btn-ghost admin-btn-sm">+ Add Inclusion</button>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Venues used by this package</label>
-                            <div class="vs-venue-checks" id="editPackageVenues">
-                                @forelse ($venues as $venue)
-                                    <label class="vs-venue-checks__item">
-                                        <input type="checkbox" class="edit-package-venue" value="{{ $venue->id }}">
-                                        <span>{{ $venue->name }}</span>
-                                    </label>
-                                @empty
-                                    <p class="vs-admin-dashboard__field-note mb-0">No venues yet. <a href="{{ route('admin.venues') }}">Create one first</a>.</p>
-                                @endforelse
+                    <div class="vs-package-editor-layout">
+                        <div class="vs-package-editor__fields">
+                            <div class="vs-admin-dashboard__edit-details">
+                                <div class="mb-3">
+                                    <label class="form-label" for="editPackageName">Package Name</label>
+                                    <input type="text" id="editPackageName" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="editPackageDescription">Description</label>
+                                    <textarea id="editPackageDescription" class="form-control" rows="5"></textarea>
+                                </div>
                             </div>
-                            <p class="vs-admin-dashboard__field-note">Patrons get a "View venue pictures" button that lets them switch between these venues. <a href="{{ route('admin.venues') }}">Upload the villa photos on the Venues page</a>.</p>
+                            <div class="vs-admin-dashboard__edit-media">
+                                <div class="mb-3">
+                                    <label class="form-label">Current Main Image</label>
+                                    <img id="currentMainImage" src="" alt="Current Image" class="img-fluid rounded mb-2 vs-admin-dashboard__edit-image">
+                                    <input type="file" id="editPackageImage" class="form-control" accept="image/*">
+                                </div>
+                                <p class="vs-admin-dashboard__field-note">Use a landscape photo without text, at least 1200px wide.</p>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Venues used by this package</label>
+                                <div class="vs-venue-checks" id="editPackageVenues">
+                                    @forelse ($venues as $venue)
+                                        <label class="vs-venue-checks__item">
+                                            <input type="checkbox" class="edit-package-venue" value="{{ $venue->id }}">
+                                            <span>{{ $venue->name }}</span>
+                                        </label>
+                                    @empty
+                                        <p class="vs-admin-dashboard__field-note mb-0">No venues yet. <a href="{{ route('admin.venues') }}">Create one first</a>.</p>
+                                    @endforelse
+                                </div>
+                                <p class="vs-admin-dashboard__field-note">Patrons get a "View venue pictures" button that lets them switch between these venues. <a href="{{ route('admin.venues') }}">Upload the villa photos on the Venues page</a>.</p>
+                            </div>
+                            <p class="text-muted mb-0 vs-admin-dashboard__edit-note"><small>Leave the photo field empty to keep the package's current photo.</small></p>
                         </div>
+                        <section class="vs-package-inclusions-editor" aria-labelledby="editInclusionsTitle">
+                            <label class="form-label" id="editInclusionsTitle">Package inclusions (0)</label>
+                            <ul id="editInclusionsContainer" class="vs-inclusion-list" role="list"></ul>
+                            <button type="button" id="editAddInclusion" class="admin-btn admin-btn-ghost vs-inclusion-add">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false">
+                                    <path d="M12 5v14M5 12h14"/>
+                                </svg>
+                                <span>Add inclusion</span>
+                            </button>
+                        </section>
                     </div>
-                    <div class="vs-admin-dashboard__edit-media">
-                        <div class="mb-3">
-                            <label class="form-label">Current Main Image</label>
-                            <img id="currentMainImage" src="" alt="Current Image" class="img-fluid rounded mb-2 vs-admin-dashboard__edit-image">
-                            <input type="file" id="editPackageImage" class="form-control" accept="image/*">
-                        </div>
-                        <p class="vs-admin-dashboard__field-note">Use a landscape photo without text, at least 1200px wide.</p>
-                    </div>
-                    <p class="text-muted mb-0 vs-admin-dashboard__edit-note"><small>Leave the photo field empty to keep the package's current photo.</small></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="admin-btn admin-btn-ghost" data-bs-dismiss="modal">Cancel</button>
@@ -201,46 +210,48 @@
             </div>
             <form id="addPackageForm" enctype="multipart/form-data">
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Package Name</label>
-                            <input type="text" name="name" id="newPackageName" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea name="description" id="newPackageDescription" class="form-control" rows="3"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Venues used by this package</label>
-                        <div class="vs-venue-checks" id="newPackageVenues">
-                            @forelse ($venues as $venue)
-                                <label class="vs-venue-checks__item">
-                                    <input type="checkbox" class="new-package-venue" value="{{ $venue->id }}">
-                                    <span>{{ $venue->name }}</span>
-                                </label>
-                            @empty
-                                <p class="vs-admin-dashboard__field-note mb-0">No venues yet. <a href="{{ route('admin.venues') }}">Create one first</a>.</p>
-                            @endforelse
-                        </div>
-                        <p class="vs-admin-dashboard__field-note">Tick every venue this package can be held in. Photos are uploaded once per venue on the Venues page. They are shared, not copied per package.</p>
-                    </div>
-                    <div class="vs-admin-dashboard__add-media">
-                        <div class="mb-3">
-                            <label class="form-label" for="newPackageImage">Package Image</label>
-                            <input type="file" name="image" id="newPackageImage" class="form-control" accept="image/*" required>
-                        </div>
-                        <p class="vs-admin-dashboard__field-note">Use a landscape photo without text, at least 1200px wide.</p>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Package Inclusions</label>
-                        <div id="inclusionsContainer">
-                            <div class="vs-inclusion-row mb-2">
-                                <input type="text" name="inclusions[]" class="form-control" placeholder="Enter inclusion">
-                                <button type="button" class="admin-btn admin-btn-danger admin-btn-sm remove-inclusion">Remove</button>
+                    <div class="vs-package-editor-layout">
+                        <div class="vs-package-editor__fields">
+                            <div class="mb-3">
+                                <label class="form-label" for="newPackageName">Package Name</label>
+                                <input type="text" name="name" id="newPackageName" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="newPackageDescription">Description</label>
+                                <textarea name="description" id="newPackageDescription" class="form-control" rows="5"></textarea>
+                            </div>
+                            <div class="vs-admin-dashboard__add-media">
+                                <div class="mb-3">
+                                    <label class="form-label" for="newPackageImage">Package Image</label>
+                                    <input type="file" name="image" id="newPackageImage" class="form-control" accept="image/*" required>
+                                </div>
+                                <p class="vs-admin-dashboard__field-note">Use a landscape photo without text, at least 1200px wide.</p>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Venues used by this package</label>
+                                <div class="vs-venue-checks" id="newPackageVenues">
+                                    @forelse ($venues as $venue)
+                                        <label class="vs-venue-checks__item">
+                                            <input type="checkbox" class="new-package-venue" value="{{ $venue->id }}">
+                                            <span>{{ $venue->name }}</span>
+                                        </label>
+                                    @empty
+                                        <p class="vs-admin-dashboard__field-note mb-0">No venues yet. <a href="{{ route('admin.venues') }}">Create one first</a>.</p>
+                                    @endforelse
+                                </div>
+                                <p class="vs-admin-dashboard__field-note">Tick every venue this package can be held in. Photos are uploaded once per venue on the Venues page. They are shared, not copied per package.</p>
                             </div>
                         </div>
-                        <button type="button" id="addInclusion" class="admin-btn admin-btn-ghost admin-btn-sm">+ Add Inclusion</button>
+                        <section class="vs-package-inclusions-editor" aria-labelledby="addInclusionsTitle">
+                            <label class="form-label" id="addInclusionsTitle">Package inclusions (0)</label>
+                            <ul id="inclusionsContainer" class="vs-inclusion-list" role="list"></ul>
+                            <button type="button" id="addInclusion" class="admin-btn admin-btn-ghost vs-inclusion-add">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false">
+                                    <path d="M12 5v14M5 12h14"/>
+                                </svg>
+                                <span>Add inclusion</span>
+                            </button>
+                        </section>
                     </div>
                 </div>
                 <div class="modal-footer">

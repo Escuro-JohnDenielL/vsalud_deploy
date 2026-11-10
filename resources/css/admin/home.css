@@ -751,33 +751,68 @@
   object-fit: contain;
 }
 
-.vs-admin-dashboard__edit-modal #editPackageForm .modal-body {
+.vs-admin-dashboard__edit-modal .modal-dialog,
+.vs-admin-dashboard__add-modal .modal-dialog {
+  width: calc(100% - 2rem);
+  max-width: 1100px;
+}
+
+.vs-admin-dashboard__edit-modal .modal-content,
+.vs-admin-dashboard__add-modal .modal-content {
+  display: flex;
+  max-height: calc(100vh - 2rem);
+  flex-direction: column;
+  padding: 0;
+}
+
+.vs-admin-dashboard__edit-modal #editPackageForm,
+.vs-admin-dashboard__add-modal #addPackageForm {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.vs-admin-dashboard__edit-modal #editPackageForm .modal-body,
+.vs-admin-dashboard__add-modal #addPackageForm .modal-body {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  padding: var(--vs-space-4) var(--vs-space-5);
+}
+
+.vs-package-editor-layout {
   display: grid;
-  max-height: calc(100vh - 180px);
+  min-height: 0;
+  height: 100%;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  align-items: start;
-  gap: var(--vs-space-3) var(--vs-space-5);
-  overflow-y: auto;
+  align-items: stretch;
+  gap: var(--vs-space-4) var(--vs-space-5);
+}
+
+.vs-package-editor__fields {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: var(--vs-space-3);
+}
+
+.vs-package-editor__fields > .mb-3,
+.vs-admin-dashboard__edit-details > .mb-3 {
+  min-width: 0;
+  margin-bottom: 0;
 }
 
 .vs-admin-dashboard__edit-details {
   display: grid;
   min-width: 0;
   gap: var(--vs-space-3);
-  grid-column: 1;
-}
-
-.vs-admin-dashboard__edit-details > .mb-3 {
-  min-width: 0;
-  margin-bottom: 0;
 }
 
 .vs-admin-dashboard__edit-media {
   display: grid;
   min-width: 0;
-  grid-template-columns: minmax(0, 1fr);
   gap: var(--vs-space-3);
-  grid-column: 2;
 }
 
 .vs-admin-dashboard__edit-media > .mb-3 {
@@ -808,14 +843,15 @@
   font-size: var(--vs-text-secondary-min);
 }
 
-/* Add Package modal: full-width file fields and a scrollable body */
-.vs-admin-dashboard__add-modal .modal-body {
-  max-height: calc(100vh - 220px);
-  overflow-y: auto;
+.vs-admin-dashboard__edit-modal #editPackageDescription,
+.vs-admin-dashboard__add-modal #newPackageDescription {
+  min-height: 8rem;
+  resize: vertical;
 }
 
 .vs-admin-dashboard__add-media {
   display: grid;
+  min-width: 0;
   gap: var(--vs-space-3);
 }
 
@@ -831,24 +867,137 @@
   font-size: var(--vs-text-secondary-min);
 }
 
-/* Inclusion rows: input plus a compact danger button (no input-group stretching) */
-.vs-admin-dashboard .vs-inclusion-row {
+.vs-package-inclusions-editor {
   display: flex;
-  align-items: center;
-  gap: var(--vs-space-2);
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
 }
 
-.vs-admin-dashboard .vs-inclusion-row .form-control {
+.vs-package-inclusions-editor > .form-label {
+  flex: 0 0 auto;
+  margin-bottom: var(--vs-space-2);
+}
+
+.vs-package-inclusions-editor .vs-inclusion-list {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 8px;
+  max-height: calc(100vh - 300px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  margin: 0;
+  padding: 2px 4px 2px 2px;
+  list-style: none;
+}
+
+.vs-package-inclusions-editor .vs-inclusion-row {
+  display: flex;
+  min-width: 0;
+  flex: 0 0 auto;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.vs-inclusion-row__reorder {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vs-inclusion-row .vs-inclusion-text {
   flex: 1 1 auto;
   min-width: 0;
+  height: auto;
+  min-height: 40px;
+  overflow: hidden;
+  resize: none;
+  overflow-wrap: anywhere;
 }
 
-.vs-admin-dashboard .vs-inclusion-row .admin-btn {
+.vs-inclusion-icon-button {
+  display: grid;
+  width: 36px;
+  height: 36px;
   flex: 0 0 auto;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--vs-radius-control);
+  background: transparent;
+  box-shadow: none;
+  color: var(--vs-color-text-secondary);
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
 }
 
-.vs-admin-dashboard__edit-modal #editPackageForm .modal-body > .vs-admin-dashboard__edit-note {
-  grid-column: 1 / -1;
+.vs-inclusion-icon-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.vs-inclusion-icon-button:disabled {
+  color: var(--vs-color-text-secondary);
+  cursor: default;
+  opacity: 0.4;
+}
+
+.vs-inclusion-icon-button:not(:disabled):hover {
+  background: var(--vs-color-surface-beige);
+}
+
+.vs-inclusion-icon-button--remove:not(:disabled):hover {
+  color: var(--vs-status-danger-text);
+}
+
+.vs-inclusion-icon-button:focus-visible,
+.vs-inclusion-add:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.vs-inclusion-row .vs-inclusion-text:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: 1px;
+  box-shadow: none;
+}
+
+.vs-inclusion-add {
+  display: inline-flex;
+  min-height: 44px;
+  flex: 0 0 auto;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--vs-space-2);
+  margin-top: var(--vs-space-2);
+  padding: 7px 10px;
+  box-shadow: none;
+}
+
+.vs-admin-dashboard__edit-modal .modal-footer,
+.vs-admin-dashboard__add-modal .modal-footer {
+  flex: 0 0 auto;
+  gap: var(--vs-space-2);
+  margin-top: 0;
+  padding: var(--vs-space-3) var(--vs-space-5);
+}
+
+.vs-admin-dashboard__edit-modal .modal-footer .admin-btn,
+.vs-admin-dashboard__add-modal .modal-footer .admin-btn {
+  min-height: 44px;
+}
+
+.vs-admin-dashboard__edit-modal .btn-close {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.vs-inclusion-add svg {
+  flex: 0 0 auto;
 }
 
 .vs-admin-dashboard .package-inclusions ul {
@@ -905,22 +1054,49 @@
   to { transform: rotate(360deg); }
 }
 
+@media (max-width: 900px) {
+  .vs-admin-dashboard__edit-modal .modal-content,
+  .vs-admin-dashboard__add-modal .modal-content {
+    max-height: calc(100vh - 1rem);
+  }
+
+  .vs-admin-dashboard__edit-modal #editPackageForm .modal-body,
+  .vs-admin-dashboard__add-modal #addPackageForm .modal-body {
+    overflow-y: auto;
+  }
+
+  .vs-package-editor-layout {
+    height: auto;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .vs-package-inclusions-editor .vs-inclusion-list {
+    max-height: 45vh;
+    flex: 0 1 auto;
+  }
+
+  .vs-inclusion-icon-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .vs-inclusion-row .vs-inclusion-text {
+    min-height: 44px;
+  }
+
+  .vs-package-editor__fields .form-control {
+    min-height: 44px;
+  }
+}
+
+@media (pointer: coarse) {
+  .vs-inclusion-icon-button {
+    width: 44px;
+    height: 44px;
+  }
+}
+
 @media (max-width: 768px) {
-  .vs-admin-dashboard__edit-modal #editPackageForm .modal-body {
-    max-height: calc(100vh - 180px);
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .vs-admin-dashboard__edit-details,
-  .vs-admin-dashboard__edit-media,
-  .vs-admin-dashboard__edit-modal #editPackageForm .modal-body > .vs-admin-dashboard__edit-note {
-    grid-column: 1;
-  }
-
-  .vs-admin-dashboard__edit-media {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   .vs-admin-dashboard .package-card {
     width: auto;
     max-width: none;
@@ -973,6 +1149,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .vs-admin-dashboard .package-card {
+    transition: none;
+  }
+
+  .vs-inclusion-icon-button {
     transition: none;
   }
 
