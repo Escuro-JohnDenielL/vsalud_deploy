@@ -645,6 +645,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    let activeInclusionReorder = null;
+    const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
     // Build one inclusion row (shared by the Add and Edit modals)
     function createInclusionRow(container, value = "", afterRow = null) {
         if (!container) return null;
@@ -652,18 +655,13 @@ document.addEventListener("DOMContentLoaded", function () {
         const row = document.createElement("li");
         row.className = "vs-inclusion-row";
         row.innerHTML = `
-            <div class="vs-inclusion-row__reorder">
-                <button type="button" class="vs-inclusion-icon-button move-inclusion" data-direction="up" aria-label="Move inclusion up">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                        <path d="m6 14 6-6 6 6"/>
-                    </svg>
-                </button>
-                <button type="button" class="vs-inclusion-icon-button move-inclusion" data-direction="down" aria-label="Move inclusion down">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                        <path d="m6 10 6 6 6-6"/>
-                    </svg>
-                </button>
-            </div>
+            <button type="button" class="vs-inclusion-handle" aria-label="Reorder inclusion" aria-pressed="false" aria-keyshortcuts="Space Enter ArrowUp ArrowDown Escape">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 24" fill="currentColor" aria-hidden="true" focusable="false">
+                    <circle cx="6" cy="5" r="1.5"/><circle cx="14" cy="5" r="1.5"/>
+                    <circle cx="6" cy="12" r="1.5"/><circle cx="14" cy="12" r="1.5"/>
+                    <circle cx="6" cy="19" r="1.5"/><circle cx="14" cy="19" r="1.5"/>
+                </svg>
+            </button>
             <textarea name="inclusions[]" class="form-control vs-inclusion-text" rows="1" placeholder="Enter inclusion"></textarea>
             <button type="button" class="vs-inclusion-icon-button vs-inclusion-icon-button--remove remove-inclusion" aria-label="Remove inclusion">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
@@ -687,10 +685,255 @@ document.addEventListener("DOMContentLoaded", function () {
     function resizeInclusionTextarea(textarea) {
         textarea.style.height = "auto";
         textarea.style.height = `${textarea.scrollHeight}px`;
+        textarea.style.overflowY = "hidden";
+    }
+
+    function resizeInclusionList(container) {
+        container?.querySelectorAll(".vs-inclusion-text").forEach(resizeInclusionTextarea);
+    }
+
+    function getInclusionRows(container) {
+        return Array.from(container.querySelectorAll(".vs-inclusion-row"));
+    }
+
+    function animateInclusionChange(container, change) {
+        const rows = getInclusionRows(container);
+        const previousTops = new Map(rows.map(row => [row, row.getBoundingClientRect().top]));
+        change();
+
+        if (reducedMotionQuery.matches) return;
+
+        const movedRows = getInclusionRows(container).filter(row => previousTops.has(row));
+        movedRows.forEach(row => {
+            const delta = previousTops.get(row) - row.getBoundingClientRect().top;
+            if (delta) {
+                row.style.transition = "none";
+                row.style.transform = `translateY(${delta}px)`;
+            }
+        });
+
+        if (movedRows.some(row => row.style.transform)) {
+            void container.offsetHeight;
+            window.requestAnimationFrame(() => {
+                movedRows.forEach(row => {
+                    if (row.isConnected) {
+                        row.style.transition = "transform 160ms ease";
+                        row.style.transform = "";
+                    }
+                });
+            });
+        }
+    }
+
+    function getInclusionLiveRegion(container) {
+        const editor = container.closest(".vs-package-inclusions-editor");
+        let liveRegion = editor?.querySelector(".vs-inclusion-live");
+        if (!liveRegion && editor) {
+            liveRegion = document.createElement("div");
+            liveRegion.className = "vs-inclusion-live visually-hidden";
+            liveRegion.setAttribute("aria-live", "polite");
+            liveRegion.setAttribute("aria-atomic", "true");
+            editor.appendChild(liveRegion);
+        }
+        return liveRegion;
+    }
+
+    function announceInclusionMove(state) {
+        const rows = getInclusionRows(state.container);
+        const position = rows.indexOf(state.row) + 1;
+        const liveRegion = getInclusionLiveRegion(state.container);
+        if (!position || !liveRegion) return;
+
+        liveRegion.textContent = "";
+        window.requestAnimationFrame(() => {
+            liveRegion.textContent = `Inclusion ${state.originalPosition} moved to position ${position} of ${rows.length}`;
+        });
+    }
+
+    function getRowPosition(row) {
+        return getInclusionRows(row.parentElement).indexOf(row) + 1;
+    }
+
+    function updateInclusionHandleState(state, pressed) {
+        state.handle.setAttribute("aria-pressed", String(pressed));
+        state.row.classList.toggle("is-keyboard-grabbed", pressed);
+    }
+
+    function restoreInclusionOrder(state) {
+        state.placeholder?.remove();
+        state.originalRows.forEach(row => state.container.appendChild(row));
+    }
+
+    function clearPointerDragStyles(row) {
+        row.classList.remove("is-pointer-dragging");
+        ["position", "top", "left", "width", "zIndex", "margin", "pointerEvents", "transition", "transform"].forEach(property => {
+            row.style[property] = "";
+        });
+    }
+
+    function stopInclusionReorder(cancel = false) {
+        const state = activeInclusionReorder;
+        if (!state) return;
+
+        activeInclusionReorder = null;
+        if (state.scrollFrame) window.cancelAnimationFrame(state.scrollFrame);
+
+        if (cancel) {
+            restoreInclusionOrder(state);
+        } else if (state.mode === "pointer" && state.placeholder?.parentElement === state.container) {
+            state.container.insertBefore(state.row, state.placeholder);
+            state.placeholder.remove();
+        }
+
+        if (state.mode === "pointer") {
+            clearPointerDragStyles(state.row);
+            if (state.handle.hasPointerCapture?.(state.pointerId)) {
+                state.handle.releasePointerCapture(state.pointerId);
+            }
+        } else {
+            updateInclusionHandleState(state, false);
+        }
+        state.container.classList.remove("is-reordering");
+        updateInclusionEditor(state.container);
+        resizeInclusionList(state.container);
+        state.handle.focus({ preventScroll: true });
+
+        if (!cancel && getRowPosition(state.row) !== state.originalPosition) {
+            announceInclusionMove(state);
+        }
+    }
+
+    function movePointerPlaceholder(state, pointerY) {
+        const rows = getInclusionRows(state.container).filter(row => row !== state.row);
+        const target = rows.find(row => pointerY <= row.getBoundingClientRect().top + row.getBoundingClientRect().height / 2);
+        const insert = () => {
+            if (target) {
+                if (state.placeholder.nextElementSibling !== target) {
+                    state.container.insertBefore(state.placeholder, target);
+                }
+            } else if (state.container.lastElementChild !== state.placeholder) {
+                state.container.appendChild(state.placeholder);
+            }
+        };
+        const needsMove = target
+            ? state.placeholder.nextElementSibling !== target
+            : state.container.lastElementChild !== state.placeholder;
+        if (needsMove) {
+            animateInclusionChange(state.container, insert);
+        }
+    }
+
+    function scrollInclusionArea(state) {
+        const candidates = [
+            state.container,
+            state.container.closest(".modal-body")
+        ].filter((element, index, list) => element && list.indexOf(element) === index);
+
+        for (const element of candidates) {
+            if (element.scrollHeight <= element.clientHeight + 1) continue;
+            const rect = element.getBoundingClientRect();
+            if (state.pointerY < rect.top || state.pointerY > rect.bottom) continue;
+
+            const edge = Math.min(56, rect.height / 4);
+            let amount = 0;
+            if (state.pointerY < rect.top + edge && element.scrollTop > 0) {
+                amount = -Math.ceil(12 * (1 - (state.pointerY - rect.top) / edge));
+            } else if (state.pointerY > rect.bottom - edge && element.scrollTop + element.clientHeight < element.scrollHeight - 1) {
+                amount = Math.ceil(12 * (1 - (rect.bottom - state.pointerY) / edge));
+            }
+            if (amount) {
+                element.scrollTop += amount;
+                break;
+            }
+        }
+    }
+
+    function startPointerAutoScroll(state) {
+        const scroll = () => {
+            if (activeInclusionReorder !== state) return;
+            scrollInclusionArea(state);
+            movePointerPlaceholder(state, state.pointerY);
+            state.scrollFrame = window.requestAnimationFrame(scroll);
+        };
+        state.scrollFrame = window.requestAnimationFrame(scroll);
+    }
+
+    function startPointerInclusionReorder(handle, event) {
+        const row = handle.closest(".vs-inclusion-row");
+        const container = row?.closest(".vs-inclusion-list");
+        if (!row || !container || activeInclusionReorder || event.button !== 0) return;
+
+        event.preventDefault();
+        handle.focus({ preventScroll: true });
+        const rect = row.getBoundingClientRect();
+        const originalRows = getInclusionRows(container);
+        const placeholder = document.createElement("li");
+        placeholder.className = "vs-inclusion-placeholder";
+        placeholder.setAttribute("aria-hidden", "true");
+        placeholder.style.height = `${rect.height}px`;
+        container.insertBefore(placeholder, row);
+
+        const state = {
+            mode: "pointer",
+            row,
+            handle,
+            container,
+            placeholder,
+            originalRows,
+            originalPosition: originalRows.indexOf(row) + 1,
+            pointerId: event.pointerId,
+            pointerY: event.clientY,
+            offsetY: event.clientY - rect.top
+        };
+        activeInclusionReorder = state;
+        container.classList.add("is-reordering");
+        row.classList.add("is-pointer-dragging");
+        row.style.top = `${rect.top}px`;
+        row.style.left = `${rect.left}px`;
+        row.style.width = `${rect.width}px`;
+        handle.setPointerCapture(event.pointerId);
+        startPointerAutoScroll(state);
+    }
+
+    function startKeyboardInclusionReorder(handle) {
+        const row = handle.closest(".vs-inclusion-row");
+        const container = row?.closest(".vs-inclusion-list");
+        if (!row || !container || activeInclusionReorder) return;
+
+        const originalRows = getInclusionRows(container);
+        const state = {
+            mode: "keyboard",
+            row,
+            handle,
+            container,
+            originalRows,
+            originalPosition: originalRows.indexOf(row) + 1
+        };
+        activeInclusionReorder = state;
+        container.classList.add("is-reordering");
+        updateInclusionHandleState(state, true);
+    }
+
+    function moveKeyboardInclusionRow(state, direction) {
+        const rows = getInclusionRows(state.container);
+        const index = rows.indexOf(state.row);
+        const neighbor = rows[index + direction];
+        if (!neighbor) return;
+
+        animateInclusionChange(state.container, () => {
+            if (direction < 0) {
+                state.container.insertBefore(state.row, neighbor);
+            } else {
+                state.container.insertBefore(neighbor, state.row);
+            }
+        });
+        updateInclusionEditor(state.container);
+        state.handle.focus({ preventScroll: true });
+        announceInclusionMove(state);
     }
 
     function updateInclusionEditor(container) {
-        const rows = Array.from(container.querySelectorAll(".vs-inclusion-row"));
+        const rows = getInclusionRows(container);
         const editor = container.closest(".vs-package-inclusions-editor");
         const countLabel = editor?.querySelector(".form-label");
 
@@ -700,15 +943,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         rows.forEach((row, index) => {
             const position = index + 1;
-            const upButton = row.querySelector('.move-inclusion[data-direction="up"]');
-            const downButton = row.querySelector('.move-inclusion[data-direction="down"]');
+            const handle = row.querySelector(".vs-inclusion-handle");
             const removeButton = row.querySelector(".remove-inclusion");
             const textarea = row.querySelector('textarea[name="inclusions[]"]');
 
-            upButton.disabled = index === 0;
-            upButton.setAttribute("aria-label", `Move inclusion ${position} up`);
-            downButton.disabled = index === rows.length - 1;
-            downButton.setAttribute("aria-label", `Move inclusion ${position} down`);
+            handle.setAttribute("aria-label", `Reorder inclusion ${position}`);
+            handle.setAttribute("aria-pressed", String(activeInclusionReorder?.row === row && activeInclusionReorder.mode === "keyboard"));
             removeButton.setAttribute("aria-label", `Remove inclusion ${position}`);
             textarea.setAttribute("aria-label", `Package inclusion ${position}`);
         });
@@ -725,6 +965,10 @@ document.addEventListener("DOMContentLoaded", function () {
         row?.closest(".vs-package-inclusions-editor")?.querySelector(".vs-inclusion-add")?.focus();
     }
 
+    function focusInclusionHandle(row) {
+        row?.querySelector(".vs-inclusion-handle")?.focus();
+    }
+
     function removeInclusionRow(row, focusPrevious = false) {
         const container = row?.parentElement;
         if (!container) return;
@@ -736,7 +980,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const focusTarget = focusPrevious ? previousRow || nextRow : nextRow || previousRow;
         if (focusTarget) {
-            focusInclusionRow(focusTarget);
+            focusInclusionHandle(focusTarget);
         } else {
             container.closest(".vs-package-inclusions-editor")?.querySelector(".vs-inclusion-add")?.focus();
         }
@@ -765,7 +1009,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const addInclusionBtn = document.getElementById('addInclusion');
     if (addInclusionBtn) {
         addInclusionBtn.addEventListener('click', function() {
-            createInclusionRow(document.getElementById('inclusionsContainer'));
+            const row = createInclusionRow(document.getElementById('inclusionsContainer'));
+            row?.scrollIntoView({ block: "nearest" });
         });
     }
 
@@ -773,34 +1018,82 @@ document.addEventListener("DOMContentLoaded", function () {
     const editAddInclusionBtn = document.getElementById('editAddInclusion');
     if (editAddInclusionBtn) {
         editAddInclusionBtn.addEventListener('click', function() {
-            createInclusionRow(document.getElementById('editInclusionsContainer'));
+            const row = createInclusionRow(document.getElementById('editInclusionsContainer'));
+            row?.scrollIntoView({ block: "nearest" });
         });
     }
 
-    // Handle remove inclusion for existing inputs (delegated)
+    // Keep row controls scoped to their own inclusion list.
     document.addEventListener('click', function(e) {
         const button = e.target.closest("button");
-        if (!button) return;
+        if (!button || !button.classList.contains("remove-inclusion")) return;
 
         const row = button.closest(".vs-inclusion-row");
-        if (!row) return;
+        if (row?.closest(".vs-inclusion-list")) removeInclusionRow(row);
+    });
 
-        if (button.classList.contains("remove-inclusion")) {
-            removeInclusionRow(row);
+    document.addEventListener("pointerdown", function(e) {
+        const handle = e.target.closest(".vs-inclusion-handle");
+        if (handle) startPointerInclusionReorder(handle, e);
+    });
+
+    document.addEventListener("pointermove", function(e) {
+        const state = activeInclusionReorder;
+        if (!state || state.mode !== "pointer" || e.pointerId !== state.pointerId) return;
+
+        e.preventDefault();
+        state.pointerY = e.clientY;
+        state.row.style.top = `${e.clientY - state.offsetY}px`;
+        movePointerPlaceholder(state, state.pointerY);
+    }, { passive: false });
+
+    document.addEventListener("pointerup", function(e) {
+        const state = activeInclusionReorder;
+        if (!state || state.mode !== "pointer" || e.pointerId !== state.pointerId) return;
+
+        state.pointerY = e.clientY;
+        movePointerPlaceholder(state, state.pointerY);
+        stopInclusionReorder(false);
+    });
+
+    document.addEventListener("pointercancel", function(e) {
+        const state = activeInclusionReorder;
+        if (state?.mode === "pointer" && e.pointerId === state.pointerId) {
+            stopInclusionReorder(true);
+        }
+    });
+
+    document.addEventListener("keydown", function(e) {
+        const state = activeInclusionReorder;
+        if (e.key === "Escape" && state) {
+            e.preventDefault();
+            e.stopPropagation();
+            stopInclusionReorder(true);
             return;
         }
 
-        if (button.classList.contains("move-inclusion")) {
-            const container = row.parentElement;
-            if (button.dataset.direction === "up" && row.previousElementSibling) {
-                container.insertBefore(row, row.previousElementSibling);
-            } else if (button.dataset.direction === "down" && row.nextElementSibling) {
-                container.insertBefore(row.nextElementSibling, row);
+        const handle = e.target.closest?.(".vs-inclusion-handle");
+        if (!handle) return;
+
+        if (state?.mode === "keyboard" && state.handle === handle) {
+            if (e.key === " " || e.key === "Enter") {
+                e.preventDefault();
+                e.stopPropagation();
+                stopInclusionReorder(false);
+            } else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                e.preventDefault();
+                e.stopPropagation();
+                moveKeyboardInclusionRow(state, e.key === "ArrowUp" ? -1 : 1);
             }
-            updateInclusionEditor(container);
-            focusInclusionRow(row);
+            return;
         }
-    });
+
+        if (!state && (e.key === " " || e.key === "Enter")) {
+            e.preventDefault();
+            e.stopPropagation();
+            startKeyboardInclusionReorder(handle);
+        }
+    }, true);
 
     document.addEventListener("input", function(e) {
         if (e.target.matches(".vs-inclusion-text")) {
@@ -817,6 +1110,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!e.shiftKey) {
                 const row = e.target.closest(".vs-inclusion-row");
                 const newRow = createInclusionRow(row.parentElement, "", row);
+                newRow?.scrollIntoView({ block: "nearest" });
                 focusInclusionRow(newRow);
             }
             return;
@@ -841,8 +1135,30 @@ document.addEventListener("DOMContentLoaded", function () {
         resizeInclusionTextarea(textarea);
     });
 
-    window.addEventListener("resize", function() {
-        document.querySelectorAll(".vs-inclusion-text").forEach(resizeInclusionTextarea);
+    const inclusionLists = [
+        document.getElementById("inclusionsContainer"),
+        document.getElementById("editInclusionsContainer")
+    ].filter(Boolean);
+    inclusionLists.forEach(container => getInclusionLiveRegion(container));
+
+    const inclusionResizeObserver = typeof ResizeObserver === "undefined"
+        ? null
+        : new ResizeObserver(entries => {
+            entries.forEach(entry => resizeInclusionList(entry.target));
+        });
+    inclusionLists.forEach(container => inclusionResizeObserver?.observe(container));
+
+    if (!inclusionResizeObserver) {
+        window.addEventListener("resize", function() {
+            inclusionLists.forEach(resizeInclusionList);
+        });
+    }
+
+    ["addPackageModal", "editPackageModal"].forEach(modalId => {
+        document.getElementById(modalId)?.addEventListener("shown.bs.modal", event => {
+            const container = event.currentTarget.querySelector(".vs-inclusion-list");
+            resizeInclusionList(container);
+        });
     });
 
     console.log("Admin Package Manager initialized.");

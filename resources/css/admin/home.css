@@ -889,6 +889,7 @@
   max-height: calc(100vh - 300px);
   overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior: contain;
   margin: 0;
   padding: 2px 4px 2px 2px;
   list-style: none;
@@ -899,14 +900,67 @@
   min-width: 0;
   flex: 0 0 auto;
   align-items: flex-start;
+  flex-wrap: nowrap;
   gap: 8px;
 }
 
-.vs-inclusion-row__reorder {
-  display: flex;
+.vs-inclusion-handle {
+  display: grid;
+  width: 36px;
+  height: 36px;
   flex: 0 0 auto;
-  flex-direction: column;
-  gap: 2px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--vs-radius-control);
+  appearance: none;
+  background: transparent;
+  color: var(--vs-color-text-secondary);
+  cursor: grab;
+  touch-action: none;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.vs-inclusion-handle svg {
+  width: 20px;
+  height: 24px;
+}
+
+.vs-inclusion-handle:hover {
+  background: var(--vs-color-surface-beige);
+  color: var(--vs-color-dark-green);
+}
+
+.vs-inclusion-handle:active,
+.vs-inclusion-row.is-pointer-dragging .vs-inclusion-handle {
+  cursor: grabbing;
+}
+
+.vs-inclusion-list.is-reordering {
+  user-select: none;
+}
+
+.vs-inclusion-placeholder {
+  box-sizing: border-box;
+  width: 100%;
+  flex: 0 0 auto;
+  border: 1px dashed rgba(0, 107, 83, 0.42);
+  border-radius: var(--vs-radius-control);
+  background: rgba(0, 107, 83, 0.06);
+}
+
+.vs-inclusion-row.is-pointer-dragging,
+.vs-inclusion-row.is-keyboard-grabbed {
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface-beige);
+  box-shadow: 0 6px 18px rgba(27, 47, 39, 0.16);
+}
+
+.vs-inclusion-row.is-pointer-dragging {
+  position: fixed;
+  z-index: 1060;
+  margin: 0;
+  pointer-events: none;
 }
 
 .vs-inclusion-row .vs-inclusion-text {
@@ -928,6 +982,7 @@
   padding: 0;
   border: 0;
   border-radius: var(--vs-radius-control);
+  appearance: none;
   background: transparent;
   box-shadow: none;
   color: var(--vs-color-text-secondary);
@@ -940,20 +995,16 @@
   height: 16px;
 }
 
-.vs-inclusion-icon-button:disabled {
-  color: var(--vs-color-text-secondary);
-  cursor: default;
-  opacity: 0.4;
-}
-
 .vs-inclusion-icon-button:not(:disabled):hover {
   background: var(--vs-color-surface-beige);
 }
 
 .vs-inclusion-icon-button--remove:not(:disabled):hover {
+  background: var(--vs-status-danger-bg);
   color: var(--vs-status-danger-text);
 }
 
+.vs-inclusion-handle:focus-visible,
 .vs-inclusion-icon-button:focus-visible,
 .vs-inclusion-add:focus-visible {
   outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
@@ -1080,6 +1131,11 @@
     height: 44px;
   }
 
+  .vs-inclusion-handle {
+    width: 44px;
+    height: 44px;
+  }
+
   .vs-inclusion-row .vs-inclusion-text {
     min-height: 44px;
   }
@@ -1091,6 +1147,11 @@
 
 @media (pointer: coarse) {
   .vs-inclusion-icon-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .vs-inclusion-handle {
     width: 44px;
     height: 44px;
   }
@@ -1152,6 +1213,7 @@
     transition: none;
   }
 
+  .vs-inclusion-handle,
   .vs-inclusion-icon-button {
     transition: none;
   }
