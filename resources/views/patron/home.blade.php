@@ -50,10 +50,14 @@
     </div>
     </div>
 
-    {{-- View Package Modal. A package carries one photo, so the media column is
-         a single framed image and the details column holds the actions. --}}
+    {{-- View Package Modal. A package carries one photo beside its details and venue rates. --}}
     <div id="packageModal" class="pkg-modal pkg-modal--package" role="dialog" aria-modal="true" aria-labelledby="pkgModalTitle">
         <div class="pkg-modal__dialog">
+            <button type="button" class="pkg-modal__close close-btn" id="pkgModalClose" aria-label="Close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false">
+                    <path d="m6 6 12 12M18 6 6 18"/>
+                </svg>
+            </button>
             <div class="pkg-modal__body">
                 <div class="pkg-modal__media">
                     <button type="button" class="pkg-modal__zoom" id="pkgModalZoom" aria-label="Enlarge package photo">
@@ -63,30 +67,62 @@
 
                 <div class="pkg-modal__info">
                     <h2 class="pkg-modal__title" id="pkgModalTitle"></h2>
-                    <section class="pkg-modal__pricing" aria-labelledby="pkgModalPricingTitle">
-                        <h3 id="pkgModalPricingTitle">Venue rental estimate</h3>
-                        <p id="pkgModalPriceRange" class="pkg-modal__pricing-range"></p>
-                        <p class="pkg-modal__pricing-disclaimer">Venue rental only; the final quote is confirmed by Villa Salud.</p>
-                        <ul id="pkgModalVenueRates" class="pkg-modal__venue-rates"></ul>
-                    </section>
                     <p class="pkg-modal__desc" id="pkgModalDesc"></p>
 
-                    {{-- Which villa this package is held in (hidden when not linked). --}}
-                    <div class="pkg-modal__venue" id="pkgModalVenueInfo" hidden>
-                        <span class="pkg-modal__venue-label">Venue</span>
-                        <span class="pkg-modal__venue-name" id="pkgModalVenueName"></span>
-                    </div>
-
-                    <div class="pkg-modal__inclusions">
-                        <h3>Package inclusions</h3>
+                    <section class="pkg-modal__inclusions" id="pkgModalInclusionsSection" aria-labelledby="pkgModalInclusionsTitle">
+                        <h3 id="pkgModalInclusionsTitle">Package inclusions</h3>
                         <ul id="pkgModalInclusions"></ul>
-                    </div>
+                    </section>
 
-                    <div class="pkg-modal__actions">
-                        <button type="button" class="pkg-modal__cta pkg-modal__cta--secondary" id="pkgModalDismiss">Close</button>
-                    </div>
+                    <section class="pkg-modal__pricing" aria-labelledby="pkgModalPricingTitle">
+                        <div class="pkg-modal__estimate">
+                            <h3 id="pkgModalPricingTitle">Venue rental estimate</h3>
+                            <p id="pkgModalPriceRange" class="pkg-modal__pricing-range"></p>
+                            <p class="pkg-modal__pricing-disclaimer">Venue rental only. The final quote is confirmed by Villa Salud.</p>
+                        </div>
+                        <button type="button" class="pkg-modal__rates-trigger" id="pkgModalRatesOpen" aria-haspopup="dialog" aria-controls="pkgVenueRatesModal" hidden>
+                            <span>View venue rates</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                <path d="M5 12h14m-6-6 6 6-6 6"/>
+                            </svg>
+                        </button>
+                    </section>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="pkgVenueRatesModal" class="pkg-modal pkg-modal--rates" role="dialog" aria-modal="true" aria-labelledby="pkgModalVenueHeading" hidden>
+        <div class="pkg-modal__dialog pkg-modal__rates-dialog">
+            <div class="pkg-modal__rates-header">
+                <h2 class="pkg-modal__venue-heading" id="pkgModalVenueHeading">Venue rates</h2>
+                <button type="button" class="pkg-modal__rates-close" id="pkgModalRatesClose" aria-label="Close venue rates">&times;</button>
+            </div>
+            <div class="pkg-modal__venue-picker">
+                <div class="pkg-modal__venue-tabs" id="pkgModalVenueTabs" role="tablist" aria-label="Choose a venue"></div>
+                <label class="pkg-modal__venue-picker-label" for="pkgModalVenueSelect">Choose a venue</label>
+                <select class="pkg-modal__venue-select" id="pkgModalVenueSelect" aria-label="Choose a venue">
+                    <option value="">No venues linked</option>
+                </select>
+                <div class="pkg-modal__rates-panel" id="pkgModalVenueRatesPanel" role="tabpanel" aria-live="polite">
+                    <div class="pkg-modal__venue-table-scroll">
+                        <table class="pkg-modal__venue-table" id="pkgModalVenueTable" hidden>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Period</th>
+                                    <th scope="col">Non-air-conditioned</th>
+                                    <th scope="col">Air-conditioned</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pkgModalVenueRates"></tbody>
+                        </table>
+                    </div>
+                    <p class="pkg-modal__venue-rates-empty" id="pkgModalVenueRatesEmpty" hidden></p>
+                </div>
+            </div>
+            <footer class="pkg-modal__rates-footer">
+                <button type="button" class="pkg-modal__cta pkg-modal__cta--secondary" id="pkgModalRatesDone">Done</button>
+            </footer>
         </div>
     </div>
 

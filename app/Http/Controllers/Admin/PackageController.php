@@ -11,7 +11,7 @@ class PackageController extends Controller
 {
     public function index()
     {
-        return response()->json(Package::with('venues')->get());
+        return response()->json(Package::with('venues.rates')->get());
     }
 
     public function store(Request $request)

@@ -508,7 +508,7 @@ CREATE TABLE `packages` (
 INSERT INTO `packages` (`id`, `name`, `description`, `price`, `inclusions`, `image_path`, `image_2_path`, `image_3_path`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (2, 'Wedding Package', 'An elegant setup tailored for weddings with full-service amenities.', 25000.00, '[]', '/images/wedding_package.jpg', '/images/wedding_package2.jpg', '/images/wedding_package3.jpg', '2025-06-11 18:05:32', '2025-06-25 02:56:58', NULL),
 (3, 'Debut Package', 'Celebrate 18 in style with stage, lights, and a memorable party setup.', 20000.00, '[\"Stage decor\", \"Host & DJ\", \"LED Wall\"]', '/images/debut_package.jpg', '/images/debut_package2.jpg', '/images/debut_package3.jpg', '2025-06-11 18:05:45', '2025-06-11 18:05:45', NULL),
-(4, 'Baptism Package', 'A wholesome and joyful setup for your babys special day.', 15000.00, '[\"Theme decor\", \"Balloon setup\", \"Simple catering\"]', '/images/baptism_package.jpg', '/images/baptism_package2.jpg', '/images/baptism_package3.jpg', '2025-06-11 18:06:35', '2025-06-11 18:06:35', NULL),
+(4, 'Baptism Package', 'A wholesome and joyful setup for your baby''s special day.', 15000.00, '[\"Theme decor\", \"Balloon setup\", \"Simple catering\"]', '/images/baptism_package.jpg', '/images/baptism_package2.jpg', '/images/baptism_package3.jpg', '2025-06-11 18:06:35', '2025-06-11 18:06:35', NULL),
 (5, 'Kiddie Party Package', 'Fun and playful designs for an unforgettable kids celebration.', 18000.00, '[\"Clown or mascot\", \"Games & prizes\", \"Theme cakes\"]', '/images/kiddie_package.jpg', '/images/kiddie_package2.jpg', '/images/kiddie_package3.jpg', '2025-06-11 18:06:42', '2025-06-11 18:06:42', NULL);
 
 -- --------------------------------------------------------

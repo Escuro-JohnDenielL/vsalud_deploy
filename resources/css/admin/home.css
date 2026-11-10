@@ -13,7 +13,8 @@
   align-items: stretch;
   gap: var(--vs-space-4);
   overflow-x: auto;
-  padding: var(--vs-space-4) 0 var(--vs-space-3);
+  margin: -4px 0 -8px;
+  padding: 20px 0;
   scroll-snap-type: x proximity;
 }
 
@@ -58,14 +59,14 @@
   border: 1px solid var(--vs-color-control-border);
   border-radius: var(--vs-radius-card);
   background: var(--vs-color-surface);
-  box-shadow: var(--vs-shadow-card);
+  box-shadow: none;
   text-align: center;
-  transition: box-shadow var(--vs-duration-base), transform var(--vs-duration-base);
+  transition: box-shadow 150ms ease;
 }
 
-.vs-admin-dashboard .package-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(0, 76, 58, 0.16);
+.vs-admin-dashboard .package-card:hover,
+.vs-admin-dashboard .package-card:focus-within {
+  box-shadow: 0 6px 18px rgba(0, 76, 58, 0.08);
 }
 
 /* Photo band: fixed ratio so every card lines up regardless of image size. */
@@ -215,6 +216,469 @@
 .vs-admin-dashboard .modal-content img.is-fallback {
   object-fit: contain;
   background: var(--vs-color-surface-beige);
+}
+
+/* Admin package modals mirror the patron modal structure and interactions. */
+.vs-layout--admin .pkg-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  overscroll-behavior: contain;
+}
+
+.vs-layout--admin .pkg-modal__dialog {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 1060px;
+  max-height: 90vh;
+  max-height: 90dvh;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 24px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
+  box-shadow: var(--vs-shadow-card);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+  text-align: left;
+}
+
+.vs-layout--admin .pkg-modal__body {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+  align-items: stretch;
+  gap: 28px;
+  overflow: hidden;
+}
+
+.vs-layout--admin .pkg-modal--package .pkg-modal__media {
+  position: sticky;
+  top: 0;
+  min-width: 0;
+  align-self: stretch;
+}
+
+.vs-layout--admin .pkg-modal__main-image {
+  display: block;
+  width: 100%;
+  max-height: min(72vh, 660px);
+  object-fit: contain;
+  border-radius: 10px;
+  background: var(--vs-color-surface-beige);
+}
+
+.vs-layout--admin .pkg-modal__main-image.is-fallback {
+  padding: var(--vs-space-3);
+  object-fit: contain;
+  background: var(--vs-color-surface-beige);
+}
+
+.vs-layout--admin .pkg-modal__info {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  max-height: min(72vh, 660px);
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 2px 0;
+}
+
+.vs-layout--admin .pkg-modal__title {
+  margin: 0;
+  padding-right: 52px;
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-display);
+  font-size: clamp(30px, 3.2vw, 38px);
+  font-weight: var(--vs-weight-bold);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.vs-layout--admin .pkg-modal__desc {
+  margin: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(0, 107, 83, 0.18);
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-normal);
+  white-space: pre-line;
+}
+
+.vs-layout--admin .pkg-modal__close.close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--vs-color-text-secondary);
+  cursor: pointer;
+  transition: background-color var(--vs-duration-fast), color var(--vs-duration-fast);
+}
+
+.vs-layout--admin .pkg-modal__close.close-btn:hover {
+  background: var(--vs-color-surface-beige);
+  color: var(--vs-color-deep-green);
+}
+
+.vs-layout--admin .pkg-modal__close.close-btn:focus-visible,
+.vs-layout--admin .pkg-modal__rates-close.close-btn:focus-visible,
+.vs-layout--admin .pkg-modal__rates-trigger.admin-btn:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.vs-layout--admin .pkg-modal__inclusions {
+  margin: 0;
+}
+
+.vs-layout--admin .pkg-modal__inclusions h3,
+.vs-layout--admin .pkg-modal__estimate h3 {
+  margin: 0 0 10px;
+  color: var(--vs-color-text-secondary);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-semibold);
+}
+
+.vs-layout--admin .pkg-modal__inclusions ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vs-layout--admin .pkg-modal__inclusions[hidden] {
+  display: none !important;
+}
+
+.vs-layout--admin .pkg-modal__inclusions li {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--vs-space-3);
+  padding: 2px 0;
+  color: var(--vs-color-text);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-normal);
+}
+
+.vs-layout--admin .pkg-modal__inclusion-text {
+  min-width: 0;
+}
+
+.vs-layout--admin .pkg-modal__inclusion-check {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  margin-top: 3px;
+  color: var(--vs-color-dark-green);
+}
+
+.vs-layout--admin .pkg-modal__pricing {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin: auto 0 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 107, 83, 0.18);
+}
+
+.vs-layout--admin .pkg-modal__estimate {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.vs-layout--admin .pkg-modal__estimate h3 {
+  margin: 0;
+  font-size: var(--vs-text-secondary-min);
+}
+
+.vs-layout--admin .pkg-modal__pricing-range {
+  margin: 0;
+  color: var(--vs-color-deep-green);
+  font-size: 18px;
+  font-weight: var(--vs-weight-semibold);
+  line-height: var(--vs-leading-tight);
+  overflow-wrap: anywhere;
+}
+
+.vs-layout--admin .pkg-modal__pricing-range--contact {
+  color: var(--vs-color-text-secondary);
+  font-weight: var(--vs-weight-regular);
+  overflow-wrap: normal;
+}
+
+.vs-layout--admin .pkg-modal__pricing-disclaimer {
+  margin: 0;
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-secondary-min);
+  line-height: var(--vs-leading-normal);
+}
+
+.vs-layout--admin .pkg-modal__rates-trigger.admin-btn {
+  display: inline-flex;
+  min-width: 0;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1px solid var(--vs-color-deep-green);
+  border-radius: var(--vs-radius-pill);
+  background: transparent;
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-control-min);
+  font-weight: var(--vs-weight-semibold);
+  cursor: pointer;
+  box-shadow: none;
+  text-decoration: none;
+  transform: none;
+  transition: background-color var(--vs-duration-fast), border-color var(--vs-duration-fast);
+}
+
+.vs-layout--admin .pkg-modal__rates-trigger.admin-btn:hover {
+  border-color: var(--vs-color-dark-green);
+  background: var(--vs-color-surface-pale-green);
+  color: var(--vs-color-deep-green);
+  box-shadow: none;
+  text-decoration: none;
+  transform: none;
+}
+
+.vs-layout--admin .pkg-modal__rates-trigger svg {
+  flex: 0 0 auto;
+}
+
+.vs-layout--admin .pkg-modal__rates-trigger[hidden] {
+  display: none !important;
+}
+
+.vs-layout--admin .pkg-modal--rates {
+  z-index: 1510;
+  padding: 16px;
+}
+
+.vs-layout--admin .pkg-modal--rates .pkg-modal__rates-dialog {
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  max-height: 90dvh;
+  gap: 16px;
+  padding: 20px;
+}
+
+.vs-layout--admin .pkg-modal__rates-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-right: 48px;
+}
+
+.vs-layout--admin .pkg-modal__rates-header .pkg-modal__venue-heading {
+  margin: 0;
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-display);
+  font-size: 24px;
+}
+
+.vs-layout--admin .pkg-modal__rates-close.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--vs-color-text-secondary);
+  cursor: pointer;
+}
+
+.vs-layout--admin .pkg-modal__rates-close.close-btn:hover {
+  background: var(--vs-color-surface-beige);
+  color: var(--vs-color-deep-green);
+}
+
+.vs-layout--admin .pkg-modal__venue-picker-label {
+  display: block;
+  margin: 0 0 6px;
+  color: var(--vs-color-text-secondary);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-secondary-min);
+}
+
+.vs-layout--admin .pkg-modal__venue-select {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-surface);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+}
+
+.vs-layout--admin .pkg-modal__venue-select:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.vs-layout--admin .pkg-modal__admin-rates {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vs-layout--admin .pkg-modal__admin-rates > li {
+  padding: 8px 2px;
+  border-bottom: 1px solid rgba(0, 76, 58, 0.12);
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-secondary-min);
+}
+
+.vs-layout--admin .pkg-modal__rates-footer {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.vs-layout--admin .pkg-modal__rates-footer .admin-btn-ghost {
+  min-height: 44px;
+}
+
+.vs-layout--admin .pkg-modal.vs-modal--closing {
+  animation: vs-modal-fade-out var(--vs-duration-base) ease-in both;
+}
+
+.vs-layout--admin .pkg-modal {
+  animation: vs-modal-fade-in var(--vs-duration-base) ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-layout--admin .pkg-modal,
+  .vs-layout--admin .pkg-modal.vs-modal--closing {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .vs-layout--admin .pkg-modal--package {
+    overflow-y: auto;
+    padding:
+      max(16px, env(safe-area-inset-top, 0px))
+      max(16px, env(safe-area-inset-right, 0px))
+      max(16px, env(safe-area-inset-bottom, 0px))
+      max(16px, env(safe-area-inset-left, 0px));
+  }
+
+  .vs-layout--admin .pkg-modal--package .pkg-modal__dialog {
+    max-height: calc(100vh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    max-height: calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    padding: 16px;
+  }
+
+  .vs-layout--admin .pkg-modal--package .pkg-modal__body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .vs-layout--admin .pkg-modal--package .pkg-modal__media {
+    position: static;
+    min-width: 0;
+  }
+
+  .vs-layout--admin .pkg-modal--package .pkg-modal__main-image {
+    width: 100%;
+    max-height: 40vh;
+  }
+
+  .vs-layout--admin .pkg-modal--package .pkg-modal__info {
+    max-height: none;
+    min-height: 0;
+    gap: 12px;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .vs-layout--admin .pkg-modal__title {
+    padding-right: 48px;
+    font-size: clamp(22px, 6vw, 28px);
+  }
+
+  .vs-layout--admin .pkg-modal__pricing {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+    margin-top: 0;
+  }
+
+  .vs-layout--admin .pkg-modal__estimate {
+    width: 100%;
+  }
+
+  .vs-layout--admin .pkg-modal__rates-trigger.admin-btn {
+    justify-self: start;
+  }
+
+  .vs-layout--admin .pkg-modal__close.close-btn {
+    top: 12px;
+    right: 12px;
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+
+  .vs-layout--admin .pkg-modal--rates .pkg-modal__rates-dialog {
+    max-height: calc(100vh - 32px);
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+  }
+
+  .vs-layout--admin .pkg-modal--rates .pkg-modal__rates-close.close-btn {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
 }
 
 .vs-admin-dashboard .vs-admin-dashboard__field-note {

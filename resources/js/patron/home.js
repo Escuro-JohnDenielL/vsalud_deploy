@@ -5,23 +5,27 @@ document.addEventListener("DOMContentLoaded", function () {
     const modal = document.getElementById("packageModal");
     if (!modal) return;
 
-    const closeBtn = document.getElementById("pkgModalDismiss");
+    const closeBtn = document.getElementById("pkgModalClose");
+    const ratesModal = document.getElementById("pkgVenueRatesModal");
+    const ratesOpenBtn = document.getElementById("pkgModalRatesOpen");
+    const ratesCloseBtn = document.getElementById("pkgModalRatesClose");
+    const ratesDoneBtn = document.getElementById("pkgModalRatesDone");
     const titleEl = document.getElementById("pkgModalTitle");
     const descEl = document.getElementById("pkgModalDesc");
     const priceRangeEl = document.getElementById("pkgModalPriceRange");
     const venueRatesEl = document.getElementById("pkgModalVenueRates");
+    const venueTable = document.getElementById("pkgModalVenueTable");
+    const venueRatesEmpty = document.getElementById("pkgModalVenueRatesEmpty");
+    const venueRatesPanel = document.getElementById("pkgModalVenueRatesPanel");
+    const venueTabs = document.getElementById("pkgModalVenueTabs");
+    const venueSelect = document.getElementById("pkgModalVenueSelect");
     const mainImage = document.getElementById("pkgModalMainImage");
     const inclusionsEl = document.getElementById("pkgModalInclusions");
+    const inclusionsSection = document.getElementById("pkgModalInclusionsSection");
     const zoomBtn = document.getElementById("pkgModalZoom");
     const lightbox = document.getElementById("pkgLightbox");
     const lightboxImage = document.getElementById("pkgLightboxImage");
     const lightboxClose = document.getElementById("pkgLightboxClose");
-
-    // Venue row inside the package dialog. The villa gallery is opened from the
-    // page-level "View venue pictures" button (venue-gallery.js owns it), so this
-    // script only fills the venue name/capacity line.
-    const pkgVenueInfo = document.getElementById("pkgModalVenueInfo");
-    const pkgVenueName = document.getElementById("pkgModalVenueName");
 
     const formatPrice = function (amount) {
         return `₱${Number(amount).toLocaleString("en-PH", {
@@ -35,8 +39,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let currentImage = DEFAULT_IMAGE;
     let packageName = "Package";
+    let currentVenues = [];
+    let selectedVenueIndex = -1;
+    let packageWideEstimate = "Contact us for venue pricing";
+    let packageWideHasPrice = false;
     let lightboxReturnFocus = null;
     let modalReturnFocus = null;
+    let ratesReturnFocus = null;
 
     // A package row can still point at a photo that was never uploaded, so probe
     // the URL once and fall back to the branded placeholder when it fails.
@@ -81,7 +90,27 @@ document.addEventListener("DOMContentLoaded", function () {
         closeBtn?.focus();
     };
 
+    const openRatesModal = function () {
+        if (!ratesModal || ratesOpenBtn?.hidden) return;
+        ratesReturnFocus = document.activeElement;
+        window.vsModalPrepareOpen(ratesModal);
+        ratesModal.hidden = false;
+        ratesModal.style.display = "flex";
+        ratesCloseBtn?.focus();
+    };
+
+    const closeRatesModal = function (restoreFocus = true) {
+        if (!ratesModal || ratesModal.hidden || ratesModal.style.display === "none") return;
+        window.vsModalCloseAfterFade(ratesModal, () => {
+            ratesModal.style.display = "none";
+            ratesModal.hidden = true;
+            if (restoreFocus && ratesReturnFocus?.focus) ratesReturnFocus.focus();
+        });
+    };
+
     const closeModal = function () {
+        closeRatesModal(false);
+        resetVenueDisplay({ clearAll: true });
         closeLightbox(false);
         window.vsModalCloseAfterFade(modal, () => {
             modal.style.display = "none";
@@ -92,7 +121,167 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     };
 
-    // One bordered row per inclusion, with the tick on the right.
+    function resetVenueDisplay({ clearAll = false } = {}) {
+        priceRangeEl.textContent = packageWideEstimate;
+        priceRangeEl.classList.toggle("pkg-modal__pricing-range--contact", !packageWideHasPrice);
+        venueRatesEl.replaceChildren();
+        venueTable.hidden = true;
+        venueRatesEmpty.textContent = "";
+        venueRatesEmpty.hidden = true;
+        venueRatesPanel.removeAttribute("aria-labelledby");
+        selectedVenueIndex = -1;
+
+        if (clearAll) {
+            venueTabs.replaceChildren();
+            venueTabs.hidden = true;
+            venueSelect.replaceChildren();
+            venueSelect.disabled = true;
+            currentVenues = [];
+        }
+    }
+
+    const formatPriceRange = function (rates) {
+        const prices = (Array.isArray(rates) ? rates : [])
+            .map(rate => Number(rate.price))
+            .filter(Number.isFinite);
+        if (!prices.length) return "Contact us for venue pricing";
+        const minimum = Math.min(...prices);
+        const maximum = Math.max(...prices);
+        return minimum === maximum
+            ? formatPrice(minimum)
+            : `${formatPrice(minimum)}–${formatPrice(maximum)}`;
+    };
+
+    const renderVenueRates = function (venue) {
+        venueRatesEl.replaceChildren();
+        venueRatesEmpty.textContent = "";
+        venueRatesEmpty.hidden = true;
+        venueTable.hidden = true;
+
+        const rates = Array.isArray(venue?.rates) ? venue.rates : [];
+        priceRangeEl.textContent = formatPriceRange(rates);
+        priceRangeEl.classList.toggle(
+            "pkg-modal__pricing-range--contact",
+            !rates.some(rate => Number.isFinite(Number(rate.price)))
+        );
+        if (!rates.length) {
+            venueRatesEmpty.textContent = "Contact us for this venue's rates.";
+            venueRatesEmpty.hidden = false;
+            return;
+        }
+
+        const periods = {
+            AM: { nonAir: "Not listed", air: "Not listed" },
+            PM: { nonAir: "Not listed", air: "Not listed" },
+        };
+        rates.forEach(rate => {
+            const label = String(rate.label || "").toLowerCase();
+            const periodText = String(rate.period || "").toUpperCase();
+            const periodMatch = periodText.match(/\b(AM|PM)\b/) || label.match(/\b(AM|PM)\b/);
+            const period = periodMatch?.[1];
+            if (!period || !periods[period]) return;
+
+            if (/non[\s-]*air/.test(label)) {
+                periods[period].nonAir = formatPrice(rate.price);
+            } else if (/air[\s-]*condition/.test(label)) {
+                periods[period].air = formatPrice(rate.price);
+            }
+        });
+
+        ["AM", "PM"].forEach(period => {
+            const row = document.createElement("tr");
+            [period, periods[period].nonAir, periods[period].air].forEach(value => {
+                const cell = document.createElement("td");
+                cell.textContent = value;
+                row.appendChild(cell);
+            });
+            venueRatesEl.appendChild(row);
+        });
+        venueTable.hidden = false;
+    };
+
+    const selectVenue = function (venueIndex, focusTab) {
+        if (!Number.isInteger(venueIndex) || venueIndex < 0 || venueIndex >= currentVenues.length) return;
+
+        selectedVenueIndex = venueIndex;
+        const tabs = Array.from(venueTabs.querySelectorAll('[role="tab"]'));
+        tabs.forEach(function (tab, index) {
+            const selected = index === venueIndex;
+            tab.setAttribute("aria-selected", String(selected));
+            tab.tabIndex = selected ? 0 : -1;
+        });
+
+        const selectedTab = tabs[venueIndex];
+        if (selectedTab) {
+            venueRatesPanel.setAttribute("aria-labelledby", selectedTab.id);
+            if (focusTab) selectedTab.focus();
+        }
+
+        venueSelect.value = String(venueIndex);
+        renderVenueRates(currentVenues[venueIndex]);
+    };
+
+    const populateVenueControls = function (venues) {
+        venueTabs.replaceChildren();
+        venueSelect.replaceChildren();
+        ratesOpenBtn.hidden = !venues.some(venue => Array.isArray(venue.rates) && venue.rates.length > 0);
+        if (!venues.length) {
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "No venues linked";
+            venueSelect.appendChild(option);
+            venueSelect.disabled = true;
+            venueTabs.hidden = true;
+            venueRatesEmpty.textContent = "No venues linked.";
+            venueRatesEmpty.hidden = false;
+            return;
+        }
+
+        venueTabs.hidden = false;
+        venueSelect.disabled = false;
+        venues.forEach(function (venue, index) {
+            const option = document.createElement("option");
+            option.value = String(index);
+            option.textContent = venue.name;
+            venueSelect.appendChild(option);
+
+            const tab = document.createElement("button");
+            tab.type = "button";
+            tab.className = "pkg-modal__venue-tab";
+            tab.id = `pkgModalVenueTab-${index}`;
+            tab.setAttribute("role", "tab");
+            tab.setAttribute("aria-selected", "false");
+            tab.setAttribute("aria-controls", venueRatesPanel.id);
+            tab.tabIndex = -1;
+            tab.textContent = venue.name;
+            tab.addEventListener("click", function () {
+                selectVenue(index, false);
+            });
+            venueTabs.appendChild(tab);
+        });
+
+        selectVenue(0, false);
+    };
+
+    venueSelect.addEventListener("change", function () {
+        selectVenue(Number(this.value), false);
+    });
+
+    venueTabs.addEventListener("keydown", function (event) {
+        const tabs = Array.from(venueTabs.querySelectorAll('[role="tab"]'));
+        if (!tabs.length) return;
+
+        let nextIndex = selectedVenueIndex;
+        if (event.key === "ArrowRight") nextIndex = (selectedVenueIndex + 1) % tabs.length;
+        else if (event.key === "ArrowLeft") nextIndex = (selectedVenueIndex - 1 + tabs.length) % tabs.length;
+        else if (event.key === "Home") nextIndex = 0;
+        else if (event.key === "End") nextIndex = tabs.length - 1;
+        else return;
+
+        event.preventDefault();
+        selectVenue(nextIndex, true);
+    });
+
     const addInclusionRow = function (text) {
         const li = document.createElement("li");
 
@@ -100,12 +289,22 @@ document.addEventListener("DOMContentLoaded", function () {
         label.className = "pkg-modal__inclusion-text";
         label.textContent = text;
 
-        const check = document.createElement("span");
-        check.className = "pkg-modal__inclusion-check";
+        const check = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        check.classList.add("pkg-modal__inclusion-check");
+        check.setAttribute("viewBox", "0 0 16 16");
         check.setAttribute("aria-hidden", "true");
-        check.textContent = "\u2713";
+        check.setAttribute("focusable", "false");
 
-        li.append(label, check);
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", "m3 8 3.2 3.2L13 4.5");
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke", "currentColor");
+        path.setAttribute("stroke-linecap", "round");
+        path.setAttribute("stroke-linejoin", "round");
+        path.setAttribute("stroke-width", "1.8");
+        check.appendChild(path);
+
+        li.append(check, label);
         inclusionsEl.appendChild(li);
     };
 
@@ -119,74 +318,39 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             if (!data) return;
 
+            resetVenueDisplay({ clearAll: true });
             packageName = data.name || "Package";
 
             titleEl.textContent = packageName;
             descEl.textContent = data.description || "No description available.";
-            // Which villa(s) this package is held in.
-            const venues = Array.isArray(data.venues) ? data.venues : [];
-            const hasVenue = venues.length > 0;
-
-            if (pkgVenueInfo) {
-                pkgVenueInfo.hidden = !hasVenue;
-            }
-            if (pkgVenueName) {
-                const names = venues.map(v => v.name).filter(Boolean).join(" · ");
-                const only = venues.length === 1 && venues[0].capacity
-                    ? ` · Good for up to ${Number(venues[0].capacity).toLocaleString("en-PH")} guests`
-                    : "";
-                pkgVenueName.textContent = hasVenue ? `${names}${only}` : "";
-            }
-
-            const prices = venues.flatMap((venue) => (
-                Array.isArray(venue.rates) ? venue.rates.map((rate) => Number(rate.price)) : []
-            )).filter(Number.isFinite);
-
-            if (prices.length > 0) {
-                const minimum = Math.min(...prices);
-                const maximum = Math.max(...prices);
-                priceRangeEl.textContent = minimum === maximum
-                    ? formatPrice(minimum)
-                    : `${formatPrice(minimum)}–${formatPrice(maximum)}`;
-            } else {
-                priceRangeEl.textContent = "Contact us for venue pricing";
-            }
-
-            venueRatesEl.replaceChildren();
-            venues.forEach((venue) => {
-                const item = document.createElement("li");
-                const name = document.createElement("strong");
-                name.textContent = venue.name || "Venue";
-                item.appendChild(name);
-
-                if (!Array.isArray(venue.rates) || venue.rates.length === 0) {
-                    item.append(" — Contact us for pricing");
-                } else {
-                    const rateList = document.createElement("ul");
-                    venue.rates.forEach((rate) => {
-                        const rateItem = document.createElement("li");
-                        const period = rate.period ? ` (${rate.period})` : "";
-                        rateItem.textContent = `${rate.label}${period}: ${formatPrice(rate.price)}`;
-                        rateList.appendChild(rateItem);
-                    });
-                    item.appendChild(rateList);
-                }
-
-                venueRatesEl.appendChild(item);
+            const seenVenues = new Set();
+            const venues = (Array.isArray(data.venues) ? data.venues : []).filter((venue) => {
+                const key = venue?.id != null ? `id:${venue.id}` : `name:${String(venue?.name || "").trim().toLowerCase()}`;
+                if (!venue?.name || seenVenues.has(key)) return false;
+                seenVenues.add(key);
+                return true;
             });
-
-            if (!hasVenue) {
-                const item = document.createElement("li");
-                item.textContent = "Contact us to discuss available venues and pricing.";
-                venueRatesEl.appendChild(item);
-            }
+            currentVenues = venues;
+            const packageRates = venues.flatMap(venue => (
+                Array.isArray(venue.rates) ? venue.rates : []
+            ));
+            const packagePrices = packageRates
+                .map(rate => Number(rate.price))
+                .filter(Number.isFinite);
+            packageWideHasPrice = packagePrices.length > 0;
+            packageWideEstimate = formatPriceRange(packageRates);
+            resetVenueDisplay();
+            populateVenueControls(venues);
 
             inclusionsEl.innerHTML = "";
             const inclusions = Array.isArray(data.inclusions) ? data.inclusions : [];
+            inclusionsEl.classList.toggle("pkg-modal__inclusions-list--columns", inclusions.length > 6);
             if (inclusions.length > 0) {
+                inclusionsSection.hidden = false;
+                inclusionsEl.hidden = false;
                 inclusions.forEach(addInclusionRow);
             } else {
-                addInclusionRow("No inclusions specified");
+                inclusionsSection.hidden = true;
             }
 
             // A package carries a single photo. Probe it once so a broken path
@@ -211,9 +375,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     if (closeBtn) closeBtn.addEventListener("click", closeModal);
+    ratesOpenBtn?.addEventListener("click", openRatesModal);
+    ratesCloseBtn?.addEventListener("click", function () { closeRatesModal(); });
+    ratesDoneBtn?.addEventListener("click", function () { closeRatesModal(); });
 
     modal.addEventListener("click", function (event) {
         if (event.target === modal) closeModal();
+    });
+
+    ratesModal?.addEventListener("click", function (event) {
+        if (event.target === ratesModal) closeRatesModal();
     });
 
     // Enlarged photo. Click the main photo, then Escape, Close or a backdrop click.
@@ -235,6 +406,32 @@ document.addEventListener("DOMContentLoaded", function () {
             if (event.key === "Escape") {
                 event.preventDefault();
                 closeLightbox(true);
+            }
+            return;
+        }
+
+        if (ratesModal && !ratesModal.hidden) {
+            if (event.key === "Escape") {
+                event.preventDefault();
+                closeRatesModal();
+                return;
+            }
+
+            if (event.key === "Tab") {
+                const items = Array.from(ratesModal.querySelectorAll(FOCUSABLE)).filter(function (el) {
+                    return el.offsetParent !== null;
+                });
+                if (!items.length) return;
+
+                const first = items[0];
+                const last = items[items.length - 1];
+                if (event.shiftKey && document.activeElement === first) {
+                    event.preventDefault();
+                    last.focus();
+                } else if (!event.shiftKey && document.activeElement === last) {
+                    event.preventDefault();
+                    first.focus();
+                }
             }
             return;
         }

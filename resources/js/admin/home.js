@@ -2,7 +2,20 @@ import * as bootstrap from 'bootstrap';
 window.bootstrap = bootstrap;
 
 document.addEventListener("DOMContentLoaded", function () {
-    const packageModal = new bootstrap.Modal(document.getElementById("packageModal"));
+    const packageModalElement = document.getElementById("packageModal");
+    const packageRatesModalElement = document.getElementById("packageRatesModal");
+    const packageModalHost = document.createElement("div");
+    packageModalHost.className = "vs-admin-dashboard vs-layout--admin";
+    packageModalHost.appendChild(packageModalElement);
+    packageModalHost.appendChild(packageRatesModalElement);
+    document.body.appendChild(packageModalHost);
+    const packageModalClose = document.getElementById("modalPackageClose");
+    const ratesOpenButton = document.getElementById("modalRatesOpen");
+    const ratesCloseButton = document.getElementById("modalVenueRatesClose");
+    const ratesDoneButton = document.getElementById("modalVenueRatesDone");
+    let packageModalTrigger = null;
+    let ratesReturnFocus = null;
+    const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
     const addPackageModal = new bootstrap.Modal(document.getElementById("addPackageModal"));
     const editPackageModal = new bootstrap.Modal(document.getElementById("editPackageModal"));
     const successModal = new bootstrap.Modal(document.getElementById("successModal"));
@@ -12,6 +25,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Branded placeholder for packages with no photo, or when a photo fails to load.
     const PACKAGE_FALLBACK = "/images/package_placeholder.svg";
+    const formatPrice = amount => `₱${Number(amount).toLocaleString("en-PH", {
+        minimumFractionDigits: Number.isInteger(Number(amount)) ? 0 : 2,
+        maximumFractionDigits: 2,
+    })}`;
+    const uniqueVenues = venues => {
+        const seen = new Set();
+        return (Array.isArray(venues) ? venues : []).filter(venue => {
+            const key = venue?.id != null ? `id:${venue.id}` : `name:${String(venue?.name || "").trim().toLowerCase()}`;
+            if (!venue?.name || seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+    };
+    const packageImageUrl = path => {
+        if (!path) return PACKAGE_FALLBACK;
+        if (/^(https?:)?\/\//i.test(path) || path.startsWith("/")) return path;
+        return `/storage/${path.replace(/^storage\//, "")}`;
+    };
 
     // Pending delete state for confirm modal
     let pendingDelete = null;
@@ -144,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (detailsDiv) {
                     const description = packageData.description || "No description available";
                     const truncatedDesc = description.length > 80 ? description.substring(0, 80) + "..." : description;
-                    const venueNames = (Array.isArray(packageData.venues) ? packageData.venues : [])
+                    const venueNames = uniqueVenues(packageData.venues)
                         .map(v => v.name)
                         .filter(Boolean);
                     const venueLabel = venueNames.length
@@ -160,36 +191,190 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    function openPackageModal(packageName) {
+    function openPackageRatesModal() {
+        if (ratesOpenButton.hidden || packageRatesModalElement.style.display === "flex") return;
+        ratesReturnFocus = document.activeElement;
+        window.vsModalPrepareOpen(packageRatesModalElement);
+        packageRatesModalElement.hidden = false;
+        packageRatesModalElement.style.display = "flex";
+        ratesCloseButton.focus();
+    }
+
+    function closePackageRatesModal(restoreFocus = true) {
+        if (packageRatesModalElement.hidden || packageRatesModalElement.style.display === "none") return;
+        window.vsModalCloseAfterFade(packageRatesModalElement, () => {
+            packageRatesModalElement.style.display = "none";
+            packageRatesModalElement.hidden = true;
+            if (restoreFocus && ratesReturnFocus?.isConnected) ratesReturnFocus.focus();
+            ratesReturnFocus = null;
+        });
+    }
+
+    function openPackageViewModal(trigger) {
+        packageModalTrigger = trigger;
+        window.vsModalPrepareOpen(packageModalElement);
+        window.vsModalPrepareOpen(packageRatesModalElement);
+        packageRatesModalElement.style.display = "none";
+        packageRatesModalElement.hidden = true;
+        packageModalElement.style.display = "flex";
+        document.body.style.overflow = "hidden";
+        packageModalClose.focus();
+    }
+
+    function closePackageViewModal() {
+        closePackageRatesModal(false);
+        window.vsModalCloseAfterFade(packageModalElement, () => {
+            packageModalElement.style.display = "none";
+            document.body.style.overflow = "";
+            if (packageModalTrigger?.isConnected) packageModalTrigger.focus();
+            packageModalTrigger = null;
+        });
+    }
+
+    function trapModalFocus(event, modalElement) {
+        if (event.key !== "Tab") return;
+        const items = Array.from(modalElement.querySelectorAll(FOCUSABLE)).filter(element => element.offsetParent !== null);
+        if (!items.length) return;
+
+        const first = items[0];
+        const last = items[items.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+        }
+    }
+
+    packageModalClose.addEventListener("click", closePackageViewModal);
+    ratesOpenButton.addEventListener("click", openPackageRatesModal);
+    ratesCloseButton.addEventListener("click", () => closePackageRatesModal());
+    ratesDoneButton.addEventListener("click", () => closePackageRatesModal());
+    packageModalElement.addEventListener("click", event => {
+        if (event.target === packageModalElement) closePackageViewModal();
+    });
+    packageRatesModalElement.addEventListener("click", event => {
+        if (event.target === packageRatesModalElement) closePackageRatesModal();
+    });
+    document.addEventListener("keydown", event => {
+        if (packageRatesModalElement.style.display === "flex") {
+            if (event.key === "Escape") {
+                event.preventDefault();
+                closePackageRatesModal();
+            } else {
+                trapModalFocus(event, packageRatesModalElement);
+            }
+            return;
+        }
+
+        if (packageModalElement.style.display !== "flex") return;
+        if (event.key === "Escape") {
+            event.preventDefault();
+            closePackageViewModal();
+            return;
+        }
+        trapModalFocus(event, packageModalElement);
+    });
+
+    function openPackageModal(packageName, trigger) {
         const data = packages[packageName];
         if (!data) return;
 
+        packageModalTrigger = trigger;
         document.getElementById("modalTitle").textContent = data.name;
         document.getElementById("modalDescription").textContent = data.description || "No description available";
-        const image = data.image_path || PACKAGE_FALLBACK;
+        const imageEl = document.getElementById("modalMainImage");
+        imageEl.dataset.fallbackApplied = "false";
+        imageEl.classList.remove("is-fallback");
+        imageEl.src = packageImageUrl(data.image_path);
+        imageEl.alt = `${data.name} package photo`;
 
-        document.getElementById("modalMainImage").src = image;
+        const venues = uniqueVenues(data.venues);
+        const prices = venues.flatMap(venue => Array.isArray(venue.rates) ? venue.rates.map(rate => Number(rate.price)) : []).filter(Number.isFinite);
+        const priceRange = document.getElementById("modalPriceRange");
+        priceRange.textContent = prices.length
+            ? (Math.min(...prices) === Math.max(...prices)
+                ? formatPrice(Math.min(...prices))
+                : `${formatPrice(Math.min(...prices))}–${formatPrice(Math.max(...prices))}`)
+            : "Contact us for venue pricing";
+        priceRange.classList.toggle("pkg-modal__pricing-range--contact", prices.length === 0);
+        const hasVenueRates = venues.some(venue => Array.isArray(venue.rates) && venue.rates.length > 0);
+        ratesOpenButton.hidden = !hasVenueRates;
+        packageRatesModalElement.hidden = true;
+        packageRatesModalElement.style.display = "none";
+        ratesReturnFocus = null;
+        const venueSelect = document.getElementById("modalVenueSelect");
+        venueSelect.replaceChildren();
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = venues.length ? "Select a venue" : "No venues linked";
+        venueSelect.appendChild(placeholder);
+        venues.forEach((venue, index) => {
+            const option = document.createElement("option");
+            option.value = String(index);
+            option.textContent = venue.name;
+            venueSelect.appendChild(option);
+        });
+        venueSelect.disabled = venues.length === 0;
+        const venueRates = document.getElementById("modalVenueRates");
+        venueRates.replaceChildren();
+        const renderVenueRates = () => {
+            venueRates.replaceChildren();
+            const venue = venues[Number(venueSelect.value)];
+            if (!venue) return;
+            const rates = Array.isArray(venue.rates) ? venue.rates : [];
+            (rates.length ? rates : [{ label: "Contact us for this venue's rates" }]).forEach(rate => {
+                const item = document.createElement("li");
+                item.textContent = rate.price == null
+                    ? rate.label
+                    : `${rate.label || "Venue rental"}${rate.period ? ` (${rate.period})` : ""}: ${formatPrice(rate.price)}`;
+                venueRates.appendChild(item);
+            });
+        };
+        venueSelect.onchange = renderVenueRates;
+        if (venues.length === 1) {
+            venueSelect.value = "0";
+            renderVenueRates();
+        }
 
         const inclusionsList = document.getElementById("modalInclusions");
         inclusionsList.innerHTML = "";
+        const inclusionsSection = document.getElementById("modalInclusionsSection");
 
         const inclusions = Array.isArray(data.inclusions)
             ? data.inclusions.filter(value => typeof value === "string" && value.trim() !== "")
             : [];
 
         if (inclusions.length > 0) {
+            inclusionsSection.hidden = false;
             inclusions.forEach(inclusion => {
                 const li = document.createElement("li");
-                li.textContent = inclusion;
+                const check = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                check.setAttribute("viewBox", "0 0 16 16");
+                check.setAttribute("aria-hidden", "true");
+                check.setAttribute("focusable", "false");
+                check.classList.add("pkg-modal__inclusion-check");
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.setAttribute("d", "m3 8 3.2 3.2L13 4.5");
+                path.setAttribute("fill", "none");
+                path.setAttribute("stroke", "currentColor");
+                path.setAttribute("stroke-linecap", "round");
+                path.setAttribute("stroke-linejoin", "round");
+                path.setAttribute("stroke-width", "1.8");
+                check.appendChild(path);
+
+                const label = document.createElement("span");
+                label.className = "pkg-modal__inclusion-text";
+                label.textContent = inclusion;
+                li.append(check, label);
                 inclusionsList.appendChild(li);
             });
         } else {
-            const li = document.createElement("li");
-            li.textContent = "No inclusions specified";
-            inclusionsList.appendChild(li);
+            inclusionsSection.hidden = true;
         }
 
-        packageModal.show();
+        openPackageViewModal(trigger);
     }
 
     function createPackageCard(data) {
@@ -197,10 +382,10 @@ document.addEventListener("DOMContentLoaded", function () {
         wrapper.className = "package-card";
         wrapper.dataset.package = data.name;
 
-        const image = data.image_path || PACKAGE_FALLBACK;
+        const image = packageImageUrl(data.image_path);
         const description = data.description || "No description available";
         const truncatedDesc = description.length > 80 ? description.substring(0, 80) + "..." : description;
-        const venueNames = (Array.isArray(data.venues) ? data.venues : [])
+        const venueNames = uniqueVenues(data.venues)
             .map(v => v.name)
             .filter(Boolean);
         const venueLabel = venueNames.length
@@ -243,8 +428,8 @@ document.addEventListener("DOMContentLoaded", function () {
     function attachPackageEventListeners(card) {
         const packageName = card.dataset.package;
 
-        card.querySelector(".view-package")?.addEventListener("click", () => {
-            openPackageModal(packageName);
+        card.querySelector(".view-package")?.addEventListener("click", event => {
+            openPackageModal(packageName, event.currentTarget);
         });
 
         card.querySelector(".edit-btn")?.addEventListener("click", () => {

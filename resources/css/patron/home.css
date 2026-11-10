@@ -1,4 +1,14 @@
 /* Five packages share one row on wide screens; smaller screens can scroll the row. */
+.patron-content--packages {
+  padding-bottom: calc(clamp(200px, 10.416667vw, 240px) - var(--vs-space-3) - var(--vs-space-8));
+}
+
+@media (max-width: 768px) {
+  .patron-content--packages {
+    padding-bottom: calc(160px - var(--vs-space-3) - 15px - var(--vs-space-8));
+  }
+}
+
 .packages {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -19,10 +29,10 @@
   background: var(--color-surface);
   border-radius: var(--radius-lg);
   text-align: center;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   border: 1px solid var(--color-border);
   overflow: hidden;
-  transition: all var(--transition-base);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
   display: flex;
   flex-direction: column;
   /* No height:100% here — it would opt the card out of `align-items: stretch`
@@ -31,8 +41,8 @@
 }
 
 .package-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-xl);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.09);
 }
 
 .package-card__media {
@@ -224,12 +234,12 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--vs-space-5);
+  gap: 0;
   background: var(--color-surface);
   width: 100%;
   max-width: 900px;
   max-height: 90vh;
-  overflow-y: auto;
+  overflow: hidden;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
   padding: 30px 32px 26px;
@@ -237,39 +247,106 @@
 }
 
 .pkg-modal__body {
+  flex: 1 1 auto;
+  min-height: 0;
   display: grid;
   grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
   gap: 28px;
   align-items: start;
 }
 
-/* The package dialog mirrors the venue one, but a package carries a single
-   photo: the media column is one tall framed image, and the details column
-   holds the price, the inclusions and the actions. */
+/* Package photo stays anchored while the details column scrolls independently. */
 .pkg-modal--package .pkg-modal__dialog {
   max-width: 1060px;
-  padding: 22px;
+  padding: 24px;
+}
+
+.pkg-modal__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--vs-color-text-secondary);
+  cursor: pointer;
+  transition: background-color var(--vs-duration-fast), color var(--vs-duration-fast);
+}
+
+.pkg-modal__close:hover {
+  background: var(--vs-color-surface-beige);
+  color: var(--vs-color-deep-green);
+}
+
+.pkg-modal__close:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
 }
 
 .pkg-modal--package .pkg-modal__body {
   align-items: stretch;
-  gap: 34px;
+  min-height: 0;
+  gap: 28px;
+  overflow: hidden;
 }
 
 .pkg-modal--package .pkg-modal__media,
 .pkg-modal--package .pkg-modal__zoom {
-  height: 100%;
+  height: auto;
+}
+
+.pkg-modal--package .pkg-modal__media {
+  position: sticky;
+  top: 0;
+  align-self: stretch;
+}
+
+.pkg-modal--package .pkg-modal__zoom {
+  max-width: 100%;
 }
 
 .pkg-modal--package .pkg-modal__main-image {
-  height: 100%;
-  min-height: 400px;
+  height: auto;
+  min-height: 0;
+  max-height: min(72vh, 660px);
+  object-fit: contain;
+  background: transparent;
 }
 
 .pkg-modal--package .pkg-modal__info {
   display: flex;
   flex-direction: column;
-  padding: 6px 2px 0;
+  gap: 14px;
+  min-width: 0;
+  min-height: 0;
+  max-height: min(72vh, 660px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 2px 0;
+}
+
+.pkg-modal--package .pkg-modal__title {
+  margin: 0;
+  padding-right: 52px;
+  font-size: clamp(30px, 3.2vw, 38px);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.pkg-modal--package .pkg-modal__desc {
+  margin: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(0, 107, 83, 0.18);
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-normal);
 }
 
 .pkg-modal__main-image {
@@ -509,31 +586,155 @@
 }
 
 .pkg-modal__pricing {
-  margin: 0 0 16px;
-  padding: 0 0 16px;
-  border-bottom: 1px solid rgba(0, 107, 83, 0.18);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin: auto 0 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 107, 83, 0.18);
 }
 
-.pkg-modal__pricing h3 {
-  margin: 0 0 5px;
-  color: var(--vs-color-deep-green);
+.pkg-modal__estimate {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+  padding: 0;
+}
+
+.pkg-modal__estimate h3 {
+  margin: 0;
+  color: var(--vs-color-text-secondary);
   font-family: var(--vs-font-ui);
-  font-size: 14px;
-  font-weight: 700;
+  font-size: var(--vs-text-secondary-min);
+  font-weight: var(--vs-weight-semibold);
 }
 
 .pkg-modal__pricing-range {
   margin: 0;
+  min-width: 0;
   color: var(--vs-color-deep-green);
-  font-size: 21px;
-  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: var(--vs-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.pkg-modal__pricing-range--contact {
+  color: var(--vs-color-text-secondary);
+  font-weight: var(--vs-weight-regular);
+  overflow-wrap: normal;
 }
 
 .pkg-modal__pricing-disclaimer {
-  margin: 3px 0 10px;
-  color: var(--color-text-muted);
+  margin: 0;
+  color: var(--vs-color-text-secondary);
   font-size: 12px;
   line-height: 1.45;
+}
+
+.vs-layout--patron .pkg-modal__rates-trigger {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 9px 16px;
+  border: 1px solid var(--vs-color-deep-green);
+  border-radius: var(--vs-radius-pill);
+  background: transparent;
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-control-min);
+  font-weight: var(--vs-weight-semibold);
+  cursor: pointer;
+  transition: background-color var(--vs-duration-fast), border-color var(--vs-duration-fast);
+}
+
+.vs-layout--patron .pkg-modal__rates-trigger:hover:not(:disabled) {
+  border-color: var(--vs-color-dark-green);
+  background: var(--vs-color-surface-pale-green);
+}
+
+.vs-layout--patron .pkg-modal__rates-trigger svg {
+  flex: 0 0 auto;
+}
+
+.vs-layout--patron .pkg-modal__rates-trigger:focus-visible,
+.pkg-modal__rates-close:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.vs-layout--patron .pkg-modal__rates-trigger[hidden],
+.pkg-modal__inclusions[hidden] {
+  display: none !important;
+}
+
+.pkg-modal--rates {
+  z-index: 1510;
+  padding: 16px;
+}
+
+.pkg-modal--rates .pkg-modal__rates-dialog {
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  max-height: 90dvh;
+  gap: 16px;
+  padding: 20px;
+}
+
+.pkg-modal__rates-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pkg-modal__rates-header .pkg-modal__venue-heading {
+  font-family: var(--vs-font-display);
+  font-size: 24px;
+}
+
+.vs-layout--patron .pkg-modal__rates-close {
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-ui);
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.vs-layout--patron .pkg-modal__rates-close:hover {
+  background: var(--vs-color-surface-pale-green);
+  color: var(--vs-color-deep-green);
+  transform: none;
+}
+
+.pkg-modal--rates .pkg-modal__rates-panel {
+  min-height: 112px;
+}
+
+.pkg-modal--rates .pkg-modal__venue-table {
+  min-width: 0;
+}
+
+.pkg-modal__rates-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 4px;
 }
 
 .pkg-modal__venue-rates {
@@ -557,25 +758,156 @@
   margin-bottom: 4px;
 }
 
-.pkg-modal__venue-rates ul {
+.pkg-modal__venue-picker {
   display: grid;
-  gap: 3px;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pkg-modal__venue-heading {
   margin: 0;
-  padding-left: 18px;
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-semibold);
+}
+
+.pkg-modal__venue-picker-label,
+.pkg-modal__venue-select {
+  display: none;
+}
+
+.pkg-modal__venue-select {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 36px 8px 12px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background-color: var(--vs-color-surface);
+  color: var(--vs-color-text);
+  font: inherit;
+  appearance: auto;
+}
+
+.pkg-modal__venue-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pkg-modal__venue-tabs[hidden] {
+  display: none;
+}
+
+.vs-layout--patron .pkg-modal__venue-tab {
+  display: inline-flex;
+  min-height: 36px;
+  min-width: 0;
+  max-width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-pill);
+  background: transparent;
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-ui);
+  font-size: var(--vs-text-secondary-min);
+  font-weight: var(--vs-weight-medium);
+  line-height: var(--vs-leading-tight);
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  box-shadow: none;
+  transition: background-color var(--vs-duration-fast), border-color var(--vs-duration-fast), color var(--vs-duration-fast);
+}
+
+.vs-layout--patron .pkg-modal__venue-tab:hover {
+  border-color: var(--vs-color-dark-green);
+  background: var(--vs-color-surface-pale-green);
+  color: var(--vs-color-deep-green);
+  transform: none;
+}
+
+.vs-layout--patron .pkg-modal__venue-tab[aria-selected="true"] {
+  border-color: var(--vs-color-dark-green);
+  background: var(--vs-color-dark-green);
+  color: var(--vs-color-surface);
+  font-weight: var(--vs-weight-semibold);
+}
+
+.vs-layout--patron .pkg-modal__venue-tab:focus-visible,
+.vs-layout--patron .pkg-modal__venue-select:focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.pkg-modal__rates-panel {
+  min-height: 112px;
+}
+
+.pkg-modal__venue-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.pkg-modal__venue-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  min-width: 390px;
   color: var(--vs-color-text-secondary);
   font-size: 12px;
 }
 
+.pkg-modal__venue-table[hidden],
+.pkg-modal__venue-rates-empty[hidden],
+.pkg-modal__inclusions-empty[hidden] {
+  display: none;
+}
+
+.pkg-modal__venue-table th,
+.pkg-modal__venue-table td {
+  padding: 7px 8px;
+  border-bottom: 1px solid rgba(0, 76, 58, 0.12);
+  text-align: left;
+}
+
+.pkg-modal__venue-table th {
+  color: var(--vs-color-deep-green);
+  font-weight: var(--vs-weight-semibold);
+  white-space: nowrap;
+}
+
+.pkg-modal__venue-table th:first-child,
+.pkg-modal__venue-table td:first-child {
+  width: 64px;
+  font-weight: var(--vs-weight-semibold);
+  white-space: nowrap;
+}
+
+.pkg-modal__venue-table th:not(:first-child),
+.pkg-modal__venue-table td:not(:first-child) {
+  text-align: right;
+}
+
+.pkg-modal__venue-rates-empty {
+  margin: 0;
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-secondary-min);
+}
+
 .pkg-modal--package .pkg-modal__desc {
-  margin: 0 0 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid rgba(0, 107, 83, 0.18);
+  margin: 0;
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-normal);
 }
 
 .pkg-modal__inclusions {
-  /* Guarantees breathing room before the actions divider when the details
-     column is taller than the photo. */
-  margin-bottom: 18px;
+  margin: 0;
 }
 
 .pkg-modal__inclusions h3 {
@@ -600,16 +932,28 @@
   margin: 0;
 }
 
-/* One bordered row per inclusion, with the tick on the right. */
+.pkg-modal__inclusions ul[hidden] {
+  display: none;
+}
+
+.pkg-modal__inclusions ul.pkg-modal__inclusions-list--columns {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 18px;
+}
+
+.pkg-modal__inclusions-empty {
+  margin: 0;
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-body-min);
+}
+
+/* Keep inclusion rows light so the title and description remain dominant. */
 .pkg-modal__inclusions li {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
+  justify-content: flex-start;
   gap: var(--vs-space-3);
-  padding: 10px 14px;
-  border: 1px solid var(--vs-status-success-border);
-  border-radius: var(--vs-radius-control);
-  background: var(--vs-status-success-bg);
+  padding: 2px 0;
   color: var(--color-text);
   font-size: var(--vs-text-body-min);
   line-height: var(--vs-leading-normal);
@@ -621,37 +965,19 @@
 
 .pkg-modal__inclusion-check {
   flex: 0 0 auto;
-  color: var(--vs-status-success-text);
-  font-weight: var(--vs-weight-bold);
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  color: var(--vs-color-dark-green);
 }
 
-/* Actions sit in the details column, under the inclusions. */
-.pkg-modal__actions {
+/* Keep the action close to the content and align it with the right edge. */
+.pkg-modal__footer {
   display: flex;
   justify-content: flex-end;
-  gap: var(--vs-space-3);
-  margin-top: auto;
-  padding-top: 18px;
-  border-top: 1px solid rgba(0, 107, 83, 0.18);
-}
-
-.pkg-modal__actions .pkg-modal__cta {
-  flex: 1 1 0;
-  min-width: 0;
-  max-width: 220px;
-  padding-inline: 18px;
-  white-space: nowrap;
-}
-
-/* Below this the two actions no longer fit side by side without clipping. */
-@media (max-width: 920px) {
-  .pkg-modal__actions {
-    flex-wrap: wrap;
-  }
-
-  .pkg-modal__actions .pkg-modal__cta {
-    flex: 1 1 100%;
-  }
+  flex: 0 0 auto;
+  margin-top: 8px;
+  padding: 0;
 }
 
 .pkg-modal__cta {
@@ -773,7 +1099,6 @@
 
   .pkg-modal__dialog {
     padding: 24px;
-    gap: 18px;
   }
 
   .pkg-modal__body {
@@ -786,20 +1111,19 @@
   }
 
   .pkg-modal--package .pkg-modal__main-image {
-    height: 220px;
+    height: auto;
+    max-height: 55vh;
     min-height: 0;
-  }
-
-  .pkg-modal__actions {
-    flex-wrap: wrap;
-  }
-
-  .pkg-modal__actions .pkg-modal__cta {
-    flex: 1 1 100%;
+    object-fit: contain;
   }
 
   .pkg-modal__cta {
     flex: 1 1 100%;
+  }
+
+  .pkg-modal__footer .pkg-modal__cta {
+    flex: 0 0 auto;
+    min-width: 120px;
   }
 }
 
@@ -1032,16 +1356,16 @@
   max-width: none;
   flex: none;
   scroll-snap-align: start;
-  border: 1px solid var(--vs-color-control-border);
+  border: 1px solid rgba(0, 107, 83, 0.18);
   border-radius: var(--vs-radius-card);
   background: var(--vs-color-surface);
-  box-shadow: var(--vs-shadow-card);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transition: box-shadow var(--vs-duration-base), transform var(--vs-duration-base);
 }
 
 .vs-layout--patron .package-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--vs-shadow-card);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .vs-layout--patron .package-card__title {
@@ -1474,8 +1798,7 @@
     max-height: calc(100vh - max(20px, env(safe-area-inset-top, 0px)) - max(20px, env(safe-area-inset-bottom, 0px)));
     max-height: calc(100dvh - max(20px, env(safe-area-inset-top, 0px)) - max(20px, env(safe-area-inset-bottom, 0px)));
     padding: 16px;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
@@ -1483,7 +1806,8 @@
   .vs-layout--patron .pkg-modal__body,
   .vs-layout--patron .pkg-modal--package .pkg-modal__body {
     grid-template-columns: minmax(0, 1fr);
-    gap: 16px;
+    gap: 18px;
+    overflow-y: auto;
   }
 
   .vs-layout--patron .pkg-modal__info {
@@ -1495,20 +1819,16 @@
     overflow-wrap: anywhere;
   }
 
-  .vs-layout--patron .pkg-modal--package .pkg-modal__media,
-  .vs-layout--patron .pkg-modal--package .pkg-modal__zoom {
-    height: auto;
-  }
-
-  .vs-layout--patron .pkg-modal--package .pkg-modal__zoom {
-    aspect-ratio: 16 / 10;
-  }
-
   .vs-layout--patron .pkg-modal--package .pkg-modal__main-image {
     width: 100%;
-    height: 100%;
+    height: auto;
+    max-height: 34vh;
     min-height: 0;
-    object-fit: cover;
+    object-fit: contain;
+  }
+
+  .vs-layout--patron .pkg-modal--package .pkg-modal__info {
+    padding: 0;
   }
 
   .vs-layout--patron .pkg-modal--venue .pkg-modal__dialog {
@@ -1584,8 +1904,8 @@
     padding-top: 12px;
   }
 
-  .vs-layout--patron .pkg-modal--package .pkg-modal__actions {
-    justify-content: center;
+  .vs-layout--patron .pkg-modal--package .pkg-modal__footer {
+    justify-content: flex-end;
   }
 
   .vs-layout--patron .pkg-lightbox {
@@ -1605,5 +1925,99 @@
   .vs-layout--patron .pkg-lightbox__close {
     top: max(12px, env(safe-area-inset-top, 0px));
     right: max(12px, env(safe-area-inset-right, 0px));
+  }
+}
+
+@media (max-width: 768px) {
+  .vs-layout--patron .pkg-modal--package {
+    overflow: hidden;
+    padding:
+      max(16px, env(safe-area-inset-top, 0px))
+      max(16px, env(safe-area-inset-right, 0px))
+      max(16px, env(safe-area-inset-bottom, 0px))
+      max(16px, env(safe-area-inset-left, 0px));
+    overscroll-behavior: contain;
+  }
+
+  .vs-layout--patron .pkg-modal--package .pkg-modal__dialog {
+    max-height: calc(100vh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    max-height: calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    padding: 16px;
+  }
+
+  .vs-layout--patron .pkg-modal--package .pkg-modal__body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .vs-layout--patron .pkg-modal--package .pkg-modal__media {
+    position: static;
+    min-width: 0;
+  }
+
+  .vs-layout--patron .pkg-modal--package .pkg-modal__main-image {
+    width: 100%;
+    max-height: 40vh;
+    object-fit: contain;
+  }
+
+  .vs-layout--patron .pkg-modal--package .pkg-modal__info {
+    gap: 12px;
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .vs-layout--patron .pkg-modal--package .pkg-modal__pricing {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+    margin-top: 0;
+  }
+
+  .vs-layout--patron .pkg-modal--package .pkg-modal__estimate {
+    width: 100%;
+  }
+
+  .vs-layout--patron .pkg-modal--package .pkg-modal__rates-trigger {
+    justify-self: start;
+  }
+
+  .vs-layout--patron .pkg-modal--package .pkg-modal__close {
+    top: 12px;
+    right: 12px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .vs-layout--patron .pkg-modal--package .pkg-modal__title {
+    padding-right: 48px;
+  }
+
+  .pkg-modal__inclusions ul.pkg-modal__inclusions-list--columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .pkg-modal__venue-tabs {
+    display: none;
+  }
+
+  .pkg-modal__venue-picker-label,
+  .pkg-modal__venue-select {
+    display: block;
+  }
+
+  .pkg-modal__venue-select {
+    min-height: 44px;
+  }
+
+  .pkg-modal__venue-table {
+    font-size: 11px;
   }
 }

@@ -42,7 +42,9 @@
         </div>
         <div class="package-content">
             <h3>{{ $package->name }}</h3>
-            <div class="package-details"></div>
+            <div class="package-details">
+                <p class="package-description">{{ $package->description ?: 'No description available' }}</p>
+            </div>
             <div class="vs-admin-dashboard__card-actions">
                 <x-ui.row-actions label="Package actions">
                     <x-slot:view>
@@ -71,31 +73,62 @@
 </div>
 
 {{-- View Package Modal --}}
-<div class="modal fade" id="packageModal" tabindex="-1" aria-labelledby="packageModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="packageModalLabel">Package Details</h5>
+<div id="packageModal" class="pkg-modal pkg-modal--package" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="pkg-modal__dialog">
+        <button type="button" class="pkg-modal__close close-btn" id="modalPackageClose" aria-label="Close">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false">
+                <path d="m6 6 12 12M18 6 6 18"/>
+            </svg>
+        </button>
+        <div class="pkg-modal__body">
+            <div class="pkg-modal__media">
+                <img id="modalMainImage" class="pkg-modal__main-image" src="" alt="Package Image" data-package-image>
             </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <img id="modalMainImage" src="" alt="Package Image" class="img-fluid rounded mb-3">
+            <div class="pkg-modal__info">
+                <h2 class="pkg-modal__title" id="modalTitle">Package Name</h2>
+                <p id="modalDescription" class="pkg-modal__desc">Package description will appear here...</p>
+                <section class="pkg-modal__inclusions" id="modalInclusionsSection" aria-labelledby="modalInclusionsTitle">
+                    <h3 id="modalInclusionsTitle">Package inclusions</h3>
+                    <ul id="modalInclusions"></ul>
+                </section>
+                <section class="pkg-modal__pricing" aria-labelledby="modalPricingTitle">
+                    <div class="pkg-modal__estimate">
+                        <h3 id="modalPricingTitle">Venue rental estimate</h3>
+                        <p id="modalPriceRange" class="pkg-modal__pricing-range"></p>
+                        <p class="pkg-modal__pricing-disclaimer">Venue rental only. The final quote is confirmed by Villa Salud.</p>
                     </div>
-                    <div class="col-md-6">
-                        <h4 id="modalTitle">Package Name</h4>
-                        <p id="modalDescription">Package description will appear here...</p>
-                        <p class="text-muted">Venue rental pricing depends on the selected venue and time slot. It is estimated on the reservation form.</p>
-                        <div class="package-inclusions mt-3">
-                            <h6>Package Inclusions:</h6>
-                            <ul id="modalInclusions"></ul>
-                        </div>
-                    </div>
-                </div>
+                    <button type="button" class="pkg-modal__rates-trigger admin-btn" id="modalRatesOpen" aria-haspopup="dialog" aria-controls="packageRatesModal" hidden>
+                        <span>View venue rates</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <path d="M5 12h14m-6-6 6 6-6 6"/>
+                        </svg>
+                    </button>
+                </section>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="admin-btn admin-btn-ghost" data-bs-dismiss="modal">Close</button>
-            </div>
+        </div>
+    </div>
+</div>
+
+<div id="packageRatesModal" class="pkg-modal pkg-modal--rates" role="dialog" aria-modal="true" aria-labelledby="packageRatesHeading" hidden>
+    <div class="pkg-modal__dialog pkg-modal__rates-dialog">
+        <div class="pkg-modal__rates-header">
+            <h2 class="pkg-modal__venue-heading" id="packageRatesHeading">Venue rates</h2>
+            <button type="button" class="pkg-modal__rates-close close-btn" id="modalVenueRatesClose" aria-label="Close venue rates">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false">
+                    <path d="m6 6 12 12M18 6 6 18"/>
+                </svg>
+            </button>
+        </div>
+        <div class="pkg-modal__venue-picker">
+            <label class="pkg-modal__venue-picker-label" for="modalVenueSelect">Choose a venue</label>
+            <select class="pkg-modal__venue-select" id="modalVenueSelect"></select>
+            <ul id="modalVenueRates" class="pkg-modal__admin-rates" aria-live="polite"></ul>
+        </div>
+        <footer class="pkg-modal__rates-footer">
+            <button type="button" class="pkg-modal__cta pkg-modal__cta--secondary admin-btn admin-btn-ghost" id="modalVenueRatesDone">Done</button>
+        </footer>
+    </div>
+</div>
         </div>
     </div>
 </div>
@@ -190,7 +223,7 @@
                                 <p class="vs-admin-dashboard__field-note mb-0">No venues yet. <a href="{{ route('admin.venues') }}">Create one first</a>.</p>
                             @endforelse
                         </div>
-                        <p class="vs-admin-dashboard__field-note">Tick every venue this package can be held in. Photos are uploaded once per venue on the Venues page — they are shared, not copied per package.</p>
+                        <p class="vs-admin-dashboard__field-note">Tick every venue this package can be held in. Photos are uploaded once per venue on the Venues page. They are shared, not copied per package.</p>
                     </div>
                     <div class="vs-admin-dashboard__add-media">
                         <div class="mb-3">
