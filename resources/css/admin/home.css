@@ -250,6 +250,11 @@
   text-align: left;
 }
 
+.vs-layout--admin .pkg-modal--package .pkg-modal__dialog {
+  min-width: 0;
+  container-type: inline-size;
+}
+
 .vs-layout--admin .pkg-modal__body {
   display: grid;
   min-width: 0;
@@ -259,20 +264,25 @@
   align-items: stretch;
   gap: 28px;
   overflow: hidden;
+  max-width: 100%;
 }
 
 .vs-layout--admin .pkg-modal--package .pkg-modal__media {
-  position: sticky;
-  top: 0;
+  position: relative;
   min-width: 0;
   align-self: stretch;
+  min-height: calc(51cqi - 14.28px);
+  overflow: hidden;
 }
 
 .vs-layout--admin .pkg-modal__main-image {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
-  max-height: min(72vh, 660px);
-  object-fit: contain;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
   border-radius: 10px;
   background: var(--vs-color-surface-beige);
 }
@@ -286,13 +296,60 @@
 .vs-layout--admin .pkg-modal__info {
   display: flex;
   min-width: 0;
+  max-width: 100%;
   min-height: 0;
-  max-height: min(72vh, 660px);
+  max-height: min(90vh, 58cqi);
+  max-height: min(90dvh, 58cqi);
   flex-direction: column;
   gap: 14px;
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 4px 2px 0;
+}
+
+.vs-layout--admin .pkg-modal__inclusions {
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 120px;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.vs-layout--admin .pkg-modal__inclusions ul {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 120px;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(91, 119, 108, 0.38) transparent;
+}
+
+.vs-layout--admin .pkg-modal__inclusions ul:hover {
+  scrollbar-color: rgba(91, 119, 108, 0.56) transparent;
+}
+
+@supports selector(::-webkit-scrollbar) {
+  .vs-layout--admin .pkg-modal__inclusions ul::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .vs-layout--admin .pkg-modal__inclusions ul::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .vs-layout--admin .pkg-modal__inclusions ul::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(91, 119, 108, 0.38);
+  }
+
+  .vs-layout--admin .pkg-modal__inclusions ul::-webkit-scrollbar-thumb:hover {
+    background: rgba(91, 119, 108, 0.56);
+  }
 }
 
 .vs-layout--admin .pkg-modal__title {
@@ -375,6 +432,8 @@
 
 .vs-layout--admin .pkg-modal__inclusions li {
   display: flex;
+  min-width: 0;
+  max-width: 100%;
   align-items: flex-start;
   justify-content: flex-start;
   gap: var(--vs-space-3);
@@ -386,9 +445,13 @@
 
 .vs-layout--admin .pkg-modal__inclusion-text {
   min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .vs-layout--admin .pkg-modal__inclusion-check {
+  flex: 0 0 auto;
   width: 16px;
   height: 16px;
   flex: 0 0 auto;
@@ -626,11 +689,29 @@
   .vs-layout--admin .pkg-modal--package .pkg-modal__media {
     position: static;
     min-width: 0;
+    min-height: 0;
+    overflow: visible;
   }
 
   .vs-layout--admin .pkg-modal--package .pkg-modal__main-image {
+    position: static;
     width: 100%;
+    height: auto;
     max-height: 40vh;
+    object-fit: contain;
+  }
+
+  .vs-layout--admin .pkg-modal__inclusions {
+    flex: none;
+    min-height: 0;
+  }
+
+  .vs-layout--admin .pkg-modal__inclusions ul {
+    flex: none;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: clip;
+    scrollbar-gutter: auto;
   }
 
   .vs-layout--admin .pkg-modal--package .pkg-modal__info {

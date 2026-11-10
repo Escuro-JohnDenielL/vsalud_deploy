@@ -258,6 +258,10 @@
 /* Package photo stays anchored while the details column scrolls independently. */
 .pkg-modal--package .pkg-modal__dialog {
   max-width: 1060px;
+  max-height: 90vh;
+  max-height: 90dvh;
+  min-width: 0;
+  container-type: inline-size;
   padding: 24px;
 }
 
@@ -292,6 +296,8 @@
 
 .pkg-modal--package .pkg-modal__body {
   align-items: stretch;
+  min-width: 0;
+  max-width: 100%;
   min-height: 0;
   gap: 28px;
   overflow: hidden;
@@ -303,20 +309,27 @@
 }
 
 .pkg-modal--package .pkg-modal__media {
-  position: sticky;
-  top: 0;
+  position: relative;
   align-self: stretch;
+  min-width: 0;
+  min-height: calc(51cqi - 14.28px);
+  overflow: hidden;
 }
 
 .pkg-modal--package .pkg-modal__zoom {
+  position: absolute;
+  inset: 0;
+  height: 100%;
   max-width: 100%;
 }
 
 .pkg-modal--package .pkg-modal__main-image {
-  height: auto;
-  min-height: 0;
-  max-height: min(72vh, 660px);
-  object-fit: contain;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
   background: transparent;
 }
 
@@ -325,11 +338,58 @@
   flex-direction: column;
   gap: 14px;
   min-width: 0;
+  max-width: 100%;
   min-height: 0;
-  max-height: min(72vh, 660px);
+  max-height: min(90vh, 58cqi);
+  max-height: min(90dvh, 58cqi);
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 4px 2px 0;
+}
+
+.pkg-modal--package .pkg-modal__inclusions {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 120px;
+}
+
+.pkg-modal--package .pkg-modal__inclusions ul {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 120px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(91, 119, 108, 0.38) transparent;
+}
+
+.pkg-modal--package .pkg-modal__inclusions ul:hover {
+  scrollbar-color: rgba(91, 119, 108, 0.56) transparent;
+}
+
+@supports selector(::-webkit-scrollbar) {
+  .pkg-modal--package .pkg-modal__inclusions ul::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .pkg-modal--package .pkg-modal__inclusions ul::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .pkg-modal--package .pkg-modal__inclusions ul::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(91, 119, 108, 0.38);
+  }
+
+  .pkg-modal--package .pkg-modal__inclusions ul::-webkit-scrollbar-thumb:hover {
+    background: rgba(91, 119, 108, 0.56);
+  }
 }
 
 .pkg-modal--package .pkg-modal__title {
@@ -937,8 +997,7 @@
 }
 
 .pkg-modal__inclusions ul.pkg-modal__inclusions-list--columns {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 18px;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .pkg-modal__inclusions-empty {
@@ -950,6 +1009,8 @@
 /* Keep inclusion rows light so the title and description remain dominant. */
 .pkg-modal__inclusions li {
   display: flex;
+  min-width: 0;
+  max-width: 100%;
   align-items: flex-start;
   justify-content: flex-start;
   gap: var(--vs-space-3);
@@ -961,6 +1022,9 @@
 
 .pkg-modal__inclusion-text {
   min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .pkg-modal__inclusion-check {
@@ -1975,12 +2039,34 @@
   .vs-layout--patron .pkg-modal--package .pkg-modal__media {
     position: static;
     min-width: 0;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .vs-layout--patron .pkg-modal--package .pkg-modal__zoom {
+    position: static;
+    height: auto;
   }
 
   .vs-layout--patron .pkg-modal--package .pkg-modal__main-image {
     width: 100%;
+    height: auto;
     max-height: 40vh;
     object-fit: contain;
+    position: static;
+  }
+
+  .vs-layout--patron .pkg-modal--package .pkg-modal__inclusions {
+    flex: none;
+    min-height: 0;
+  }
+
+  .vs-layout--patron .pkg-modal--package .pkg-modal__inclusions ul {
+    flex: none;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: clip;
+    scrollbar-gutter: auto;
   }
 
   .vs-layout--patron .pkg-modal--package .pkg-modal__info {
