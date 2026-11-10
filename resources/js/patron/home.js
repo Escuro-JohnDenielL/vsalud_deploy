@@ -159,17 +159,14 @@ document.addEventListener("DOMContentLoaded", function () {
         venueTable.hidden = true;
 
         const rates = Array.isArray(venue?.rates) ? venue.rates : [];
-        priceRangeEl.textContent = formatPriceRange(rates);
-        priceRangeEl.classList.toggle(
-            "pkg-modal__pricing-range--contact",
-            !rates.some(rate => Number.isFinite(Number(rate.price)))
-        );
         if (!rates.length) {
             venueRatesEmpty.textContent = "Contact us for this venue's rates.";
             venueRatesEmpty.hidden = false;
             return;
         }
 
+        // Keep the package estimate consistent with the card; venue-specific
+        // prices are shown in the rates table below.
         const periods = {
             AM: { nonAir: "Not listed", air: "Not listed" },
             PM: { nonAir: "Not listed", air: "Not listed" },
