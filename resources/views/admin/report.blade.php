@@ -11,9 +11,6 @@
 
 @section('content')
 
-{{-- Header image --}}
-<div class="header-image"></div>
-
 {{-- Start content container --}}
 <div class="report-container vs-admin-report">
 

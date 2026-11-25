@@ -21,7 +21,7 @@ body.landing-page { margin: 0; overflow-x: hidden; background: var(--landing-bei
 .landing-nav { position: absolute; top: 0; left: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 82px; padding: 12px clamp(20px, 4vw, 64px); transition: background .2s ease, box-shadow .2s ease, padding .2s ease; }
 .landing-nav.is-scrolled { position: fixed; top: 0; left: 0; width: 100%; min-height: 72px; padding: 10px clamp(20px, 4vw, 64px); transform: none; background: #fff; box-shadow: 0 3px 14px rgba(0,0,0,.14); }
 .landing-logo { display: inline-flex; align-items: center; gap: 11px; color: #fff; text-decoration: none; }
-.landing-logo__mark { display: grid; width: 46px; height: 46px; place-items: center; border: 1px solid var(--landing-beige); border-radius: 50%; color: var(--landing-beige); font-family: var(--landing-display); font-size: 16px; }
+.landing-logo__logo { display: block; flex: 0 0 auto; width: 46px; height: 46px; object-fit: contain; }
 .landing-logo__name { display: flex; flex-direction: column; line-height: 1.1; letter-spacing: 3px; }
 .landing-logo__name small { font-size: 8px; }
 .landing-logo__name strong { margin-top: 3px; font-size: 13px; }
@@ -29,7 +29,6 @@ body.landing-page { margin: 0; overflow-x: hidden; background: var(--landing-bei
 .landing-nav__links a { padding: 11px 18px; border-radius: 30px; color: #fff; font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-decoration: none; text-transform: uppercase; transition: background .2s ease, color .2s ease; }
 .landing-nav__links a:hover, .landing-nav__links a.active { background: var(--landing-beige); color: var(--landing-deep); }
 .landing-nav.is-scrolled .landing-logo { color: var(--landing-deep); }
-.landing-nav.is-scrolled .landing-logo__mark { border-color: var(--landing-emerald); color: var(--landing-emerald); }
 .landing-nav.is-scrolled .landing-nav__links a { color: var(--landing-deep); }
 .landing-nav.is-scrolled .landing-nav__links a:hover, .landing-nav.is-scrolled .landing-nav__links a.active { background: #e8f5ec; color: var(--landing-dark); }
 .landing-menu-button { display: none; width: 44px; height: 44px; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: 1px solid rgba(245,242,223,.75); border-radius: 50%; background: rgba(0,76,58,.65); }
@@ -101,6 +100,9 @@ body.landing-page { margin: 0; overflow-x: hidden; background: var(--landing-bei
 .landing-footer .site-footer__list a:hover { color: var(--landing-beige); text-decoration: underline; }
 .landing-footer .site-footer__bottom { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 34px; padding-top: 18px; border-top: 1px solid rgba(245,242,223,.18); }
 .landing-footer .site-footer__bottom p { margin: 0; color: rgba(245,242,223,.75); font-size: 11px; }
+.site-footer__legal { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.landing-footer .site-footer__privacy { color: rgba(245,242,223,.85); font-size: 11px; letter-spacing: .4px; text-decoration: none; }
+.landing-footer .site-footer__privacy:hover { color: var(--landing-beige); text-decoration: underline; }
 .landing-admin-link {
   display: inline-flex;
   align-items: center;

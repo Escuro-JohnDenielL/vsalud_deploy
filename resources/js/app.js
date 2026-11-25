@@ -277,6 +277,23 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.vs-patron-nav, .vs-admin-nav').forEach(initNavPill);
 
     /* ----------------------------------------------------------
+       Header lift (patron + admin). The bar sits flat at the top
+       of the page and takes the landing page's shadow once the
+       page scrolls, matching the landing nav when it is pulled
+       down.
+       ---------------------------------------------------------- */
+    const headerBars = document.querySelectorAll('.vs-patron-nav, .vs-admin-nav');
+    if (headerBars.length) {
+        const setHeaderLift = () => {
+            const lifted = window.scrollY > 8;
+            headerBars.forEach((bar) => bar.classList.toggle('is-scrolled', lifted));
+        };
+
+        setHeaderLift();
+        window.addEventListener('scroll', setHeaderLift, { passive: true });
+    }
+
+    /* ----------------------------------------------------------
        Responsive navigation menu (patron and admin).
        ---------------------------------------------------------- */
     const nav = document.querySelector('.nav-collapsible');

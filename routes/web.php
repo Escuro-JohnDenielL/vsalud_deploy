@@ -62,6 +62,10 @@ Route::name('patron.')->group(function () {
     Route::view('/faq', 'patron.faq')->name('faq');
     Route::view('/guidelines', 'patron.guidelines')->name('guidelines');
 
+    // Data Privacy Notice. Informational page linked from every form that
+    // collects personal data; it never gates browsing.
+    Route::view('/privacy', 'patron.privacy')->name('privacy');
+
     // Cancellation request
     Route::get('/cancel-reservation', [CancellationController::class, 'index'])->name('cancel-reservation');
 });

@@ -20,10 +20,6 @@
 
 <body class="vs-layout--admin">
 
-    <header class="header-image">
-        <img src="{{ asset('images/background_picture.jpeg') }}" alt="Villa Salud Header" class="header-banner">
-    </header>
-
     {{-- Floating site-home-btn intentionally removed; logout now lives in the account menu. --}}
 
     @php
@@ -51,10 +47,13 @@
     @endphp
 
     <nav class="navbar vs-admin-nav nav-collapsible">
-        <a href="{{ route('admin.report') }}" class="landing-logo vs-admin-brand" aria-label="Villa Salud admin dashboard">
-            <span class="landing-logo__mark">VS</span>
-            <span class="landing-logo__name"><small>VILLA</small><strong>SALUD</strong></span>
-        </a>
+        <div class="vs-brand">
+            <a href="{{ route('admin.report') }}" class="landing-logo vs-admin-brand" aria-label="Villa Salud admin console">
+                <img src="{{ asset('images/vs_logo_nav.png') }}" alt="" class="vs-brand__logo" width="44" height="44" decoding="async">
+                <span class="landing-logo__name"><small>VILLA</small><strong>SALUD</strong></span>
+            </a>
+            <span class="vs-brand__portal">Admin Console</span>
+        </div>
 
         <button type="button" class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="adminPrimaryNav">
             <span class="nav-toggle-bar"></span>

@@ -70,7 +70,18 @@ to the log instead of delivered, and the UI still reports success.
     most once per hour from `/calendar/availability` and the admin dashboard,
     guarded by `Cache::add` and run after the response is sent.
   - A real scheduler process is still required for reliable daily mail.
-- **Backups.** `backup:database` exists but is not scheduled anywhere.
+- **Backups.** The weekly dump runs from a Railway cron service, not from the web
+  process and not from `routes/console.php`:
+  - Cron expression `0 3 * * 0` — every Sunday at 03:00 UTC (11:00 Asia/Manila).
+  - Command `php artisan backup:database`.
+  - The command (`app/Console/Commands/DatabaseBackup.php`) gzips a `mysqldump`
+    and uploads it to the `r2` disk under `database-backups/`.
+  - The cron service needs its own copies of `DB_*` and `R2_*`. Railway services
+    do not share variables, so a missing value there fails the job silently
+    unless the run log is read.
+  - Because the schedule lives outside the repository, nothing in the application
+    code records it. Check the Railway cron service to confirm it is still
+    enabled before claiming backups are running.
 - **Seeding.** No deploy step runs `db:seed`.
 - **Migrations.** The start command runs a hardcoded list of migration paths, not
   `migrate --force`. Migrations not named there (including the three
@@ -126,3 +137,5 @@ to the log instead of delivered, and the UI still reports success.
 - Confirm `/.htaccess` returns 404 in the deployed container.
 - Leave an admin tab idle past `ADMIN_IDLE_MINUTES` and confirm the next click
   lands on the login page with the inactivity message.
+- Confirm the Railway cron service for `backup:database` is still enabled and
+  that the newest object in the `database-backups/` R2 prefix is from last Sunday.

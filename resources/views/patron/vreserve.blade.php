@@ -24,6 +24,8 @@
             </div>
 
             <button type="submit" class="view-details vs-btn vs-btn--primary">View Details</button>
+
+            <x-privacy-note text="We use the email address and reservation code you enter only to look up your booking." />
         </form>
 
         <div id="reservationModal" class="vs-modal modal" style="display: none;">

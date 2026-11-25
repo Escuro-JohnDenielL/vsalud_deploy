@@ -136,34 +136,6 @@
             <img id="pkgLightboxImage" class="pkg-lightbox__image" src="" alt="">
         </div>
     </div>
-    <div id="privacyModal" class="privacy-overlay" role="dialog" aria-modal="true" aria-labelledby="privacyTitle" data-decline-url="{{ url('/') }}">
-        <div class="privacy-modal" tabindex="-1">
-            <h2 id="privacyTitle">Data Privacy Notice</h2>
-            <p class="privacy-modal__subtitle">Republic Act No. 10173 &middot; Data Privacy Act of 2012</p>
-
-            <div class="privacy-modal__body" tabindex="0" role="region" aria-label="Data privacy notice text">
-                <p>Welcome to <strong>Villa Salud Catering</strong>. We value your privacy and are committed to protecting your personal information in accordance with the <strong>Data Privacy Act of 2012 (Republic Act No. 10173)</strong> and its Implementing Rules and Regulations.</p>
-                <section class="privacy-section">
-                    <h3>What we collect and why:</h3>
-                    <p>We collect the personal information you provide through this system &mdash; such as your name, contact number, email address, event and reservation details, and payment information &mdash; for the legitimate purpose of processing your inquiries, bookings, reservations, and other related services.</p>
-                </section>
-                <section class="privacy-section">
-                    <h3>How we protect your data:</h3>
-                    <p>Your information is stored securely and is accessed only by authorized personnel. We do not sell or share your personal information with third parties without your consent, except when required or permitted by law.</p>
-                </section>
-                <section class="privacy-section">
-                    <h3>Your rights:</h3>
-                    <p>Under the Data Privacy Act, you have the right to be informed, to access, to object, to correct, and to request the deletion of your personal data. For any privacy-related concern, you may contact our office or data protection officer.</p>
-                </section>
-                <p>By clicking <strong>&ldquo;I Agree&rdquo;</strong>, you confirm that you have read and understood this notice and you consent to the collection, use, storage, and processing of your personal information as described above.</p>
-            </div>
-
-            <div class="privacy-modal__actions">
-                <button type="button" class="privacy-btn" id="privacyAgree">I Agree</button>
-                <button type="button" class="privacy-decline" id="privacyDecline">Decline</button>
-            </div>
-        </div>
-    </div>
 
     {{-- Tracking code confirmation — shown once after a patron submits an inquiry.
          The code comes from a one-view session flash, never from the URL. --}}

@@ -95,6 +95,10 @@
 
     <div class="site-footer__bottom">
         <p>&copy; {{ date('Y') }} Villa Salud Catering. All rights reserved.</p>
-        {{ $slot }}
+        <div class="site-footer__legal">
+            {{-- The notice is kept reachable from every page without gating any of them. --}}
+            <a class="site-footer__privacy" href="{{ route('patron.privacy') }}">Data Privacy Notice</a>
+            {{ $slot }}
+        </div>
     </div>
 </footer>

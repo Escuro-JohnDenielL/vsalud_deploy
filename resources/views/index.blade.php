@@ -23,7 +23,7 @@
     @endphp
     <nav class="landing-nav" aria-label="Main navigation">
         <a href="#home" class="landing-logo" aria-label="Villa Salud home">
-            <span class="landing-logo__mark">VS</span>
+            <img src="{{ asset('images/vs_logo_nav.png') }}" alt="" class="landing-logo__logo" width="46" height="46" decoding="async">
             <span class="landing-logo__name"><small>VILLA</small><strong>SALUD</strong></span>
         </a>
         <div class="landing-nav__links" id="navMenu">

@@ -25,7 +25,7 @@
             <section class="agreement-privacy">
                 <h3>Data Privacy Act Summary</h3>
                 <p>We collect your name, email, phone number, event details and payment receipts to process your booking and payments. Villa Salud administrators can see this information. It is kept as stated in the full notice.</p>
-                <p><a href="{{ route('patron.home') }}#privacy" target="_blank" rel="noopener noreferrer">Read the full Data Privacy Notice</a></p>
+                <p><a href="{{ route('patron.privacy') }}" target="_blank" rel="noopener noreferrer">Read the full Data Privacy Notice</a></p>
             </section>
 
             <section>
@@ -50,10 +50,9 @@
                     <li>Up to 10% reduction in guest count allowed 2 weeks before the event.</li>
                     <li>No refund for unconsumed catering items.</li>
                     <li>Clients are liable for toll fees and external catering incidentals.</li>
-                    <li>Outside food/drinks are prohibited unless pre-approved in writing.</li>
+                    <li>Food must be consumed at the agreed serving time; no take-outs without management approval.</li>
+                    <li>Outside food/drinks are prohibited unless prior written approval is given for religious or other special reasons.</li>
                     <li>Villa Salud is not liable for spoiled food due to client delay in serving.</li>
-                    <li>All food must be consumed immediately; Villa Salud is not liable for takeout food-related illness.
-                    </li>
                 </ul>
             </section>
 

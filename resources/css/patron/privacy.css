@@ -1,0 +1,68 @@
+/* Standalone Data Privacy Notice page reached from the notes shown on the
+   data-gathering forms. Informational only: nothing here gates a form. */
+.privacy-page {
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.privacy-document {
+  padding: clamp(var(--vs-space-5), 3vw, var(--vs-space-8));
+  border: 1px solid rgba(0, 107, 83, 0.16);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-white);
+  box-shadow: var(--vs-shadow-card);
+  color: var(--vs-color-text);
+  font-family: var(--vs-font-ui);
+  line-height: var(--vs-leading-relaxed);
+}
+
+.privacy-document > p:first-child {
+  margin-top: 0;
+}
+
+.privacy-document h2 {
+  margin: var(--vs-space-8) 0 var(--vs-space-3);
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-display);
+  font-size: 20px;
+  line-height: var(--vs-leading-tight);
+}
+
+.privacy-document h2:first-of-type {
+  margin-top: var(--vs-space-6);
+}
+
+.privacy-document p {
+  margin: 0 0 var(--vs-space-3);
+}
+
+.privacy-document ul {
+  margin: 0 0 var(--vs-space-3);
+  padding-left: var(--vs-space-5);
+}
+
+.privacy-document li {
+  margin-bottom: var(--vs-space-2);
+}
+
+.privacy-document__meta {
+  margin: 0;
+  color: var(--vs-color-text-muted);
+  font-size: 13px;
+}
+
+.privacy-document__contact {
+  margin-top: var(--vs-space-6);
+  padding-top: var(--vs-space-4);
+  border-top: 1px solid rgba(0, 107, 83, 0.16);
+}
+
+.privacy-document__contact-title {
+  margin-top: 0;
+}
+
+@media (max-width: 575.98px) {
+  .privacy-document {
+    padding: var(--vs-space-5) var(--vs-space-4);
+  }
+}

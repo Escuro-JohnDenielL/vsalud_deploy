@@ -43,9 +43,17 @@
             <li>Up to 10% reduction in guest count allowed 2 weeks before the event.</li>
             <li>No refund for unconsumed catering items.</li>
             <li>Clients are liable for toll fees and external catering incidentals.</li>
-            <li>Outside food/drinks are prohibited unless pre-approved in writing.</li>
             <li>Villa Salud is not liable for spoiled food due to client delay in serving.</li>
-            <li>All food must be consumed immediately; Villa Salud is not liable for takeout food-related illness.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Food Take-Out Policy</h2>
+        <ul>
+            <li>Food served by Villa Salud Catering Services must be consumed immediately at the agreed serving time to maintain food quality and prevent spoilage.</li>
+            <li>No take-outs are allowed without the approval of Villa Salud management.</li>
+            <li>Bringing food or beverages from outside sources is generally prohibited, unless the patron obtains prior written approval from Villa Salud Management for religious or other special reasons.</li>
+            <li>Food that leaves the premises is no longer covered by Villa Salud's handling and quality control.</li>
         </ul>
     </section>
 

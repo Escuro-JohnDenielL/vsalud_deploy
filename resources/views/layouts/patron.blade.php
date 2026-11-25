@@ -19,15 +19,17 @@
 </head>
 
 <body class="vs-layout--patron">
-    <header class="header-image">
-        <img src="{{ asset('images/background_picture.jpeg') }}" alt="Villa Salud Header" class="header-banner">
-    </header>
-
+    {{-- The app chrome carries the landing page identity: the real Villa Salud
+         logo plus the portal label, in the same "pulled down" bar the landing
+         page uses once it scrolls. No banner strip above the nav. --}}
     <nav class="navbar nav-collapsible vs-patron-nav" aria-label="Main navigation">
-        <a href="{{ url('/') }}" class="landing-logo vs-patron-brand" aria-label="Villa Salud home">
-            <span class="landing-logo__mark">VS</span>
-            <span class="landing-logo__name"><small>VILLA</small><strong>SALUD</strong></span>
-        </a>
+        <div class="vs-brand">
+            <a href="{{ url('/') }}" class="landing-logo vs-patron-brand" aria-label="Villa Salud patron portal home">
+                <img src="{{ asset('images/vs_logo_nav.png') }}" alt="" class="vs-brand__logo" width="44" height="44" decoding="async">
+                <span class="landing-logo__name"><small>VILLA</small><strong>SALUD</strong></span>
+            </a>
+            <span class="vs-brand__portal">Patron Portal</span>
+        </div>
 
         <span class="vs-nav-pill" aria-hidden="true" hidden></span>
 
