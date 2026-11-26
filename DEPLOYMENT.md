@@ -82,6 +82,10 @@ to the log instead of delivered, and the UI still reports success.
   - Because the schedule lives outside the repository, nothing in the application
     code records it. Check the Railway cron service to confirm it is still
     enabled before claiming backups are running.
+- **PHP patch level.** `Docker` pins the PHP line (`php:8.3-cli`), not the patch
+  release, and the image rebuilds only when a watched path changes. The container
+  can therefore lag behind PHP security releases. Rebuild the service after a PHP
+  security announcement to pick up the current patch level.
 - **Seeding.** No deploy step runs `db:seed`.
 - **Migrations.** The start command runs a hardcoded list of migration paths, not
   `migrate --force`. Migrations not named there (including the three

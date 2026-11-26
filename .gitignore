@@ -39,6 +39,13 @@ temp_vapt.txt
 BUG_REPORT_TRACKER.csv
 SECURITY.md
 
+# Database dumps contain real patron and admin data - never commit them
+/database/*.sql
+/database/*.sql.gz
+/database/*.sql.tar.gz
+/database-backups_*.sql*
+*.sql.gz
+
 # Tests stay local only
 /tests
 docs/MAJOR_SPRINT_PROPOSAL.md
