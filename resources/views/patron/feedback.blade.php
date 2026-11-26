@@ -9,6 +9,49 @@
 @section('content')
 <div class="container">
   <div class="left-section">
+    <section class="verified-review" id="reviewForm" aria-labelledby="verifiedReviewTitle">
+      <h1 id="verifiedReviewTitle">Leave a verified review</h1>
+      <p>Reviews are limited to completed bookings. Enter the tracking code and email address used for your reservation; your code and email will not appear with the published review.</p>
+
+      <form method="POST" action="{{ route('patron.reviews.store') }}">
+        @csrf
+        <label for="review_tracking_code">Booking tracking code</label>
+        <input type="text" id="review_tracking_code" name="review_tracking_code" maxlength="20"
+               value="{{ old('review_tracking_code') }}" autocomplete="off" required>
+        @error('review_tracking_code')
+          <span class="error" role="alert">{{ $message }}</span>
+        @enderror
+
+        <label for="review_email">Booking email address</label>
+        <input type="email" id="review_email" name="review_email" maxlength="254"
+               value="{{ old('review_email') }}" autocomplete="email" required>
+        @error('review_email')
+          <span class="error" role="alert">{{ $message }}</span>
+        @enderror
+
+        <label for="review_rating">Your rating</label>
+        <select id="review_rating" name="review_rating" required>
+          <option value="">Choose a rating</option>
+          @foreach ([5 => '5 - Excellent', 4 => '4 - Very good', 3 => '3 - Good', 2 => '2 - Fair', 1 => '1 - Poor'] as $rating => $label)
+            <option value="{{ $rating }}" @selected((string) old('review_rating') === (string) $rating)>{{ $label }}</option>
+          @endforeach
+        </select>
+        @error('review_rating')
+          <span class="error" role="alert">{{ $message }}</span>
+        @enderror
+
+        <label for="review_message">Your review</label>
+        <textarea id="review_message" name="review_message" rows="5" maxlength="2000"
+                  placeholder="Share what you liked about your event..." required>{{ old('review_message') }}</textarea>
+        @error('review_message')
+          <span class="error" role="alert">{{ $message }}</span>
+        @enderror
+
+        <button type="submit">Submit verified review</button>
+        <x-privacy-note text="Your tracking code and booking email are used only to verify the completed booking. They are not shown publicly." />
+      </form>
+    </section>
+
     <div class="contact-box">
       <h1>We'd Love to Hear From You</h1>
       <p>Please share your experience, suggestions, or any issues you faced. Your feedback helps us improve.</p>

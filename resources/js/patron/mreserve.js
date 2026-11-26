@@ -28,6 +28,19 @@ document.addEventListener("DOMContentLoaded", function () {
     if (form) form.reset();
     initVenuePriceEstimate();
 
+    const trackingCode = document.getElementById("reservationTrackingCode");
+    const copyTrackingCode = document.getElementById("copyReservationTrackingCode");
+    if (trackingCode && copyTrackingCode) {
+        copyTrackingCode.addEventListener("click", async function () {
+            try {
+                await navigator.clipboard.writeText(trackingCode.textContent.trim());
+                copyTrackingCode.textContent = "Copied";
+            } catch (error) {
+                copyTrackingCode.textContent = "Select code to copy";
+            }
+        });
+    }
+
     // Email: inline convenience check. The server rule is the real control.
     const emailInput = document.getElementById("field_email");
     const emailError = document.createElement("p");

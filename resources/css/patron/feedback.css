@@ -193,6 +193,90 @@ button:hover {
   }
 }
 
+.verified-review {
+  margin-bottom: var(--vs-space-5);
+  padding: var(--vs-space-5);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-surface);
+  box-shadow: var(--vs-shadow-card);
+}
+
+.verified-review h1 {
+  margin: 0 0 var(--vs-space-2);
+  color: var(--vs-color-deep-green);
+  font-family: var(--vs-font-display);
+  font-size: 26px;
+}
+
+.verified-review > p {
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-text-body-min);
+  line-height: var(--vs-leading-relaxed);
+}
+
+.verified-review label {
+  display: block;
+  margin: var(--vs-space-3) 0 var(--vs-space-1);
+  color: var(--vs-color-text);
+  font-size: var(--vs-text-body-min);
+  font-weight: var(--vs-weight-semibold);
+}
+
+.verified-review input,
+.verified-review select,
+.verified-review textarea {
+  width: 100%;
+  min-height: 42px;
+  padding: var(--vs-space-2) var(--vs-space-3);
+  border: 1px solid var(--vs-color-control-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-color-white);
+  color: var(--vs-color-text);
+  font: inherit;
+}
+
+.verified-review textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.verified-review :is(input, select, textarea):focus-visible {
+  outline: var(--vs-focus-width) solid var(--vs-focus-on-light);
+  outline-offset: var(--vs-focus-offset);
+}
+
+.verified-review button {
+  width: 100%;
+  min-height: 44px;
+  margin-top: var(--vs-space-4);
+  border: 1px solid var(--vs-button-primary-border);
+  border-radius: var(--vs-radius-control);
+  background: var(--vs-button-primary-bg);
+  color: var(--vs-button-primary-text);
+  font: inherit;
+  font-weight: var(--vs-weight-semibold);
+  cursor: pointer;
+}
+
+.verified-review button:hover {
+  transform: none;
+  border-color: var(--vs-button-primary-hover-border);
+  background: var(--vs-button-primary-hover-bg);
+  color: var(--vs-button-primary-hover-text);
+}
+
+.verified-review .error {
+  display: block;
+  margin-top: var(--vs-space-1);
+  color: var(--vs-status-danger-text);
+  font-size: var(--vs-text-secondary-min);
+}
+
+.verified-review .privacy-note {
+  margin-top: var(--vs-space-3);
+}
+
 .vs-layout--patron .patron-content > .container {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);

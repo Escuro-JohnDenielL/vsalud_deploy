@@ -10,6 +10,44 @@
     <div class="vs-page vs-admin-feedback">
         <x-ui.page-header title="Customer Feedback" subtitle="View and manage feedback submitted by patrons." />
 
+        <section class="vs-card" aria-labelledby="reviewModerationTitle" style="margin-bottom: 24px;">
+            <div class="vs-card__header">
+                <h2 id="reviewModerationTitle">Verified booking reviews</h2>
+                <p>New reviews stay private until staff approve them. Tracking codes and booking emails are never shown here.</p>
+            </div>
+            <div class="vs-table-frame">
+                <div class="vs-table-wrap" role="region" tabindex="0" aria-label="Verified booking reviews">
+                    <table class="vs-table">
+                        <thead><tr><th>Patron</th><th>Rating</th><th>Review</th><th>Status</th><th>Submitted</th><th class="vs-cell-actions">Action</th></tr></thead>
+                        <tbody>
+                            @forelse ($reviews as $review)
+                                <tr class="vs-table__row">
+                                    <td>Verified patron</td>
+                                    <td>{{ $review->rating }} / 5</td>
+                                    <td>{{ \Illuminate\Support\Str::limit($review->message, 140) }}</td>
+                                    <td>{{ $review->is_approved ? 'Published' : 'Pending approval' }}</td>
+                                    <td class="vs-cell-nowrap">{{ vs_datetime($review->created_at) }}</td>
+                                    <td class="vs-cell-actions">
+                                        <form method="POST" action="{{ route('admin.reviews.approval', $review) }}">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="is_approved" value="{{ $review->is_approved ? '0' : '1' }}">
+                                            <button type="submit" class="admin-btn {{ $review->is_approved ? 'admin-btn-ghost' : 'admin-btn-primary' }}">
+                                                {{ $review->is_approved ? 'Unpublish' : 'Approve' }}
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <x-ui.empty-row :colspan="6" message="No verified reviews have been submitted." />
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {{ $reviews->links() }}
+        </section>
+
         <form class="vs-toolbar vs-table-search" method="GET" action="{{ route('admin.feedback') }}" role="search">
             <div class="vs-field">
                 <label class="vs-label" for="feedbackSearch">Search</label>

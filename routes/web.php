@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Patron\HomeController;
 use App\Http\Controllers\Patron\FeedbackController;
 use App\Http\Controllers\Patron\PaymentController;
+use App\Http\Controllers\LandingController;
 
 // Unified
 use App\Http\Controllers\ReservationController;
@@ -42,6 +43,9 @@ Route::name('patron.')->group(function () {
     Route::post('/feedback', [FeedbackController::class, 'store'])
         ->middleware('throttle:feedback')
         ->name('feedback.store');
+    Route::post('/reviews', [FeedbackController::class, 'storeReview'])
+        ->middleware('throttle:5,1')
+        ->name('reviews.store');
 
     // Reservation form
     Route::get('/mreserve', [ReservationController::class, 'create'])->name('mreserve');
@@ -49,7 +53,6 @@ Route::name('patron.')->group(function () {
     Route::post('/agree', [ReservationController::class, 'acceptAgreement'])
         ->middleware('throttle:10,1')
         ->name('agree');
-
     // Payment (proof of receipt upload)
     Route::get('/payment', [PaymentController::class, 'index'])->name('payment');
     Route::get('/payment/bank-qr', [PaymentController::class, 'bankQr'])->name('bank-qr');
@@ -146,6 +149,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'auth.session'
     Route::get('/feedback', [AdminFeedbackController::class, 'index'])->name('feedback');
     Route::delete('/feedback', [AdminFeedbackController::class, 'bulkDestroy'])->name('feedback.bulk-destroy');
     Route::delete('/feedback/{id}', [AdminFeedbackController::class, 'destroy'])->name('feedback.destroy');
+    Route::patch('/reviews/{review}/approval', [AdminFeedbackController::class, 'setReviewApproval'])->name('reviews.approval');
 
     // Availability for the calendar on admin making inquiry/reservation
     Route::get('/availability', [AvailabilityController::class, 'index'])->name('availability.index');
@@ -297,7 +301,7 @@ Route::get('/calendar/availability', function () {
 });
 
 // Landing Page
-Route::view('/', 'index');
+Route::get('/', LandingController::class)->name('landing');
 
 // IT Management (super_admin only — inside admin guard)
 Route::prefix('admin/it')->name('admin.it.')->middleware(['auth:admin', 'role.admin:super_admin'])->group(function () {

@@ -8,13 +8,14 @@
     'showCalendar' => false,  // Whether to show the calendar sidebar
     'venues' => collect(),
     'showVenuePriceEstimate' => false,
+    'formId' => null,
 ])
 
 @php
     $fields = $form->activeFields;
 @endphp
 
-<form method="{{ $method === 'GET' ? 'GET' : 'POST' }}" action="{{ $action }}" class="dynamic-form">
+<form @if($formId) id="{{ $formId }}" @endif method="{{ $method === 'GET' ? 'GET' : 'POST' }}" action="{{ $action }}" class="dynamic-form">
     @csrf
     @if(!in_array($method, ['GET', 'POST']))
         @method($method)
@@ -180,6 +181,8 @@
     @if($showVenuePriceEstimate)
         <x-venue-price-estimate :venues="$venues" :selected-rate-id="old('venue_rate_id')" :errors="$errors" />
     @endif
+
+    {{ $slot }}
 
     <div class="form-group">
         <button type="submit" class="btn-submit">{{ $submitLabel }}</button>

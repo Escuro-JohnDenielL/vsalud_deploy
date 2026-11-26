@@ -18,7 +18,7 @@
     @stack('styles')
 </head>
 
-<body class="vs-layout--patron">
+<body class="vs-layout--patron" style="--patron-backdrop-image: url('{{ asset('images/background_picture.jpeg') }}')">
     {{-- The app chrome carries the landing page identity: the real Villa Salud
          logo plus the portal label, in the same "pulled down" bar the landing
          page uses once it scrolls. No banner strip above the nav. --}}

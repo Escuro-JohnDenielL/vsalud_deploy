@@ -1007,6 +1007,7 @@
     .vs-patron-reservation .calendar-container {
         position: static;
         top: auto;
+        order: -1;
     }
 }
 
@@ -1068,5 +1069,57 @@
     }
 }
 
+.reservation-submission-success {
+        width: min(calc(100% - 32px), 1160px);
+        margin: var(--vs-space-5) auto 0;
+        padding: var(--vs-space-4);
+        border: 1px solid var(--vs-color-control-border);
+        border-radius: var(--vs-radius-card);
+        background: var(--vs-color-pale-green);
+        color: var(--vs-color-deep-green);
+}
+
+    .reservation-submission-success h2 {
+        margin: 0 0 var(--vs-space-2);
+        color: var(--vs-color-deep-green);
+}
+
+    .reservation-submission-success p {
+        margin: 0 0 var(--vs-space-2);
+}
+
+    .reservation-submission-success__code {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--vs-space-3);
+        margin: var(--vs-space-3) 0;
+    }
+
+    .reservation-submission-success__code code {
+        padding: var(--vs-space-2) var(--vs-space-3);
+        border: 1px dashed var(--vs-color-deep-green);
+        border-radius: var(--vs-radius-control);
+        background: #fff;
+        color: var(--vs-color-deep-green);
+        font-size: 1.1rem;
+        font-weight: var(--vs-weight-bold);
+        letter-spacing: 0.08em;
+        user-select: all;
+    }
+
+    .reservation-submission-success__code button {
+        min-height: 40px;
+        padding: var(--vs-space-2) var(--vs-space-3);
+        border: 1px solid var(--vs-button-primary-border);
+        border-radius: var(--vs-radius-control);
+        background: var(--vs-button-primary-bg);
+        color: var(--vs-button-primary-text);
+        cursor: pointer;
+    }
+
+    .reservation-submission-success__email {
+        margin-bottom: 0 !important;
+    }
 /* Legacy .legend-box color helpers removed: the legend now uses the shared
    .vs-calendar__legend-swatch classes so the swatches match the day cells. */

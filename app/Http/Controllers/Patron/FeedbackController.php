@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Patron;
 
 use App\Http\Controllers\Controller;
 use App\Models\Feedback;
+use App\Models\Inquiry;
+use App\Models\Review;
 use App\Rules\EmailAddress;
 use App\Support\FeedbackInput;
 use App\Support\PatronAudit;
 use App\Support\SecurityLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
 
 class FeedbackController extends Controller
@@ -77,6 +80,80 @@ class FeedbackController extends Controller
         );
 
         return redirect()->back()->with('success', 'Thank you for your feedback!');
+    }
+
+    public function storeReview(Request $request)
+    {
+        $request->merge([
+            'review_tracking_code' => strtoupper(FeedbackInput::cleanLine((string) $request->input('review_tracking_code', ''))),
+            'review_email' => strtolower(FeedbackInput::cleanLine((string) $request->input('review_email', ''))),
+            'review_message' => FeedbackInput::cleanMessage((string) $request->input('review_message', '')),
+        ]);
+
+        $validated = $request->validate([
+            'review_tracking_code' => ['required', 'string', 'max:20'],
+            'review_email' => ['required', 'string', 'max:254', new EmailAddress()],
+            'review_rating' => ['required', 'integer', 'between:1,5'],
+            'review_message' => ['required', 'string', 'min:10', 'max:2000'],
+        ]);
+
+        $result = DB::transaction(function () use ($validated) {
+            $inquiry = Inquiry::query()
+                ->with(['patron', 'reservation'])
+                ->where('tracking_code', $validated['review_tracking_code'])
+                ->lockForUpdate()
+                ->first();
+
+            if (
+                ! $inquiry
+                || ! $inquiry->patron
+                || ! hash_equals(
+                    strtolower(trim((string) $inquiry->patron->email)),
+                    $validated['review_email']
+                )
+                || ! $inquiry->reservation
+                || $inquiry->reservation->status !== 'completed'
+            ) {
+                return ['status' => 'ineligible'];
+            }
+
+            if ($inquiry->review()->exists()) {
+                return ['status' => 'duplicate'];
+            }
+
+            Review::create([
+                'inquiry_id' => $inquiry->inquiry_id,
+                'display_name' => 'Verified patron',
+                'rating' => $validated['review_rating'],
+                'message' => $validated['review_message'],
+            ]);
+
+            return ['status' => 'created', 'inquiry' => $inquiry];
+        });
+
+        if ($result['status'] === 'ineligible') {
+            return redirect()->back()->withErrors([
+                'review_tracking_code' => 'We could not verify an eligible completed booking. Check the code and booking email, then try again.',
+            ])->withInput($request->except(['review_tracking_code', 'review_email']));
+        }
+
+        if ($result['status'] === 'duplicate') {
+            return redirect()->back()->withErrors([
+                'review_tracking_code' => 'A review has already been submitted for this booking.',
+            ]);
+        }
+
+        /** @var Inquiry $inquiry */
+        $inquiry = $result['inquiry'];
+        PatronAudit::log(
+            'Patron Review Submitted',
+            $request,
+            $inquiry->tracking_code,
+            'verified review submitted',
+            $inquiry->inquiry_id
+        );
+
+        return redirect()->back()->with('success', 'Thank you for sharing your verified review!');
     }
 
     /**

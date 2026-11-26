@@ -28,6 +28,8 @@
         </a>
         <div class="landing-nav__links" id="navMenu">
             <a class="active" href="#home">Home</a>
+            <a href="#venues">Venues</a>
+            <a href="#reviews">Reviews</a>
             <a href="#about">About us</a>
             <a href="#contact">Contact us</a>
         </div>
@@ -60,6 +62,102 @@
                         <span class="portal-action__arrow" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
                     </a>
                 </div>
+            </div>
+        </section>
+
+        <section id="venues" class="landing-venues">
+            <div class="landing-venues__backdrop" aria-hidden="true">
+                <img class="landing-venues__backdrop-image" alt="">
+                <img class="landing-venues__backdrop-image" alt="">
+            </div>
+            <div class="container">
+                <div class="landing-section-heading">
+                    <span class="section-eyebrow">Find your setting</span>
+                    <h2>Explore our <em>venues.</em></h2>
+                    <p>Browse venue photos, capacities, and verified guest ratings before you book.</p>
+                </div>
+
+                @if ($venues->isNotEmpty())
+                    <div class="landing-venue-grid">
+                        @foreach ($venues as $venue)
+                            @php
+                                $cover = $venue->photos->first(fn ($photo) => \App\Support\PublicImage::exists($photo->path));
+                                $hasCover = (bool) $cover;
+                                $venueRating = $venueRatings->get($venue->name);
+                                $ratingValue = $venueRating ? (float) $venueRating->average_rating : null;
+                                $filledStars = $ratingValue !== null ? (int) round($ratingValue) : 0;
+                            @endphp
+                            <article class="landing-venue-card" @if ($hasCover) data-venue-image="{{ $cover->url() }}" @endif>
+                                <div class="landing-venue-card__image">
+                                    @if ($hasCover)
+                                        <img src="{{ $cover->url() }}"
+                                             alt="{{ $cover->alt_text ?: $venue->name }}"
+                                             loading="lazy">
+                                    @else
+                                        <div class="landing-venue-card__placeholder" role="img" aria-label="Photo coming soon for {{ $venue->name }}">
+                                            <span aria-hidden="true">VS</span>
+                                            <small>Villa Salud venue</small>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="landing-venue-card__body">
+                                    <div class="landing-venue-card__heading">
+                                        <h3>{{ $venue->name }}</h3>
+                                        @if ($venue->capacity)
+                                            <span>Up to {{ number_format($venue->capacity) }} guests</span>
+                                        @endif
+                                    </div>
+                                    <div class="landing-venue-card__rating" role="img" aria-label="{{ $ratingValue !== null ? number_format($ratingValue, 1) . ' out of 5 stars from ' . $venueRating->review_count . ' reviews' : 'No ratings yet' }}">
+                                        <span class="landing-venue-card__stars" aria-hidden="true">
+                                            @for ($star = 1; $star <= 5; $star++)
+                                                <span class="{{ $star <= $filledStars ? 'is-filled' : 'is-empty' }}">{{ $star <= $filledStars ? '★' : '☆' }}</span>
+                                            @endfor
+                                        </span>
+                                        @if ($ratingValue !== null)
+                                            <span class="landing-venue-card__rating-count">{{ number_format($ratingValue, 1) }} · {{ $venueRating->review_count }}</span>
+                                        @endif
+                                    </div>
+                                    <p class="landing-venue-card__description">{{ $venue->description ?: 'A welcoming setting for your next celebration.' }}</p>
+                                    <a class="landing-venue-card__cta" href="{{ route('patron.mreserve', ['venue' => $venue->name]) }}">Make a reservation</a>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="landing-empty-state">Venue information is being updated. Please check back soon.</p>
+                @endif
+            </div>
+        </section>
+
+        <section id="reviews" class="landing-reviews">
+            <div class="container">
+                <div class="landing-section-heading">
+                    <span class="section-eyebrow">Guest experiences</span>
+                    <h2>Reviews from <em>verified patrons.</em></h2>
+                    @if ($reviewCount > 0)
+                        <p>{{ number_format($averageRating, 1) }} out of 5 from {{ $reviewCount }} verified {{ \Illuminate\Support\Str::plural('review', $reviewCount) }}.</p>
+                    @else
+                        <p>Reviews are accepted only from patrons with a completed booking.</p>
+                    @endif
+                </div>
+
+                @if ($reviews->isNotEmpty())
+                    <div class="landing-review-grid">
+                        @foreach ($reviews as $review)
+                            <article class="landing-review-card">
+                                <p class="landing-review-card__rating" aria-label="{{ $review->rating }} out of 5 stars">{{ $review->rating }} / 5</p>
+                                <blockquote>{{ $review->message }}</blockquote>
+                                <p class="landing-review-card__byline">
+                                    <strong>Verified patron</strong>
+                                    <span>Completed booking</span>
+                                </p>
+                            </article>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="landing-empty-state">No verified reviews yet. After a completed event, patrons can share their experience.</p>
+                @endif
+                <a class="landing-outline-link" href="{{ route('patron.feedback') }}#reviewForm">Leave a verified review</a>
             </div>
         </section>
 

@@ -13,8 +13,7 @@
         $dailyCap = \App\Support\AvailabilityScale::cap();
     @endphp
 
-    <!-- Agreement Modal -->
-    <div id="agreementModal" class="modal agreement-modal">
+    <div id="agreementModal" class="modal agreement-modal" style="display: none;">
         <div class="guidelines-content" id="agreementContent" tabindex="0" role="region" aria-label="Data Privacy Notice and Reservation Guidelines">
             <h3>Data Privacy Notice and Reservation Guidelines</h3>
 
@@ -138,25 +137,33 @@
     </script>
 
     <div class="page-wrapper vs-patron-reservation">
+        <div class="vs-patron-reservation__intro">
+            <h2>Choose a date, then send one reservation request.</h2>
+            <x-ui.page-info id="patronReserveInfo" title="How to reserve a date">
+                <ol>
+                    <li>Choose an available date and complete the form on this page.</li>
+                    <li>Agree to the privacy notice and reservation rules, then submit once.</li>
+                    <li>Save the tracking code shown here and sent to your email.</li>
+                    <li>Villa Salud will review the request; it is not confirmed until approved.</li>
+                    <li>If a date is full, use the calendar's waitlist option.</li>
+                </ol>
+            </x-ui.page-info>
+        </div>
+
+        @if (session('tracking_code'))
+            <section class="reservation-submission-success" role="status" aria-labelledby="reservationSubmittedTitle">
+                <h2 id="reservationSubmittedTitle">Request received</h2>
+                <p>Your request is pending Villa Salud's review; it is not confirmed yet. Save this tracking code to manage your booking.</p>
+                <div class="reservation-submission-success__code">
+                    <code id="reservationTrackingCode">{{ session('tracking_code') }}</code>
+                    <button type="button" id="copyReservationTrackingCode">Copy code</button>
+                </div>
+                <p class="reservation-submission-success__email">We also sent the code to your booking email.</p>
+            </section>
+        @endif
+
         <div class="container vs-patron-reservation__layout">
             <div class="reservation-container">
-                <div class="vs-patron-reservation__intro">
-                    <h2>Let's bring your vision to life. Fill out the form below.</h2>
-                    <x-ui.page-info id="patronReserveInfo" title="How to reserve a date">
-                        <ol>
-                            <li>Pick a date on the calendar.</li>
-                            <li>Read the legend to see how full each date is. Closed dates cannot be booked.</li>
-                            <li>Fill out the form with your event details.</li>
-                            <li>Read and accept the Data Privacy Notice and Reservation Guidelines.</li>
-                            <li>Submit the form. Your tracking code appears on screen and is also emailed to you. Save it.</li>
-                            <li>Your submission is a request. Villa Salud reviews it and confirms the reservation.</li>
-                            <li>After the reservation is confirmed, upload your proof of payment under Manage Booking, then Payment Order.</li>
-                            <li>Use Track Booking to check your booking status.</li>
-                            <li>If the date is full, you can join the waitlist from the calendar.</li>
-                        </ol>
-                    </x-ui.page-info>
-                </div>
-
                 @php
                     $reservationForm = \App\Models\Form::with('activeFields')
                         ->where('slug', 'reservation')

@@ -71,6 +71,16 @@ body {
   line-height: 1.6;
 }
 
+body.vs-layout--patron {
+  background-color: var(--vs-color-page-bg);
+  background-image:
+    linear-gradient(rgba(250, 248, 239, 0.94), rgba(250, 248, 239, 0.94)),
+    var(--patron-backdrop-image);
+  background-position: center top;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
 /* === Shared Navbar === */
 .navbar {
   display: flex;
@@ -1666,6 +1676,29 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
   color: var(--vs-button-primary-hover-text);
 }
 
+.vs-layout--patron .vs-patron-nav a.vs-nav-track:hover,
+.vs-layout--patron .vs-patron-nav a.vs-nav-cta:hover {
+  transform: none !important;
+  scale: none !important;
+}
+
+.vs-layout--patron .vs-patron-nav a.vs-nav-track:focus,
+.vs-layout--patron .vs-patron-nav a.vs-nav-track:active,
+.vs-layout--patron .vs-patron-nav a.vs-nav-cta:focus,
+.vs-layout--patron .vs-patron-nav a.vs-nav-cta:active {
+  transform: none !important;
+  scale: none !important;
+}
+
+.vs-layout--patron .vs-patron-nav a.vs-nav-track,
+.vs-layout--patron .vs-patron-nav a.vs-nav-cta {
+  transform: none !important;
+  scale: none !important;
+  zoom: 1 !important;
+  animation: none !important;
+  transition: color var(--vs-duration-fast), background-color var(--vs-duration-fast), border-color var(--vs-duration-fast) !important;
+}
+
 /* Sliding active pill on the primary nav links (patron and admin). The pill is
    absolute and moves with transform, so nothing shifts layout. It ignores
    pointer events. Hidden in the collapsed mobile nav and under reduced motion,
@@ -3022,6 +3055,11 @@ body.vs-layout--admin :is(.vs-admin-dashboard__edit-modal, .vs-admin-dashboard__
     font-weight: var(--vs-weight-semibold);
     letter-spacing: 1.2px;
     text-transform: uppercase;
+  }
+
+  .vs-layout--patron .vs-patron-nav a.vs-nav-track:is(:hover, :focus, :active),
+  .vs-layout--patron .vs-patron-nav a.vs-nav-cta:is(:hover, :focus, :active) {
+    font-size: 11px !important;
   }
 }
 

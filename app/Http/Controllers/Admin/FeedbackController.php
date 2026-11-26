@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\Feedback;
+use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -31,7 +32,37 @@ class FeedbackController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('admin.feedback', compact('feedbacks', 'search'));
+        $reviews = Review::query()
+            ->latest()
+            ->paginate(10, ['*'], 'reviews_page')
+            ->withQueryString();
+
+        return view('admin.feedback', compact('feedbacks', 'reviews', 'search'));
+    }
+
+    public function setReviewApproval(Request $request, Review $review)
+    {
+        $validated = $request->validate([
+            'is_approved' => ['required', 'boolean'],
+        ]);
+
+        $review->is_approved = (bool) $validated['is_approved'];
+        $review->save();
+
+        ActivityLog::create([
+            'admin_id' => $request->user('admin')?->getAuthIdentifier(),
+            'activity_type' => $review->is_approved ? 'Approved Review' : 'Unpublished Review',
+            'category' => 'data',
+            'route_name' => 'admin.reviews.approval',
+            'http_method' => 'PATCH',
+            'subject' => $review->is_approved ? 'Approved verified review' : 'Unpublished verified review',
+            'description' => 'Review ID ' . $review->id . ' publication set to ' . ($review->is_approved ? 'approved' : 'pending'),
+            'ip_address' => $request->ip(),
+            'user_agent' => Str::limit((string) $request->userAgent(), 500, ''),
+        ]);
+
+        return redirect()->route('admin.feedback', ['page' => $request->query('page'), 'reviews_page' => $request->query('reviews_page')])
+            ->with('success', $review->is_approved ? 'Review approved and published.' : 'Review unpublished.');
     }
 
     public function destroy($id)

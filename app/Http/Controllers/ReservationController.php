@@ -50,7 +50,10 @@ class ReservationController extends Controller
         // Consent is checked before anything else, so a refused submission
         // writes no row and never reaches the form-data log below. The
         // exemption is the authenticated admin guard, never a request field.
-        if (ConsentGate::required(auth('admin')->check(), $request->session()->get('guest_agreed', false))) {
+        if (ConsentGate::required(
+            auth('admin')->check(),
+            $request->session()->get('guest_agreed', false)
+        )) {
             SecurityLog::consentMissing($request->route()?->getName() ?? 'patron.mreserve.submit');
 
             if ($request->expectsJson()) {
@@ -266,10 +269,7 @@ class ReservationController extends Controller
                 ]);
             }
 
-            // Reset agreement so they must re-agree for their next reservation
-            $request->session()->forget('guest_agreed');
-
-            // Redirect admin to admin home, patrons to patron home
+            // Redirect admin to admin home, patrons back to the request page.
             if ($request->is('admin/*')) {
                 return redirect()->route('admin.home', ['toast' => 'success', 'toast_msg' => 'Inquiry successfully created!']);
             }
@@ -278,8 +278,9 @@ class ReservationController extends Controller
             // patron sees it once on the next page. It is flashed for a single
             // view and never placed in the URL.
             $request->session()->flash('tracking_code', $inquiry->tracking_code);
+            $request->session()->forget('guest_agreed');
 
-            return redirect()->route('patron.home');
+            return redirect()->route('patron.mreserve');
         } catch (\Throwable $th) {
             Log::error('Failed to insert inquiry: ' . $th->getMessage());
 
@@ -423,4 +424,5 @@ class ReservationController extends Controller
             'message' => 'Agreement accepted.',
         ]);
     }
+
 }

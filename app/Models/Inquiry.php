@@ -96,4 +96,9 @@ class Inquiry extends Model
     {
         return $this->hasOne(\App\Models\Reservation::class, 'inquiry_id', 'inquiry_id');
     }
+
+    public function review()
+    {
+        return $this->hasOne(\App\Models\Review::class, 'inquiry_id', 'inquiry_id');
+    }
 }

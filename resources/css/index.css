@@ -56,6 +56,62 @@ body.landing-page { margin: 0; overflow-x: hidden; background: var(--landing-bei
 .portal-action__copy strong { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; }
 .portal-action__copy small { margin-top: 3px; font-size: 10px; opacity: .85; }
 .portal-action__arrow { color: var(--landing-beige); font-size: 20px; }
+.landing-venues, .landing-reviews { padding: clamp(62px, 8vw, 104px) 0; }
+.landing-venues { position: relative; isolation: isolate; overflow: hidden; background: var(--landing-beige); }
+.landing-venues__backdrop { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.landing-venues__backdrop::after { position: absolute; inset: 0; background: rgba(250,248,239,.94); content: ""; }
+.landing-venues__backdrop-image { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .55s ease-in-out; }
+.landing-venues__backdrop-image.is-active { opacity: 1; }
+.landing-reviews { background: #f3f1e7; text-align: center; }
+.landing-venues .container, .landing-reviews .container { position: relative; z-index: 1; display: block; width: min(92%, 1200px); max-width: 1200px; margin: 0 auto; padding: 0; }
+.landing-venues .container { width: min(92%, 1560px); max-width: 1560px; }
+.landing-section-heading { max-width: 740px; margin: 0 auto 34px; text-align: center; }
+.landing-section-heading h2 { margin: 12px 0; color: var(--landing-deep); font-family: var(--landing-display); font-size: clamp(36px, 5vw, 56px); font-weight: 600; line-height: 1; }
+.landing-section-heading h2 em { color: var(--landing-emerald); }
+.landing-section-heading p { margin: 0 auto; color: var(--landing-muted); font-size: 15px; line-height: 1.7; }
+.landing-venue-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: stretch; gap: 18px; }
+.landing-venue-card { position: relative; isolation: isolate; display: flex; min-width: 0; flex-direction: column; overflow: hidden; border: 1px solid rgba(0,76,58,.12); border-radius: 20px; background: #fff; box-shadow: 0 6px 20px rgba(0,76,58,.07); transition: transform .2s ease, box-shadow .2s ease; }
+.landing-venue-card__image { aspect-ratio: 16 / 10; overflow: hidden; background: #f5f2df; }
+.landing-venue-card__image img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .35s ease; }
+.landing-venue-card:hover .landing-venue-card__image img { transform: scale(1.03); }
+.landing-venue-card__placeholder { display: flex; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--landing-deep); }
+.landing-venue-card__placeholder span { display: grid; width: 84px; aspect-ratio: 1; place-items: center; border: 1.5px solid var(--landing-dark); border-radius: 50%; font-family: var(--landing-display); font-size: 36px; }
+.landing-venue-card__placeholder small { color: var(--landing-muted); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+.landing-venue-card__body { display: flex; flex: 1; min-height: 270px; flex-direction: column; padding: 17px; }
+.landing-venue-card__heading { display: flex; min-height: 52px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 7px; padding-bottom: 10px; border-bottom: 1px solid rgba(0,76,58,.12); }
+.landing-venue-card__heading h3 { margin: 0; color: var(--landing-deep); font-family: var(--landing-display); font-size: clamp(19px, 1.4vw, 23px); font-weight: 600; line-height: 1.15; }
+.landing-venue-card__heading span { padding: 4px 9px; border-radius: 999px; background: #e8f5ec; color: var(--landing-dark); font-size: 10px; font-weight: 600; }
+.landing-venue-card__description { display: -webkit-box; min-height: 3.2em; margin: 11px 0; overflow: hidden; color: var(--landing-muted); font-size: 12px; line-height: 1.55; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.landing-venue-card__rating { display: flex; min-height: 35px; align-items: center; gap: 9px; margin: 8px 0 2px; }
+.landing-venue-card__stars { display: inline-flex; align-items: center; gap: 2px; color: #c99a24; font-size: 20px; line-height: 1; letter-spacing: .02em; }
+.landing-venue-card__stars .is-empty { color: #b9b7a8; }
+.landing-venue-card__rating-count { color: var(--landing-muted); font-size: 11px; font-weight: 600; }
+.landing-venue-card__cta { display: inline-flex; width: 100%; min-height: 44px; align-items: center; justify-content: center; margin-top: auto; padding: 10px 12px; border-radius: 999px; background: var(--landing-emerald); color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; transition: background .2s ease, box-shadow .2s ease; }
+.landing-venue-card__cta:hover { background: var(--landing-deep); box-shadow: 0 5px 14px rgba(0,76,58,.18); color: #fff; }
+.landing-review-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr)); gap: 18px; margin: 0 0 28px; text-align: left; }
+.landing-review-card { padding: 22px; border: 1px solid rgba(0,76,58,.12); border-radius: 18px; background: #fff; box-shadow: 0 8px 22px rgba(0,76,58,.06); }
+.landing-review-card__rating { margin: 0 0 12px; color: var(--landing-emerald); font-size: 13px; font-weight: 700; }
+.landing-review-card blockquote { margin: 0 0 18px; color: var(--landing-deep); font-size: 14px; line-height: 1.7; }
+.landing-review-card__byline { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0; color: var(--landing-deep); font-size: 12px; }
+.landing-review-card__byline span { color: var(--landing-emerald); font-size: 10px; font-weight: 600; }
+.landing-empty-state { max-width: 650px; margin: 0 auto; padding: 20px; border: 1px dashed rgba(0,76,58,.24); border-radius: 16px; color: var(--landing-muted); text-align: center; }
+@media (max-width: 1199.98px) {
+  .landing-venue-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .landing-venue-card { grid-column: span 2; }
+  .landing-venue-card:nth-child(4):nth-last-child(2) { grid-column: 2 / span 2; }
+  .landing-venue-card:nth-child(5):last-child { grid-column: 4 / span 2; }
+}
+@media (max-width: 680px) {
+  .landing-venue-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .landing-venue-card { grid-column: auto; }
+  .landing-venue-card:nth-child(4):nth-last-child(2), .landing-venue-card:nth-child(5):last-child { grid-column: auto; }
+  .landing-venue-card:last-child:nth-child(odd) { grid-column: 1 / -1; justify-self: center; width: min(100%, 340px); }
+  .landing-venue-card__body { min-height: 260px; padding: 14px; }
+}
+@media (max-width: 420px) {
+  .landing-venue-grid { grid-template-columns: minmax(0, 1fr); }
+  .landing-venue-card, .landing-venue-card:last-child:nth-child(odd) { grid-column: 1; width: 100%; }
+}
 /* The nav turns fixed (72px) as soon as the page scrolls and #about anchors
    right below it, so the section is sized to the space that is actually
    visible. A full 100svh section under a 72px offset used to push the row
